@@ -1,11 +1,10 @@
-import time
-
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow
 import datetime
 import pathlib
 import pandas
 import ctypes
+import time
 import VMU_monitor_ui
 from dll_power import CANMarathon
 
@@ -30,36 +29,21 @@ def show_empty_params_list(list_of_params: list, table: str):
     row = 0
 
     for par in list_of_params:
-        name_Item = QTableWidgetItem(par['name'])
-        name_Item.setFlags(name_Item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, 0, name_Item)
-        if str(par['description']) != 'nan':
-            description = str(par['description'])
-        else:
-            description = ''
-        description_Item = QTableWidgetItem(description)
-        show_table.setItem(row, 1, description_Item)
+        name_item = QTableWidgetItem(par['name'])
+        name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
+        show_table.setItem(row, 0, name_item)
 
-        if par['address']:
-            if str(par['address']) != 'nan':
-                adr = hex(round(par['address']))
-            else:
-                adr = ''
-            adr_Item = QTableWidgetItem(adr)
-            adr_Item.setFlags(adr_Item.flags() & ~Qt.ItemIsEditable)
-            show_table.setItem(row, 2, adr_Item)
+        value_item = QTableWidgetItem('')
+        value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
+        show_table.setItem(row, 1, value_item)
 
         if str(par['unit']) != 'nan':
             unit = str(par['unit'])
         else:
             unit = ''
-        unit_Item = QTableWidgetItem(unit)
-        unit_Item.setFlags(unit_Item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, show_table.columnCount() - 1, unit_Item)
-
-        value_Item = QTableWidgetItem('')
-        value_Item.setFlags(value_Item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, window.value_col, value_Item)
+        unit_item = QTableWidgetItem(unit)
+        unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
+        show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
         row += 1
     show_table.resizeColumnsToContents()
@@ -123,19 +107,16 @@ def start_btn_pressed():
                                                                  'vmu_record_' +
                                                                  datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
                                                                  '.csv')
-        window.constantly_req_vmu_params.setChecked(True)
-        window.constantly_req_vmu_params.setEnabled(False)
-        window.connect_vmu_btn.setEnabled(False)
+
+        window.connect_btn.setEnabled(False)
         window.record_vmu_params = True
-        window.start_record.setText('Стоп')
+        window.start_btn.setText('Стоп')
         adding_to_csv_file('name')
     #  если запись параметров ведётся, отключаю её и сохраняю файл
     else:
         window.record_vmu_params = False
-        window.start_record.setText('Запись')
-        window.constantly_req_vmu_params.setChecked(False)
-        window.constantly_req_vmu_params.setEnabled(True)
-        window.connect_vmu_btn.setEnabled(True)
+        window.start_record.setText('Начать запись')
+        window.connect_btn.setEnabled(True)
         # Reading the csv file
         file_name = str(window.vmu_req_thread.recording_file_name)
         df_new = pandas.read_csv(file_name, encoding='windows-1251')
@@ -167,9 +148,7 @@ def fill_vmu_params_values(ans_list: list):
             # возможно, здесь тоже нужно вытаскивать знаковое int, ага, int32
             else:
                 value = ctypes.c_int32(value).value
-                # print(' = ' + str(value), end=' ')
                 par['value'] = (value / par['scale'])
-                # print(' = ' + str(par['value']))
             par['value'] = float('{:.2f}'.format(par['value']))
         i += 1
     print('Новые параметры КВУ записаны ')
@@ -198,18 +177,7 @@ class VMUSaveToFileThread(QObject):
             #  И отправляю их в основной поток для обновления
             self.new_vmu_params.emit(ans_list)
 
-            response_time = window.response_time_edit.text()
-            if response_time:
-                response_time = int(response_time)
-                if not response_time:
-                    response_time = 1000
-                if response_time < 10:
-                    response_time = 10
-                elif response_time > 60000:
-                    response_time = 60000
-            else:
-                response_time = 1000
-            QThread.msleep(response_time)
+            QThread.msleep(100)
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
@@ -237,14 +205,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # если в списке строка - нахер такой список, похоже, нас отсоединили
         # но бывает, что параметр не прилетел в первый пункт списка, тогда нужно проверить,
         # что хотя бы два пункта списка - строки( или придумать более изощерённую проверку)
-        if len(list_of_params) == 1:  # or (isinstance(list_of_params[0], str) and isinstance(list_of_params[1],
-            # str)):
-            window.connect_vmu_btn.setText('Подключиться')
-            window.connect_vmu_btn.setEnabled(True)
-            window.start_record.setText('Запись')
-            window.start_record.setEnabled(False)
-            window.constantly_req_vmu_params.setChecked(False)
-            window.constantly_req_vmu_params.setEnabled(False)
+        if len(list_of_params) == 1:
+            window.connect_btn.setText('Подключиться')
+            window.connect_btn.setEnabled(True)
+            window.start_btn.setText('Начать запись')
+            window.start_btn.setEnabled(False)
             window.record_vmu_params = False
             window.thread_to_record.running = False
             window.thread_to_record.terminate()
