@@ -99,6 +99,42 @@ def adding_to_csv_file(name_or_value: str):
               encoding='windows-1251')
 
 
+def connect_vmu():
+    param_list = [[0x40, 0x18, 0x10, 0x02, 0x00, 0x00, 0x00, 0x00]]
+    # Проверяю, есть ли подключение к кву
+    check = marathon.can_request_many(rtcon_vmu, vmu_rtcon, param_list)
+    if isinstance(check, list):
+        check = check[0]
+    if isinstance(check, str):
+        QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + check, QMessageBox.Ok)
+        window.connect_btn.setText('Подключиться')
+        window.start_btn.setEnabled(False)
+        window.power_box.setEnabled(False)
+        window.reset_faults.setEnabled(False)
+        return False
+
+    # запрашиваю список полученных ответов
+    ans_list = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
+    fill_vmu_params_values(ans_list)
+    # отображаю сообщения из списка
+    window.show_new_vmu_params()
+    # разблокирую все кнопки и чекбоксы
+    window.connect_btn.setText('Отключиться')
+    window.start_btn.setEnabled(True)
+    window.power_box.setEnabled(True)
+    window.reset_faults.setEnabled(True)
+    return True
+
+
+def const_req_vmu_params():
+    if not window.vmu_req_thread.running:
+        window.vmu_req_thread.running = True
+        window.thread_to_record.start()
+    else:
+        window.vmu_req_thread.running = False
+        window.thread_to_record.terminate()
+
+
 def start_btn_pressed():
     # если записи параметров ещё нет, включаю ее
     if not window.record_vmu_params:
