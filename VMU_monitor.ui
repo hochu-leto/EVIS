@@ -26,7 +26,7 @@
    <set>QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,5">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5">
     <item>
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
@@ -34,7 +34,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout" stretch="2,5,2">
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="start_button">
          <property name="text">
           <string>Подключиться</string>
          </property>
@@ -45,11 +45,11 @@
          <property name="title">
           <string>Момент, %</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,10">
+         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,10">
           <item>
-           <widget class="QSlider" name="verticalSlider">
+           <widget class="QSlider" name="power_slider">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -75,7 +75,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox">
+           <widget class="QDoubleSpinBox" name="power_spinbox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -94,7 +94,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="reset_faults">
          <property name="text">
           <string>Сброс ошибок</string>
          </property>
@@ -104,7 +104,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QTableView" name="vmu_params_table"/>
+     <widget class="QTableWidget" name="vmu_param_table"/>
     </item>
    </layout>
   </widget>
