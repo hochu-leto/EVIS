@@ -16,8 +16,11 @@ marathon = CANMarathon()
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params.xlsx'
 VMU_ID_PDO = 0x00000401
-rtcon_vmu = 0x00000601
-vmu_rtcon = 0x00000581
+rtcon_vmu = 0x1850460E
+vmu_rtcon = 0x594
+#
+# rtcon_vmu = 0x00000601
+# vmu_rtcon = 0x00000581
 
 
 def show_empty_params_list(list_of_params: list, table: str):
@@ -292,7 +295,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         for par in vmu_params_list:
             value_Item = QTableWidgetItem(str(par['value']))
             value_Item.setFlags(value_Item.flags() & ~Qt.ItemIsEditable)
-            self.vmu_param_table.setItem(row, window.value_col, value_Item)
+            self.vmu_param_table.setItem(row, 1, value_Item)
             row += 1
 
 
