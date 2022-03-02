@@ -10,8 +10,6 @@ from dll_power import CANMarathon
 
 drive_limit = 30000 * 0.2  # 20% момента - достаточно, чтоб заехать на горку у выхода и не разложиться без тормозов
 ref_torque = 0
-start_time = int(round(time.time() * 1000))
-send_delay = 50  # задержка отправки в кан сообщений
 # // сброс ошибок
 RESET_FAULTS = 8
 marathon = CANMarathon()
@@ -105,34 +103,51 @@ def connect_vmu():
     check = marathon.can_request_many(rtcon_vmu, vmu_rtcon, param_list)
     if isinstance(check, list):
         check = check[0]
+
     if isinstance(check, str):
         QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + check, QMessageBox.Ok)
         window.connect_btn.setText('Подключиться')
-        # window.start_btn.setEnabled(False)
         window.power_box.setEnabled(False)
         window.reset_faults.setEnabled(False)
         return False
 
-    window.vmu_req_thread.recording_file_name = pathlib.Path(pathlib.Path.cwd(),
-                                                             'VMU records',
-                                                             'vmu_record_' +
-                                                             datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
-                                                             '.csv')
-    adding_to_csv_file('name')
+    if not window.record_vmu_params:
+        window.vmu_req_thread.recording_file_name = pathlib.Path(pathlib.Path.cwd(),
+                                                                 'VMU records',
+                                                                 'vmu_record_' +
+                                                                 datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
+                                                                 '.csv')
+        adding_to_csv_file('name')
 
-    # запрашиваю список полученных ответов
-    ans_list = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
-    fill_vmu_params_values(ans_list)
-    # отображаю сообщения из списка
-    window.show_new_vmu_params()
-    if not window.vmu_req_thread.running:
+        # запрашиваю список полученных ответов
+        ans_list = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
+        fill_vmu_params_values(ans_list)
+        # отображаю сообщения из списка
+        window.show_new_vmu_params()
         window.vmu_req_thread.running = True
         window.thread_to_record.start()
-    # разблокирую все кнопки и чекбоксы
-    window.connect_btn.setText('Отключиться')
-    # window.start_btn.setEnabled(True)
-    window.power_box.setEnabled(True)
-    window.reset_faults.setEnabled(True)
+        # разблокирую все кнопки и чекбоксы
+        window.connect_btn.setText('Отключиться')
+        window.power_box.setEnabled(True)
+        window.reset_faults.setEnabled(True)
+    else:
+        # поток останавливаем
+        window.vmu_req_thread.running = False
+        window.thread_to_record.terminate()
+        window.record_vmu_params = False
+        window.connect_btn.setEnabled(True)
+        # Reading the csv file
+        file_name = str(window.vmu_req_thread.recording_file_name)
+        df_new = pandas.read_csv(file_name, encoding='windows-1251')
+        file_name = file_name.replace('.csv', '_excel.xlsx', 1)
+        # saving xlsx file
+        GFG = pandas.ExcelWriter(file_name)
+        df_new.to_excel(GFG, index=False)
+        GFG.save()
+        QMessageBox.information(window, "Успешный Успех", 'Файл с записью параметров КВУ\n' +
+                                'ищи в папке "VMU records"',
+                                QMessageBox.Ok)
+
     return True
 
 
@@ -161,7 +176,6 @@ def start_btn_pressed():
     #  если запись параметров ведётся, отключаю её и сохраняю файл
     else:
         window.record_vmu_params = False
-        window.start_record.setText('Начать запись')
         window.connect_btn.setEnabled(True)
         # Reading the csv file
         file_name = str(window.vmu_req_thread.recording_file_name)
@@ -205,25 +219,36 @@ class VMUSaveToFileThread(QObject):
     running = False
     new_vmu_params = pyqtSignal(list)
     recording_file_name = ''
+    start_time = int(round(time.time() * 1000))
+    send_delay = 50  # задержка отправки в кан сообщений
+    r_fault = RESET_FAULTS  # сбрасываем ошибки - сбросить в 0 при следующей итерации
 
     # метод, который будет выполнять алгоритм в другом потоке
     def run(self):
+        current_time = self.start_time
         while True:
-            if window.record_vmu_params:
-                adding_to_csv_file('value')
+            adding_to_csv_file('value')
             #  Получаю новые параметры от КВУ
-            ans_list = []
-            answer = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
-            # Если происходит разрыв связи в блоком во время чтения
-            #  И прилетает строка ошибки, то надо запихнуть её в список
-            if isinstance(answer, str):
-                ans_list.append(answer)
-            else:
-                ans_list = answer.copy()
-            #  И отправляю их в основной поток для обновления
-            self.new_vmu_params.emit(ans_list)
+            torque_data = int(window.power_slider.value())
+            data = [self.r_fault + 0b10001,
+                    torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
+                    0, 0, 0, 0, 0]
+            # проверяем что время передачи пришло
+            if (current_time - self.start_time) > self.send_delay:
+                self.start_time = current_time
+                marathon.can_write(VMU_ID_PDO, data)
+                ans_list = []
+                answer = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
+                # Если происходит разрыв связи в блоком во время чтения
+                #  И прилетает строка ошибки, то надо запихнуть её в список
+                if isinstance(answer, str):
+                    ans_list.append(answer)
+                else:
+                    ans_list = answer.copy()
+                #  И отправляю их в основной поток для обновления
+                self.new_vmu_params.emit(ans_list)
 
-            QThread.msleep(100)
+            current_time = int(round(time.time() * 1000))
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
@@ -254,8 +279,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if len(list_of_params) == 1:
             window.connect_btn.setText('Подключиться')
             window.connect_btn.setEnabled(True)
-            # window.start_btn.setText('Начать запись')
-            # window.start_btn.setEnabled(False)
             window.record_vmu_params = False
             window.thread_to_record.running = False
             window.thread_to_record.terminate()
@@ -268,23 +291,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         row = 0
         for par in vmu_params_list:
             value_Item = QTableWidgetItem(str(par['value']))
-            # value_Item.setFlags(value_Item.flags() & ~Qt.ItemIsEditable)
+            value_Item.setFlags(value_Item.flags() & ~Qt.ItemIsEditable)
             self.vmu_param_table.setItem(row, window.value_col, value_Item)
             row += 1
 
 
-r_fault = RESET_FAULTS  # сбрасываем ошибки - сбросить в 0 при следующей итерации
+# r_fault = RESET_FAULTS  # сбрасываем ошибки - сбросить в 0 при следующей итерации
 
-current_time = int(round(time.time() * 1000))
-
-torque_data = int(ref_torque)
-data = [r_fault + 0b10001,
-        torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
-        0, 0, 0, 0, 0]
-
-if (current_time - start_time) > send_delay:
-    start_time = current_time
-    marathon.can_write(VMU_ID_PDO, data)
 
 app = QApplication([])
 window = VMUMonitorApp()
@@ -292,6 +305,6 @@ window = VMUMonitorApp()
 vmu_params_list = fill_vmu_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
 req_list = feel_req_list(vmu_params_list)
 show_empty_params_list(vmu_params_list, 'vmu_param_table')
-
+window.connect_btn.clicked.connect(connect_vmu)
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение
