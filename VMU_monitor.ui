@@ -32,21 +32,11 @@
       <property name="title">
        <string>Управление </string>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="2,0,5,2">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="2,5,2">
        <item>
         <widget class="QPushButton" name="connect_btn">
          <property name="text">
           <string>Подключиться</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="start_btn">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Начать запись</string>
          </property>
         </widget>
        </item>

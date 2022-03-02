@@ -108,19 +108,29 @@ def connect_vmu():
     if isinstance(check, str):
         QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + check, QMessageBox.Ok)
         window.connect_btn.setText('Подключиться')
-        window.start_btn.setEnabled(False)
+        # window.start_btn.setEnabled(False)
         window.power_box.setEnabled(False)
         window.reset_faults.setEnabled(False)
         return False
+
+    window.vmu_req_thread.recording_file_name = pathlib.Path(pathlib.Path.cwd(),
+                                                             'VMU records',
+                                                             'vmu_record_' +
+                                                             datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
+                                                             '.csv')
+    adding_to_csv_file('name')
 
     # запрашиваю список полученных ответов
     ans_list = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
     fill_vmu_params_values(ans_list)
     # отображаю сообщения из списка
     window.show_new_vmu_params()
+    if not window.vmu_req_thread.running:
+        window.vmu_req_thread.running = True
+        window.thread_to_record.start()
     # разблокирую все кнопки и чекбоксы
     window.connect_btn.setText('Отключиться')
-    window.start_btn.setEnabled(True)
+    # window.start_btn.setEnabled(True)
     window.power_box.setEnabled(True)
     window.reset_faults.setEnabled(True)
     return True
@@ -146,7 +156,7 @@ def start_btn_pressed():
 
         window.connect_btn.setEnabled(False)
         window.record_vmu_params = True
-        window.start_btn.setText('Стоп')
+        # window.start_btn.setText('Стоп')
         adding_to_csv_file('name')
     #  если запись параметров ведётся, отключаю её и сохраняю файл
     else:
@@ -244,8 +254,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if len(list_of_params) == 1:
             window.connect_btn.setText('Подключиться')
             window.connect_btn.setEnabled(True)
-            window.start_btn.setText('Начать запись')
-            window.start_btn.setEnabled(False)
+            # window.start_btn.setText('Начать запись')
+            # window.start_btn.setEnabled(False)
             window.record_vmu_params = False
             window.thread_to_record.running = False
             window.thread_to_record.terminate()
