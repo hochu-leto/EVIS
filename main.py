@@ -14,13 +14,13 @@ ref_torque = 0
 RESET_FAULTS = 8
 marathon = CANMarathon()
 dir_path = str(pathlib.Path.cwd())
-vmu_param_file = 'table_for_params.xlsx'
+vmu_param_file = 'table_for_params_new_VMU.xlsx'
 VMU_ID_PDO = 0x00000401
-rtcon_vmu = 0x1850460E
-vmu_rtcon = 0x594
-#
-# rtcon_vmu = 0x00000601
-# vmu_rtcon = 0x00000581
+# rtcon_vmu = 0x1850460E
+# vmu_rtcon = 0x594
+# #
+rtcon_vmu = 0x00000601
+vmu_rtcon = 0x00000581
 
 
 def show_empty_params_list(list_of_params: list, table: str):
@@ -101,44 +101,31 @@ def adding_to_csv_file(name_or_value: str):
 
 
 def connect_vmu():
-    param_list = [[0x40, 0x18, 0x10, 0x02, 0x00, 0x00, 0x00, 0x00]]
-    # Проверяю, есть ли подключение к кву
-    check = marathon.can_request_many(rtcon_vmu, vmu_rtcon, param_list)
-    if isinstance(check, list):
-        check = check[0]
-
-    if isinstance(check, str):
-        QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + check, QMessageBox.Ok)
-        window.connect_btn.setText('Подключиться')
-        window.power_box.setEnabled(False)
-        window.reset_faults.setEnabled(False)
-        return False
-
     if not window.record_vmu_params:
         window.vmu_req_thread.recording_file_name = pathlib.Path(pathlib.Path.cwd(),
-                                                                 'VMU records',
-                                                                 'vmu_record_' +
+                                                                 'VMU records', 'vmu_record_' +
                                                                  datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
                                                                  '.csv')
         adding_to_csv_file('name')
-
-        # запрашиваю список полученных ответов
-        ans_list = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
-        fill_vmu_params_values(ans_list)
-        # отображаю сообщения из списка
-        window.show_new_vmu_params()
         window.vmu_req_thread.running = True
+        window.record_vmu_params = True
         window.thread_to_record.start()
         # разблокирую все кнопки и чекбоксы
         window.connect_btn.setText('Отключиться')
         window.power_box.setEnabled(True)
+        window.power_slider.setEnabled(True)
+        window.power_spinbox.setEnabled(True)
+        window.power_slider.setValue(0)
         window.reset_faults.setEnabled(True)
     else:
         # поток останавливаем
         window.vmu_req_thread.running = False
         window.thread_to_record.terminate()
         window.record_vmu_params = False
-        window.connect_btn.setEnabled(True)
+        window.connect_btn.setText('Подключиться')
+        window.power_box.setEnabled(False)
+        window.reset_faults.setEnabled(False)
+        marathon.close_marathon_canal()
         # Reading the csv file
         file_name = str(window.vmu_req_thread.recording_file_name)
         df_new = pandas.read_csv(file_name, encoding='windows-1251')
@@ -154,45 +141,6 @@ def connect_vmu():
     return True
 
 
-def const_req_vmu_params():
-    if not window.vmu_req_thread.running:
-        window.vmu_req_thread.running = True
-        window.thread_to_record.start()
-    else:
-        window.vmu_req_thread.running = False
-        window.thread_to_record.terminate()
-
-
-def start_btn_pressed():
-    # если записи параметров ещё нет, включаю ее
-    if not window.record_vmu_params:
-        window.vmu_req_thread.recording_file_name = pathlib.Path(pathlib.Path.cwd(),
-                                                                 'VMU records',
-                                                                 'vmu_record_' +
-                                                                 datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
-                                                                 '.csv')
-
-        window.connect_btn.setEnabled(False)
-        window.record_vmu_params = True
-        # window.start_btn.setText('Стоп')
-        adding_to_csv_file('name')
-    #  если запись параметров ведётся, отключаю её и сохраняю файл
-    else:
-        window.record_vmu_params = False
-        window.connect_btn.setEnabled(True)
-        # Reading the csv file
-        file_name = str(window.vmu_req_thread.recording_file_name)
-        df_new = pandas.read_csv(file_name, encoding='windows-1251')
-        file_name = file_name.replace('.csv', '_excel.xlsx', 1)
-        # saving xlsx file
-        GFG = pandas.ExcelWriter(file_name)
-        df_new.to_excel(GFG, index=False)
-        GFG.save()
-        QMessageBox.information(window, "Успешный Успех", 'Файл с записью параметров КВУ\n' +
-                                'ищи в папке "VMU records"',
-                                QMessageBox.Ok)
-
-
 def fill_vmu_params_values(ans_list: list):
     i = 0
     for par in vmu_params_list:
@@ -206,15 +154,27 @@ def fill_vmu_params_values(ans_list: list):
             # for j in message:
             #     print(hex(j), end=' ')
             # если множителя нет, то берём знаковое int16
-            if par['scale'] == 1:
+            if par['type'] == 'UNSIGNED8':
+                par['value'] = ctypes.c_uint8(value).value
+            elif par['type'] == 'UNSIGNED16':
+                par['value'] = ctypes.c_uint16(value).value
+            elif par['type'] == 'UNSIGNED32':
+                par['value'] = ctypes.c_uint32(value).value
+            elif par['type'] == 'SIGNED8':
+                par['value'] = ctypes.c_int8(value).value
+            elif par['type'] == 'SIGNED16':
                 par['value'] = ctypes.c_int16(value).value
-            # возможно, здесь тоже нужно вытаскивать знаковое int, ага, int32
-            else:
-                value = ctypes.c_int32(value).value
-                par['value'] = (value / par['scale'])
-            par['value'] = float('{:.2f}'.format(par['value']))
+            elif par['type'] == 'SIGNED32':
+                par['value'] = ctypes.c_int32(value).value
+
+            par['value'] = (par['value'] / par['scale'] - par['scaleB'])
+            par['value'] = '{:.2f}'.format(par['value'])
         i += 1
     print('Новые параметры КВУ записаны ')
+
+
+def reset_fault_btn_pressed():
+    window.vmu_req_thread.reset_fault_timer = 5
 
 
 #  поток для опроса и записи в файл параметров кву
@@ -223,8 +183,10 @@ class VMUSaveToFileThread(QObject):
     new_vmu_params = pyqtSignal(list)
     recording_file_name = ''
     start_time = int(round(time.time() * 1000))
+    time_for_request = start_time
     send_delay = 50  # задержка отправки в кан сообщений
     r_fault = RESET_FAULTS  # сбрасываем ошибки - сбросить в 0 при следующей итерации
+    reset_fault_timer = 0
 
     # метод, который будет выполнять алгоритм в другом потоке
     def run(self):
@@ -232,7 +194,13 @@ class VMUSaveToFileThread(QObject):
         while True:
             adding_to_csv_file('value')
             #  Получаю новые параметры от КВУ
-            torque_data = int(window.power_slider.value())
+            if self.reset_fault_timer:
+                self.r_fault = RESET_FAULTS
+                self.reset_fault_timer -= 1
+            else:
+                self.r_fault = 0
+
+            torque_data = int(window.power_slider.value()) * 300
             data = [self.r_fault + 0b10001,
                     torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
                     0, 0, 0, 0, 0]
@@ -240,6 +208,9 @@ class VMUSaveToFileThread(QObject):
             if (current_time - self.start_time) > self.send_delay:
                 self.start_time = current_time
                 marathon.can_write(VMU_ID_PDO, data)
+
+            if (current_time - self.time_for_request) > self.send_delay:
+                self.time_for_request = current_time
                 ans_list = []
                 answer = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
                 # Если происходит разрыв связи в блоком во время чтения
@@ -281,10 +252,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # что хотя бы два пункта списка - строки( или придумать более изощерённую проверку)
         if len(list_of_params) == 1:
             window.connect_btn.setText('Подключиться')
-            window.connect_btn.setEnabled(True)
+            window.power_box.setEnabled(False)
+            window.reset_faults.setEnabled(False)
             window.record_vmu_params = False
             window.thread_to_record.running = False
             window.thread_to_record.terminate()
+            marathon.close_marathon_canal()
             QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + list_of_params[0], QMessageBox.Ok)
         else:
             fill_vmu_params_values(list_of_params)
@@ -309,5 +282,6 @@ vmu_params_list = fill_vmu_list(pathlib.Path(dir_path, 'Tables', vmu_param_file)
 req_list = feel_req_list(vmu_params_list)
 show_empty_params_list(vmu_params_list, 'vmu_param_table')
 window.connect_btn.clicked.connect(connect_vmu)
+window.reset_faults.clicked.connect(reset_fault_btn_pressed)
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение
