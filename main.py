@@ -15,6 +15,7 @@ RESET_FAULTS = 8
 marathon = CANMarathon()
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
+vmu_errors_file = 'kvu_error_codes_my.xlsx'
 VMU_ID_PDO = 0x00000401
 # rtcon_vmu = 0x1850460E
 # vmu_rtcon = 0x594
@@ -60,6 +61,16 @@ def feel_req_list(p_list: list):
         data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
         req_list.append(data)
     return req_list
+
+
+def make_vmu_error_dict(file_name):
+    excel_data_df = pandas.read_excel(file_name)
+    vmu_er_list = excel_data_df.to_dict(orient='records')
+    ex_dict = {}
+    for par in vmu_er_list:
+        if str(par['Code']) != 'nan':
+            ex_dict[par['Code']] = par['Description']
+    return ex_dict
 
 
 def fill_vmu_list(file_name):
@@ -149,11 +160,6 @@ def fill_vmu_params_values(ans_list: list):
             value = (message[7] << 24) + \
                     (message[6] << 16) + \
                     (message[5] << 8) + message[4]
-            #  вывод на печать полученных ответов
-            # print(par['name'])
-            # for j in message:
-            #     print(hex(j), end=' ')
-            # если множителя нет, то берём знаковое int16
             if par['type'] == 'UNSIGNED8':
                 par['value'] = ctypes.c_uint8(value).value
             elif par['type'] == 'UNSIGNED16':
@@ -175,6 +181,7 @@ def fill_vmu_params_values(ans_list: list):
 
 def reset_fault_btn_pressed():
     window.vmu_req_thread.reset_fault_timer = 5
+    window.vmu_req_thread.errors = []
 
 
 #  поток для опроса и записи в файл параметров кву
@@ -184,6 +191,8 @@ class VMUSaveToFileThread(QObject):
     recording_file_name = ''
     start_time = int(round(time.time() * 1000))
     time_for_request = start_time
+    time_for_errors = start_time
+    errors = []
     send_delay = 50  # задержка отправки в кан сообщений
     r_fault = RESET_FAULTS  # сбрасываем ошибки - сбросить в 0 при следующей итерации
     reset_fault_timer = 0
@@ -193,7 +202,7 @@ class VMUSaveToFileThread(QObject):
         current_time = self.start_time
         while True:
             adding_to_csv_file('value')
-            #  Получаю новые параметры от КВУ
+
             if self.reset_fault_timer:
                 self.r_fault = RESET_FAULTS
                 self.reset_fault_timer -= 1
@@ -204,12 +213,12 @@ class VMUSaveToFileThread(QObject):
             data = [self.r_fault + 0b10001,
                     torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
                     0, 0, 0, 0, 0]
-            # проверяем что время передачи пришло
+            # проверяем что время передачи пришло и отправляю управление по 401 адресу
             if (current_time - self.start_time) > self.send_delay:
                 self.start_time = current_time
                 marathon.can_write(VMU_ID_PDO, data)
-
-            if (current_time - self.time_for_request) > self.send_delay:
+            #  Получаю новые параметры от КВУ
+            if (current_time - self.time_for_request) > self.send_delay * 4:
                 self.time_for_request = current_time
                 ans_list = []
                 answer = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
@@ -221,7 +230,17 @@ class VMUSaveToFileThread(QObject):
                     ans_list = answer.copy()
                 #  И отправляю их в основной поток для обновления
                 self.new_vmu_params.emit(ans_list)
-
+            # запрашиваю ошибки
+            if (current_time - self.time_for_errors) > self.send_delay * 200:
+                self.time_for_errors = current_time
+                error = marathon.can_request(rtcon_vmu, vmu_rtcon, [0x40, 0x15, 0x21, 0x01, 0, 0, 0, 0])
+                print(error)
+                if error not in self.errors:
+                    self.errors.append(error)
+                err = ''
+                for er in self.errors:
+                    err += vmu_errors_dict[er] + '\n'
+                window.errors_browser.setText(err)
             current_time = int(round(time.time() * 1000))
 
 
@@ -279,6 +298,7 @@ app = QApplication([])
 window = VMUMonitorApp()
 
 vmu_params_list = fill_vmu_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
 req_list = feel_req_list(vmu_params_list)
 show_empty_params_list(vmu_params_list, 'vmu_param_table')
 window.connect_btn.clicked.connect(connect_vmu)

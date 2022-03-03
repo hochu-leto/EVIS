@@ -199,7 +199,6 @@ class CANMarathon:
         for i in range(self.max_iteration):
             try:
                 err = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(buffer))
-                # print(f'Trying to send in address {hex(buffer.id)} message {hex(buffer.data[0])} {hex(buffer.data[1])}')
             except Exception as e:
                 print('CiTransmit do not work')
                 pprint(e)
@@ -219,7 +218,7 @@ class CANMarathon:
         # ответ приходит сразу же
 
         # здесь два варианта - или всё нормально передалось и transmit_ok == 0 или все попытки  неудачны и
-        self.close_marathon_canal()
+        # self.close_marathon_canal()
         if err < 0:
             if err in error_codes.keys():
                 return error_codes[err]
