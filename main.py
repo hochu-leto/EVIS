@@ -7,7 +7,9 @@ import ctypes
 import time
 import VMU_monitor_ui
 from dll_power import CANMarathon
-
+'''
+    осталось связать слайдер и спинбокс
+'''
 drive_limit = 30000 * 0.2  # 20% момента - достаточно, чтоб заехать на горку у выхода и не разложиться без тормозов
 ref_torque = 0
 # // сброс ошибок
@@ -234,6 +236,9 @@ class VMUSaveToFileThread(QObject):
             if (current_time - self.time_for_errors) > self.send_delay * 200:
                 self.time_for_errors = current_time
                 error = marathon.can_request(rtcon_vmu, vmu_rtcon, [0x40, 0x15, 0x21, 0x01, 0, 0, 0, 0])
+                if not isinstance(error, str):
+                    value = (error[5] << 8) + error[4]
+                    error = ctypes.c_uint16(value).value
                 print(error)
                 if error not in self.errors:
                     self.errors.append(error)
