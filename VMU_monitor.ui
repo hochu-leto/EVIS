@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
+    <width>542</width>
     <height>728</height>
    </rect>
   </property>
@@ -26,7 +26,7 @@
    <set>QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="10,1,0" columnstretch="1,6">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="10,4,0" columnstretch="1,6">
     <item row="1" column="1">
      <widget class="QTextBrowser" name="errors_browser"/>
     </item>
@@ -153,6 +153,14 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Impact</family>
+              <pointsize>12</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
