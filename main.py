@@ -186,6 +186,13 @@ def reset_fault_btn_pressed():
     window.vmu_req_thread.errors = []
 
 
+def spinbox_changed(item):
+    window.power_slider.setValue(item)
+
+
+def slider_changed(item):
+    window.power_spinbox.setValue(item)
+
 #  поток для опроса и записи в файл параметров кву
 class VMUSaveToFileThread(QObject):
     running = False
@@ -308,5 +315,7 @@ req_list = feel_req_list(vmu_params_list)
 show_empty_params_list(vmu_params_list, 'vmu_param_table')
 window.connect_btn.clicked.connect(connect_vmu)
 window.reset_faults.clicked.connect(reset_fault_btn_pressed)
+window.power_spinbox.changeEvent.connect(spinbox_changed)
+window.power_slider.changeEvent.connect(slider_changed)
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение
