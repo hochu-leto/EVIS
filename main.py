@@ -315,7 +315,7 @@ req_list = feel_req_list(vmu_params_list)
 show_empty_params_list(vmu_params_list, 'vmu_param_table')
 window.connect_btn.clicked.connect(connect_vmu)
 window.reset_faults.clicked.connect(reset_fault_btn_pressed)
-window.power_spinbox.changeEvent.connect(spinbox_changed)
-window.power_slider.changeEvent.connect(slider_changed)
+window.power_spinbox.valueChanged.connect(spinbox_changed)
+window.power_slider.valueChanged.connect(slider_changed)
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение
