@@ -23,17 +23,35 @@ vmu_errors_file = 'kvu_error_codes_my.xlsx'
 VMU_ID_PDO = 0x00000401
 # rtcon_vmu = 0x1850460E
 # vmu_rtcon = 0x594
-# #
 rtcon_vmu = 0x00000601
 vmu_rtcon = 0x00000581
 invertor_set = 0x00000499
 
 
-def speed_manage():
+def speed_or_torque():
     window.power_slider.setValue(0)
-    window.power_box.setEnabled(False)
     window.speed_slider.setValue(0)
-    window.speed_box.setEnabled(True)
+    record_file_name = window.vmu_req_thread.recording_file_name
+    window.vmu_req_thread.running = False
+    window.thread_to_record.terminate()
+    window.connect_btn.setText('Подключиться')
+    window.reset_faults.setEnabled(False)
+    marathon.close_marathon_canal()
+    #  перевожу инвертор на управление по скорости
+    if QApplication.instance().sender() == window.speed_rb:
+        control_byte = 0
+        window.power_box.setEnabled(False)
+        window.speed_box.setEnabled(True)
+    else:
+        control_byte = 1
+        window.power_box.setEnabled(True)
+        window.speed_box.setEnabled(False)
+
+    marathon.can_write(invertor_set, [control_byte, 0, 0, 0, 0, 0, 2, 0])
+    marathon.can_write(invertor_set, [0, 0, 0, 0, 0, 0, 3, 0])
+    window.vmu_req_thread.running = True
+    window.record_vmu_params = True
+    window.thread_to_record.start()
 
 def show_empty_params_list(list_of_params: list, table: str):
     show_table = getattr(window, table)
@@ -104,6 +122,8 @@ def fill_vmu_list(file_name):
 
 
 def adding_to_csv_file(name_or_value: str):
+    if not window.vmu_req_thread.recording_file_name:
+        return
     data = []
     data_string = []
     for par in vmu_params_list:
@@ -134,10 +154,15 @@ def connect_vmu():
         window.thread_to_record.start()
         # разблокирую все кнопки и чекбоксы
         window.connect_btn.setText('Отключиться')
-        window.power_box.setEnabled(True)
-        window.power_slider.setEnabled(True)
-        window.power_spinbox.setEnabled(True)
+        if window.speed_rb.isChecked():
+            window.speed_box.setEnabled(True)
+            window.speed_slider.setEnabled(True)
+            window.speed_spinbox.setEnabled(True)
+        else:
+            window.power_box.setEnabled(True)
+
         window.power_slider.setValue(0)
+        window.speed_slider.setValue(0)
         window.reset_faults.setEnabled(True)
     else:
         # поток останавливаем
@@ -146,6 +171,7 @@ def connect_vmu():
         window.record_vmu_params = False
         window.connect_btn.setText('Подключиться')
         window.power_box.setEnabled(False)
+        window.speed_box.setEnabled(False)
         window.reset_faults.setEnabled(False)
         marathon.close_marathon_canal()
         # Reading the csv file
@@ -239,13 +265,21 @@ class VMUSaveToFileThread(QObject):
                 self.r_fault = 0
 
             torque_data = int(window.power_slider.value()) * 300
-            data = [self.r_fault + 0b10001,
-                    torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
-                    0, 0, 0, 0, 0]
+            torque_data_list = [self.r_fault + 0b10001,
+                                torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
+                                0, 0, 0, 0, 0]
+
+            speed_data = int(window.speed_slider.value())
+            speed_data_list = [0, 0,
+                               speed_data & 0xFF, ((speed_data & 0xFF00) >> 8),
+                               0, 0, 8, 0]
+
             # проверяем что время передачи пришло и отправляю управление по 401 адресу
             if (current_time - self.start_time) > self.send_delay:
                 self.start_time = current_time
-                marathon.can_write(VMU_ID_PDO, data)
+                marathon.can_write(VMU_ID_PDO, torque_data_list)
+                marathon.can_write(invertor_set, speed_data_list)
+
             #  Получаю новые параметры от КВУ
             if (current_time - self.time_for_request) > self.send_delay * 4:
                 self.time_for_request = current_time
@@ -345,5 +379,13 @@ window.connect_btn.clicked.connect(connect_vmu)
 window.reset_faults.clicked.connect(reset_fault_btn_pressed)
 window.power_spinbox.valueChanged.connect(spinbox_changed)
 window.power_slider.valueChanged.connect(slider_changed)
+window.speed_spinbox.valueChanged.connect(spinbox_changed)
+window.speed_slider.valueChanged.connect(slider_changed)
+window.speed_rb.toggled.connect(speed_or_torque)
+window.power_rb.toggled.connect(speed_or_torque)
+window.speed_slider.setEnabled(True)
+window.speed_spinbox.setEnabled(True)
+window.power_slider.setEnabled(True)
+window.power_spinbox.setEnabled(True)
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение
