@@ -1,3 +1,4 @@
+
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow
@@ -5,12 +6,13 @@ import datetime
 import pathlib
 import pandas
 import ctypes
+import struct
 import time
 import VMU_monitor_ui
 from dll_power import CANMarathon
 
 '''
-    осталось связать слайдер и спинбокс
+    осталось сделать торможение по пробелу
 '''
 drive_limit = 30000 * 0.2  # 20% момента - достаточно, чтоб заехать на горку у выхода и не разложиться без тормозов
 ref_torque = 0
@@ -26,50 +28,6 @@ VMU_ID_PDO = 0x00000401
 rtcon_vmu = 0x00000601
 vmu_rtcon = 0x00000581
 invertor_set = 0x00000499
-speed_dict = {-8000: 0xC5FA00,
-              -7000: 0xC5DAC0,
-              -6000: 0xC5BB80,
-              -5000: 0xC59C40,
-              -4000: 0xC57A00,
-              -3000: 0xC53B80,
-              -2000: 0xC4FA00,
-              -1000: 0xC47A00,
-              0: 0,
-              1000: 0x447A00,
-              2000: 0x44FA00,
-              3000: 0x453B80,
-              4000: 0x457A00,
-              5000: 0x459C40,
-              6000: 0x45BB80,
-              7000: 0x45DAC0,
-              8000: 0x45FA00
-              }
-
-
-def speed_or_torque():
-    window.power_slider.setValue(0)
-    window.speed_slider.setValue(0)
-    record_file_name = window.vmu_req_thread.recording_file_name
-    window.vmu_req_thread.running = False
-    window.thread_to_record.terminate()
-    window.connect_btn.setText('Подключиться')
-    window.reset_faults.setEnabled(False)
-    marathon.close_marathon_canal()
-    #  перевожу инвертор на управление по скорости
-    if QApplication.instance().sender() == window.speed_rb:
-        control_byte = 0
-        # window.power_box.setEnabled(False)
-        # window.speed_box.setEnabled(True)
-    else:
-        control_byte = 1
-        # window.power_box.setEnabled(True)
-        # window.speed_box.setEnabled(False)
-
-    marathon.can_write(invertor_set, [control_byte, 0, 0, 0, 0, 0, 2, 0])
-    marathon.can_write(invertor_set, [0, 0, 0, 0, 0, 0, 3, 0])
-    window.vmu_req_thread.running = True
-    window.record_vmu_params = True
-    window.thread_to_record.start()
 
 
 def show_empty_params_list(list_of_params: list, table: str):
@@ -268,9 +226,24 @@ def slider_changed(item):
     spinbox.setValue(item)
 
 
+def dw2float(dw_array):
+    assert (len(dw_array) == 4)
+    dw = int.from_bytes(dw_array, byteorder='little', signed=False)
+    s = -1 if (dw >> 31) == 1 \
+        else 1  # Знак
+    e = (dw >> 23) & 0xFF  # Порядок
+    m = ((dw & 0x7FFFFF) | 0x800000) if e != 0 \
+        else ((dw & 0x7FFFFF) << 1)  # Мантисса
+    m1 = m * (2 ** (-23))  # Мантисса в float
+    return s * m1 * (2 ** (e - 127))
+
+
+def float_to_int(f):
+    return int(struct.unpack('<I', struct.pack('<f', f))[0])
+
+
 #  поток для опроса и записи в файл параметров кву
 class VMUSaveToFileThread(QObject):
-    is_speed_manage = False
     running = False
     new_vmu_params = pyqtSignal(list)
     new_vmu_errors = pyqtSignal(list)
@@ -300,10 +273,10 @@ class VMUSaveToFileThread(QObject):
                                 torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
                                 0, 0, 0, 0, 0]
 
-            speed = round(int(window.speed_slider.value()) / 1000) * 1000
-            speed_data = speed_dict[speed]
-            speed_data_list = [0, speed_data & 0xFF, ((speed_data & 0xFF00) >> 8),
-                               ((speed_data & 0xFF0000) >> 16), 0, 0, 8, 0]
+            speed = float(window.speed_slider.value())
+            speed_data = float_to_int(speed)
+            speed_data_list = [speed_data & 0xFF, ((speed_data & 0xFF00) >> 8),
+                               ((speed_data & 0xFF0000) >> 16), ((speed_data & 0xFF000000) >> 24), 0, 0, 8, 0]
 
             # проверяем что время передачи пришло и отправляю управление по 401 адресу
             if (current_time - self.start_time) > self.send_delay:
