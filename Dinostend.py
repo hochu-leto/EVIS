@@ -26,7 +26,14 @@ VMU_ID_PDO = 0x00000401
 # #
 rtcon_vmu = 0x00000601
 vmu_rtcon = 0x00000581
+invertor_set = 0x00000499
 
+
+def speed_manage():
+    window.power_slider.setValue(0)
+    window.power_box.setEnabled(False)
+    window.speed_slider.setValue(0)
+    window.speed_box.setEnabled(True)
 
 def show_empty_params_list(list_of_params: list, table: str):
     show_table = getattr(window, table)
@@ -189,15 +196,24 @@ def reset_fault_btn_pressed():
 
 
 def spinbox_changed(item):
-    window.power_slider.setValue(item)
+    spinbox = QApplication.instance().sender()
+    spinbox_name = spinbox.objectName()
+    slider_name = spinbox_name.split('_')[0] + '_slider'
+    slider = getattr(window, slider_name)
+    slider.setValue(item)
 
 
 def slider_changed(item):
-    window.power_spinbox.setValue(item)
+    slider = QApplication.instance().sender()
+    slider_name = slider.objectName()
+    spinbox_name = slider_name.split('_')[0] + '_spinbox'
+    spinbox = getattr(window, spinbox_name)
+    spinbox.setValue(item)
 
 
 #  поток для опроса и записи в файл параметров кву
 class VMUSaveToFileThread(QObject):
+    is_speed_manage = False
     running = False
     new_vmu_params = pyqtSignal(list)
     new_vmu_errors = pyqtSignal(list)
