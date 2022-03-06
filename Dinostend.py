@@ -1,4 +1,3 @@
-
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow
@@ -10,6 +9,7 @@ import struct
 import time
 import VMU_monitor_ui
 from dll_power import CANMarathon
+from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file
 
 '''
     осталось сделать торможение по пробелу
@@ -55,68 +55,6 @@ def show_empty_params_list(list_of_params: list, table: str):
 
         row += 1
     show_table.resizeColumnsToContents()
-
-
-def feel_req_list(p_list: list):
-    req_list = []
-    for par in p_list:
-        address = par['address']
-        MSB = ((address & 0xFF0000) >> 16)
-        LSB = ((address & 0xFF00) >> 8)
-        sub_index = address & 0xFF
-        data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
-        req_list.append(data)
-    return req_list
-
-
-def make_vmu_error_dict(file_name):
-    excel_data_df = pandas.read_excel(file_name)
-    vmu_er_list = excel_data_df.to_dict(orient='records')
-    ex_dict = {}
-    for par in vmu_er_list:
-        if str(par['Code']) != 'nan':
-            ex_dict[par['Code']] = par['Description']
-    return ex_dict
-
-
-def fill_vmu_list(file_name):
-    excel_data_df = pandas.read_excel(file_name)
-    vmu_params_list = excel_data_df.to_dict(orient='records')
-    exit_list = []
-    for par in vmu_params_list:
-        if str(par['name']) != 'nan':
-            if str(par['address']) != 'nan':
-                if isinstance(par['address'], str):
-                    if '0x' in par['address']:
-                        par['address'] = par['address'].rsplit('x')[1]
-                    par['address'] = int(par['address'], 16)
-                if str(par['scale']) == 'nan':
-                    par['scale'] = 1
-                if str(par['scaleB']) == 'nan':
-                    par['scaleB'] = 0
-                exit_list.append(par)
-    return exit_list
-
-
-def adding_to_csv_file(name_or_value: str):
-    if not window.vmu_req_thread.recording_file_name:
-        return
-    data = []
-    data_string = []
-    for par in vmu_params_list:
-        data_string.append(par[name_or_value])
-    dt = datetime.datetime.now()
-    dt = dt.strftime("%H:%M:%S.%f")
-    if name_or_value == 'name':
-        dt = 'time'
-    data_string.append(dt)
-    data.append(data_string)
-    df = pandas.DataFrame(data)
-    df.to_csv(window.vmu_req_thread.recording_file_name,
-              mode='a',
-              header=False,
-              index=False,
-              encoding='windows-1251')
 
 
 def connect_vmu():
@@ -226,18 +164,6 @@ def slider_changed(item):
     spinbox.setValue(item)
 
 
-def dw2float(dw_array):
-    assert (len(dw_array) == 4)
-    dw = int.from_bytes(dw_array, byteorder='little', signed=False)
-    s = -1 if (dw >> 31) == 1 \
-        else 1  # Знак
-    e = (dw >> 23) & 0xFF  # Порядок
-    m = ((dw & 0x7FFFFF) | 0x800000) if e != 0 \
-        else ((dw & 0x7FFFFF) << 1)  # Мантисса
-    m1 = m * (2 ** (-23))  # Мантисса в float
-    return s * m1 * (2 ** (e - 127))
-
-
 def float_to_int(f):
     return int(struct.unpack('<I', struct.pack('<f', f))[0])
 
@@ -260,7 +186,7 @@ class VMUSaveToFileThread(QObject):
     def run(self):
         current_time = self.start_time
         while True:
-            adding_to_csv_file('value')
+            adding_to_csv_file('value', vmu_params_list, window.vmu_req_thread.recording_file_name)
 
             if self.reset_fault_timer:
                 self.r_fault = RESET_FAULTS
@@ -371,9 +297,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             value_Item.setFlags(value_Item.flags() & ~Qt.ItemIsEditable)
             self.vmu_param_table.setItem(row, 1, value_Item)
             row += 1
-
-
-# r_fault = RESET_FAULTS  # сбрасываем ошибки - сбросить в 0 при следующей итерации
 
 
 app = QApplication([])
