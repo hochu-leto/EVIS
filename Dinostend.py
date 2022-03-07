@@ -219,6 +219,7 @@ class VMUSaveToFileThread(QObject):
             if (current_time - self.start_time) > self.send_delay:
                 self.start_time = current_time
                 marathon.can_write(VMU_ID_PDO, torque_data_list)
+                # управление оборотами - напрямую в инвертор МЭИ по 499 адресу
                 if window.speed_rb.isChecked():
                     marathon.can_write(invertor_set, speed_data_list)
 
@@ -310,6 +311,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             row += 1
 
     def keyPressEvent(self, e):
+        print(e.key(), e.modifiers())
         if e.key() == Qt.Key_Escape:
             self.record_vmu_params = False
             self.thread_to_record.running = False
@@ -320,6 +322,18 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.vmu_req_thread.brake_timer = int(round(time.time() * 1000)) + BRAKE_TIMER
             self.speed_slider.setValue(0)
             self.power_slider.setValue(0)
+        elif e.key() == Qt.Key_Up:
+            self.speed_slider.setValue(self.speed_slider.value() + self.speed_slider.singleStep())
+            self.power_slider.setValue(self.power_slider.value() + self.power_slider.singleStep())
+        elif e.key() == Qt.Key_Down:
+            self.speed_slider.setValue(self.speed_slider.value() - self.speed_slider.singleStep())
+            self.power_slider.setValue(self.power_slider.value() - self.power_slider.singleStep())
+        elif e.modifiers() == Qt.CTRL and e.key() == Qt.Key_Up:
+            self.speed_slider.setValue(self.speed_slider.value() + self.speed_slider.pageStep())
+            self.power_slider.setValue(self.power_slider.value() + self.power_slider.pageStep())
+        elif e.modifiers() & Qt.ControlModifier and e.key() == Qt.Key_Down:
+            self.speed_slider.setValue(self.speed_slider.value() - self.speed_slider.pageStep())
+            self.power_slider.setValue(self.power_slider.value() - self.power_slider.pageStep())
 
 
 app = QApplication([])
