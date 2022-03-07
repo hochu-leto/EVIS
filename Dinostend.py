@@ -16,8 +16,13 @@ from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, ad
 '''
 drive_limit = 30000 * 0.2  # 20% момента - достаточно, чтоб заехать на горку у выхода и не разложиться без тормозов
 ref_torque = 0
+# // включение стояночного тормоза
+HANDBRAKE = 2
 # // сброс ошибок
 RESET_FAULTS = 8
+#
+BRAKE_TIMER = 4000  # 4 секунды
+
 marathon = CANMarathon()
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
@@ -64,7 +69,6 @@ def connect_vmu():
                                                                  datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
                                                                  '.csv')
         adding_to_csv_file('name')
-
         # разблокирую все кнопки и чекбоксы
         window.connect_btn.setText('Отключиться')
         if window.speed_rb.isChecked():
@@ -179,8 +183,10 @@ class VMUSaveToFileThread(QObject):
     time_for_errors = start_time
     errors = []
     send_delay = 50  # задержка отправки в кан сообщений
-    r_fault = RESET_FAULTS  # сбрасываем ошибки - сбросить в 0 при следующей итерации
+    r_fault = RESET_FAULTS
     reset_fault_timer = 0
+    h_brake = HANDBRAKE
+    brake_timer = 0
 
     # метод, который будет выполнять алгоритм в другом потоке
     def run(self):
@@ -194,8 +200,13 @@ class VMUSaveToFileThread(QObject):
             else:
                 self.r_fault = 0
 
+            if (self.brake_timer - current_time) > 0:
+                self.h_brake = HANDBRAKE
+            else:
+                self.h_brake = 0
+
             torque_data = int(window.power_slider.value()) * 300
-            torque_data_list = [self.r_fault + 0b10001,
+            torque_data_list = [self.r_fault | self.h_brake + 0b10001,
                                 torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
                                 0, 0, 0, 0, 0]
 
@@ -231,7 +242,7 @@ class VMUSaveToFileThread(QObject):
                 if not isinstance(error, str):
                     value = (error[5] << 8) + error[4]
                     error = ctypes.c_uint16(value).value
-                print(error)
+                # print(error)
                 if error not in self.errors:
                     self.errors.append(error)
                 self.new_vmu_errors.emit(self.errors)
@@ -297,6 +308,18 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             value_Item.setFlags(value_Item.flags() & ~Qt.ItemIsEditable)
             self.vmu_param_table.setItem(row, 1, value_Item)
             row += 1
+
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_Escape:
+            self.record_vmu_params = False
+            self.thread_to_record.running = False
+            self.thread_to_record.terminate()
+            marathon.close_marathon_canal()
+            self.close()
+        elif e.key() == Qt.Key_Space:
+            self.vmu_req_thread.brake_timer = int(round(time.time() * 1000)) + BRAKE_TIMER
+            self.speed_slider.setValue(0)
+            self.power_slider.setValue(0)
 
 
 app = QApplication([])
