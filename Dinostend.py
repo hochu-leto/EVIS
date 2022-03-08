@@ -1,3 +1,4 @@
+import keyboard
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow
@@ -68,7 +69,7 @@ def connect_vmu():
                                                                  'VMU records', 'vmu_record_' +
                                                                  datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
                                                                  '.csv')
-        adding_to_csv_file('name')
+        adding_to_csv_file('name', vmu_params_list, window.vmu_req_thread.recording_file_name)
         # разблокирую все кнопки и чекбоксы
         window.connect_btn.setText('Отключиться')
         if window.speed_rb.isChecked():
@@ -250,6 +251,19 @@ class VMUSaveToFileThread(QObject):
             current_time = int(round(time.time() * 1000))
 
 
+def keyboard_event_received(event):
+    if event.event_type == 'down':
+        print(event.name)
+        if event.name == 'f3':
+            print('F3 pressed')
+        elif event.name == 'f4':
+            print('F4 pressed')
+        elif event.name == 'space':
+            window.vmu_req_thread.brake_timer = int(round(time.time() * 1000)) + BRAKE_TIMER
+            window.speed_slider.setValue(0)
+            window.power_slider.setValue(0)
+
+
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
 
@@ -353,5 +367,7 @@ window.speed_slider.setEnabled(True)
 window.speed_spinbox.setEnabled(True)
 window.power_slider.setEnabled(True)
 window.power_spinbox.setEnabled(True)
+window.hook = keyboard.on_press(keyboard_event_received)
+
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение
