@@ -253,12 +253,8 @@ class VMUSaveToFileThread(QObject):
 
 def keyboard_event_received(event):
     if event.event_type == 'down':
-        print(event.name)
-        if event.name == 'f3':
-            print('F3 pressed')
-        elif event.name == 'f4':
-            print('F4 pressed')
-        elif event.name == 'space':
+        # print(event.name)
+        if event.name == 'space':
             window.vmu_req_thread.brake_timer = int(round(time.time() * 1000)) + BRAKE_TIMER
             window.speed_slider.setValue(0)
             window.power_slider.setValue(0)
@@ -278,6 +274,21 @@ def keyboard_event_received(event):
                 window.speed_slider.setValue(window.speed_slider.value() - window.speed_slider.singleStep())
             if window.power_slider.isEnabled():
                 window.power_slider.setValue(window.power_slider.value() - window.power_slider.singleStep())
+
+
+def ctrl_up():
+    if window.speed_slider.isEnabled():
+        window.speed_slider.setValue(window.speed_slider.value() + window.speed_slider.pageStep())
+    if window.power_slider.isEnabled():
+        window.power_slider.setValue(window.power_slider.value() + window.power_slider.pageStep())
+
+
+def ctrl_down():
+    if window.speed_slider.isEnabled():
+        window.speed_slider.setValue(window.speed_slider.value() - window.speed_slider.pageStep())
+    if window.power_slider.isEnabled():
+        window.power_slider.setValue(window.power_slider.value() - window.power_slider.pageStep())
+
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
@@ -339,13 +350,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.vmu_param_table.setItem(row, 1, value_Item)
             row += 1
 
-   # if e.modifiers() == Qt.CTRL and e.key() == Qt.Key_Up:
-   #          self.speed_slider.setValue(self.speed_slider.value() + self.speed_slider.pageStep())
-   #          self.power_slider.setValue(self.power_slider.value() + self.power_slider.pageStep())
-   #      elif e.modifiers() & Qt.ControlModifier and e.key() == Qt.Key_Down:
-   #          self.speed_slider.setValue(self.speed_slider.value() - self.speed_slider.pageStep())
-   #          self.power_slider.setValue(self.power_slider.value() - self.power_slider.pageStep())
-
 
 app = QApplication([])
 window = VMUMonitorApp()
@@ -365,6 +369,7 @@ window.speed_spinbox.setEnabled(True)
 window.power_slider.setEnabled(True)
 window.power_spinbox.setEnabled(True)
 window.hook = keyboard.on_press(keyboard_event_received)
-
+keyboard.add_hotkey('ctrl + up', ctrl_up)
+keyboard.add_hotkey('ctrl + down', ctrl_down)
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение
