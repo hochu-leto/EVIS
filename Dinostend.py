@@ -12,9 +12,6 @@ import VMU_monitor_ui
 from dll_power import CANMarathon
 from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file
 
-'''
-    осталось сделать торможение по пробелу
-'''
 drive_limit = 30000 * 0.2  # 20% момента - достаточно, чтоб заехать на горку у выхода и не разложиться без тормозов
 ref_torque = 0
 # // включение стояночного тормоза
@@ -35,6 +32,18 @@ rtcon_vmu = 0x00000601
 vmu_rtcon = 0x00000581
 invertor_set = 0x00000499
 
+command_list = {'power', 'speed', 'front_steer', 'rear_steer'}
+
+
+def steer_allowed_changed(item):
+    window.steer_mode_box.setEnabled(item)
+    window.front_steer_box.setEnabled(item)
+    window.rear_steer_box.setEnabled((not window.front_mode_rb.isChecked()) and item)
+
+
+def front_mode_changed():
+    # print(e)
+    window.rear_steer_box.setEnabled((not window.front_mode_rb.isChecked()))
 
 def show_empty_params_list(list_of_params: list, table: str):
     show_table = getattr(window, table)
@@ -156,7 +165,7 @@ def reset_fault_btn_pressed():
 def spinbox_changed(item):
     spinbox = QApplication.instance().sender()
     spinbox_name = spinbox.objectName()
-    slider_name = spinbox_name.split('_')[0] + '_slider'
+    slider_name = spinbox_name.replace('spinbox', 'slider')
     slider = getattr(window, slider_name)
     slider.setValue(item)
 
@@ -164,7 +173,7 @@ def spinbox_changed(item):
 def slider_changed(item):
     slider = QApplication.instance().sender()
     slider_name = slider.objectName()
-    spinbox_name = slider_name.split('_')[0] + '_spinbox'
+    spinbox_name = slider_name.replace('slider', 'spinbox')
     spinbox = getattr(window, spinbox_name)
     spinbox.setValue(item)
 
@@ -357,19 +366,28 @@ window = VMUMonitorApp()
 vmu_params_list = fill_vmu_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
 vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
 req_list = feel_req_list(vmu_params_list)
+
 show_empty_params_list(vmu_params_list, 'vmu_param_table')
 window.connect_btn.clicked.connect(connect_vmu)
 window.reset_faults.clicked.connect(reset_fault_btn_pressed)
-window.power_spinbox.valueChanged.connect(spinbox_changed)
-window.power_slider.valueChanged.connect(slider_changed)
-window.speed_spinbox.valueChanged.connect(spinbox_changed)
-window.speed_slider.valueChanged.connect(slider_changed)
-window.speed_slider.setEnabled(True)
-window.speed_spinbox.setEnabled(True)
-window.power_slider.setEnabled(True)
-window.power_spinbox.setEnabled(True)
+window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
+# window.rear_steer_box.changeEvent(not isChecked())
+window.front_mode_rb.toggled.connect(front_mode_changed)
+
+for name in command_list:
+    spinbox_name = name + '_spinbox'
+    spinbox = getattr(window, spinbox_name)
+    spinbox.valueChanged.connect(spinbox_changed)
+    spinbox.setEnabled(True)
+
+    slider_name = name + '_slider'
+    slider = getattr(window, slider_name)
+    slider.valueChanged.connect(slider_changed)
+    slider.setEnabled(True)
+
 window.hook = keyboard.on_press(keyboard_event_received)
 keyboard.add_hotkey('ctrl + up', ctrl_up)
 keyboard.add_hotkey('ctrl + down', ctrl_down)
+
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение

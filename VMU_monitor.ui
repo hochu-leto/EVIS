@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
-    <height>734</height>
+    <width>798</width>
+    <height>754</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,38 +26,9 @@
    <set>QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="10,4,0" columnstretch="1,6">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="10,0,0" columnstretch="1,5">
     <item row="1" column="1">
      <widget class="QTextBrowser" name="errors_browser"/>
-    </item>
-    <item row="0" column="1">
-     <widget class="QTableWidget" name="vmu_param_table">
-      <column>
-       <property name="text">
-        <string>Параметр</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Значение</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Размерность</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="reset_faults">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Сброс ошибок</string>
-      </property>
-     </widget>
     </item>
     <item row="2" column="0">
      <widget class="QPushButton" name="connect_btn">
@@ -91,6 +62,35 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="1">
+     <widget class="QTableWidget" name="vmu_param_table">
+      <column>
+       <property name="text">
+        <string>Параметр</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Значение</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Размерность</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="reset_faults">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Сброс ошибок</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0" rowspan="2">
      <widget class="QGroupBox" name="groupBox">
       <property name="minimumSize">
@@ -102,70 +102,44 @@
       <property name="title">
        <string>Управление </string>
       </property>
-      <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" columnstretch="0,0" columnminimumwidth="0,0">
-       <item row="1" column="1">
-        <widget class="QGroupBox" name="power_box">
+      <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="0,0,0,0" columnminimumwidth="0,0,0,0">
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="steer_mode_box">
          <property name="enabled">
           <bool>false</bool>
          </property>
          <property name="title">
-          <string>Момент</string>
+          <string>Режим</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QSlider" name="power_slider">
-            <property name="enabled">
-             <bool>false</bool>
+           <widget class="QRadioButton" name="front_mode_rb">
+            <property name="text">
+             <string>Перед</string>
             </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="minimum">
-             <number>-100</number>
-            </property>
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="value">
-             <number>0</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TicksAbove</enum>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="power_spinbox">
-            <property name="enabled">
-             <bool>false</bool>
+           <widget class="QRadioButton" name="crab_mode_rb">
+            <property name="text">
+             <string>КРАБ</string>
             </property>
-            <property name="font">
-             <font>
-              <family>Impact</family>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
-            <property name="minimum">
-             <number>-100</number>
-            </property>
-            <property name="maximum">
-             <number>100</number>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="circle_mode_rb">
+            <property name="text">
+             <string>КРУГ</string>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="1" column="2" rowspan="3">
         <widget class="QGroupBox" name="speed_box">
          <property name="enabled">
           <bool>false</bool>
@@ -230,14 +204,240 @@
          </layout>
         </widget>
        </item>
+       <item row="1" column="3" rowspan="3">
+        <widget class="QGroupBox" name="power_box">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="title">
+          <string>Момент</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+          <item>
+           <widget class="QSlider" name="power_slider">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="minimum">
+             <number>-100</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="power_spinbox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="font">
+             <font>
+              <family>Impact</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="minimum">
+             <number>-100</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="front_steer_box">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="title">
+          <string>Передний</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QSlider" name="front_steer_slider">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Impact</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="minimum">
+             <number>-1000</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="singleStep">
+             <number>10</number>
+            </property>
+            <property name="pageStep">
+             <number>100</number>
+            </property>
+            <property name="tracking">
+             <bool>false</bool>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="front_steer_spinbox">
+            <property name="font">
+             <font>
+              <family>Impact</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="frame">
+             <bool>false</bool>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="readOnly">
+             <bool>false</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::PlusMinus</enum>
+            </property>
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+            <property name="minimum">
+             <number>-1000</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="singleStep">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QGroupBox" name="rear_steer_box">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="title">
+          <string>Задний</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QSlider" name="rear_steer_slider">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimum">
+             <number>-1000</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="singleStep">
+             <number>10</number>
+            </property>
+            <property name="pageStep">
+             <number>100</number>
+            </property>
+            <property name="sliderPosition">
+             <number>0</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="rear_steer_spinbox">
+            <property name="font">
+             <font>
+              <family>Impact</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="wrapping">
+             <bool>false</bool>
+            </property>
+            <property name="frame">
+             <bool>false</bool>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::PlusMinus</enum>
+            </property>
+            <property name="minimum">
+             <number>-1000</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="singleStep">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item row="0" column="0">
+        <widget class="QCheckBox" name="steer_allow_cb">
+         <property name="text">
+          <string>Рулим</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
         <widget class="QRadioButton" name="speed_rb">
          <property name="text">
           <string>Скорость</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="0" column="3">
         <widget class="QRadioButton" name="power_rb">
          <property name="text">
           <string>Момент</string>
@@ -252,7 +452,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>
