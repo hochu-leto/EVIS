@@ -262,7 +262,22 @@ def keyboard_event_received(event):
             window.vmu_req_thread.brake_timer = int(round(time.time() * 1000)) + BRAKE_TIMER
             window.speed_slider.setValue(0)
             window.power_slider.setValue(0)
-
+        elif event.name == 'esc':
+            window.record_vmu_params = False
+            window.thread_to_record.running = False
+            window.thread_to_record.terminate()
+            marathon.close_marathon_canal()
+            window.close()
+        elif event.name == 'up':
+            if window.speed_slider.isEnabled():
+                window.speed_slider.setValue(window.speed_slider.value() + window.speed_slider.singleStep())
+            if window.power_slider.isEnabled():
+                window.power_slider.setValue(window.power_slider.value() + window.power_slider.singleStep())
+        elif event.name == 'down':
+            if window.speed_slider.isEnabled():
+                window.speed_slider.setValue(window.speed_slider.value() - window.speed_slider.singleStep())
+            if window.power_slider.isEnabled():
+                window.power_slider.setValue(window.power_slider.value() - window.power_slider.singleStep())
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
@@ -324,30 +339,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.vmu_param_table.setItem(row, 1, value_Item)
             row += 1
 
-    def keyPressEvent(self, e):
-        print(e.key(), e.modifiers())
-        if e.key() == Qt.Key_Escape:
-            self.record_vmu_params = False
-            self.thread_to_record.running = False
-            self.thread_to_record.terminate()
-            marathon.close_marathon_canal()
-            self.close()
-        elif e.key() == Qt.Key_Space:
-            self.vmu_req_thread.brake_timer = int(round(time.time() * 1000)) + BRAKE_TIMER
-            self.speed_slider.setValue(0)
-            self.power_slider.setValue(0)
-        elif e.key() == Qt.Key_Up:
-            self.speed_slider.setValue(self.speed_slider.value() + self.speed_slider.singleStep())
-            self.power_slider.setValue(self.power_slider.value() + self.power_slider.singleStep())
-        elif e.key() == Qt.Key_Down:
-            self.speed_slider.setValue(self.speed_slider.value() - self.speed_slider.singleStep())
-            self.power_slider.setValue(self.power_slider.value() - self.power_slider.singleStep())
-        elif e.modifiers() == Qt.CTRL and e.key() == Qt.Key_Up:
-            self.speed_slider.setValue(self.speed_slider.value() + self.speed_slider.pageStep())
-            self.power_slider.setValue(self.power_slider.value() + self.power_slider.pageStep())
-        elif e.modifiers() & Qt.ControlModifier and e.key() == Qt.Key_Down:
-            self.speed_slider.setValue(self.speed_slider.value() - self.speed_slider.pageStep())
-            self.power_slider.setValue(self.power_slider.value() - self.power_slider.pageStep())
+   # if e.modifiers() == Qt.CTRL and e.key() == Qt.Key_Up:
+   #          self.speed_slider.setValue(self.speed_slider.value() + self.speed_slider.pageStep())
+   #          self.power_slider.setValue(self.power_slider.value() + self.power_slider.pageStep())
+   #      elif e.modifiers() & Qt.ControlModifier and e.key() == Qt.Key_Down:
+   #          self.speed_slider.setValue(self.speed_slider.value() - self.speed_slider.pageStep())
+   #          self.power_slider.setValue(self.power_slider.value() - self.power_slider.pageStep())
 
 
 app = QApplication([])
