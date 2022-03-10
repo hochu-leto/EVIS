@@ -35,6 +35,10 @@ invertor_set = 0x00000499
 command_list = {'power', 'speed', 'front_steer', 'rear_steer'}
 
 
+def warning_message():
+    QMessageBox.warning(window, "УВАГА!!!", 'После Подключения выключи на 10 секунд START ПСТЭД', QMessageBox.Ok)
+
+
 def steer_allowed_changed(item):
     window.steer_mode_box.setEnabled(item)
     window.front_steer_box.setEnabled(item)
@@ -102,6 +106,7 @@ def connect_vmu():
         window.speed_slider.setValue(0)
         window.reset_faults.setEnabled(True)
         marathon.can_write(invertor_set, [control_byte, 0, 0, 0, 0, 0, 2, 0])
+        time.sleep(1)
         marathon.can_write(invertor_set, [0, 0, 0, 0, 0, 0, 3, 0])
         window.vmu_req_thread.running = True
         window.record_vmu_params = True
@@ -221,8 +226,8 @@ class VMUSaveToFileThread(QObject):
                 self.h_brake = 0
 
             torque_data = int(window.power_slider.value()) * 300
-            front_steer_data = int(window.front_steer_slider.value()) * 300
-            rear_steer_data = int(window.rear_steer_slider.value()) * 300
+            front_steer_data = int(window.front_steer_slider.value()) * 30
+            rear_steer_data = int(window.rear_steer_slider.value()) * 30
             torque_data_list = [self.r_fault | self.h_brake + 0b10001,
                                 torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
                                 front_steer_data & 0xFF, ((front_steer_data & 0xFF00) >> 8),
@@ -291,14 +296,42 @@ def keyboard_event_received(event):
                 window.speed_slider.setValue(window.speed_slider.value() - window.speed_slider.singleStep())
             if window.power_slider.isEnabled():
                 window.power_slider.setValue(window.power_slider.value() - window.power_slider.singleStep())
-
-        # доделай рули!!!
         elif event.name == 'left':
             if window.steer_allow_cb.isChecked():
                 window.front_steer_slider.setValue(window.front_steer_slider.value() -
-                                                   window.front_steer_slider.singleStep())
-            # if window.circle_mode_rb.isChecked():
-            #     window.power_slider.setValue(window.power_slider.value() - window.power_slider.singleStep())
+                                                   5 * window.front_steer_slider.singleStep())
+            if window.circle_mode_rb.isChecked():
+                window.rear_steer_slider.setValue(-1 * window.front_steer_slider.value())
+            elif window.crab_mode_rb.isChecked():
+                window.rear_steer_slider.setValue(window.front_steer_slider.value())
+        elif event.name == 'right':
+            if window.steer_allow_cb.isChecked():
+                window.front_steer_slider.setValue(window.front_steer_slider.value() +
+                                                   5 * window.front_steer_slider.singleStep())
+            if window.circle_mode_rb.isChecked():
+                window.rear_steer_slider.setValue(-1 * window.front_steer_slider.value())
+            elif window.crab_mode_rb.isChecked():
+                window.rear_steer_slider.setValue(window.front_steer_slider.value())
+
+
+def ctrl_left():
+    if window.steer_allow_cb.isChecked():
+        window.front_steer_slider.setValue(window.front_steer_slider.value() -
+                                           window.front_steer_slider.pageStep())
+    if window.circle_mode_rb.isChecked():
+        window.rear_steer_slider.setValue(-1 * window.front_steer_slider.value())
+    elif window.crab_mode_rb.isChecked():
+        window.rear_steer_slider.setValue(window.front_steer_slider.value())
+
+
+def ctrl_right():
+    if window.steer_allow_cb.isChecked():
+        window.front_steer_slider.setValue(window.front_steer_slider.value() +
+                                           window.front_steer_slider.pageStep())
+    if window.circle_mode_rb.isChecked():
+        window.rear_steer_slider.setValue(-1 * window.front_steer_slider.value())
+    elif window.crab_mode_rb.isChecked():
+        window.rear_steer_slider.setValue(window.front_steer_slider.value())
 
 
 def ctrl_up():
@@ -381,15 +414,20 @@ window = VMUMonitorApp()
 
 vmu_params_list = fill_vmu_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
 vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
-req_list = feel_req_list(vmu_params_list)
 
+req_list = feel_req_list(vmu_params_list)
 show_empty_params_list(vmu_params_list, 'vmu_param_table')
+
 window.connect_btn.clicked.connect(connect_vmu)
 window.reset_faults.clicked.connect(reset_fault_btn_pressed)
 window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
+
 window.front_mode_rb.toggled.connect(steer_mode_changed)
 window.circle_mode_rb.toggled.connect(steer_mode_changed)
 window.crab_mode_rb.toggled.connect(steer_mode_changed)
+
+window.speed_rb.toggled.connect(warning_message)
+window.power_rb.toggled.connect(warning_message)
 
 for name in command_list:
     spinbox_name = name + '_spinbox'
@@ -405,6 +443,8 @@ for name in command_list:
 window.hook = keyboard.on_press(keyboard_event_received)
 keyboard.add_hotkey('ctrl + up', ctrl_up)
 keyboard.add_hotkey('ctrl + down', ctrl_down)
+keyboard.add_hotkey('ctrl + left', ctrl_left)
+keyboard.add_hotkey('ctrl + right', ctrl_right)
 
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение
