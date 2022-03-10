@@ -36,7 +36,9 @@ command_list = {'power', 'speed', 'front_steer', 'rear_steer'}
 
 
 def warning_message():
-    QMessageBox.warning(window, "УВАГА!!!", 'После Подключения выключи на 10 секунд START ПСТЭД', QMessageBox.Ok)
+    QMessageBox.warning(window, "УВАГА!!!", 'Для смены типа управления нужно: \n - ВЫКЛЮЧИТЬ START ПСТЭД\n - нажать '
+                                            'кнопку Подключиться\n - подождать 10 секунд\n - ВКЛЮЧИТЬ START ПСТЭД',
+                        QMessageBox.Ok)
 
 
 def steer_allowed_changed(item):
