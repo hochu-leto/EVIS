@@ -292,6 +292,14 @@ def keyboard_event_received(event):
             if window.power_slider.isEnabled():
                 window.power_slider.setValue(window.power_slider.value() - window.power_slider.singleStep())
 
+        # доделай рули!!!
+        elif event.name == 'left':
+            if window.steer_allow_cb.isChecked():
+                window.front_steer_slider.setValue(window.front_steer_slider.value() -
+                                                   window.front_steer_slider.singleStep())
+            # if window.circle_mode_rb.isChecked():
+            #     window.power_slider.setValue(window.power_slider.value() - window.power_slider.singleStep())
+
 
 def ctrl_up():
     if window.speed_slider.isEnabled():
