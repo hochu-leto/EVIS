@@ -39,11 +39,15 @@ def steer_allowed_changed(item):
     window.steer_mode_box.setEnabled(item)
     window.front_steer_box.setEnabled(item)
     window.rear_steer_box.setEnabled((not window.front_mode_rb.isChecked()) and item)
+    window.front_steer_slider.setValue(0)
+    window.rear_steer_slider.setValue(0)
 
 
-def front_mode_changed():
-    # print(e)
+def steer_mode_changed():
     window.rear_steer_box.setEnabled((not window.front_mode_rb.isChecked()))
+    window.front_steer_slider.setValue(0)
+    window.rear_steer_slider.setValue(0)
+
 
 def show_empty_params_list(list_of_params: list, table: str):
     show_table = getattr(window, table)
@@ -212,13 +216,17 @@ class VMUSaveToFileThread(QObject):
 
             if (self.brake_timer - current_time) > 0:
                 self.h_brake = HANDBRAKE
+                self.brake_timer -= 1
             else:
                 self.h_brake = 0
 
             torque_data = int(window.power_slider.value()) * 300
+            front_steer_data = int(window.front_steer_slider.value()) * 300
+            rear_steer_data = int(window.rear_steer_slider.value()) * 300
             torque_data_list = [self.r_fault | self.h_brake + 0b10001,
                                 torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
-                                0, 0, 0, 0, 0]
+                                front_steer_data & 0xFF, ((front_steer_data & 0xFF00) >> 8),
+                                rear_steer_data & 0xFF, ((rear_steer_data & 0xFF00) >> 8), 0]
 
             speed = float(window.speed_slider.value())
             speed_data = float_to_int(speed)
@@ -371,8 +379,9 @@ show_empty_params_list(vmu_params_list, 'vmu_param_table')
 window.connect_btn.clicked.connect(connect_vmu)
 window.reset_faults.clicked.connect(reset_fault_btn_pressed)
 window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
-# window.rear_steer_box.changeEvent(not isChecked())
-window.front_mode_rb.toggled.connect(front_mode_changed)
+window.front_mode_rb.toggled.connect(steer_mode_changed)
+window.circle_mode_rb.toggled.connect(steer_mode_changed)
+window.crab_mode_rb.toggled.connect(steer_mode_changed)
 
 for name in command_list:
     spinbox_name = name + '_spinbox'
