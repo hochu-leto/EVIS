@@ -22,6 +22,11 @@ RESET_FAULTS = 8
 BRAKE_TIMER = 4000  # 4 секунды
 
 marathon = CANMarathon()
+#  и чтоб слать по второму кану управление пневмой
+marathon2 = CANMarathon()
+marathon2.can_canal_number = 1
+marathon2.BCI_bt0 = marathon2.BCI_250K_bt0
+
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_errors_file = 'kvu_error_codes_my.xlsx'
@@ -31,8 +36,8 @@ VMU_ID_PDO = 0x00000401
 rtcon_vmu = 0x00000601
 vmu_rtcon = 0x00000581
 invertor_set = 0x00000499
-
-command_list = {'power', 'speed', 'front_steer', 'rear_steer'}
+bku_vmu_suspension = 0x18FF83A5
+command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus', 'rr_sus', 'rl_sus'}
 
 
 def warning_message():
@@ -47,6 +52,10 @@ def steer_allowed_changed(item):
     window.rear_steer_box.setEnabled((not window.front_mode_rb.isChecked()) and item)
     window.front_steer_slider.setValue(0)
     window.rear_steer_slider.setValue(0)
+
+
+def suspension_allowed_changed(item):
+    window.suspesion_box.setEnabled(item)
 
 
 def steer_mode_changed():
@@ -165,7 +174,8 @@ def fill_vmu_params_values(ans_list: list):
             par['value'] = (par['value'] / par['scale'] - par['scaleB'])
             par['value'] = '{:.2f}'.format(par['value'])
         i += 1
-    print('Новые параметры КВУ записаны ')
+    # здесь не проверяется что принятый параметр соответствует запрошенному. а было бы правильно так
+    # print('Новые параметры КВУ записаны ')
 
 
 def reset_fault_btn_pressed():
@@ -211,6 +221,10 @@ class VMUSaveToFileThread(QObject):
 
     # метод, который будет выполнять алгоритм в другом потоке
     def run(self):
+        len_param_list = len(req_list)
+        errors_counter = 0
+        params_counter = 0
+        ans_list = []
         current_time = self.start_time
         while True:
             adding_to_csv_file('value', vmu_params_list, window.vmu_req_thread.recording_file_name)
@@ -244,24 +258,25 @@ class VMUSaveToFileThread(QObject):
             if (current_time - self.start_time) > self.send_delay:
                 self.start_time = current_time
                 marathon.can_write(VMU_ID_PDO, torque_data_list)
+                # попытаюсь за каждый прогон опрашивать один параметр
+                # - думается, это не даст КВУ потерять связь с программой
+                param = marathon.can_request(rtcon_vmu, vmu_rtcon, req_list[params_counter])
+                ans_list.append(param)
+                if isinstance(param, str):
+                    errors_counter += 1
+                params_counter += 1
+                if params_counter == len_param_list:
+                    if errors_counter > len_param_list / 3:
+                        self.new_vmu_params.emit(ans_list[:1])
+                    else:
+                        self.new_vmu_params.emit(ans_list)
+                    errors_counter = 0
+                    params_counter = 0
+                    ans_list = []
                 # управление оборотами - напрямую в инвертор МЭИ по 499 адресу
                 if window.speed_rb.isChecked():
                     marathon.can_write(invertor_set, speed_data_list)
 
-            #  Получаю новые параметры от КВУ
-            if (current_time - self.time_for_request) > self.send_delay * 4:
-                self.time_for_request = current_time
-                ans_list = []
-                answer = marathon.can_request_many(rtcon_vmu, vmu_rtcon, req_list)
-                # Если происходит разрыв связи в блоком во время чтения
-                #  И прилетает строка ошибки, то надо запихнуть её в список
-                if isinstance(answer, str):
-                    ans_list.append(answer)
-                else:
-                    ans_list = answer.copy()
-                #  И отправляю их в основной поток для обновления
-                self.new_vmu_params.emit(ans_list)
-            # запрашиваю ошибки
             if (current_time - self.time_for_errors) > self.send_delay * 50:
                 self.time_for_errors = current_time
                 error = marathon.can_request(rtcon_vmu, vmu_rtcon, [0x40, 0x15, 0x21, 0x01, 0, 0, 0, 0])
@@ -405,48 +420,59 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def show_new_vmu_params(self):
         row = 0
         for par in vmu_params_list:
+            # old_value = str(self.vmu_param_table.item(row=row, column=1))
+            # if old_value.isdigit():
+            #     old_value = float(old_value)
+            #
             value_Item = QTableWidgetItem(str(par['value']))
             value_Item.setFlags(value_Item.flags() & ~Qt.ItemIsEditable)
             self.vmu_param_table.setItem(row, 1, value_Item)
             row += 1
 
 
-app = QApplication([])
-window = VMUMonitorApp()
+if __name__ == '__main__':
+    app = QApplication([])
+    window = VMUMonitorApp()
 
-vmu_params_list = fill_vmu_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
-vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
+    vmu_params_list = fill_vmu_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+    vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
 
-req_list = feel_req_list(vmu_params_list)
-show_empty_params_list(vmu_params_list, 'vmu_param_table')
+    req_list = feel_req_list(vmu_params_list)
+    show_empty_params_list(vmu_params_list, 'vmu_param_table')
 
-window.connect_btn.clicked.connect(connect_vmu)
-window.reset_faults.clicked.connect(reset_fault_btn_pressed)
-window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
+    window.connect_btn.clicked.connect(connect_vmu)
+    window.reset_faults.clicked.connect(reset_fault_btn_pressed)
+    window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
+    window.suspesion_allow_cb.stateChanged.connect(suspension_allowed_changed)
 
-window.front_mode_rb.toggled.connect(steer_mode_changed)
-window.circle_mode_rb.toggled.connect(steer_mode_changed)
-window.crab_mode_rb.toggled.connect(steer_mode_changed)
+    window.front_mode_rb.toggled.connect(steer_mode_changed)
+    window.circle_mode_rb.toggled.connect(steer_mode_changed)
+    window.crab_mode_rb.toggled.connect(steer_mode_changed)
 
-window.speed_rb.toggled.connect(warning_message)
-window.power_rb.toggled.connect(warning_message)
+    window.speed_rb.toggled.connect(warning_message)
+    window.power_rb.toggled.connect(warning_message)
 
-for name in command_list:
-    spinbox_name = name + '_spinbox'
-    spinbox = getattr(window, spinbox_name)
-    spinbox.valueChanged.connect(spinbox_changed)
-    spinbox.setEnabled(True)
+    for name in command_list:
+        spinbox_name = name + '_spinbox'
+        spinbox = getattr(window, spinbox_name)
+        spinbox.valueChanged.connect(spinbox_changed)
+        spinbox.setEnabled(True)
 
-    slider_name = name + '_slider'
-    slider = getattr(window, slider_name)
-    slider.valueChanged.connect(slider_changed)
-    slider.setEnabled(True)
+        slider_name = name + '_slider'
+        slider = getattr(window, slider_name)
+        slider.valueChanged.connect(slider_changed)
+        slider.setEnabled(True)
 
-window.hook = keyboard.on_press(keyboard_event_received)
-keyboard.add_hotkey('ctrl + up', ctrl_up)
-keyboard.add_hotkey('ctrl + down', ctrl_down)
-keyboard.add_hotkey('ctrl + left', ctrl_left)
-keyboard.add_hotkey('ctrl + right', ctrl_right)
+        if 'sus' in name:
+            box_name = name + '_box'
+            box = getattr(window, box_name)
+            box.setEnabled(True)
 
-window.show()  # Показываем окно
-app.exec_()  # и запускаем приложение
+    window.hook = keyboard.on_press(keyboard_event_received)
+    keyboard.add_hotkey('ctrl + up', ctrl_up)
+    keyboard.add_hotkey('ctrl + down', ctrl_down)
+    keyboard.add_hotkey('ctrl + left', ctrl_left)
+    keyboard.add_hotkey('ctrl + right', ctrl_right)
+
+    window.show()  # Показываем окно
+    app.exec_()  # и запускаем приложение

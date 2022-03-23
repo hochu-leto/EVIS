@@ -26,10 +26,7 @@
    <set>QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="10,0,0" columnstretch="1,5">
-    <item row="1" column="1">
-     <widget class="QTextBrowser" name="errors_browser"/>
-    </item>
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,2" columnstretch="1,10" rowminimumheight="0,0,1">
     <item row="2" column="0">
      <widget class="QPushButton" name="connect_btn">
       <property name="sizePolicy">
@@ -62,41 +59,18 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QTableWidget" name="vmu_param_table">
-      <column>
-       <property name="text">
-        <string>Параметр</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Значение</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Размерность</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="reset_faults">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Сброс ошибок</string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0" rowspan="2">
      <widget class="QGroupBox" name="groupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>480</height>
+        <height>650</height>
        </size>
       </property>
       <property name="title">
@@ -463,6 +437,60 @@
         </widget>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="3">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Инвертор</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="3,0,0">
+        <item>
+         <widget class="QTableWidget" name="vmu_param_table">
+          <column>
+           <property name="text">
+            <string>Параметр</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Значение</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Размерность</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextBrowser" name="errors_browser"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="reset_faults">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Сброс ошибок</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+      </widget>
      </widget>
     </item>
    </layout>

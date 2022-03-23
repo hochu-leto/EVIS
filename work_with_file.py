@@ -1,11 +1,24 @@
 import datetime
+from pprint import pprint
 
 import pandas
 
 
 def fill_vmu_list(file_name):
-    excel_data_df = pandas.read_excel(file_name)
-    vmu_params_list = excel_data_df.to_dict(orient='records')
+    need_fields = {'name', 'address', 'type'}
+    file = pandas.ExcelFile(file_name)
+    bookmark_dict = {}
+
+    for sheet_name in file.sheet_names:
+        sheet = file.parse(sheet_name=sheet_name)
+        headers = list(sheet.columns.values)
+        if set(need_fields).issubset(headers):
+            sheet_params_list = sheet.to_dict(orient='records')
+            bookmark_dict[sheet_name] = sheet_params_list
+    pprint(bookmark_dict.keys())
+    # ---------------старая добрая рабочая функция---------------------------------
+    # excel_data_df = pandas.read_excel(file_name)
+    vmu_params_list = bookmark_dict[list(bookmark_dict.keys())[0]]  # excel_data_df.to_dict(orient='records')
     exit_list = []
     for par in vmu_params_list:
         if str(par['name']) != 'nan':
@@ -75,4 +88,3 @@ def dw2float(dw_array):
         else ((dw & 0x7FFFFF) << 1)  # Мантисса
     m1 = m * (2 ** (-23))  # Мантисса в float
     return s * m1 * (2 ** (e - 127))
-

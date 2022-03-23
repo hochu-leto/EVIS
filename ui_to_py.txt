@@ -1,2 +1,3 @@
-pyuic5 VMU_monitor.ui -o VMU_monitor_ui.py
+pyuic5 VMU_monitor_v1.ui -o VMU_monitor_ui.py
+pyuic5 two_chanell.ui -o two_chanell_ui.py
 pyinstaller --noconsole --noconfirm -i "icons_speed.ico" Dinostend.py
