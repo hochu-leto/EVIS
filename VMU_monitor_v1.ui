@@ -992,6 +992,9 @@
      <property name="autoExclusive">
       <bool>true</bool>
      </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup</string>
+     </attribute>
     </widget>
     <widget class="QCheckBox" name="steer_allow_cb">
      <property name="geometry">

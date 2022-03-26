@@ -443,6 +443,7 @@ class Ui_MainWindow(object):
         self.speed_rb.setChecked(False)
         self.speed_rb.setAutoExclusive(True)
         self.speed_rb.setObjectName("speed_rb")
+        self.buttonGroup.addButton(self.speed_rb)
         self.steer_allow_cb = QtWidgets.QCheckBox(self.command_box)
         self.steer_allow_cb.setGeometry(QtCore.QRect(170, 20, 62, 20))
         self.steer_allow_cb.setObjectName("steer_allow_cb")
