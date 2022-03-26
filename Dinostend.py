@@ -287,6 +287,13 @@ class VMUSaveToFileThread(QObject):
                 if error not in self.errors:
                     self.errors.append(error)
                 self.new_vmu_errors.emit(self.errors)
+                FL_height = int((window.fl_sus_slider.value() + 250) / 2)
+                FR_height = int((window.fr_sus_slider.value() + 250) / 2)
+                RL_height = int((window.rl_sus_slider.value() + 250) / 2)
+                RR_height = int((window.rr_sus_slider.value() + 250) / 2)
+                sus_data = [window.suspesion_allow_cb.isChecked(), FL_height, FR_height, RL_height, RR_height, 0, 0, 0]
+                # каждые 2,5 сек если отмечена подвеска, шлём по кан2
+                marathon2.can_write(bku_vmu_suspension, sus_data)
             current_time = int(round(time.time() * 1000))
 
 
@@ -420,13 +427,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def show_new_vmu_params(self):
         row = 0
         for par in vmu_params_list:
-            # old_value = str(self.vmu_param_table.item(row=row, column=1))
-            # if old_value.isdigit():
-            #     old_value = float(old_value)
-            #
-            value_Item = QTableWidgetItem(str(par['value']))
-            value_Item.setFlags(value_Item.flags() & ~Qt.ItemIsEditable)
-            self.vmu_param_table.setItem(row, 1, value_Item)
+            value_item = QTableWidgetItem(str(par['value']))
+            value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
+            self.vmu_param_table.setItem(row, 1, value_item)
             row += 1
 
 
