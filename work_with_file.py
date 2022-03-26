@@ -4,7 +4,7 @@ from pprint import pprint
 import pandas
 
 
-def fill_vmu_list(file_name):
+def fill_bookmarks_list(file_name):
     need_fields = {'name', 'address', 'type'}
     file = pandas.ExcelFile(file_name)
     bookmark_dict = {}
@@ -16,9 +16,10 @@ def fill_vmu_list(file_name):
             sheet_params_list = sheet.to_dict(orient='records')
             bookmark_dict[sheet_name] = sheet_params_list
     pprint(bookmark_dict.keys())
-    # ---------------старая добрая рабочая функция---------------------------------
-    # excel_data_df = pandas.read_excel(file_name)
-    vmu_params_list = bookmark_dict[list(bookmark_dict.keys())[0]]  # excel_data_df.to_dict(orient='records')
+    return bookmark_dict
+
+
+def fill_vmu_list(vmu_params_list):
     exit_list = []
     for par in vmu_params_list:
         if str(par['name']) != 'nan':

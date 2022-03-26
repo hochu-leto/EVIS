@@ -10,7 +10,7 @@ import struct
 import time
 import VMU_monitor_ui
 from dll_power import CANMarathon
-from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file
+from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list
 
 drive_limit = 30000 * 0.2  # 20% момента - достаточно, чтоб заехать на горку у выхода и не разложиться без тормозов
 ref_torque = 0
@@ -44,6 +44,14 @@ def warning_message():
     QMessageBox.warning(window, "УВАГА!!!", 'Для смены типа управления нужно: \n - ВЫКЛЮЧИТЬ START ПСТЭД\n - нажать '
                                             'кнопку Подключиться\n - подождать 10 секунд\n - ВКЛЮЧИТЬ START ПСТЭД',
                         QMessageBox.Ok)
+
+
+def params_list_changed():
+    print('param list changed')
+    global vmu_params_list, req_list
+    vmu_params_list = fill_vmu_list(bookmark_dict[window.blocks_list.currentItem().text()])
+    req_list = feel_req_list(vmu_params_list)
+    show_empty_params_list(vmu_params_list, 'vmu_param_table')
 
 
 def steer_allowed_changed(item):
@@ -100,6 +108,7 @@ def connect_vmu():
         adding_to_csv_file('name', vmu_params_list, window.vmu_req_thread.recording_file_name)
         # разблокирую все кнопки и чекбоксы
         window.connect_btn.setText('Отключиться')
+        window.blocks_list.setEnabled(False)
         if window.speed_rb.isChecked():
             window.speed_box.setEnabled(True)
             window.speed_slider.setEnabled(True)
@@ -133,6 +142,7 @@ def connect_vmu():
         window.reset_faults.setEnabled(False)
         window.power_rb.setEnabled(True)
         window.speed_rb.setEnabled(True)
+        window.blocks_list.setEnabled(True)
 
         marathon.close_marathon_canal()
         # Reading the csv file
@@ -404,6 +414,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             window.speed_box.setEnabled(False)
             window.power_rb.setEnabled(True)
             window.speed_rb.setEnabled(True)
+            window.blocks_list.setEnabled(True)
             window.reset_faults.setEnabled(False)
             window.record_vmu_params = False
             window.thread_to_record.running = False
@@ -437,7 +448,10 @@ if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
 
-    vmu_params_list = fill_vmu_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+    bookmark_dict = fill_bookmarks_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+    window.blocks_list.addItems(list(bookmark_dict))
+    window.blocks_list.setCurrentRow(0)
+    vmu_params_list = fill_vmu_list(bookmark_dict[list(bookmark_dict.keys())[0]])
     vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
 
     req_list = feel_req_list(vmu_params_list)
@@ -447,6 +461,7 @@ if __name__ == '__main__':
     window.reset_faults.clicked.connect(reset_fault_btn_pressed)
     window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
     window.suspesion_allow_cb.stateChanged.connect(suspension_allowed_changed)
+    window.blocks_list.currentItemChanged.connect(params_list_changed)
 
     window.front_mode_rb.toggled.connect(steer_mode_changed)
     window.circle_mode_rb.toggled.connect(steer_mode_changed)

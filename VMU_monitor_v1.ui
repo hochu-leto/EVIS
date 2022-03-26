@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1196</width>
+    <width>1098</width>
     <height>761</height>
    </rect>
   </property>
@@ -31,7 +31,7 @@
      <rect>
       <x>369</x>
       <y>10</y>
-      <width>821</width>
+      <width>721</width>
       <height>741</height>
      </rect>
     </property>
@@ -41,9 +41,9 @@
     <widget class="QTextBrowser" name="errors_browser">
      <property name="geometry">
       <rect>
-       <x>280</x>
+       <x>210</x>
        <y>590</y>
-       <width>531</width>
+       <width>501</width>
        <height>141</height>
       </rect>
      </property>
@@ -56,7 +56,7 @@
       <rect>
        <x>10</x>
        <y>640</y>
-       <width>261</width>
+       <width>191</width>
        <height>41</height>
       </rect>
      </property>
@@ -69,7 +69,7 @@
       <rect>
        <x>10</x>
        <y>587</y>
-       <width>261</width>
+       <width>191</width>
        <height>41</height>
       </rect>
      </property>
@@ -105,9 +105,9 @@
     <widget class="QTableWidget" name="vmu_param_table">
      <property name="geometry">
       <rect>
-       <x>280</x>
+       <x>210</x>
        <y>30</y>
-       <width>531</width>
+       <width>501</width>
        <height>551</height>
       </rect>
      </property>
@@ -132,7 +132,7 @@
       <rect>
        <x>12</x>
        <y>28</y>
-       <width>256</width>
+       <width>191</width>
        <height>551</height>
       </rect>
      </property>
@@ -145,7 +145,7 @@
       <rect>
        <x>10</x>
        <y>690</y>
-       <width>261</width>
+       <width>191</width>
        <height>41</height>
       </rect>
      </property>
