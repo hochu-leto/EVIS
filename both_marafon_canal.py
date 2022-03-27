@@ -22,7 +22,6 @@ def read_can2():
     window.thread_for_second_canal.start()
 
 
-#  поток для опроса и записи в файл параметров кву
 class CANSaveToFileThread(QObject):
     mar = marathon
     running = False
