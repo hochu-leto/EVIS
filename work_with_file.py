@@ -15,7 +15,6 @@ def fill_bookmarks_list(file_name):
         if set(need_fields).issubset(headers):
             sheet_params_list = sheet.to_dict(orient='records')
             bookmark_dict[sheet_name] = sheet_params_list
-    pprint(bookmark_dict.keys())
     return bookmark_dict
 
 

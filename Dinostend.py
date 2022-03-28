@@ -12,6 +12,7 @@ import VMU_monitor_ui
 from dll_power import CANMarathon
 from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list
 
+suspension_stroke = 100
 drive_limit = 30000 * 0.2  # 20% момента - достаточно, чтоб заехать на горку у выхода и не разложиться без тормозов
 ref_torque = 0
 # // включение стояночного тормоза
@@ -47,7 +48,6 @@ def warning_message():
 
 
 def params_list_changed():
-    print('param list changed')
     global vmu_params_list, req_list
     vmu_params_list = fill_vmu_list(bookmark_dict[window.blocks_list.currentItem().text()])
     req_list = feel_req_list(vmu_params_list)
@@ -485,7 +485,12 @@ if __name__ == '__main__':
             box_name = name + '_box'
             box = getattr(window, box_name)
             box.setEnabled(True)
+            slider.setMinimum(-1 * suspension_stroke)
+            slider.setMaximum(suspension_stroke)
+            spinbox.setMinimum(-1 * suspension_stroke)
+            spinbox.setMaximum(suspension_stroke)
 
+    # window.buttonGroup_2.
     window.hook = keyboard.on_press(keyboard_event_received)
     keyboard.add_hotkey('ctrl + up', ctrl_up)
     keyboard.add_hotkey('ctrl + down', ctrl_down)
