@@ -1,6 +1,6 @@
 import keyboard
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow
 import datetime
 import pathlib
@@ -39,6 +39,9 @@ vmu_rtcon = 0x00000581
 invertor_set = 0x00000499
 bku_vmu_suspension = 0x18FF83A5
 command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus', 'rr_sus', 'rl_sus'}
+# запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
+# записать в мэишный инвертор параметр    00000601 8 HEX   20  01  21  00
+# есть подозрения, что последний байт - номер параметра из файла пдф
 
 
 def warning_message():
@@ -109,6 +112,7 @@ def connect_vmu():
         # разблокирую все кнопки и чекбоксы
         window.connect_btn.setText('Отключиться')
         window.blocks_list.setEnabled(False)
+        # ------------------------------------------------------с новой прошивкой мэи это не работает-----------------
         if window.speed_rb.isChecked():
             window.speed_box.setEnabled(True)
             window.speed_slider.setEnabled(True)
@@ -122,12 +126,14 @@ def connect_vmu():
             window.speed_rb.setEnabled(False)
             control_byte = 1
 
-        window.power_slider.setValue(0)
-        window.speed_slider.setValue(0)
-        window.reset_faults.setEnabled(True)
         marathon.can_write(invertor_set, [control_byte, 0, 0, 0, 0, 0, 2, 0])
         time.sleep(1)
         marathon.can_write(invertor_set, [0, 0, 0, 0, 0, 0, 3, 0])
+        # ----------------------------------------------------------------------------------------------
+
+        window.power_slider.setValue(0)
+        window.speed_slider.setValue(0)
+        window.reset_faults.setEnabled(True)
         window.vmu_req_thread.running = True
         window.record_vmu_params = True
         window.thread_to_record.start()
@@ -185,7 +191,6 @@ def fill_vmu_params_values(ans_list: list):
             par['value'] = '{:.2f}'.format(par['value'])
         i += 1
     # здесь не проверяется что принятый параметр соответствует запрошенному. а было бы правильно так
-    # print('Новые параметры КВУ записаны ')
 
 
 def reset_fault_btn_pressed():
@@ -459,8 +464,8 @@ if __name__ == '__main__':
 
     window.connect_btn.clicked.connect(connect_vmu)
     window.reset_faults.clicked.connect(reset_fault_btn_pressed)
-    window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
-    window.suspesion_allow_cb.stateChanged.connect(suspension_allowed_changed)
+    # window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
+    # window.suspesion_allow_cb.stateChanged.connect(suspension_allowed_changed)
     window.blocks_list.currentItemChanged.connect(params_list_changed)
 
     window.front_mode_rb.toggled.connect(steer_mode_changed)
@@ -491,11 +496,17 @@ if __name__ == '__main__':
             spinbox.setMaximum(suspension_stroke)
 
     # window.buttonGroup_2.
-    window.hook = keyboard.on_press(keyboard_event_received)
-    keyboard.add_hotkey('ctrl + up', ctrl_up)
-    keyboard.add_hotkey('ctrl + down', ctrl_down)
-    keyboard.add_hotkey('ctrl + left', ctrl_left)
-    keyboard.add_hotkey('ctrl + right', ctrl_right)
+    # Красота
+    window.max_pos_sus_rb.setFont(QFont('MS Shell Dlg 2', 20))
+    window.max_pos_sus_rb.setText(u'\u21E7')
+    window.min_pos_sus_rb.setFont(QFont('MS Shell Dlg 2', 20))
+    window.min_pos_sus_rb.setText(u'\u21E9')
+
+    # window.hook = keyboard.on_press(keyboard_event_received)
+    # keyboard.add_hotkey('ctrl + up', ctrl_up)
+    # keyboard.add_hotkey('ctrl + down', ctrl_down)
+    # keyboard.add_hotkey('ctrl + left', ctrl_left)
+    # keyboard.add_hotkey('ctrl + right', ctrl_right)
 
     window.show()  # Показываем окно
     app.exec_()  # и запускаем приложение

@@ -208,7 +208,7 @@ class CANMarathon:
             #     print('     в CiRcQueCancel так ' + str(result))
 
             try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 300)  # timeout = 300 миллисекунд
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 300 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
                 pprint(e)
@@ -230,10 +230,10 @@ class CANMarathon:
                 #     print('       в CiRead так ' + str(result))
                 # если удалось прочитать
                 if result >= 0:
-                    print(hex(buffer.id), end='    ')
-                    for e in buffer.data:
-                        print(hex(e), end=' ')
-                    print()
+                    # print(hex(buffer.id), end='    ')
+                    # for e in buffer.data:
+                    #     print(hex(e), end=' ')
+                    # print()
                     return [hex(buffer.id), buffer.len, buffer.flags, buffer.data, buffer.ts]
                     # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
                 else:
