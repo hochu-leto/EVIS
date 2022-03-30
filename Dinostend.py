@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import keyboard
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon, QFont
@@ -39,6 +41,8 @@ vmu_rtcon = 0x00000581
 invertor_set = 0x00000499
 bku_vmu_suspension = 0x18FF83A5
 command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus', 'rr_sus', 'rl_sus'}
+
+
 # запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
 # записать в мэишный инвертор параметр    00000601 8 HEX   20  01  21  00
 # есть подозрения, что последний байт - номер параметра из файла пдф
@@ -186,9 +190,11 @@ def fill_vmu_params_values(ans_list: list):
                 par['value'] = ctypes.c_int16(value).value
             elif par['type'] == 'SIGNED32':
                 par['value'] = ctypes.c_int32(value).value
-
+            elif par['type'] == 'FLOAT':
+                par['value'] = bytes_to_float(message[-4:])
             par['value'] = (par['value'] / par['scale'] - par['scaleB'])
             par['value'] = '{:.2f}'.format(par['value'])
+
         i += 1
     # здесь не проверяется что принятый параметр соответствует запрошенному. а было бы правильно так
 
@@ -218,6 +224,10 @@ def float_to_int(f):
     return int(struct.unpack('<I', struct.pack('<f', f))[0])
 
 
+def bytes_to_float(b: list):
+    return struct.unpack('<f', bytearray(b))[0]
+
+
 #  поток для опроса и записи в файл параметров кву
 class VMUSaveToFileThread(QObject):
     running = False
@@ -241,6 +251,8 @@ class VMUSaveToFileThread(QObject):
         params_counter = 0
         ans_list = []
         current_time = self.start_time
+        no_answer_counter = 0
+        no_can_counter = 0
         while True:
             adding_to_csv_file('value', vmu_params_list, window.vmu_req_thread.recording_file_name)
 
@@ -256,9 +268,10 @@ class VMUSaveToFileThread(QObject):
             else:
                 self.h_brake = 0
 
-            torque_data = int(window.power_slider.value()) * 300
             front_steer_data = int(window.front_steer_slider.value()) * 30
             rear_steer_data = int(window.rear_steer_slider.value()) * 30
+
+            torque_data = int(window.power_slider.value()) * 300
             torque_data_list = [self.r_fault | self.h_brake + 0b10001,
                                 torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
                                 front_steer_data & 0xFF, ((front_steer_data & 0xFF00) >> 8),
@@ -272,43 +285,54 @@ class VMUSaveToFileThread(QObject):
             # проверяем что время передачи пришло и отправляю управление по 401 адресу
             if (current_time - self.start_time) > self.send_delay:
                 self.start_time = current_time
+
                 marathon.can_write(VMU_ID_PDO, torque_data_list)
-                # попытаюсь за каждый прогон опрашивать один параметр
-                # - думается, это не даст КВУ потерять связь с программой
-                param = marathon.can_request(rtcon_vmu, vmu_rtcon, req_list[params_counter])
-                ans_list.append(param)
-                if isinstance(param, str):
-                    errors_counter += 1
-                params_counter += 1
-                if params_counter == len_param_list:
-                    if errors_counter > len_param_list / 3:
-                        self.new_vmu_params.emit(ans_list[:1])
-                    else:
-                        self.new_vmu_params.emit(ans_list)
-                    errors_counter = 0
-                    params_counter = 0
-                    ans_list = []
+
                 # управление оборотами - напрямую в инвертор МЭИ по 499 адресу
                 if window.speed_rb.isChecked():
                     marathon.can_write(invertor_set, speed_data_list)
 
+            # попытаюсь за каждый прогон опрашивать один параметр
+            # - думается, это не даст КВУ потерять связь с программой
+            param = marathon.can_request(rtcon_vmu, vmu_rtcon, req_list[params_counter])
+            ans_list.append(param)
+            if isinstance(param, str):
+                errors_counter += 1
+            params_counter += 1
+            if params_counter == len_param_list:
+                if errors_counter > len_param_list / 3:
+                    self.new_vmu_params.emit(ans_list[:1])
+                else:
+                    self.new_vmu_params.emit(ans_list)
+                errors_counter = 0
+                params_counter = 0
+                ans_list = []
+
             if (current_time - self.time_for_errors) > self.send_delay * 50:
                 self.time_for_errors = current_time
-                error = marathon.can_request(rtcon_vmu, vmu_rtcon, [0x40, 0x15, 0x21, 0x01, 0, 0, 0, 0])
-                if not isinstance(error, str):
-                    value = (error[5] << 8) + error[4]
-                    error = ctypes.c_uint16(value).value
-                # print(error)
-                if error not in self.errors:
-                    self.errors.append(error)
+                if no_answer_counter < 3:
+                    error = marathon.can_request(rtcon_vmu, vmu_rtcon, [0x40, 0x15, 0x21, 0x01, 0, 0, 0, 0])
+                    if not isinstance(error, str):
+                        value = (error[5] << 8) + error[4]
+                        error = ctypes.c_uint16(value).value
+                    else:
+                        no_answer_counter += 1
+
+                    if error not in self.errors:
+                        self.errors.append(error)
+                else:
+                    self.errors = ['КВУ не отвечает на запрос ошибок']
                 self.new_vmu_errors.emit(self.errors)
+
                 FL_height = int((window.fl_sus_slider.value() + 250) / 2)
                 FR_height = int((window.fr_sus_slider.value() + 250) / 2)
                 RL_height = int((window.rl_sus_slider.value() + 250) / 2)
                 RR_height = int((window.rr_sus_slider.value() + 250) / 2)
-                sus_data = [window.suspesion_allow_cb.isChecked(), FL_height, FR_height, RL_height, RR_height, 0, 0, 0]
+                sus_data = [not window.sus_off_rb.isChecked(), FL_height, FR_height, RL_height, RR_height, 0, 0, 0]
                 # каждые 2,5 сек если отмечена подвеска, шлём по кан2
-                marathon2.can_write(bku_vmu_suspension, sus_data)
+                if no_can_counter < 3:
+                    can_answer = marathon2.can_write(bku_vmu_suspension, sus_data)
+                    if
             current_time = int(round(time.time() * 1000))
 
 
