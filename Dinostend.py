@@ -1,6 +1,11 @@
-from pprint import pprint
+'''
+- как сделать нормальную размерность в таблице
+- раздвигать таблицу по окну
+- складывать параметр в две строки
 
-import keyboard
+- сделать несколько блоков по ИД - как их запихнуть в эксель
+
+'''
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow
@@ -23,6 +28,7 @@ HANDBRAKE = 2
 RESET_FAULTS = 8
 #
 BRAKE_TIMER = 4000  # 4 секунды
+# from keyboard_handler import KeyboardHandler
 
 marathon = CANMarathon()
 #  и чтоб слать по второму кану управление пневмой
@@ -33,11 +39,11 @@ marathon2.BCI_bt0 = marathon2.BCI_250K_bt0
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_errors_file = 'kvu_error_codes_my.xlsx'
-VMU_ID_PDO = 0x00000401
+VMU_ID_PDO = 0x00000403
 # rtcon_vmu = 0x1850460E
 # vmu_rtcon = 0x594
-rtcon_vmu = 0x00000601
-vmu_rtcon = 0x00000581
+rtcon_vmu = 0x00000603
+vmu_rtcon = 0x00000583
 invertor_set = 0x00000499
 bku_vmu_suspension = 0x18FF83A5
 command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus', 'rr_sus', 'rl_sus'}
@@ -170,6 +176,14 @@ def connect_vmu():
     return True
 
 
+def zero_del(s):
+    s = '{:g}'.format(s)    # '{:.5f}'.format(s)
+    # s = s.rstrip('0')
+    # if len(s) > 0 and s[-1] == '.':
+    #     s = s[:-1]
+    return s
+
+
 def fill_vmu_params_values(ans_list: list):
     i = 0
     for par in vmu_params_list:
@@ -192,9 +206,10 @@ def fill_vmu_params_values(ans_list: list):
                 par['value'] = ctypes.c_int32(value).value
             elif par['type'] == 'FLOAT':
                 par['value'] = bytes_to_float(message[-4:])
+            # print(par['value'])
             par['value'] = (par['value'] / par['scale'] - par['scaleB'])
-            par['value'] = '{:.2f}'.format(par['value'])
 
+            par['value'] = zero_del(par['value'])
         i += 1
     # здесь не проверяется что принятый параметр соответствует запрошенному. а было бы правильно так
 
@@ -322,7 +337,6 @@ class VMUSaveToFileThread(QObject):
                         self.errors.append(error)
                 else:
                     self.errors = ['КВУ не отвечает на запрос ошибок']
-                self.new_vmu_errors.emit(self.errors)
 
                 FL_height = int((window.fl_sus_slider.value() + 250) / 2)
                 FR_height = int((window.fr_sus_slider.value() + 250) / 2)
@@ -331,84 +345,15 @@ class VMUSaveToFileThread(QObject):
                 sus_data = [not window.sus_off_rb.isChecked(), FL_height, FR_height, RL_height, RR_height, 0, 0, 0]
                 # каждые 2,5 сек если отмечена подвеска, шлём по кан2
                 if no_can_counter < 3:
-                    can_answer = marathon2.can_write(bku_vmu_suspension, sus_data)
-                    if
+                    can_answer = 0  # marathon2.can_write(bku_vmu_suspension, sus_data)
+                    if can_answer:
+                        no_answer_counter += 1
+                else:
+                    self.errors += ['CAN2 не отвечает']
+
+                self.new_vmu_errors.emit(self.errors)
+
             current_time = int(round(time.time() * 1000))
-
-
-def keyboard_event_received(event):
-    if event.event_type == 'down':
-        # print(event.name)
-        if event.name == 'space':
-            window.vmu_req_thread.brake_timer = int(round(time.time() * 1000)) + BRAKE_TIMER
-            window.speed_slider.setValue(0)
-            window.power_slider.setValue(0)
-        elif event.name == 'esc':
-            window.record_vmu_params = False
-            window.thread_to_record.running = False
-            window.thread_to_record.terminate()
-            marathon.close_marathon_canal()
-            window.close()
-        elif event.name == 'up':
-            if window.speed_slider.isEnabled():
-                window.speed_slider.setValue(window.speed_slider.value() + window.speed_slider.singleStep())
-            if window.power_slider.isEnabled():
-                window.power_slider.setValue(window.power_slider.value() + window.power_slider.singleStep())
-        elif event.name == 'down':
-            if window.speed_slider.isEnabled():
-                window.speed_slider.setValue(window.speed_slider.value() - window.speed_slider.singleStep())
-            if window.power_slider.isEnabled():
-                window.power_slider.setValue(window.power_slider.value() - window.power_slider.singleStep())
-        elif event.name == 'left':
-            if window.steer_allow_cb.isChecked():
-                window.front_steer_slider.setValue(window.front_steer_slider.value() -
-                                                   5 * window.front_steer_slider.singleStep())
-            if window.circle_mode_rb.isChecked():
-                window.rear_steer_slider.setValue(-1 * window.front_steer_slider.value())
-            elif window.crab_mode_rb.isChecked():
-                window.rear_steer_slider.setValue(window.front_steer_slider.value())
-        elif event.name == 'right':
-            if window.steer_allow_cb.isChecked():
-                window.front_steer_slider.setValue(window.front_steer_slider.value() +
-                                                   5 * window.front_steer_slider.singleStep())
-            if window.circle_mode_rb.isChecked():
-                window.rear_steer_slider.setValue(-1 * window.front_steer_slider.value())
-            elif window.crab_mode_rb.isChecked():
-                window.rear_steer_slider.setValue(window.front_steer_slider.value())
-
-
-def ctrl_left():
-    if window.steer_allow_cb.isChecked():
-        window.front_steer_slider.setValue(window.front_steer_slider.value() -
-                                           window.front_steer_slider.pageStep())
-    if window.circle_mode_rb.isChecked():
-        window.rear_steer_slider.setValue(-1 * window.front_steer_slider.value())
-    elif window.crab_mode_rb.isChecked():
-        window.rear_steer_slider.setValue(window.front_steer_slider.value())
-
-
-def ctrl_right():
-    if window.steer_allow_cb.isChecked():
-        window.front_steer_slider.setValue(window.front_steer_slider.value() +
-                                           window.front_steer_slider.pageStep())
-    if window.circle_mode_rb.isChecked():
-        window.rear_steer_slider.setValue(-1 * window.front_steer_slider.value())
-    elif window.crab_mode_rb.isChecked():
-        window.rear_steer_slider.setValue(window.front_steer_slider.value())
-
-
-def ctrl_up():
-    if window.speed_slider.isEnabled():
-        window.speed_slider.setValue(window.speed_slider.value() + window.speed_slider.pageStep())
-    if window.power_slider.isEnabled():
-        window.power_slider.setValue(window.power_slider.value() + window.power_slider.pageStep())
-
-
-def ctrl_down():
-    if window.speed_slider.isEnabled():
-        window.speed_slider.setValue(window.speed_slider.value() - window.speed_slider.pageStep())
-    if window.power_slider.isEnabled():
-        window.power_slider.setValue(window.power_slider.value() - window.power_slider.pageStep())
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
@@ -449,7 +394,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             window.thread_to_record.running = False
             window.thread_to_record.terminate()
             marathon.close_marathon_canal()
-            QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + list_of_params[0], QMessageBox.Ok)
+            QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
         else:
             fill_vmu_params_values(list_of_params)
             self.show_new_vmu_params()
@@ -476,15 +421,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
-
-    bookmark_dict = fill_bookmarks_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
-    window.blocks_list.addItems(list(bookmark_dict))
-    window.blocks_list.setCurrentRow(0)
-    vmu_params_list = fill_vmu_list(bookmark_dict[list(bookmark_dict.keys())[0]])
-    vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
-
-    req_list = feel_req_list(vmu_params_list)
-    show_empty_params_list(vmu_params_list, 'vmu_param_table')
 
     window.connect_btn.clicked.connect(connect_vmu)
     window.reset_faults.clicked.connect(reset_fault_btn_pressed)
@@ -526,11 +462,21 @@ if __name__ == '__main__':
     window.min_pos_sus_rb.setFont(QFont('MS Shell Dlg 2', 20))
     window.min_pos_sus_rb.setText(u'\u21E9')
 
-    # window.hook = keyboard.on_press(keyboard_event_received)
+    # kh = KeyboardHandler(window)
+    # window.hook = keyboard.on_press(kh.keyboard_event_received)
     # keyboard.add_hotkey('ctrl + up', ctrl_up)
     # keyboard.add_hotkey('ctrl + down', ctrl_down)
     # keyboard.add_hotkey('ctrl + left', ctrl_left)
     # keyboard.add_hotkey('ctrl + right', ctrl_right)
+    bookmark_dict = fill_bookmarks_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+    if bookmark_dict:
+        window.blocks_list.addItems(list(bookmark_dict))
+        window.blocks_list.setCurrentRow(0)
+        vmu_params_list = fill_vmu_list(bookmark_dict[list(bookmark_dict.keys())[0]])
+        vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
 
-    window.show()  # Показываем окно
-    app.exec_()  # и запускаем приложение
+        req_list = feel_req_list(vmu_params_list)
+        show_empty_params_list(vmu_params_list, 'vmu_param_table')
+
+        window.show()  # Показываем окно
+        app.exec_()  # и запускаем приложение
