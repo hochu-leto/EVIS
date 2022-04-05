@@ -6,6 +6,8 @@
 - сделать несколько блоков по ИД - как их запихнуть в эксель
 
 '''
+from pprint import pprint
+
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow
@@ -17,7 +19,8 @@ import struct
 import time
 import VMU_monitor_ui
 from dll_power import CANMarathon
-from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list
+from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list, \
+    fill_node_list
 
 suspension_stroke = 100
 drive_limit = 30000 * 0.2  # 20% момента - достаточно, чтоб заехать на горку у выхода и не разложиться без тормозов
@@ -241,6 +244,15 @@ def float_to_int(f):
 
 def bytes_to_float(b: list):
     return struct.unpack('<f', bytearray(b))[0]
+
+
+class NodeOfEVO(object):
+    def __init__(self, *initial_data, **kwargs):
+        for dictionary in initial_data:
+            for key in dictionary:
+                setattr(self, key, dictionary[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
 
 
 #  поток для опроса и записи в файл параметров кву
@@ -468,7 +480,13 @@ if __name__ == '__main__':
     # keyboard.add_hotkey('ctrl + down', ctrl_down)
     # keyboard.add_hotkey('ctrl + left', ctrl_left)
     # keyboard.add_hotkey('ctrl + right', ctrl_right)
+    node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+    evo_nodes = {}
+    for node in node_list:
+        evo_nodes[node['name']] = NodeOfEVO(node)
+    pprint(evo_nodes[list(evo_nodes.keys())[1]].params_list)
     bookmark_dict = fill_bookmarks_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+
     if bookmark_dict:
         window.blocks_list.addItems(list(bookmark_dict))
         window.blocks_list.setCurrentRow(0)
