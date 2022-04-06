@@ -2,6 +2,7 @@ import time
 
 from Dinostend import BRAKE_TIMER
 
+# шляпа нерабочая
 
 class KeyboardHandler():
 
@@ -84,3 +85,15 @@ class KeyboardHandler():
             window.speed_slider.setValue(window.speed_slider.value() - window.speed_slider.pageStep())
         if window.power_slider.isEnabled():
             window.power_slider.setValue(window.power_slider.value() - window.power_slider.pageStep())
+
+
+
+    # kh = KeyboardHandler(window)
+    # window.hook = keyboard.on_press(kh.keyboard_event_received)
+    # keyboard.add_hotkey('ctrl + up', ctrl_up)
+    # keyboard.add_hotkey('ctrl + down', ctrl_down)
+    # keyboard.add_hotkey('ctrl + left', ctrl_left)
+    # keyboard.add_hotkey('ctrl + right', ctrl_right)
+    # window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
+    # window.suspesion_allow_cb.stateChanged.connect(suspension_allowed_changed)
+    # window.blocks_list.currentItemChanged.connect(params_list_changed)

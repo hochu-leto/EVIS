@@ -10,7 +10,7 @@ from pprint import pprint
 
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QTreeWidget
 import datetime
 import pathlib
 import pandas
@@ -65,9 +65,21 @@ def warning_message():
 
 def params_list_changed():
     global vmu_params_list, req_list
-    vmu_params_list = fill_vmu_list(bookmark_dict[window.blocks_list.currentItem().text()])
-    req_list = feel_req_list(vmu_params_list)
-    show_empty_params_list(vmu_params_list, 'vmu_param_table')
+    param_list = window.nodes_tree.currentItem().text(0)
+    if param_list in list(evo_nodes.keys()):
+        return False
+    else:
+        node = window.nodes_tree.currentItem().parent().text(0)
+        param_list = window.nodes_tree.currentItem().text(0)
+        if hasattr(evo_nodes[node], 'params_list'):
+            vmu_params_list = fill_vmu_list(evo_nodes[node].params_list[param_list])
+            req_list = feel_req_list(vmu_params_list)
+            show_empty_params_list(vmu_params_list, 'vmu_param_table')
+            return True
+        else:
+            QMessageBox.critical(None, "Ошибка ", 'В этом блоке нет параметров\n Проверь файл с блоками',
+                                 QMessageBox.Ok)
+            return False
 
 
 def steer_allowed_changed(item):
@@ -124,7 +136,7 @@ def connect_vmu():
         adding_to_csv_file('name', vmu_params_list, window.vmu_req_thread.recording_file_name)
         # разблокирую все кнопки и чекбоксы
         window.connect_btn.setText('Отключиться')
-        window.blocks_list.setEnabled(False)
+        window.nodes_tree.setEnabled(False)
         # ------------------------------------------------------с новой прошивкой мэи это не работает-----------------
         if window.speed_rb.isChecked():
             window.speed_box.setEnabled(True)
@@ -161,7 +173,7 @@ def connect_vmu():
         window.reset_faults.setEnabled(False)
         window.power_rb.setEnabled(True)
         window.speed_rb.setEnabled(True)
-        window.blocks_list.setEnabled(True)
+        window.nodes_tree.setEnabled(True)
 
         marathon.close_marathon_canal()
         # Reading the csv file
@@ -180,7 +192,7 @@ def connect_vmu():
 
 
 def zero_del(s):
-    s = '{:g}'.format(s)    # '{:.5f}'.format(s)
+    s = '{:g}'.format(s)  # '{:.5f}'.format(s)
     # s = s.rstrip('0')
     # if len(s) > 0 and s[-1] == '.':
     #     s = s[:-1]
@@ -357,7 +369,7 @@ class VMUSaveToFileThread(QObject):
                 sus_data = [not window.sus_off_rb.isChecked(), FL_height, FR_height, RL_height, RR_height, 0, 0, 0]
                 # каждые 2,5 сек если отмечена подвеска, шлём по кан2
                 if no_can_counter < 3:
-                    can_answer = 0  # marathon2.can_write(bku_vmu_suspension, sus_data)
+                    can_answer = marathon2.can_write(bku_vmu_suspension, sus_data)
                     if can_answer:
                         no_answer_counter += 1
                 else:
@@ -400,7 +412,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             window.speed_box.setEnabled(False)
             window.power_rb.setEnabled(True)
             window.speed_rb.setEnabled(True)
-            window.blocks_list.setEnabled(True)
+            window.nodes_tree.setEnabled(True)
             window.reset_faults.setEnabled(False)
             window.record_vmu_params = False
             window.thread_to_record.running = False
@@ -436,10 +448,7 @@ if __name__ == '__main__':
 
     window.connect_btn.clicked.connect(connect_vmu)
     window.reset_faults.clicked.connect(reset_fault_btn_pressed)
-    # window.steer_allow_cb.stateChanged.connect(steer_allowed_changed)
-    # window.suspesion_allow_cb.stateChanged.connect(suspension_allowed_changed)
-    window.blocks_list.currentItemChanged.connect(params_list_changed)
-
+    window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.front_mode_rb.toggled.connect(steer_mode_changed)
     window.circle_mode_rb.toggled.connect(steer_mode_changed)
     window.crab_mode_rb.toggled.connect(steer_mode_changed)
@@ -474,36 +483,30 @@ if __name__ == '__main__':
     window.min_pos_sus_rb.setFont(QFont('MS Shell Dlg 2', 20))
     window.min_pos_sus_rb.setText(u'\u21E9')
 
-    # kh = KeyboardHandler(window)
-    # window.hook = keyboard.on_press(kh.keyboard_event_received)
-    # keyboard.add_hotkey('ctrl + up', ctrl_up)
-    # keyboard.add_hotkey('ctrl + down', ctrl_down)
-    # keyboard.add_hotkey('ctrl + left', ctrl_left)
-    # keyboard.add_hotkey('ctrl + right', ctrl_right)
     node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+    vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
+
     evo_nodes = {}
+    # бахаю словарь всех объектов узлов, впоследствии необходимо научить их как-то определяться на машине
     for node in node_list:
         evo_nodes[node['name']] = NodeOfEVO(node)
-    # pprint(evo_nodes[list(evo_nodes.keys())[1]].params_list)
-    bookmark_dict = fill_bookmarks_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
 
     window.nodes_tree.setColumnCount(1)
-    window.nodes_tree.header().setTe
+    window.nodes_tree.header().close()
     items = []
-    for k, v in bookmark_dict.items():
+    for node in evo_nodes.values():
         item = QTreeWidgetItem()
-        item.setText(0, str(k))
+        item.setText(0, node.name)
+        if hasattr(node, 'params_list'):
+            for param_list in node.params_list.keys():
+                child_item = QTreeWidgetItem()
+                child_item.setText(0, str(param_list))
+                item.addChild(child_item)
         items.append(item)
+
     window.nodes_tree.insertTopLevelItems(0, items)
+    window.nodes_tree.setCurrentItem(window.nodes_tree.topLevelItem(0).child(0))
 
-    if bookmark_dict:
-        window.blocks_list.addItems(list(bookmark_dict))
-        window.blocks_list.setCurrentRow(0)
-        vmu_params_list = fill_vmu_list(bookmark_dict[list(bookmark_dict.keys())[0]])
-        vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
-
-        req_list = feel_req_list(vmu_params_list)
-        show_empty_params_list(vmu_params_list, 'vmu_param_table')
-
+    if node_list and params_list_changed():
         window.show()  # Показываем окно
         app.exec_()  # и запускаем приложение

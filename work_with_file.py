@@ -21,6 +21,7 @@ def fill_bookmarks_list(file_name):
 
 
 def fill_node_list(file_name):
+
     need_fields = {'name', 'address', 'type'}
     file = pandas.ExcelFile(file_name)
     bookmark_dict = {}
@@ -44,8 +45,21 @@ def fill_node_list(file_name):
                 node_params_list[params_list.replace(node_name + ' ', '')] = bookmark_dict[params_list]
         if node_params_list:
             node['params_list'] = node_params_list
+        node['req_id'] = check_id(node['req_id'])
+        node['ans_id'] = check_id(node['ans_id'])
 
     return node_list
+
+
+def check_id(string: str):
+    if str(string) == 'nan':
+        return 'nan'
+    if '0x' in string:
+        return int(string.replace('0x', ''), 16)
+    elif '0b' in string:
+        return int(string.replace('0b', ''), 2)
+    else:
+        return int(string)
 
 
 def fill_vmu_list(vmu_params_list):
