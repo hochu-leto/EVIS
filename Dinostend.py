@@ -25,11 +25,11 @@ marathon = CANMarathon()
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_errors_file = 'kvu_error_codes_my.xlsx'
-VMU_ID_PDO = 0x00000401
+VMU_ID_PDO = 0x00000403
 # rtcon_vmu = 0x1850460E
 # vmu_rtcon = 0x594
-rtcon_vmu = 0x00000601
-vmu_rtcon = 0x00000581
+rtcon_vmu = 0x00000603
+vmu_rtcon = 0x00000583
 invertor_set = 0x00000499
 
 command_list = {'power', 'speed', 'front_steer', 'rear_steer'}
