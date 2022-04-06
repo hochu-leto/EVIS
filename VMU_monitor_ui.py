@@ -454,6 +454,7 @@ class Ui_MainWindow(object):
         self.speed_spinbox.setObjectName("speed_spinbox")
         self.verticalLayout.addWidget(self.speed_spinbox)
         self.speed_rb = QtWidgets.QRadioButton(self.command_box)
+        self.speed_rb.setEnabled(False)
         self.speed_rb.setGeometry(QtCore.QRect(260, 20, 81, 20))
         self.speed_rb.setChecked(False)
         self.speed_rb.setAutoExclusive(True)
