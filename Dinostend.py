@@ -95,7 +95,8 @@ def suspension_allowed_changed(item):
 
 
 def steer_mode_changed():
-    window.rear_steer_box.setEnabled((not window.front_mode_rb.isChecked()))
+    window.front_steer_box.setEnabled(not window.steer_off_rb.isChecked())
+    window.rear_steer_box.setEnabled(not (window.front_mode_rb.isChecked() or window.steer_off_rb.isChecked()))
     window.front_steer_slider.setValue(0)
     window.rear_steer_slider.setValue(0)
 
@@ -267,6 +268,29 @@ class NodeOfEVO(object):
             setattr(self, key, kwargs[key])
 
 
+def set_sus_level():
+    rb = QApplication.instance().sender()
+    value = 0  # window.fl_sus_slider.value()
+    if rb == window.zero_pos_sus_rb:
+        value = 0
+    elif rb == window.max_pos_sus_rb:
+        value = suspension_stroke
+    elif rb == window.min_pos_sus_rb:
+        value = -1 * suspension_stroke
+    set_all_sus(value)
+
+
+def set_all_sus(level: int):
+    window.fl_sus_slider.setValue(level)
+    window.fr_sus_slider.setValue(level)
+    window.rl_sus_slider.setValue(level)
+    window.rr_sus_slider.setValue(level)
+    window.fl_sus_box.setEnabled(not window.sus_off_rb.isChecked())
+    window.fr_sus_box.setEnabled(not window.sus_off_rb.isChecked())
+    window.rr_sus_box.setEnabled(not window.sus_off_rb.isChecked())
+    window.rl_sus_box.setEnabled(not window.sus_off_rb.isChecked())
+
+
 #  поток для опроса и записи в файл параметров кву
 class VMUSaveToFileThread(QObject):
     running = False
@@ -324,8 +348,8 @@ class VMUSaveToFileThread(QObject):
             # проверяем что время передачи пришло и отправляю управление по 401 адресу
             if (current_time - self.start_time) > self.send_delay:
                 self.start_time = current_time
-
-                marathon.can_write(VMU_ID_PDO, torque_data_list)
+                if not window.motor_off_rb.isChecked() or not window.steer_off_rb.isChecked():
+                    marathon.can_write(VMU_ID_PDO, torque_data_list)
 
                 # управление оборотами - напрямую в инвертор МЭИ по 499 адресу
                 if window.speed_rb.isChecked():
@@ -333,7 +357,8 @@ class VMUSaveToFileThread(QObject):
 
             # попытаюсь за каждый прогон опрашивать один параметр
             # - думается, это не даст КВУ потерять связь с программой
-            param = marathon.can_request(rtcon_vmu, vmu_rtcon, req_list[params_counter])
+            current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
+            param = marathon.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
             ans_list.append(param)
             if isinstance(param, str):
                 errors_counter += 1
@@ -430,7 +455,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if er in vmu_errors_dict.keys():
                 err += vmu_errors_dict[er] + '\n'
             else:
-                err += 'Неизведанная ошибка номер ' + str(er) + '\n'
+                err += 'Неизведанная ошибка ' + str(er) + '\n'
         window.errors_browser.setText(err)
 
     def show_new_vmu_params(self):
@@ -449,6 +474,8 @@ if __name__ == '__main__':
     window.connect_btn.clicked.connect(connect_vmu)
     window.reset_faults.clicked.connect(reset_fault_btn_pressed)
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
+
+    window.steer_off_rb.toggled.connect(steer_mode_changed)
     window.front_mode_rb.toggled.connect(steer_mode_changed)
     window.circle_mode_rb.toggled.connect(steer_mode_changed)
     window.crab_mode_rb.toggled.connect(steer_mode_changed)
@@ -470,18 +497,22 @@ if __name__ == '__main__':
         if 'sus' in name:
             box_name = name + '_box'
             box = getattr(window, box_name)
-            box.setEnabled(True)
+            # box.setEnabled(True)
             slider.setMinimum(-1 * suspension_stroke)
             slider.setMaximum(suspension_stroke)
             spinbox.setMinimum(-1 * suspension_stroke)
             spinbox.setMaximum(suspension_stroke)
 
-    # window.buttonGroup_2.
     # Красота
     window.max_pos_sus_rb.setFont(QFont('MS Shell Dlg 2', 20))
     window.max_pos_sus_rb.setText(u'\u21E7')
     window.min_pos_sus_rb.setFont(QFont('MS Shell Dlg 2', 20))
     window.min_pos_sus_rb.setText(u'\u21E9')
+
+    window.min_pos_sus_rb.toggled.connect(set_sus_level)
+    window.zero_pos_sus_rb.toggled.connect(set_sus_level)
+    window.max_pos_sus_rb.toggled.connect(set_sus_level)
+    window.sus_off_rb.toggled.connect(set_sus_level)
 
     node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))

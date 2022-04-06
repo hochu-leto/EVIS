@@ -85,7 +85,7 @@
           <item row="0" column="1">
            <widget class="QRadioButton" name="max_pos_sus_rb">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="styleSheet">
              <string notr="true">U+21EA
@@ -102,7 +102,7 @@
           <item row="1" column="0">
            <widget class="QRadioButton" name="zero_pos_sus_rb">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>0</string>
@@ -118,7 +118,7 @@
           <item row="1" column="1">
            <widget class="QRadioButton" name="min_pos_sus_rb">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>v</string>
@@ -626,7 +626,7 @@
           <item>
            <widget class="QRadioButton" name="front_mode_rb">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Перед</string>
@@ -642,7 +642,7 @@
           <item>
            <widget class="QRadioButton" name="crab_mode_rb">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>КРАБ</string>
@@ -655,7 +655,7 @@
           <item>
            <widget class="QRadioButton" name="circle_mode_rb">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>КРУГ</string>
