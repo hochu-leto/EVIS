@@ -10,7 +10,7 @@ from pprint import pprint
 
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import datetime
 import pathlib
 import pandas
@@ -484,8 +484,17 @@ if __name__ == '__main__':
     evo_nodes = {}
     for node in node_list:
         evo_nodes[node['name']] = NodeOfEVO(node)
-    pprint(evo_nodes[list(evo_nodes.keys())[1]].params_list)
+    # pprint(evo_nodes[list(evo_nodes.keys())[1]].params_list)
     bookmark_dict = fill_bookmarks_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+
+    window.nodes_tree.setColumnCount(1)
+    window.nodes_tree.header().setTe
+    items = []
+    for k, v in bookmark_dict.items():
+        item = QTreeWidgetItem()
+        item.setText(0, str(k))
+        items.append(item)
+    window.nodes_tree.insertTopLevelItems(0, items)
 
     if bookmark_dict:
         window.blocks_list.addItems(list(bookmark_dict))

@@ -38,124 +38,88 @@
     <property name="title">
      <string>Параметры</string>
     </property>
-    <widget class="QTextBrowser" name="errors_browser">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>590</y>
-       <width>491</width>
-       <height>141</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="reset_faults">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>640</y>
-       <width>191</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Сброс ошибок</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="connect_btn">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>587</y>
-       <width>191</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Подключиться</string>
-     </property>
-    </widget>
-    <widget class="QTableWidget" name="vmu_param_table">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>30</y>
-       <width>491</width>
-       <height>551</height>
-      </rect>
-     </property>
-     <column>
-      <property name="text">
-       <string>Параметр</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Значение</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Размерность</string>
-      </property>
-     </column>
-    </widget>
-    <widget class="QListWidget" name="blocks_list">
-     <property name="geometry">
-      <rect>
-       <x>12</x>
-       <y>28</y>
-       <width>191</width>
-       <height>551</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="reset_faults_2">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>690</y>
-       <width>191</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Пустая кнопка</string>
-     </property>
-    </widget>
+    <layout class="QGridLayout" name="gridLayout_2" rowstretch="9,1,0,0" columnstretch="2,3" rowminimumheight="0,0,0,0">
+     <item row="0" column="0">
+      <widget class="QListWidget" name="blocks_list"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QTableWidget" name="vmu_param_table">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <column>
+        <property name="text">
+         <string>Параметр</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Значение</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Размерность</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="connect_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Подключиться</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" rowspan="3">
+      <widget class="QTextBrowser" name="errors_browser"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="reset_faults">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Сброс ошибок</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="reset_faults_2">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Пустая кнопка</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
    <widget class="QGroupBox" name="command_box">
     <property name="geometry">
@@ -654,6 +618,16 @@
      <property name="title">
       <string>Пустое место</string>
      </property>
+     <widget class="QTreeWidget" name="nodes_tree">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>111</width>
+        <height>231</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox">
      <property name="geometry">
@@ -1151,8 +1125,8 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
