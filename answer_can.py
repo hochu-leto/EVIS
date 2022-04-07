@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication
 import can_monitor_ui
 from dll_power import CANMarathon
 
-marathon = CANMarathon
+marathon = CANMarathon()
 
 
 def read_can1():
@@ -16,20 +16,25 @@ class CANReadAndAnswerThread(QObject):
     mar = marathon
     running = False
     new_can_frame = pyqtSignal(str)
-
+    bats_list = set()
     # метод, который будет выполнять алгоритм в другом потоке
+
     def run(self):
         while True:
-            can_receive_list = self.mar.can_read_all
+            can_receive_list = self.mar.can_read_all()
             #  если в ответе не список, значит, там ошибка связи
             if isinstance(can_receive_list, list):
                 # логику нахрен поменять
                 if can_receive_list[0] == hex(window.listen_ID_spinbox.value()):
                     bats = [0, 0, 0, 0]
                     string = ''
-                    for i in range(2):
+                    for i in range(3):
                         string += (hex(can_receive_list[3][i + 1])[2:].zfill(2) + ' ')
                     cur_item = window.read_byte_list.currentItem()
+                    if string not in self.bats_list:
+                        self.new_can_frame.emit(string)
+
+                    self.bats_list.add(string)
                     if cur_item:
                         if string == cur_item.text():
                             bats = [window.byte1_spinBox.value(),
@@ -37,17 +42,15 @@ class CANReadAndAnswerThread(QObject):
                                     window.byte3_spinBox.value(),
                                     window.byte4_spinBox.value(),
                                     ]
-                    self.mar.can_write(window.answer_ID_spinbox.value(), [0x43,
-                                                                          can_receive_list[3][0],
+                            self.mar.can_write(window.answer_ID_spinbox.value(), [0x43,
                                                                           can_receive_list[3][1],
-                                                                          can_receive_list[3][2]] +
+                                                                          can_receive_list[3][2],
+                                                                          can_receive_list[3][3]] +
                                        bats)
 
-                    self.new_can_frame.emit(string)
 
 
 class CANMonitorApp(QMainWindow, can_monitor_ui.Ui_MainWindow):
-    record_vmu_params = False
 
     def __init__(self):
         super().__init__()
@@ -66,12 +69,7 @@ class CANMonitorApp(QMainWindow, can_monitor_ui.Ui_MainWindow):
 
     @pyqtSlot(str)
     def add_new_frame(self, frame: str):
-        items = [window.read_byte_list.item(x).text() for x in range(window.read_byte_list.count())]
-        if frame not in items:
-            self.read_byte_list.append(frame)
-            cursor = self.read_byte_list.textCursor()
-            cursor.movePosition(QTextCursor.End)
-            self.read_byte_list.setTextCursor(cursor)
+        self.read_byte_list.addItem(frame)
 
 
 app = QApplication([])

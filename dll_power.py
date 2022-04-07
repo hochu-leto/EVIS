@@ -208,7 +208,7 @@ class CANMarathon:
             #     print('     в CiRcQueCancel так ' + str(result))
 
             try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 300)  # timeout = 300 миллисекунд
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 300 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
                 pprint(e)
@@ -230,10 +230,10 @@ class CANMarathon:
                 #     print('       в CiRead так ' + str(result))
                 # если удалось прочитать
                 if result >= 0:
-                    print(hex(buffer.id), end='    ')
-                    for e in buffer.data:
-                        print(hex(e), end=' ')
-                    print()
+                    # print(hex(buffer.id), end='    ')
+                    # for e in buffer.data:
+                    #     print(hex(e), end=' ')
+                    # print()
                     return [hex(buffer.id), buffer.len, buffer.flags, buffer.data, buffer.ts]
                     # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
                 else:
@@ -288,7 +288,8 @@ class CANMarathon:
         # max_iteration раз - тогда гарантированно залетает. Возможно, это скажется когда нужно будет запихнуть
         # кучу параметров - тогда придётся как-то решать эту проблему. Причём при запросе параметра с той же CiTransmit
         # ответ приходит сразу же
-
+        # и ещё проблема - при работе с другими блоками, кроме рулевой пихать в него несколько раз одинаковое сообщение
+        # может быть не очень гуд. Надо как-то разбираться с этой проблемой.
         # здесь два варианта - или всё нормально передалось и transmit_ok == 0 или все попытки  неудачны и
         self.close_marathon_canal()
         if err < 0:
@@ -375,7 +376,7 @@ class CANMarathon:
             #     print('     в CiRcQueCancel так ' + str(result))
 
             try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 300)  # timeout = 1000 миллисекунд
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 500)  # timeout = 500 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
                 pprint(e)
@@ -573,8 +574,8 @@ class CANMarathon:
             print('CiStop do not work')
             pprint(e)
             exit()
-        # else:
-        #     print('      в CiStop так ' + str(result))
+        else:
+            print('      в CiStop так ' + str(result))
 
         try:
             result = self.lib.CiClose(self.can_canal_number)
@@ -582,8 +583,8 @@ class CANMarathon:
             print('CiClose do not work')
             pprint(e)
             exit()
-        # else:
-        #     print('       в CiClose так ' + str(result))
+        else:
+            print('       в CiClose так ' + str(result))
         self.is_canal_open = False
 
 

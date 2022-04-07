@@ -2,6 +2,7 @@ import datetime
 from pprint import pprint
 
 import pandas
+from PyQt5.QtWidgets import QMessageBox
 
 
 def fill_bookmarks_list(file_name):
@@ -15,7 +16,50 @@ def fill_bookmarks_list(file_name):
         if set(need_fields).issubset(headers):
             sheet_params_list = sheet.to_dict(orient='records')
             bookmark_dict[sheet_name] = sheet_params_list
+
     return bookmark_dict
+
+
+def fill_node_list(file_name):
+
+    need_fields = {'name', 'address', 'type'}
+    file = pandas.ExcelFile(file_name)
+    bookmark_dict = {}
+    if 'nodes' not in file.sheet_names:
+        QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
+        return
+    node_sheet = file.parse(sheet_name='nodes')
+    node_list = node_sheet.to_dict(orient='records')
+    for sheet_name in file.sheet_names:
+        sheet = file.parse(sheet_name=sheet_name)
+        headers = list(sheet.columns.values)
+        if set(need_fields).issubset(headers):
+            sheet_params_list = sheet.to_dict(orient='records')
+            bookmark_dict[sheet_name] = sheet_params_list
+
+    for node in node_list:
+        node_name = node['name']
+        node_params_list = {}
+        for params_list in bookmark_dict.keys():
+            if node_name in params_list:
+                node_params_list[params_list.replace(node_name + ' ', '')] = bookmark_dict[params_list]
+        if node_params_list:
+            node['params_list'] = node_params_list
+        node['req_id'] = check_id(node['req_id'])
+        node['ans_id'] = check_id(node['ans_id'])
+
+    return node_list
+
+
+def check_id(string: str):
+    if str(string) == 'nan':
+        return 'nan'
+    if '0x' in string:
+        return int(string.replace('0x', ''), 16)
+    elif '0b' in string:
+        return int(string.replace('0b', ''), 2)
+    else:
+        return int(string)
 
 
 def fill_vmu_list(vmu_params_list):
