@@ -376,7 +376,7 @@ class CANMarathon:
             #     print('     в CiRcQueCancel так ' + str(result))
 
             try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 300)  # timeout = 1000 миллисекунд
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 500)  # timeout = 500 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
                 pprint(e)
@@ -574,8 +574,8 @@ class CANMarathon:
             print('CiStop do not work')
             pprint(e)
             exit()
-        # else:
-        #     print('      в CiStop так ' + str(result))
+        else:
+            print('      в CiStop так ' + str(result))
 
         try:
             result = self.lib.CiClose(self.can_canal_number)
@@ -583,8 +583,8 @@ class CANMarathon:
             print('CiClose do not work')
             pprint(e)
             exit()
-        # else:
-        #     print('       в CiClose так ' + str(result))
+        else:
+            print('       в CiClose так ' + str(result))
         self.is_canal_open = False
 
 
