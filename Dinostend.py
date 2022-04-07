@@ -34,10 +34,6 @@ BRAKE_TIMER = 4000  # 4 секунды
 # from keyboard_handler import KeyboardHandler
 
 marathon = CANMarathon()
-#  и чтоб слать по второму кану управление пневмой
-marathon2 = CANMarathon()
-marathon2.can_canal_number = 1
-marathon2.BCI_bt0 = marathon2.BCI_250K_bt0
 
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
@@ -49,7 +45,7 @@ rtcon_vmu = 0x00000603
 vmu_rtcon = 0x00000583
 invertor_set = 0x00000499
 bku_vmu_suspension = 0x18FF83A5
-command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus', 'rr_sus', 'rl_sus'}
+command_list = {'power', 'front_steer', 'rear_steer'}
 
 
 # запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
@@ -57,10 +53,10 @@ command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus
 # есть подозрения, что последний байт - номер параметра из файла пдф
 
 
-def warning_message():
-    QMessageBox.warning(window, "УВАГА!!!", 'Для смены типа управления нужно: \n - ВЫКЛЮЧИТЬ START ПСТЭД\n - нажать '
-                                            'кнопку Подключиться\n - подождать 10 секунд\n - ВКЛЮЧИТЬ START ПСТЭД',
-                        QMessageBox.Ok)
+def warning_message(item):
+    if item:
+        QMessageBox.warning(window, "УВАГА!!!", 'Колёса могут начать вращаться!!!', QMessageBox.Ok)
+    window.power_box.setEnabled(item)
 
 
 def params_list_changed():
@@ -127,7 +123,6 @@ def connect_vmu():
         window.connect_btn.setText('Отключиться')
         window.nodes_tree.setEnabled(False)
         window.power_slider.setValue(0)
-        window.speed_slider.setValue(0)
         window.reset_faults.setEnabled(True)
         window.vmu_req_thread.running = True
         window.record_vmu_params = True
@@ -139,15 +134,11 @@ def connect_vmu():
         window.record_vmu_params = False
         window.connect_btn.setText('Подключиться')
         window.power_box.setEnabled(False)
-        window.speed_box.setEnabled(False)
         window.reset_faults.setEnabled(False)
         window.power_rb.setEnabled(True)
-        # window.speed_rb.setEnabled(True)
         window.nodes_tree.setEnabled(True)
         print('Останавливаю канал 1 марафона')
         marathon.close_marathon_canal()
-        print('Останавливаю канал 2 марафона')
-        marathon2.close_marathon_canal()
         # Reading the csv file
         file_name = str(window.vmu_req_thread.recording_file_name)
         print('Открываю файл с записями')
@@ -321,11 +312,6 @@ class VMUSaveToFileThread(QObject):
                                 front_steer_data & 0xFF, ((front_steer_data & 0xFF00) >> 8),
                                 rear_steer_data & 0xFF, ((rear_steer_data & 0xFF00) >> 8), 0]
 
-            speed = float(window.speed_slider.value())
-            speed_data = float_to_int(speed)
-            speed_data_list = [speed_data & 0xFF, ((speed_data & 0xFF00) >> 8),
-                               ((speed_data & 0xFF0000) >> 16), ((speed_data & 0xFF000000) >> 24), 0, 0, 8, 0]
-
             # проверяем что время передачи пришло и отправляю управление по 401 адресу
             if (current_time - self.start_time) > self.send_delay:
                 self.start_time = current_time
@@ -365,24 +351,6 @@ class VMUSaveToFileThread(QObject):
                 else:
                     self.errors = ['КВУ не отвечает на запрос ошибок']
 
-                # каждые 2,5 сек если отмечена подвеска, шлём по кан2 вообще ситуация печальная с подвеской - надо
-                # вначале определить, что вообще ко второму есть подключение. А то негоже срать в первый
-                # со скоростью 250, так и положить недолго
-
-                FL_height = int((window.fl_sus_slider.value() + 250) / 2)
-                FR_height = int((window.fr_sus_slider.value() + 250) / 2)
-                RL_height = int((window.rl_sus_slider.value() + 250) / 2)
-                RR_height = int((window.rr_sus_slider.value() + 250) / 2)
-                sus_data = [not window.sus_off_rb.isChecked(), FL_height, FR_height, RL_height, RR_height, 0, 0, 0]
-
-                if no_can_counter < 3:
-                    can_answer = marathon2.can_write(bku_vmu_suspension, sus_data)
-                    print('CAN2 answer = ' + str(can_answer))
-                    if can_answer:
-                        no_answer_counter += 1
-                else:
-                    self.errors += ['CAN2 не отвечает']
-
                 self.new_vmu_errors.emit(self.errors)
 
             current_time = int(round(time.time() * 1000))
@@ -417,16 +385,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if len(list_of_params) == 1:
             window.connect_btn.setText('Подключиться')
             window.power_box.setEnabled(False)
-            window.speed_box.setEnabled(False)
             window.power_rb.setEnabled(True)
-            # window.speed_rb.setEnabled(True)
             window.nodes_tree.setEnabled(True)
             window.reset_faults.setEnabled(False)
             window.record_vmu_params = False
             window.thread_to_record.running = False
             window.thread_to_record.terminate()
             marathon.close_marathon_canal()
-            marathon2.close_marathon_canal()
 
             QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
         else:
@@ -465,7 +430,6 @@ if __name__ == '__main__':
     window.circle_mode_rb.toggled.connect(steer_mode_changed)
     window.crab_mode_rb.toggled.connect(steer_mode_changed)
 
-    window.speed_rb.toggled.connect(warning_message)
     window.power_rb.toggled.connect(warning_message)
 
     for name in command_list:
@@ -486,17 +450,6 @@ if __name__ == '__main__':
             slider.setMaximum(suspension_stroke)
             spinbox.setMinimum(-1 * suspension_stroke)
             spinbox.setMaximum(suspension_stroke)
-
-    # Красота
-    window.max_pos_sus_rb.setFont(QFont('MS Shell Dlg 2', 20))
-    window.max_pos_sus_rb.setText(u'\u21E7')
-    window.min_pos_sus_rb.setFont(QFont('MS Shell Dlg 2', 20))
-    window.min_pos_sus_rb.setText(u'\u21E9')
-
-    window.min_pos_sus_rb.toggled.connect(set_sus_level)
-    window.zero_pos_sus_rb.toggled.connect(set_sus_level)
-    window.max_pos_sus_rb.toggled.connect(set_sus_level)
-    window.sus_off_rb.toggled.connect(set_sus_level)
 
     node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
