@@ -58,7 +58,7 @@ marathon2.can_canal_number = 1
 marathon2.BCI_bt0 = marathon2.BCI_250K_bt0
 
 dir_path = str(pathlib.Path.cwd())
-vmu_param_file = 'table_for_params_new_VMU.xlsx'
+vmu_param_file = 'table_for_params_new_VMU1.xlsx'
 vmu_errors_file = 'kvu_error_codes_my.xlsx'
 VMU_ID_PDO = 0x00000403
 # rtcon_vmu = 0x1850460E

@@ -28,8 +28,7 @@ def fill_node_list(file_name):
     if 'nodes' not in file.sheet_names:
         QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
         return
-    node_sheet = file.parse(sheet_name='nodes')
-    node_list = node_sheet.to_dict(orient='records')
+
     for sheet_name in file.sheet_names:
         sheet = file.parse(sheet_name=sheet_name)
         headers = list(sheet.columns.values)
@@ -37,14 +36,25 @@ def fill_node_list(file_name):
             sheet_params_list = sheet.to_dict(orient='records')
             bookmark_dict[sheet_name] = sheet_params_list
 
+    node_sheet = file.parse(sheet_name='nodes')
+    node_list = node_sheet.to_dict(orient='records')
     for node in node_list:
         node_name = node['name']
         node_params_list = {}
-        for params_list in bookmark_dict.keys():
-            if node_name in params_list:
-                node_params_list[params_list.replace(node_name + ' ', '')] = bookmark_dict[params_list]
+        for params_list in bookmark_dict.values():
+            # if node_name in params_list:
+            #     node_params_list[params_list.replace(node_name + ' ', '')] = bookmark_dict[params_list]
+            prev_group_name = ''
+            p_list = []
+            for param in params_list:
+                if 'group ' in param['name']:
+                    node_params_list[prev_group_name] = p_list.copy()
+                    p_list = []
+                    prev_group_name = param['name'].replace('group ', '')
+                else:
+                    p_list.append(param)
         if node_params_list:
-            node['params_list'] = node_params_list
+            node['params_list'] = node_params_list.copy()
         node['req_id'] = check_id(node['req_id'])
         node['ans_id'] = check_id(node['ans_id'])
 
@@ -70,7 +80,12 @@ def fill_vmu_list(vmu_params_list):
                 if isinstance(par['address'], str):
                     if '0x' in par['address']:
                         par['address'] = par['address'].rsplit('x')[1]
-                    par['address'] = int(par['address'], 16)
+                        par['address'] = int(par['address'], 16)
+                    elif '0b' in par['address']:
+                        par['address'] = par['address'].rsplit('b')[1]
+                        par['address'] = int(par['address'], 2)
+                    else:
+                        par['address'] = int(par['address'])
                 if str(par['scale']) == 'nan':
                     par['scale'] = 1
                 if str(par['scaleB']) == 'nan':
