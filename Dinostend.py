@@ -164,24 +164,24 @@ def connect_vmu():
         window.nodes_tree.setEnabled(True)
         print('Останавливаю канал 1 марафона')
         marathon.close_marathon_canal()
-        print('Останавливаю канал 2 марафона')
-        marathon2.close_marathon_canal()
-        # Reading the csv file
-        file_name = str(window.vmu_req_thread.recording_file_name)
-        print('Открываю файл с записями')
-        df_new = pandas.read_csv(file_name, encoding='windows-1251')
-        file_name = file_name.replace('.csv', '_excel.xlsx', 1)
-        # saving xlsx file
-        GFG = pandas.ExcelWriter(file_name)
-        print('Преобразую в эксель')
-
-        df_new.to_excel(GFG, index=False)
-        print('сохраняю эксель')
-
-        GFG.save()
-        QMessageBox.information(window, "Успешный Успех", 'Файл с записью параметров КВУ\n' +
-                                'ищи в папке "VMU records"',
-                                QMessageBox.Ok)
+        # print('Останавливаю канал 2 марафона')
+        # marathon2.close_marathon_canal()
+        # # Reading the csv file
+        # file_name = str(window.vmu_req_thread.recording_file_name)
+        # print('Открываю файл с записями')
+        # df_new = pandas.read_csv(file_name, encoding='windows-1251')
+        # file_name = file_name.replace('.csv', '_excel.xlsx', 1)
+        # # saving xlsx file
+        # GFG = pandas.ExcelWriter(file_name)
+        # print('Преобразую в эксель')
+        #
+        # df_new.to_excel(GFG, index=False)
+        # print('сохраняю эксель')
+        #
+        # GFG.save()
+        # QMessageBox.information(window, "Успешный Успех", 'Файл с записью параметров КВУ\n' +
+        #                         'ищи в папке "VMU records"',
+        #                         QMessageBox.Ok)
 
     return True
 
@@ -330,30 +330,37 @@ class VMUSaveToFileThread(QObject):
             else:
                 self.h_brake = 0
 
-            front_steer_data = int(window.front_steer_slider.value()) * 30
-            rear_steer_data = int(window.rear_steer_slider.value()) * 30
+            # front_steer_data = int(window.front_steer_slider.value()) * 30
+            # rear_steer_data = int(window.rear_steer_slider.value()) * 30
+            #
+            # torque_data = int(window.power_slider.value()) * 300
+            # torque_data_list = [self.r_fault | self.h_brake + 0b10001,
+            #                     torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
+            #                     front_steer_data & 0xFF, ((front_steer_data & 0xFF00) >> 8),
+            #                     rear_steer_data & 0xFF, ((rear_steer_data & 0xFF00) >> 8), 0]
 
-            torque_data = int(window.power_slider.value()) * 300
-            torque_data_list = [self.r_fault | self.h_brake + 0b10001,
-                                torque_data & 0xFF, ((torque_data & 0xFF00) >> 8),
-                                front_steer_data & 0xFF, ((front_steer_data & 0xFF00) >> 8),
-                                rear_steer_data & 0xFF, ((rear_steer_data & 0xFF00) >> 8), 0]
-
-            speed = float(window.speed_slider.value())
-            speed_data = float_to_int(speed)
-            speed_data_list = [speed_data & 0xFF, ((speed_data & 0xFF00) >> 8),
-                               ((speed_data & 0xFF0000) >> 16), ((speed_data & 0xFF000000) >> 24), 0, 0, 8, 0]
-
-            # проверяем что время передачи пришло и отправляю управление по 401 адресу
-            if (current_time - self.start_time) > self.send_delay:
-                self.start_time = current_time
-                if not window.motor_off_rb.isChecked() or not window.steer_off_rb.isChecked():
-                    marathon.can_write(VMU_ID_PDO, torque_data_list)
+            # speed = float(window.speed_slider.value())
+            # speed_data = float_to_int(speed)
+            # speed_data_list = [speed_data & 0xFF, ((speed_data & 0xFF00) >> 8),
+            #                    ((speed_data & 0xFF0000) >> 16), ((speed_data & 0xFF000000) >> 24), 0, 0, 8, 0]
+            #
+            # # проверяем что время передачи пришло и отправляю управление по 401 адресу
+            # if (current_time - self.start_time) > self.send_delay:
+            #     self.start_time = current_time
+            #     if not window.motor_off_rb.isChecked() or not window.steer_off_rb.isChecked():
+            #         marathon.can_write(VMU_ID_PDO, torque_data_list)
 
             # попытаюсь за каждый прогон опрашивать один параметр
             # - думается, это не даст КВУ потерять связь с программой
             current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
             param = marathon.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
+            # string = ''
+            # for p in req_list[params_counter]:
+            #     string += hex(p) + ' '
+            # string += ' = '
+            # for p in param:
+            #     string += hex(p) + ' '
+            # print(string)
             ans_list.append(param)
             if isinstance(param, str):
                 errors_counter += 1
@@ -367,41 +374,41 @@ class VMUSaveToFileThread(QObject):
                 params_counter = 0
                 ans_list = []
 
-            if (current_time - self.time_for_errors) > self.send_delay * 10:
-                self.time_for_errors = current_time
-                if no_answer_counter < 10:
-                    error = marathon.can_request(rtcon_vmu, vmu_rtcon, [0x40, 0x15, 0x21, 0x01, 0, 0, 0, 0])
-                    pprint(error)
-                    if not isinstance(error, str):
-                        value = (error[5] << 8) + error[4]
-                        error = ctypes.c_uint16(value).value
-                    else:
-                        no_answer_counter += 1
-
-                    if error not in self.errors:
-                        self.errors.append(error)
-                else:
-                    self.errors = ['КВУ не отвечает на запрос ошибок']
-
-                # каждые 2,5 сек если отмечена подвеска, шлём по кан2 вообще ситуация печальная с подвеской - надо
-                # вначале определить, что вообще ко второму есть подключение. А то негоже срать в первый
-                # со скоростью 250, так и положить недолго
-
-                FL_height = int((window.fl_sus_slider.value() + 250) / 2)
-                FR_height = int((window.fr_sus_slider.value() + 250) / 2)
-                RL_height = int((window.rl_sus_slider.value() + 250) / 2)
-                RR_height = int((window.rr_sus_slider.value() + 250) / 2)
-                sus_data = [not window.sus_off_rb.isChecked(), FL_height, FR_height, RL_height, RR_height, 0, 0, 0]
-
-                if no_can_counter < 3:
-                    can_answer = marathon2.can_write(bku_vmu_suspension, sus_data)
-                    print('CAN2 answer = ' + str(can_answer))
-                    if can_answer:
-                        no_answer_counter += 1
-                else:
-                    self.errors += ['CAN2 не отвечает']
-
-                self.new_vmu_errors.emit(self.errors)
+            # if (current_time - self.time_for_errors) > self.send_delay * 10:
+            #     self.time_for_errors = current_time
+            #     if no_answer_counter < 10:
+            #         error = marathon.can_request(rtcon_vmu, vmu_rtcon, [0x40, 0x15, 0x21, 0x01, 0, 0, 0, 0])
+            #         pprint(error)
+            #         if not isinstance(error, str):
+            #             value = (error[5] << 8) + error[4]
+            #             error = ctypes.c_uint16(value).value
+            #         else:
+            #             no_answer_counter += 1
+            #
+            #         if error not in self.errors:
+            #             self.errors.append(error)
+            #     else:
+            #         self.errors = ['КВУ не отвечает на запрос ошибок']
+            #
+            #     # каждые 2,5 сек если отмечена подвеска, шлём по кан2 вообще ситуация печальная с подвеской - надо
+            #     # вначале определить, что вообще ко второму есть подключение. А то негоже срать в первый
+            #     # со скоростью 250, так и положить недолго
+            #
+            #     FL_height = int((window.fl_sus_slider.value() + 250) / 2)
+            #     FR_height = int((window.fr_sus_slider.value() + 250) / 2)
+            #     RL_height = int((window.rl_sus_slider.value() + 250) / 2)
+            #     RR_height = int((window.rr_sus_slider.value() + 250) / 2)
+            #     sus_data = [not window.sus_off_rb.isChecked(), FL_height, FR_height, RL_height, RR_height, 0, 0, 0]
+            #
+            #     if no_can_counter < 3:
+            #         can_answer = marathon2.can_write(bku_vmu_suspension, sus_data)
+            #         print('CAN2 answer = ' + str(can_answer))
+            #         if can_answer:
+            #             no_answer_counter += 1
+            #     else:
+            #         self.errors += ['CAN2 не отвечает']
+            #
+            #     self.new_vmu_errors.emit(self.errors)
 
             current_time = int(round(time.time() * 1000))
 
@@ -432,7 +439,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # если в списке строка - нахер такой список, похоже, нас отсоединили
         # но бывает, что параметр не прилетел в первый пункт списка, тогда нужно проверить,
         # что хотя бы два пункта списка - строки( или придумать более изощерённую проверку)
-        if len(list_of_params) == 1:
+        if len(list_of_params) < 2:
             window.connect_btn.setText('Подключиться')
             window.power_box.setEnabled(False)
             window.speed_box.setEnabled(False)
