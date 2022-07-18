@@ -98,6 +98,11 @@ class CANMarathon:
     BCI_250K_bt0 = 0x01
     BCI_500K_bt0 = 0x00
     BCI_ALL_bt1 = 0x1c
+    can_bitrate = {
+        125:BCI_125K_bt0,
+        250:BCI_250K_bt0,
+        500:BCI_500K_bt0
+    }
 
     class Buffer(Structure):
         _fields_ = [
@@ -122,11 +127,15 @@ class CANMarathon:
             ('data', ctypes.c_uint8 * 8)
         ]
 
-    def __init__(self):
+    def __init__(self, channel=0, bit=125):
         self.lib = cdll.LoadLibrary(r"Marathon Driver and dll\chai.dll")
         self.lib.CiInit()
         self.can_canal_number = 0  # по умолчанию нулевой канал
-        self.BCI_bt0 = self.BCI_125K_bt0  # и скорость 125
+        if bit in self.can_bitrate.keys():
+            self.BCI_bt0 = self.can_bitrate[bit]
+        else:
+            self.BCI_bt0 = self.BCI_125K_bt0  # и скорость 125
+
         self.max_iteration = 10
         self.is_canal_open = False
         self.log_file = pathlib.Path(pathlib.Path.cwd(),
