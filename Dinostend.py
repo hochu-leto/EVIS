@@ -36,7 +36,7 @@ import ctypes
 import struct
 import time
 import VMU_monitor_ui
-from dll_power import CANMarathon
+from marathon_power import CANMarathon
 from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list, \
     fill_node_list
 

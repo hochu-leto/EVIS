@@ -3,7 +3,7 @@ from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
 import can_monitor_ui
-from dll_power import CANMarathon
+from marathon_power import CANMarathon
 
 marathon = CANMarathon()
 
