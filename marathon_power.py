@@ -128,9 +128,9 @@ class CANMarathon:
         ]
 
     def __init__(self, channel=0, bit=125):
-        self.lib = cdll.LoadLibrary(r"Marathon Driver and dll\chai.dll")
+        self.lib = cdll.LoadLibrary(str(pathlib.Path(pathlib.Path.cwd(), 'Marathon_Driver_and_dll', 'chai.dll')))
         self.lib.CiInit()
-        self.can_canal_number = 0  # по умолчанию нулевой канал
+        self.can_canal_number = channel  # по умолчанию нулевой канал
         if bit in self.can_bitrate.keys():
             self.BCI_bt0 = self.can_bitrate[bit]
         else:
@@ -139,7 +139,7 @@ class CANMarathon:
         self.max_iteration = 10
         self.is_canal_open = False
         self.log_file = pathlib.Path(pathlib.Path.cwd(),
-                                     'Marathon logs',
+                                     'Marathon_logs',
                                      'log_marathon_' +
                                      datetime.now().strftime("%Y-%m-%d_%H-%M") +
                                      '.txt')
@@ -258,6 +258,9 @@ class CANMarathon:
         return err
 
     def can_write(self, can_id: int, message: list):
+        if not isinstance(message, list):
+            return 'Неправильные данные для передачи. Нужен список'
+
         if not self.is_canal_open:
             err = self.canal_open()
             if err:
@@ -300,7 +303,7 @@ class CANMarathon:
         # и ещё проблема - при работе с другими блоками, кроме рулевой пихать в него несколько раз одинаковое сообщение
         # может быть не очень гуд. Надо как-то разбираться с этой проблемой.
         # здесь два варианта - или всё нормально передалось и transmit_ok == 0 или все попытки  неудачны и
-        self.close_marathon_canal()
+        self.close_canal_can()
         if err < 0:
             if err in error_codes.keys():
                 return error_codes[err]
@@ -352,7 +355,7 @@ class CANMarathon:
                 break
         # здесь два варианта - или всё нормально передалось и transmit_ok == 0 или все попытки  неудачны и
         if transmit_ok < 0:
-            self.close_marathon_canal()
+            self.close_canal_can()
             if transmit_ok in error_codes.keys():
                 return error_codes[transmit_ok]
             else:
@@ -385,7 +388,7 @@ class CANMarathon:
             #     print('     в CiRcQueCancel так ' + str(result))
 
             try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 500)  # timeout = 500 миллисекунд
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 300)  # timeout = 300 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
                 pprint(e)
@@ -426,7 +429,7 @@ class CANMarathon:
             else:
                 err = 'Нет подключения к CAN шине '
         #  выход из цикла попыток
-        self.close_marathon_canal()
+        self.close_canal_can()
         return err
 
     def can_request_many(self, can_id_req: int, can_id_ans: int, messages: list):
@@ -454,7 +457,7 @@ class CANMarathon:
         for message in messages:
             # если ошибочных сообщений больше трети, что-то здесь не так
             if errors_counter > len_req_list / 3:
-                self.close_marathon_canal()
+                self.close_canal_can()
                 return err
             err = ''
             # из-за того, что буфер каждый раз обнуляю, надо заново записывать в него ИД и флаг сообщения
@@ -565,17 +568,17 @@ class CANMarathon:
                 #  значит , нас отключили, уходим
                 elif result == 0:
                     err = 'Нет CAN шины больше секунды '
-                    self.close_marathon_canal()
+                    self.close_canal_can()
                     return err
                 else:
                     err = 'Нет подключения к CAN шине '
             if err:
                 answer_list.append(err)
                 errors_counter += 1
-        self.close_marathon_canal()
+        self.close_canal_can()
         return answer_list
 
-    def close_marathon_canal(self):
+    def close_canal_can(self):
         # закрываю канал и останавливаю Марафон
         try:
             result = self.lib.CiStop(self.can_canal_number)
@@ -583,8 +586,8 @@ class CANMarathon:
             print('CiStop do not work')
             pprint(e)
             exit()
-        else:
-            print('      в CiStop так ' + str(result))
+        # else:
+        #     print('      в CiStop так ' + str(result))
 
         try:
             result = self.lib.CiClose(self.can_canal_number)
@@ -592,8 +595,8 @@ class CANMarathon:
             print('CiClose do not work')
             pprint(e)
             exit()
-        else:
-            print('       в CiClose так ' + str(result))
+        # else:
+        #     print('       в CiClose так ' + str(result))
         self.is_canal_open = False
 
 
