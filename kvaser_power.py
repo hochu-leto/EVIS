@@ -149,32 +149,47 @@ class Kvaser:
             return 'Неправильные данные для передачи. Нужен список'
         if not isinstance(self.ch, canlib.Channel):
             self.ch = self.canal_open()
+
         last_frame_time = int(round(time.time() * 1000))
 
         frame = Frame(
             id_=can_id_req,
             data=message,
             flags=canlib.MessageFlag.EXT)
-
-        pprint(message)
+        print(' Отправляю    ', end=' ')
+        for i in frame.data:
+            print(hex(i), end='   ')
+        print()
 
         if isinstance(self.ch, canlib.Channel):
             try:
                 self.ch.write(frame)
-                return ''
             except canlib.canError as ex:
                 print(ex)
-                return ex
+                #  Ежели по каким-то причинам канал оказывается закрыт, открываем его и дублируем отправку. Коряво
+                if ex.status == canlib.canERR_INVHANDLE:
+                    self.ch = self.canal_open()
+                    self.ch.write(frame)
+                else:
+                    return str(ex)
+
             while True:
                 current_time = int(round(time.time() * 1000))
                 if current_time > (last_frame_time + self.wait_time):
                     return f'Истекло время ожидания ответа {self.wait_time}'
                 try:
                     frame = self.ch.read()
+                    print(f'Принято сообщение с адреса  {hex(frame.id)}')
                 except canlib.canError as ex:
                     print(ex)
-                    return ex
+                    return str(ex)
+
                 if frame.id == can_id_ans:
+
+                    for i in frame.data:
+                        print(hex(i), end='   ')
+                    print()
+
                     return frame.data
         return f'Нет открытого канала {self.ch}'
 

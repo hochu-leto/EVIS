@@ -53,19 +53,18 @@ BRAKE_TIMER = 4000  # 4 секунды
 # from keyboard_handler import KeyboardHandler
 
 from sys import platform
+
 if platform == "linux" or platform == "linux2":
     can_adapter = Kvaser(0, 125)
     # linux
 elif platform == "darwin":
-    QMessageBox.critical(None, "Ошибка ", 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!", QMessageBox.Ok)
+    print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
     pass
     # OS X
 elif platform == "win32":
-    can_adapter = Kvaser(0, 125)
-    # can_adapter = CANMarathon()
+    # can_adapter = Kvaser(0, 125)
+    can_adapter = CANMarathon()
     # Windows...
-
-
 
 # can_adapter = CANMarathon()
 # can_adapter = Kvaser(0, 125)
@@ -212,38 +211,43 @@ def zero_del(s):
 
 
 def fill_vmu_params_values(ans_list: list):
-    i = 0
-    for par in vmu_params_list:
-        message = ans_list[i]
-        print(message)
-        print(type(message))
+    for message in ans_list:
         if message:
             if not isinstance(message, str):
+                #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
+                address_ans = '0x' \
+                              + int_to_hex_str(message[2]) \
+                              + int_to_hex_str(message[1]) \
+                              + int_to_hex_str(message[3])
+
                 value = (message[7] << 24) + \
                         (message[6] << 16) + \
                         (message[5] << 8) + message[4]
-                if par['type'] == 'UNSIGNED8':
-                    par['value'] = ctypes.c_uint8(value).value
-                elif par['type'] == 'UNSIGNED16':
-                    par['value'] = ctypes.c_uint16(value).value
-                elif par['type'] == 'UNSIGNED32':
-                    par['value'] = ctypes.c_uint32(value).value
-                elif par['type'] == 'SIGNED8':
-                    par['value'] = ctypes.c_int8(value).value
-                elif par['type'] == 'SIGNED16':
-                    par['value'] = ctypes.c_int16(value).value
-                elif par['type'] == 'SIGNED32':
-                    par['value'] = ctypes.c_int32(value).value
-                elif par['type'] == 'FLOAT':
-                    par['value'] = bytes_to_float(message[-4:])
-                # print(par['value'])
-                par['value'] = (par['value'] / par['scale'] - par['scaleB'])
+                # ищу в списке параметров како-то с тем же адресом, что в ответе
+                for par in vmu_params_list:
+                    if hex(par["address"]) == address_ans:
+                        if par['type'] == 'UNSIGNED8':
+                            par['value'] = ctypes.c_uint8(value).value
+                        elif par['type'] == 'UNSIGNED16':
+                            par['value'] = ctypes.c_uint16(value).value
+                        elif par['type'] == 'UNSIGNED32':
+                            par['value'] = ctypes.c_uint32(value).value
+                        elif par['type'] == 'SIGNED8':
+                            par['value'] = ctypes.c_int8(value).value
+                        elif par['type'] == 'SIGNED16':
+                            par['value'] = ctypes.c_int16(value).value
+                        elif par['type'] == 'SIGNED32':
+                            par['value'] = ctypes.c_int32(value).value
+                        elif par['type'] == 'FLOAT':
+                            par['value'] = bytes_to_float(message[-4:])
+                        # print(par['value'])
+                        par['value'] = (par['value'] / par['scale'] - par['scaleB'])
+                        par['value'] = zero_del(par['value'])
+                        break
 
-                par['value'] = zero_del(par['value'])
-        else:
-            par['value'] = 'Nan'
-        i += 1
-    # здесь не проверяется что принятый параметр соответствует запрошенному. а было бы правильно так
+
+def int_to_hex_str(x: int):
+    return hex(x)[2:].zfill(2)
 
 
 def reset_fault_btn_pressed():
