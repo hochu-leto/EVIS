@@ -36,6 +36,7 @@ import ctypes
 import struct
 import time
 import VMU_monitor_ui
+from kvaser_power import Kvaser
 from marathon_power import CANMarathon
 from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list, \
     fill_node_list
@@ -51,11 +52,26 @@ RESET_FAULTS = 8
 BRAKE_TIMER = 4000  # 4 секунды
 # from keyboard_handler import KeyboardHandler
 
-marathon = CANMarathon()
+from sys import platform
+if platform == "linux" or platform == "linux2":
+    can_adapter = Kvaser(0, 125)
+    # linux
+elif platform == "darwin":
+    QMessageBox.critical(None, "Ошибка ", 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!", QMessageBox.Ok)
+    pass
+    # OS X
+elif platform == "win32":
+    can_adapter = CANMarathon()
+    # Windows...
+
+
+
+# can_adapter = CANMarathon()
+# can_adapter = Kvaser(0, 125)
 #  и чтоб слать по второму кану управление пневмой
-marathon2 = CANMarathon()
-marathon2.can_canal_number = 1
-marathon2.BCI_bt0 = marathon2.BCI_250K_bt0
+# marathon2 = CANMarathon()
+# marathon2.can_canal_number = 1
+# marathon2.BCI_bt0 = marathon2.BCI_250K_bt0
 
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU1.xlsx'
@@ -137,7 +153,7 @@ def show_empty_params_list(list_of_params: list, table: str):
 def connect_vmu():
     if not window.record_vmu_params:
         window.vmu_req_thread.recording_file_name = pathlib.Path(pathlib.Path.cwd(),
-                                                                 'VMU records', 'vmu_record_' +
+                                                                 'VMU_records', 'vmu_record_' +
                                                                  datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
                                                                  '.csv')
         adding_to_csv_file('name', vmu_params_list, window.vmu_req_thread.recording_file_name)
@@ -163,9 +179,9 @@ def connect_vmu():
         # window.speed_rb.setEnabled(True)
         window.nodes_tree.setEnabled(True)
         print('Останавливаю канал 1 марафона')
-        marathon.close_marathon_canal()
+        can_adapter.close_canal_can()
         # print('Останавливаю канал 2 марафона')
-        # marathon2.close_marathon_canal()
+        # marathon2.close_canal_can()
         # # Reading the csv file
         # file_name = str(window.vmu_req_thread.recording_file_name)
         # print('Открываю файл с записями')
@@ -353,7 +369,7 @@ class VMUSaveToFileThread(QObject):
             # попытаюсь за каждый прогон опрашивать один параметр
             # - думается, это не даст КВУ потерять связь с программой
             current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
-            param = marathon.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
+            param = can_adapter.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
             # string = ''
             # for p in req_list[params_counter]:
             #     string += hex(p) + ' '
@@ -450,8 +466,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             window.record_vmu_params = False
             window.thread_to_record.running = False
             window.thread_to_record.terminate()
-            marathon.close_marathon_canal()
-            marathon2.close_marathon_canal()
+            can_adapter.close_canal_can()
+            # marathon2.close_canal_can()
 
             QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
         else:
