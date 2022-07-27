@@ -313,6 +313,9 @@ class CANMarathon:
 
     # возвращает массив int если удалось считать и str если ошибка
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
+        if not isinstance(message, list):
+            return 'Неправильные данные для передачи. Нужен список'
+
         # если канал закрыт, его нда открыть
         err = ''
         if not self.is_canal_open:

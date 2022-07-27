@@ -1,3 +1,6 @@
+import time
+from pprint import pprint
+
 from canlib import canlib, Frame
 
 '''
@@ -79,7 +82,7 @@ class Kvaser:
 
     def canal_open(self):
         try:
-            ch = canlib.openChannel(self.can_canal_number, self.bitrate, self.openFlags)
+            ch = canlib.openChannel(channel=self.can_canal_number, flags=self.openFlags, bitrate=self.bitrate)
             ch.setBusOutputControl(self.outputControl)
             ch.busOn()
         except canlib.canError as ex:
@@ -144,12 +147,34 @@ class Kvaser:
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
         if not isinstance(message, list):
             return 'Неправильные данные для передачи. Нужен список'
-
         if not isinstance(self.ch, canlib.Channel):
             self.ch = self.canal_open()
+        last_frame_time = int(round(time.time() * 1000))
+
+        frame = Frame(
+            id_=can_id_req,
+            data=message,
+            flags=canlib.MessageFlag.EXT)
+
+        pprint(message)
 
         if isinstance(self.ch, canlib.Channel):
-            pass
-        else:
-            return f'Нет открытого канала {self.ch}'
+            try:
+                self.ch.write(frame)
+                return ''
+            except canlib.canError as ex:
+                print(ex)
+                return ex
+            while True:
+                current_time = int(round(time.time() * 1000))
+                if current_time > (last_frame_time + self.wait_time):
+                    return f'Истекло время ожидания ответа {self.wait_time}'
+                try:
+                    frame = self.ch.read()
+                except canlib.canError as ex:
+                    print(ex)
+                    return ex
+                if frame.id == can_id_ans:
+                    return frame.data
+        return f'Нет открытого канала {self.ch}'
 

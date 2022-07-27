@@ -61,7 +61,8 @@ elif platform == "darwin":
     pass
     # OS X
 elif platform == "win32":
-    can_adapter = CANMarathon()
+    can_adapter = Kvaser(0, 125)
+    # can_adapter = CANMarathon()
     # Windows...
 
 
@@ -214,28 +215,33 @@ def fill_vmu_params_values(ans_list: list):
     i = 0
     for par in vmu_params_list:
         message = ans_list[i]
-        if not isinstance(message, str):
-            value = (message[7] << 24) + \
-                    (message[6] << 16) + \
-                    (message[5] << 8) + message[4]
-            if par['type'] == 'UNSIGNED8':
-                par['value'] = ctypes.c_uint8(value).value
-            elif par['type'] == 'UNSIGNED16':
-                par['value'] = ctypes.c_uint16(value).value
-            elif par['type'] == 'UNSIGNED32':
-                par['value'] = ctypes.c_uint32(value).value
-            elif par['type'] == 'SIGNED8':
-                par['value'] = ctypes.c_int8(value).value
-            elif par['type'] == 'SIGNED16':
-                par['value'] = ctypes.c_int16(value).value
-            elif par['type'] == 'SIGNED32':
-                par['value'] = ctypes.c_int32(value).value
-            elif par['type'] == 'FLOAT':
-                par['value'] = bytes_to_float(message[-4:])
-            # print(par['value'])
-            par['value'] = (par['value'] / par['scale'] - par['scaleB'])
+        print(message)
+        print(type(message))
+        if message:
+            if not isinstance(message, str):
+                value = (message[7] << 24) + \
+                        (message[6] << 16) + \
+                        (message[5] << 8) + message[4]
+                if par['type'] == 'UNSIGNED8':
+                    par['value'] = ctypes.c_uint8(value).value
+                elif par['type'] == 'UNSIGNED16':
+                    par['value'] = ctypes.c_uint16(value).value
+                elif par['type'] == 'UNSIGNED32':
+                    par['value'] = ctypes.c_uint32(value).value
+                elif par['type'] == 'SIGNED8':
+                    par['value'] = ctypes.c_int8(value).value
+                elif par['type'] == 'SIGNED16':
+                    par['value'] = ctypes.c_int16(value).value
+                elif par['type'] == 'SIGNED32':
+                    par['value'] = ctypes.c_int32(value).value
+                elif par['type'] == 'FLOAT':
+                    par['value'] = bytes_to_float(message[-4:])
+                # print(par['value'])
+                par['value'] = (par['value'] / par['scale'] - par['scaleB'])
 
-            par['value'] = zero_del(par['value'])
+                par['value'] = zero_del(par['value'])
+        else:
+            par['value'] = 'Nan'
         i += 1
     # здесь не проверяется что принятый параметр соответствует запрошенному. а было бы правильно так
 
@@ -377,6 +383,8 @@ class VMUSaveToFileThread(QObject):
             # for p in param:
             #     string += hex(p) + ' '
             # print(string)
+            # print(param)
+            # print(type(param))
             ans_list.append(param)
             if isinstance(param, str):
                 errors_counter += 1
