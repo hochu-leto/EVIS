@@ -147,8 +147,6 @@ def connect_vmu():
         # разблокирую все кнопки и чекбоксы
         window.connect_btn.setText('Отключиться')
         window.nodes_tree.setEnabled(False)
-        window.power_slider.setValue(0)
-        window.speed_slider.setValue(0)
         window.reset_faults.setEnabled(True)
         window.vmu_req_thread.running = True
         window.record_vmu_params = True
@@ -159,11 +157,6 @@ def connect_vmu():
         window.thread_to_record.terminate()
         window.record_vmu_params = False
         window.connect_btn.setText('Подключиться')
-        window.power_box.setEnabled(False)
-        window.speed_box.setEnabled(False)
-        window.reset_faults.setEnabled(False)
-        window.power_rb.setEnabled(True)
-        # window.speed_rb.setEnabled(True)
         window.nodes_tree.setEnabled(True)
         print('Останавливаю канал 1 марафона')
         can_adapter.close_canal_can()
