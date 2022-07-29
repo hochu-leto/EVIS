@@ -229,7 +229,20 @@ class NodeOfEVO(object):
             setattr(self, key, kwargs[key])
 
 
-#  поток для опроса и записи в файл параметров кву
+# поток для отслеживания подключения адаптера и кан-шины
+class CANAdapterWatchDog(QObject):
+    adapter_connected = pyqtSignal(bool)
+    CAN_bus_connected = pyqtSignal(bool)
+
+    @pyqtSlot()
+    def run(self):
+        self.adapter_connected.emit(True)
+        self.CAN_bus_connected.emit(True)
+
+
+# поток для сохранения настроечных параметров блока в файл
+# поток для ответа на апи
+#  поток для опроса и записи текущих в файл параметров кву
 class VMUSaveToFileThread(QObject):
     running = False
     new_vmu_params = pyqtSignal(list)
@@ -260,7 +273,8 @@ class VMUSaveToFileThread(QObject):
             if isinstance(param, str):
                 errors_counter += 1
             params_counter += 1
-
+            # неправильно - если три подряд значения - текстовые - значит обрыв связи с блоком,
+            # следует послать запрос на обязательное сообщение( трижды на всякий случай),если нет - ошибка, стоп поток
             if params_counter == len_param_list:
                 if errors_counter > len_param_list / 3:
                     self.new_vmu_params.emit(ans_list[:1])
