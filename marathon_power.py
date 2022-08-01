@@ -22,6 +22,8 @@ from ctypes import *
 from datetime import datetime
 
 error_codes = {
+
+    65535 - 0: 'Проблемы с адаптером',
     65535 - 1: 'generic (not specified) error',
     65535 - 2: 'device or recourse busy',
     65535 - 3: 'memory fault',
@@ -36,62 +38,12 @@ error_codes = {
     65535 - 11: 'call was interrupted by event',
     65535 - 12: 'no resources',
     65535 - 13: 'time out occured',
-    65526: 'Адаптер не подключен'  # 65526
+    65535 - 14: 'Нет CAN шины больше секунды ',
+    65535 - 15: 'Нет ответа от блока управления',
+    65535 - 16: 'Неправильные данные для передачи. Нужен список',
 }
 
 from pprint import pprint
-
-
-def trying():
-    class Buffer(Structure):
-        _fields_ = [
-            ('id', ctypes.c_int32),
-            ('data', ctypes.c_int8 * 8),
-            ('len', ctypes.c_int8),
-            ('flags', ctypes.c_int16),
-            ('ts', ctypes.c_int32)
-        ]
-
-    class Cw(Structure):
-        _fields_ = [
-            ('chan', ctypes.c_int8),
-            ('wflags', ctypes.c_int8),
-            ('rflags', ctypes.c_int8)
-        ]
-
-    array_cw = Cw * 2
-    cw = array_cw((0, 0x1 | 0x4, 0), (1, 0x1 | 0x4, 0))
-    buffer = Buffer()
-    lib = cdll.LoadLibrary(r"C:\Program Files (x86)\CHAI-2.14.0\x64\chai.dll")
-    lib.CiInit()
-
-    open_canal = -1
-    while open_canal < 0:
-        lib.CiOpen(0, 0x2 | 0x4)
-        lib.CiSetBaud(0, 0x00, 0x1c)
-        open_canal = lib.CiStart(0)
-
-    ret = 0
-    lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
-    can_read = 0
-    old_id = 0
-    while can_read >= 0:
-        while not ret:
-            ret = lib.CiWaitEvent(ctypes.pointer(cw), 1, 1000)  # timeout = 1000 миллисекунд
-
-        can_read = lib.CiRead(0, ctypes.pointer(buffer), 1)
-        if old_id != buffer.id:
-            print(hex(buffer.id), end='    ')
-            for i in range(buffer.len):
-                print(hex(buffer.data[i]), end=' ')
-            print()
-        old_id = buffer.id
-        lib.msg_zero(ctypes.pointer(cw))
-
-    lib.CiStop(0)
-
-    lib.CiClose(0)
-
 
 class CANMarathon:
     BCI_125K_bt0 = 0x03
@@ -136,7 +88,7 @@ class CANMarathon:
         else:
             self.BCI_bt0 = self.BCI_125K_bt0  # и скорость 125
 
-        self.max_iteration = 10
+        self.max_iteration = 4
         self.is_canal_open = False
         self.log_file = pathlib.Path(pathlib.Path.cwd(),
                                      'Marathon_logs',
@@ -146,7 +98,6 @@ class CANMarathon:
 
     def canal_open(self):
         result = -1
-
         try:
             result = self.lib.CiOpen(self.can_canal_number,
                                      0x2 | 0x4)  # 0x2 | 0x4 - это приём 11bit и 29bit заголовков
@@ -189,77 +140,30 @@ class CANMarathon:
         else:
             return str(result)
 
-    # возвращает массив int если удалось считать и str если ошибка
-    def can_read_all(self):
-        # если канал закрыт, его нда открыть
-        err = ''
-        if not self.is_canal_open:
-            err = self.canal_open()
-            if err:
-                return err
+    def close_canal_can(self):
+        # закрываю канал и останавливаю Марафон
+        try:
+            result = self.lib.CiStop(self.can_canal_number)
+        except Exception as e:
+            print('CiStop do not work')
+            pprint(e)
+            exit()
+        # else:
+        #     print('      в CiStop так ' + str(result))
 
-        array_cw = self.Cw * 1
-        cw = array_cw((self.can_canal_number, 0x01, 0))
-        self.lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
-        buffer = self.Buffer()
-
-        for itr_global in range(self.max_iteration):
-            # CiRcQueCancel Принудительно очищает (стирает) содержимое приемной очереди канала.
-            # наверное, надо почистить очередь перед опросом. но это неточно. совсем неточно
-            result = 0
-            try:
-                result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
-            except Exception as e:
-                print('CiRcQueCancel do not work')
-                pprint(e)
-                exit()
-            # else:
-            #     print('     в CiRcQueCancel так ' + str(result))
-
-            try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 300 миллисекунд
-            except Exception as e:
-                print('CiWaitEvent do not work')
-                pprint(e)
-                exit()
-            # else:
-            #     print('      в CiWaitEvent так ' + str(result))
-
-            # и когда количество кадров в приемной очереди стало больше
-            # или равно значению порога - 1
-            if result > 0 and cw[0].wflags & 0x01:
-                # и тогда читаем этот кадр из очереди
-                try:
-                    result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), 1)
-                except Exception as e:
-                    print('CiRead do not work')
-                    pprint(e)
-                    exit()
-                # else:
-                #     print('       в CiRead так ' + str(result))
-                # если удалось прочитать
-                if result >= 0:
-                    # print(hex(buffer.id), end='    ')
-                    # for e in buffer.data:
-                    #     print(hex(e), end=' ')
-                    # print()
-                    return [hex(buffer.id), buffer.len, buffer.flags, buffer.data, buffer.ts]
-                    # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
-                else:
-                    err = 'Ошибка при чтении с буфера канала ' + str(result)
-            #  если время ожидания хоть какого-то сообщения в шине больше секунды,
-            #  значит , нас отключили, уходим
-            elif result == 0:
-                err = 'Нет CAN шины больше секунды '
-            else:
-                err = 'Нет подключения к CAN шине '
-        #  выход из цикла попыток
-        self.close_marathon_canal()
-        return err
+        try:
+            result = self.lib.CiClose(self.can_canal_number)
+        except Exception as e:
+            print('CiClose do not work')
+            pprint(e)
+            exit()
+        # else:
+        #     print('       в CiClose так ' + str(result))
+        self.is_canal_open = False
 
     def can_write(self, can_id: int, message: list):
         if not isinstance(message, list):
-            return 'Неправильные данные для передачи. Нужен список'
+            return error_codes[65535 - 16]
 
         if not self.is_canal_open:
             err = self.canal_open()
@@ -314,7 +218,7 @@ class CANMarathon:
     # возвращает массив int если удалось считать и str если ошибка
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
         if not isinstance(message, list):
-            return 'Неправильные данные для передачи. Нужен список'
+            return error_codes[65535 - 16]
 
         # если канал закрыт, его нда открыть
         err = ''
@@ -422,18 +326,21 @@ class CANMarathon:
                         return buffer.data
                     # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
                     else:
-                        err = 'Нет ответа от блока управления'
+                        err = 65535 - 15
                 else:
                     err = 'Ошибка при чтении с буфера канала ' + str(result)
             #  если время ожидания хоть какого-то сообщения в шине больше секунды,
             #  значит , нас отключили, уходим
             elif result == 0:
-                err = 'Нет CAN шины больше секунды '
+                err = 65535 - 14
             else:
                 err = 'Нет подключения к CAN шине '
         #  выход из цикла попыток
         self.close_canal_can()
-        return err
+        if err in error_codes.keys():
+            return error_codes[err]
+        else:
+            return str(err)
 
     def can_request_many(self, can_id_req: int, can_id_ans: int, messages: list):
         # проверяю что канал Марафона открывается
@@ -581,26 +488,73 @@ class CANMarathon:
         self.close_canal_can()
         return answer_list
 
-    def close_canal_can(self):
-        # закрываю канал и останавливаю Марафон
-        try:
-            result = self.lib.CiStop(self.can_canal_number)
-        except Exception as e:
-            print('CiStop do not work')
-            pprint(e)
-            exit()
-        # else:
-        #     print('      в CiStop так ' + str(result))
+    # возвращает массив int если удалось считать и str если ошибка
+    def can_read_all(self):
+        # если канал закрыт, его нда открыть
+        err = ''
+        if not self.is_canal_open:
+            err = self.canal_open()
+            if err:
+                return err
 
-        try:
-            result = self.lib.CiClose(self.can_canal_number)
-        except Exception as e:
-            print('CiClose do not work')
-            pprint(e)
-            exit()
-        # else:
-        #     print('       в CiClose так ' + str(result))
-        self.is_canal_open = False
+        array_cw = self.Cw * 1
+        cw = array_cw((self.can_canal_number, 0x01, 0))
+        self.lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
+        buffer = self.Buffer()
+
+        for itr_global in range(self.max_iteration):
+            # CiRcQueCancel Принудительно очищает (стирает) содержимое приемной очереди канала.
+            # наверное, надо почистить очередь перед опросом. но это неточно. совсем неточно
+            result = 0
+            try:
+                result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
+            except Exception as e:
+                print('CiRcQueCancel do not work')
+                pprint(e)
+                exit()
+            # else:
+            #     print('     в CiRcQueCancel так ' + str(result))
+
+            try:
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 300 миллисекунд
+            except Exception as e:
+                print('CiWaitEvent do not work')
+                pprint(e)
+                exit()
+            # else:
+            #     print('      в CiWaitEvent так ' + str(result))
+
+            # и когда количество кадров в приемной очереди стало больше
+            # или равно значению порога - 1
+            if result > 0 and cw[0].wflags & 0x01:
+                # и тогда читаем этот кадр из очереди
+                try:
+                    result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), 1)
+                except Exception as e:
+                    print('CiRead do not work')
+                    pprint(e)
+                    exit()
+                # else:
+                #     print('       в CiRead так ' + str(result))
+                # если удалось прочитать
+                if result >= 0:
+                    # print(hex(buffer.id), end='    ')
+                    # for e in buffer.data:
+                    #     print(hex(e), end=' ')
+                    # print()
+                    return [hex(buffer.id), buffer.len, buffer.flags, buffer.data, buffer.ts]
+                    # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
+                else:
+                    err = 'Ошибка при чтении с буфера канала ' + str(result)
+            #  если время ожидания хоть какого-то сообщения в шине больше секунды,
+            #  значит , нас отключили, уходим
+            elif result == 0:
+                err = 'Нет CAN шины больше секунды '
+            else:
+                err = 'Нет подключения к CAN шине '
+        #  выход из цикла попыток
+        self.close_canal_can()
+        return err
 
 
 if __name__ == "__main__":

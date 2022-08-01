@@ -101,6 +101,24 @@ class Kvaser:
                 return ex
         return self.ch
 
+    '''
+    Возможны следующие состояния адаптера:
+    - не подключен
+    - был подключен, но сейчас закрыт
+    - открыт, но нет кан-шины
+    - открыт, подключен к кан шине, но не к той(другая скорость)
+    '''
+    def can_check(self):
+        try:
+            frame = self.ch.read()
+        except canlib.canError as ex:
+            print(ex)
+            #  Ежели по каким-то причинам канал оказывается закрыт, открываем его и дублируем отправку. Коряво
+            if ex.status == canlib.canERR_INVHANDLE:
+                self.ch = self.canal_open()
+            else:
+                return str(ex)
+
     def can_write(self, ID: int, data: list):
         if isinstance(data, list):
             frame = Frame(
@@ -192,4 +210,3 @@ class Kvaser:
 
                     return frame.data
         return f'Нет открытого канала {self.ch}'
-
