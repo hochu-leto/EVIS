@@ -143,11 +143,11 @@ def show_empty_params_list(list_of_params: list, table: str):
 
 def connect_vmu():
     if not window.record_vmu_params:
-        window.vmu_req_thread.recording_file_name = pathlib.Path(pathlib.Path.cwd(),
-                                                                 'VMU_records', 'vmu_record_' +
-                                                                 datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
-                                                                 '.csv')
-        adding_to_csv_file('name', vmu_params_list, window.vmu_req_thread.recording_file_name)
+        # window.vmu_req_thread.recording_file_name = pathlib.Path(pathlib.Path.cwd(),
+        #                                                          'VMU_records', 'vmu_record_' +
+        #                                                          datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") +
+        #                                                          '.csv')
+        # adding_to_csv_file('name', vmu_params_list, window.vmu_req_thread.recording_file_name)
         # разблокирую все кнопки и чекбоксы
         window.connect_btn.setText('Отключиться')
         window.nodes_tree.setEnabled(False)
@@ -273,7 +273,7 @@ class VMUSaveToFileThread(QObject):
         params_counter = 0
         ans_list = []
         while True:
-            adding_to_csv_file('value', vmu_params_list, window.vmu_req_thread.recording_file_name)
+            # adding_to_csv_file('value', vmu_params_list, window.vmu_req_thread.recording_file_name)
 
             # попытаюсь за каждый прогон опрашивать один параметр
             # - думается, это не даст КВУ потерять связь с программой

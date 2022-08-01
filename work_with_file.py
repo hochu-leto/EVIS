@@ -131,11 +131,11 @@ def adding_to_csv_file(name_or_value: str, vmu_params_list: list, recording_file
     data_string.append(dt)
     data.append(data_string)
     df = pandas.DataFrame(data)
-    df.to_csv(recording_file_name,
-              mode='a',
-              header=False,
-              index=False,
-              encoding='windows-1251')
+    # df.to_csv(recording_file_name,
+    #           mode='a',
+    #           header=False,
+    #           index=False,
+    #           encoding='windows-1251')
 
 
 def dw2float(dw_array):
