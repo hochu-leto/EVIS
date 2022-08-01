@@ -57,7 +57,27 @@ from canlib import canlib, Frame
     canERR__RESERVED = -49
     }
 '''
-
+canERR_WRONG_DATA = -14
+error_codes = {
+    65535 - 0: 'Проблемы с адаптером',
+    65535 - 1: 'generic (not specified) error',
+    65535 - 2: 'device or recourse busy',
+    65535 - 3: 'memory fault',
+    65535 - 4: "function can't be called for chip in current state",
+    65535 - 5: "invalid call, function can't be called for this object",
+    65535 - 6: 'invalid parameter - номер канала, переданный в качестве параметра, выходит за '
+               'пределы поддерживаемого числа каналов, либо канал не был открыт;',
+    65535 - 7: 'can not access resource',
+    65535 - 8: 'function or feature not implemented',
+    -3: 'Адаптер не подключен',  # input/output error
+    65535 - 10: 'no such device or object',
+    65535 - 11: 'call was interrupted by event',
+    65535 - 12: 'no resources',
+    65535 - 13: 'time out occured',
+    -2: 'Нет CAN шины больше секунды ',
+    65535 - 15: 'Нет ответа от блока управления',
+    -14: 'Неправильные данные для передачи. Нужен список',
+}
 
 class Kvaser:
     can_bitrate = {
@@ -85,37 +105,23 @@ class Kvaser:
             ch = canlib.openChannel(channel=self.can_canal_number, flags=self.openFlags, bitrate=self.bitrate)
             ch.setBusOutputControl(self.outputControl)
             ch.busOn()
+            return ch
         except canlib.canError as ex:
-            ch = ex
-            print(ch)
-        return ch
+            if ex.status in error_codes.keys():
+                return error_codes[ex.status]
+            else:
+                return str(ex)
 
     def close_canal_can(self):
-        if isinstance(self.ch, canlib.Channel):
-            try:
-                self.ch.busOff()
-                self.ch.close()
-                return ''
-            except canlib.canError as ex:
-                print(ex)
-                return ex
-        return self.ch
-
-    '''
-    Возможны следующие состояния адаптера:
-    - не подключен
-    - был подключен, но сейчас закрыт
-    - открыт, но нет кан-шины
-    - открыт, подключен к кан шине, но не к той(другая скорость)
-    '''
-    def can_check(self):
+        if not isinstance(self.ch, canlib.Channel):
+            return
         try:
-            frame = self.ch.read()
+            self.ch.busOff()
+            self.ch.close()
+            return ''
         except canlib.canError as ex:
-            print(ex)
-            #  Ежели по каким-то причинам канал оказывается закрыт, открываем его и дублируем отправку. Коряво
-            if ex.status == canlib.canERR_INVHANDLE:
-                self.ch = self.canal_open()
+            if ex.status in error_codes.keys():
+                return error_codes[ex.status]
             else:
                 return str(ex)
 
@@ -134,12 +140,13 @@ class Kvaser:
                     self.ch.write(frame)
                     return ''
                 except canlib.canError as ex:
-                    print(ex)
-                    return ex
+                    ch = error_codes[ex.status]
+                    print(ch)
+                    return ch
             else:
-                return f'Нет открытого канала {self.ch}'
+                return self.ch
         else:
-            return 'Неправильные данные для передачи. Нужен список'
+            return error_codes[canERR_WRONG_DATA]
 
     def can_read(self, ID: int):
         last_frame_time = int(round(time.time() * 1000))
@@ -151,7 +158,7 @@ class Kvaser:
             while True:
                 current_time = int(round(time.time() * 1000))
                 if current_time > (last_frame_time + self.wait_time):
-                    return f'Истекло время ожидания ответа {self.wait_time}'
+                    return error_codes[canlib.canERR_NOMSG]
                 try:
                     frame = self.ch.read()
                 except canlib.canError as ex:
@@ -160,11 +167,11 @@ class Kvaser:
                 if frame.id == ID:
                     return frame.data
         else:
-            return f'Нет открытого канала {self.ch}'
+            return self.ch
 
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
         if not isinstance(message, list):
-            return 'Неправильные данные для передачи. Нужен список'
+            return error_codes[-14]
         if not isinstance(self.ch, canlib.Channel):
             self.ch = self.canal_open()
 
