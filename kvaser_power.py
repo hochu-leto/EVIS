@@ -96,8 +96,8 @@ class Kvaser:
         else:
             self.bitrate = canlib.Bitrate.BITRATE_125K  # и скорость 125
 
-        self.wait_time = 1000
-        self.max_iteration = 10
+        self.wait_time = 10000
+        self.max_iteration = 5
         # может, это не совсем верный подход, но я пытаюсь стандартизировать под марафон
         self.ch = self.canal_open()
 
@@ -176,7 +176,6 @@ class Kvaser:
                 return frame.data
 
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
-        last_frame_time = int(round(time.time() * 1000))
         if not isinstance(message, list):
             return error_codes[canERR_WRONG_DATA]
 
@@ -197,18 +196,18 @@ class Kvaser:
         print()
 
         try:
-            sf = self.ch.write(frame)
-            print(sf)
-        except canlib.canError == canlib.canERR_INVHANDLE:
-            print(' не прошло')
-            self.ch = self.canal_open()
             self.ch.write(frame)
         except canlib.canError as ex:
-            print(str(ex))
-            if ex.status in error_codes.keys():
-                return error_codes[ex.status]
-            return str(ex)
+            err = ex.status
+            if err == canlib.canERR_INVHANDLE:
+                self.ch = self.canal_open()
+                self.ch.write(frame)
+            elif err in error_codes.keys():
+                return error_codes[err]
+            else:
+                return str(ex)
 
+        last_frame_time = int(round(time.time() * 1000))
         while True:
             current_time = int(round(time.time() * 1000))
             if current_time > (last_frame_time + self.wait_time):

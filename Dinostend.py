@@ -80,8 +80,8 @@ elif platform == "darwin":
     pass
     # OS X
 elif platform == "win32":
-    # can_adapter = Kvaser(0, 125)
-    can_adapter = CANMarathon()
+    can_adapter = Kvaser(0, 125)
+    # can_adapter = CANMarathon()
     # Windows...
 
 dir_path = str(pathlib.Path.cwd())
@@ -281,8 +281,8 @@ class VMUSaveToFileThread(QObject):
             param = can_adapter.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
             ans_list.append(param)
             if isinstance(param, str):
-                if param == 'Нет CAN шины больше секунды ' or param == 'Адаптер не подключен':
-                    self.new_vmu_params.emit([param])
+                # if param == 'Нет CAN шины больше секунды ' or param == 'Адаптер не подключен':
+                #     self.new_vmu_params.emit([param])
                 errors_counter += 1
             params_counter += 1
             # неправильно - если три подряд значения - текстовые - значит обрыв связи с блоком,
