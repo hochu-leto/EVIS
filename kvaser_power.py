@@ -79,6 +79,7 @@ error_codes = {
     -14: 'Неправильные данные для передачи. Нужен список',
 }
 
+
 class Kvaser:
     can_bitrate = {
         125: canlib.Bitrate.BITRATE_125K,
@@ -109,8 +110,7 @@ class Kvaser:
         except canlib.canError as ex:
             if ex.status in error_codes.keys():
                 return error_codes[ex.status]
-            else:
-                return str(ex)
+            return str(ex)
 
     def close_canal_can(self):
         if not isinstance(self.ch, canlib.Channel):
@@ -122,31 +122,34 @@ class Kvaser:
         except canlib.canError as ex:
             if ex.status in error_codes.keys():
                 return error_codes[ex.status]
-            else:
-                return str(ex)
+            return str(ex)
 
     def can_write(self, ID: int, data: list):
-        if isinstance(data, list):
-            frame = Frame(
-                id_=ID,
-                data=data,
-                flags=canlib.MessageFlag.EXT)
-
-            if not isinstance(self.ch, canlib.Channel):
-                self.ch = self.canal_open()
-
-            if isinstance(self.ch, canlib.Channel):
-                try:
-                    self.ch.write(frame)
-                    return ''
-                except canlib.canError as ex:
-                    ch = error_codes[ex.status]
-                    print(ch)
-                    return ch
-            else:
-                return self.ch
-        else:
+        if not isinstance(data, list):
             return error_codes[canERR_WRONG_DATA]
+
+        if not isinstance(self.ch, canlib.Channel):
+            self.ch = self.canal_open()
+
+        if not isinstance(self.ch, canlib.Channel):
+            return self.ch
+
+        frame = Frame(
+            id_=ID,
+            data=data,
+            flags=canlib.MessageFlag.EXT)
+
+        try:
+            self.ch.write(frame)
+            return ''
+        except canlib.canError == canlib.canERR_INVHANDLE:
+            self.ch = self.canal_open()
+            self.ch.write(frame)
+            return ''
+        except canlib.canError as ex:
+            if ex.status in error_codes.keys():
+                return error_codes[ex.status]
+            return str(ex)
 
     def can_read(self, ID: int):
         last_frame_time = int(round(time.time() * 1000))
@@ -154,66 +157,75 @@ class Kvaser:
         if not isinstance(self.ch, canlib.Channel):
             self.ch = self.canal_open()
 
-        if isinstance(self.ch, canlib.Channel):
-            while True:
-                current_time = int(round(time.time() * 1000))
-                if current_time > (last_frame_time + self.wait_time):
-                    return error_codes[canlib.canERR_NOMSG]
-                try:
-                    frame = self.ch.read()
-                except canlib.canError as ex:
-                    print(ex)
-                    return ex
-                if frame.id == ID:
-                    return frame.data
-        else:
+        if not isinstance(self.ch, canlib.Channel):
             return self.ch
 
+        while True:
+            current_time = int(round(time.time() * 1000))
+            if current_time > (last_frame_time + self.wait_time):
+                return error_codes[canlib.canERR_NOMSG]
+
+            try:
+                frame = self.ch.read()
+            except canlib.canError as ex:
+                if ex.status in error_codes.keys():
+                    return error_codes[ex.status]
+                return str(ex)
+
+            if frame.id == ID:
+                return frame.data
+
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
+        last_frame_time = int(round(time.time() * 1000))
         if not isinstance(message, list):
-            return error_codes[-14]
+            return error_codes[canERR_WRONG_DATA]
+
         if not isinstance(self.ch, canlib.Channel):
             self.ch = self.canal_open()
 
-        last_frame_time = int(round(time.time() * 1000))
+        if not isinstance(self.ch, canlib.Channel):
+            return self.ch
 
         frame = Frame(
             id_=can_id_req,
             data=message,
             flags=canlib.MessageFlag.EXT)
+
         print(' Отправляю    ', end=' ')
         for i in frame.data:
             print(hex(i), end='   ')
         print()
 
-        if isinstance(self.ch, canlib.Channel):
+        try:
+            sf = self.ch.write(frame)
+            print(sf)
+        except canlib.canError == canlib.canERR_INVHANDLE:
+            print(' не прошло')
+            self.ch = self.canal_open()
+            self.ch.write(frame)
+        except canlib.canError as ex:
+            print(str(ex))
+            if ex.status in error_codes.keys():
+                return error_codes[ex.status]
+            return str(ex)
+
+        while True:
+            current_time = int(round(time.time() * 1000))
+            if current_time > (last_frame_time + self.wait_time):
+                return error_codes[canlib.canERR_NOMSG]
+
             try:
-                self.ch.write(frame)
+                frame = self.ch.read()
+                print(f'Принято сообщение с адреса  {hex(frame.id)}')
             except canlib.canError as ex:
-                print(ex)
-                #  Ежели по каким-то причинам канал оказывается закрыт, открываем его и дублируем отправку. Коряво
-                if ex.status == canlib.canERR_INVHANDLE:
-                    self.ch = self.canal_open()
-                    self.ch.write(frame)
-                else:
-                    return str(ex)
+                if ex.status in error_codes.keys():
+                    return error_codes[ex.status]
+                return str(ex)
 
-            while True:
-                current_time = int(round(time.time() * 1000))
-                if current_time > (last_frame_time + self.wait_time):
-                    return f'Истекло время ожидания ответа {self.wait_time}'
-                try:
-                    frame = self.ch.read()
-                    print(f'Принято сообщение с адреса  {hex(frame.id)}')
-                except canlib.canError as ex:
-                    print(ex)
-                    return str(ex)
+            if frame.id == can_id_ans:
 
-                if frame.id == can_id_ans:
+                for i in frame.data:
+                    print(hex(i), end='   ')
+                print()
 
-                    for i in frame.data:
-                        print(hex(i), end='   ')
-                    print()
-
-                    return frame.data
-        return f'Нет открытого канала {self.ch}'
+                return frame.data
