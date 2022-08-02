@@ -59,7 +59,7 @@ from canlib import canlib, Frame
 '''
 canERR_WRONG_DATA = -14
 error_codes = {
-    65535 - 0: 'Проблемы с адаптером',
+    - 15: 'Проблемы с адаптером',
     65535 - 1: 'generic (not specified) error',
     65535 - 2: 'device or recourse busy',
     65535 - 3: 'memory fault',
@@ -74,7 +74,7 @@ error_codes = {
     65535 - 11: 'call was interrupted by event',
     65535 - 12: 'no resources',
     65535 - 13: 'time out occured',
-    -2: 'Нет CAN шины больше секунды ',
+    -2: 'Нет CAN шины больше секунды 444',
     65535 - 15: 'Нет ответа от блока управления',
     -14: 'Неправильные данные для передачи. Нужен список',
 }
@@ -96,12 +96,22 @@ class Kvaser:
         else:
             self.bitrate = canlib.Bitrate.BITRATE_125K  # и скорость 125
 
-        self.wait_time = 10000
+        self.wait_time = 1000
         self.max_iteration = 5
         # может, это не совсем верный подход, но я пытаюсь стандартизировать под марафон
         self.ch = self.canal_open()
 
     def canal_open(self):
+        # проверяю подключен ли вообще квасер
+        try:
+            canlib.Channel(self.can_canal_number)
+        except canlib.canError as ex:
+            print(f' В canal_open  так  {ex}')
+            if ex.status in error_codes.keys():
+                return error_codes[ex.status]
+            return str(ex)
+
+        # пытаюсь открыть его
         try:
             ch = canlib.openChannel(channel=self.can_canal_number, flags=self.openFlags, bitrate=self.bitrate)
             ch.setBusOutputControl(self.outputControl)
@@ -168,6 +178,8 @@ class Kvaser:
             try:
                 frame = self.ch.read()
             except canlib.canError as ex:
+                print(f' В canal_open  так  {ex}')
+
                 if ex.status in error_codes.keys():
                     return error_codes[ex.status]
                 return str(ex)
@@ -184,7 +196,7 @@ class Kvaser:
 
         if not isinstance(self.ch, canlib.Channel):
             return self.ch
-
+        st = self.ch.readStatus()
         frame = Frame(
             id_=can_id_req,
             data=message,
@@ -198,14 +210,16 @@ class Kvaser:
         try:
             self.ch.write(frame)
         except canlib.canError as ex:
-            err = ex.status
-            if err == canlib.canERR_INVHANDLE:
+            print(f' В canal_write  так  {ex}')
+            er = ex.status
+            if er == canlib.canERR_INVHANDLE:
                 self.ch = self.canal_open()
                 self.ch.write(frame)
-            elif err in error_codes.keys():
-                return error_codes[err]
             else:
-                return str(ex)
+                if er in error_codes.keys():
+                    return error_codes[er]
+                else:
+                    return str(ex)
 
         last_frame_time = int(round(time.time() * 1000))
         while True:
@@ -217,6 +231,7 @@ class Kvaser:
                 frame = self.ch.read()
                 print(f'Принято сообщение с адреса  {hex(frame.id)}')
             except canlib.canError as ex:
+                print(f' В canal_read  так  {ex}')
                 if ex.status in error_codes.keys():
                     return error_codes[ex.status]
                 return str(ex)
