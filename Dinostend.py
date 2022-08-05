@@ -464,6 +464,22 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
             # --END-- AThread(QThread) -------------------#
 
+        # потоки или процессы должны быть завершены    ###
+    def closeEvent(self, event):
+        reply = QMessageBox.question \
+            (self, 'Информация',
+             "Вы уверены, что хотите закрыть приложение?",
+             QMessageBox.Yes,
+             QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            if self.thread:
+                self.thread.quit()
+            del self.thread
+            self.msg.close()
+
+            super(VMUMonitorApp, self).closeEvent(event)
+        else:
+            event.ignore()
 
 
 if __name__ == '__main__':
@@ -505,27 +521,6 @@ if __name__ == '__main__':
 
 
 # Заморочка под альтернативный поток
-
-
-class MsgBoxAThread(QDialog):
-    """ Класс инициализации окна для визуализации дополнительного потока
-        и кнопка для закрытия потокового окна, если поток остановлен! """
-
-    def __init__(self):
-        super().__init__()
-
-        layout = QVBoxLayout(self)
-        self.label = QLabel("")
-        layout.addWidget(self.label)
-
-        close_btn = QPushButton("Close Окно")
-        layout.addWidget(close_btn)
-
-        # ------- Сигнал   это только закроет окно, поток как работал, так и работает
-        close_btn.clicked.connect(self.close)
-
-        self.setGeometry(900, 65, 400, 80)
-        self.setWindowTitle('MsgBox AThread(QThread)')
 
 
 # class ExampleThread(Qt.QWidget):
