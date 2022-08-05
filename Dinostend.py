@@ -7,6 +7,11 @@
 -отключили адаптер
 --- нужно отваливаться
 
+- сделать определение адаптера для виндовз
+- сделать определение наличия на шине блоков
+- продумать реляционную БД для параметров
+- сделать возможность выбора нужных параметров для своего списка
+
 - задать частоту опроса параметра, серийники не надо постоянно опрашивать, вялотекущий типа температуры не нужно
  так часто как ток или угол поворота - это должно быть редактируемо
 -- по поводу частоты опроса параметра, если поле ref_rate отсутствует или рано 0 или равно Nan (тогда ref_rate = 1)
@@ -56,16 +61,19 @@
 
 """
 from pprint import pprint
-
-from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt
+import sys
+import traceback
+from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt, QThreadPool
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QTreeWidget
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QTreeWidget, \
+    QDialog, QVBoxLayout, QLabel, QPushButton
 import datetime
 import pathlib
 import ctypes
 import struct
 import time
 import VMU_monitor_ui
+from QThreads2 import MsgBoxWorker
 from kvaser_power import Kvaser
 from marathon_power import CANMarathon
 from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list, \
@@ -89,6 +97,58 @@ vmu_param_file = 'table_for_params_new_VMU1.xlsx'
 vmu_errors_file = 'kvu_error_codes_my.xlsx'
 VMU_ID_PDO = 0x00000403
 command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus', 'rr_sus', 'rl_sus'}
+
+
+# Если при ошибке в слотах приложение просто падает без стека,
+# есть хороший способ ловить такие ошибки:
+def log_uncaught_exceptions(ex_cls, ex, tb):
+    text = '{}: {}:\n'.format(ex_cls.__name__, ex)
+    # import traceback
+    text += ''.join(traceback.format_tb(tb))
+
+    print(text)
+    Qt.QMessageBox.critical(None, 'Error', text)
+    quit()
+
+
+sys.excepthook = log_uncaught_exceptions
+
+
+class AThread(QThread):
+    threadSignalAThread = pyqtSignal(int)
+
+    def __init__(self):
+        super().__init__()
+
+    def run(self):
+        count = 0
+        while count < 1000:
+            # time.sleep(1)
+            QThread.msleep(200)
+            count += 1
+            self.threadSignalAThread.emit(count)
+
+
+class MsgBoxAThread(QDialog):
+    """ Класс инициализации окна для визуализации дополнительного потока
+        и кнопка для закрытия потокового окна, если поток остановлен! """
+
+    def __init__(self):
+        super().__init__()
+
+        layout = QVBoxLayout(self)
+        self.label = QLabel("")
+        layout.addWidget(self.label)
+
+        close_btn = QPushButton("Close Окно")
+        layout.addWidget(close_btn)
+
+        # ------- Сигнал   это только закроет окно, поток как работал, так и работает
+        close_btn.clicked.connect(self.close)
+
+        self.setGeometry(900, 65, 400, 80)
+        self.setWindowTitle('MsgBox AThread(QThread)')
+
 
 
 # запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
@@ -247,6 +307,7 @@ class CANAdapterWatchDog(QObject):
                 self.CAN_bus_connected.emit(True)
             current_time = int(round(time.time() * 1000))
 
+
 # поток для сохранения настроечных параметров блока в файл
 # поток для ответа на апи
 #  поток для опроса и записи текущих в файл параметров кву
@@ -332,6 +393,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.vmu_req_thread.new_vmu_errors.connect(self.add_new_vmu_errors)
         # подключим сигнал старта потока к методу run у объекта, который должен выполнять код в другом потоке
         self.thread_to_record.started.connect(self.vmu_req_thread.run)
+        self.connect_btn.clicked.connect(self.using_q_thread)
+
+        self.msg = MsgBoxAThread()
+        self.thread = None
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
@@ -344,7 +409,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             window.reset_faults.setEnabled(False)
             window.record_vmu_params = False
             window.thread_to_record.running = False
-            window.thread_to_record.terminate()
+            try:
+                window.thread_to_record.terminate()
+            except Exception as e:
+                print(e)
             can_adapter.close_canal_can()
 
             QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
@@ -370,12 +438,40 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.vmu_param_table.setItem(row, 1, value_item)
             row += 1
 
+    def using_q_thread(self):
+        if self.thread is None:
+            self.thread = AThread()
+            self.thread.threadSignalAThread.connect(self.on_threadSignalAThread)
+            self.thread.finished.connect(self.finishedAThread)
+            self.thread.start()
+            self.connect_btn.setText("Stop AThread(QThread)")
+        else:
+            self.thread.terminate()
+            self.thread = None
+            self.connect_btn.setText("Start AThread(QThread)")
+
+    def finishedAThread(self):
+        self.thread = None
+        self.connect_btn.setText("Start AThread(QThread)")
+
+    def on_threadSignalAThread(self, value):
+        self.msg.label.setText(str(value))
+        # Восстанавливаем визуализацию потокового окна, если его закрыли. Поток работает.
+        # .setVisible(true) или .show() устанавливает виджет в видимое состояние,
+        # если видны все его родительские виджеты до окна.
+        if not self.msg.isVisible():
+            self.msg.show()
+
+            # --END-- AThread(QThread) -------------------#
+
+
 
 if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
 
-    window.connect_btn.clicked.connect(connect_vmu)
+    # window.connect_btn.clicked.connect(connect_vmu)
+
     window.reset_faults.clicked.connect(reset_fault_btn_pressed)
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
 
@@ -406,3 +502,95 @@ if __name__ == '__main__':
     if node_list and params_list_changed():
         window.show()  # Показываем окно
         app.exec_()  # и запускаем приложение
+
+
+# Заморочка под альтернативный поток
+
+
+class MsgBoxAThread(QDialog):
+    """ Класс инициализации окна для визуализации дополнительного потока
+        и кнопка для закрытия потокового окна, если поток остановлен! """
+
+    def __init__(self):
+        super().__init__()
+
+        layout = QVBoxLayout(self)
+        self.label = QLabel("")
+        layout.addWidget(self.label)
+
+        close_btn = QPushButton("Close Окно")
+        layout.addWidget(close_btn)
+
+        # ------- Сигнал   это только закроет окно, поток как работал, так и работает
+        close_btn.clicked.connect(self.close)
+
+        self.setGeometry(900, 65, 400, 80)
+        self.setWindowTitle('MsgBox AThread(QThread)')
+
+
+# class ExampleThread(Qt.QWidget):
+#     def __init__(self, parent=None):
+#         super(ExampleThread, self).__init__(parent)
+#
+#         layout = Qt.QVBoxLayout(self)
+#         self.lbl = Qt.QLabel("Start")
+#         layout.addWidget(self.lbl)
+#         self.btnA = Qt.QPushButton("Запустить AThread(QThread)")
+#         layout.addWidget(self.btnA)
+#         self.progressBar = Qt.QProgressBar()
+#         self.progressBar.setProperty("value", 0)
+#         layout.addWidget(self.progressBar)
+#
+#         self.setGeometry(550, 65, 300, 300)
+#         self.setWindowTitle('3 разных и простых способа работы с потоками.')
+#
+#         self.btnA.clicked.connect(self.using_q_thread)
+#
+#         self.msg = MsgBoxAThread()
+#         self.thread = None
+#
+#         self.counter = 0
+#         self.timer = Qt.QTimer()
+#         self.timer.setInterval(1000)
+#         # -------- timeout -------> def recurring_timer(self):
+#         self.timer.timeout.connect(self.recurring_timer)
+#         self.timer.start()
+#
+#         self.threadpool = QThreadPool()
+#         print("Max потоков, кот. будут использоваться=`%d`" % self.threadpool.maxThreadCount())
+#         self.msgWorker = MsgBoxWorker()
+#
+#         self.threadtest = QThread(self)
+#         self.idealthreadcount = self.threadtest.idealThreadCount()
+#         print("Ваша машина может обрабатывать `{}` потокa оптимально.".format(self.idealthreadcount))
+#
+#     def recurring_timer(self):
+#         self.counter += 1
+#         self.lbl.setText("СЧЁТЧИК цикл GUI: %d" % self.counter)
+#
+#         # ---- AThread(QThread) -----------#
+#     def using_q_thread(self):
+#         if self.thread is None:
+#             self.thread = AThread()
+#             self.thread.threadSignalAThread.connect(self.on_threadSignalAThread)
+#             self.thread.finished.connect(self.finishedAThread)
+#             self.thread.start()
+#             self.btnA.setText("Stop AThread(QThread)")
+#         else:
+#             self.thread.terminate()
+#             self.thread = None
+#             self.btnA.setText("Start AThread(QThread)")
+#
+#     def finishedAThread(self):
+#         self.thread = None
+#         self.btnA.setText("Start AThread(QThread)")
+#
+#     def on_threadSignalAThread(self, value):
+#         self.msg.label.setText(str(value))
+#         # Восстанавливаем визуализацию потокового окна, если его закрыли. Поток работает.
+#         # .setVisible(true) или .show() устанавливает виджет в видимое состояние,
+#         # если видны все его родительские виджеты до окна.
+#         if not self.msg.isVisible():
+#             self.msg.show()
+#
+#             # --END-- AThread(QThread) -------------------#

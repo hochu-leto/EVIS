@@ -1,5 +1,4 @@
 import time
-from pprint import pprint
 
 from canlib import canlib, Frame
 
@@ -111,7 +110,7 @@ class Kvaser:
                 if chdata:
                     break
             except canlib.canError as ex:
-                print(f' В canal_open_card_serial_no  так  {ex}')
+                # print(f' В canal_open_card_serial_no  так  {ex}')
                 if ex.status in error_codes.keys():
                     return error_codes[ex.status]
                 return str(ex)
@@ -121,7 +120,7 @@ class Kvaser:
             ch = canlib.openChannel(channel=self.can_canal_number, flags=self.openFlags, bitrate=self.bitrate)
             ch.setBusOutputControl(self.outputControl)
             ch.busOn()
-            print(f' В canal_open2  так  {ch}')
+            # print(f' В canal_open2  так  {ch}')
             return ch
         except canlib.canError as ex:
             print(f' В canal_open2  так  {ex}')
@@ -197,7 +196,7 @@ class Kvaser:
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
         if not isinstance(message, list):
             return error_codes[canERR_WRONG_DATA]
-        print('реквест')
+        # print('реквест')
         # проверяю вообще подключен ли квасер, если да, то ошибки быть не должно
         i = 0
         while not isinstance(self.ch, canlib.Channel):
@@ -211,13 +210,13 @@ class Kvaser:
             data=message,
             flags=canlib.MessageFlag.EXT)
 
-        print(' Отправляю    ', end=' ')
-        for i in frame.data:
-            print(hex(i), end='   ')
-        print()
+        # print(' Отправляю    ', end=' ')
+        # for i in frame.data:
+        #     print(hex(i), end='   ')
+        # print()
 
         try:
-            print(f'can_write =  {self.ch.write(frame)}')
+            self.ch.write(frame)
         except canlib.canError as ex:
             er = ex.status
             self.ch = self.canal_open()
@@ -226,7 +225,7 @@ class Kvaser:
             else:
                 return str(ex)
 
-        print('after can_write')
+        # print('after can_write')
         no_msg = False
         last_frame_time = int(round(time.time() * 1000))
         while True:
@@ -239,7 +238,7 @@ class Kvaser:
 
             try:
                 frame = self.ch.read()
-                print(f'Принято сообщение с адреса  {hex(frame.id)}')
+                # print(f'Принято сообщение с адреса  {hex(frame.id)}')
                 no_msg = False
             except (canlib.canNoMsg) as ex:
                 no_msg = True
@@ -249,7 +248,7 @@ class Kvaser:
                 return str(ex)
 
             if frame.id == can_id_ans:
-                for i in frame.data:
-                    print(hex(i), end='   ')
-                print()
+                # for i in frame.data:
+                #     print(hex(i), end='   ')
+                # print()
                 return frame.data
