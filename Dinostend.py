@@ -133,8 +133,8 @@ class AThread(QThread):
             param = can_adapter.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
             ans_list.append(param)
             if isinstance(param, str):
-                if param == 'Нет CAN шины больше секунды ' or param == 'Адаптер не подключен':
-                    self.threadSignalAThread.emit(list(param))
+                if param.strip() == 'Нет CAN шины больше секунды' or param == 'Адаптер не подключен':
+                    self.threadSignalAThread.emit([param])
                 errors_counter += 1
             params_counter += 1
             # неправильно - если три подряд значения - текстовые - значит обрыв связи с блоком,
@@ -152,27 +152,6 @@ class AThread(QThread):
         #     QThread.msleep(200)
         #     count += 1
         #     self.threadSignalAThread.emit(count)
-
-
-class MsgBoxAThread(QDialog):
-    """ Класс инициализации окна для визуализации дополнительного потока
-        и кнопка для закрытия потокового окна, если поток остановлен! """
-
-    def __init__(self):
-        super().__init__()
-
-        layout = QVBoxLayout(self)
-        self.label = QLabel("")
-        layout.addWidget(self.label)
-
-        close_btn = QPushButton("Close Окно")
-        layout.addWidget(close_btn)
-
-        # ------- Сигнал   это только закроет окно, поток как работал, так и работает
-        close_btn.clicked.connect(self.close)
-
-        self.setGeometry(900, 65, 400, 80)
-        self.setWindowTitle('MsgBox AThread(QThread)')
 
 
 # запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
@@ -377,25 +356,6 @@ class VMUSaveToFileThread(QObject):
                 params_counter = 0
                 ans_list = []
 
-            # if (current_time - self.time_for_errors) > self.send_delay * 10:
-            #     self.time_for_errors = current_time
-            #     if no_answer_counter < 10:
-            #         error = marathon.can_request(rtcon_vmu, vmu_rtcon, [0x40, 0x15, 0x21, 0x01, 0, 0, 0, 0])
-            #         pprint(error)
-            #         if not isinstance(error, str):
-            #             value = (error[5] << 8) + error[4]
-            #             error = ctypes.c_uint16(value).value
-            #         else:
-            #             no_answer_counter += 1
-            #
-            #         if error not in self.errors:
-            #             self.errors.append(error)
-            #     else:
-            #         self.errors = ['КВУ не отвечает на запрос ошибок']
-            #
-            #     self.new_vmu_errors.emit(self.errors)
-            # current_time = int(round(time.time() * 1000))
-
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
@@ -407,20 +367,17 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         #  иконку пока не надо
         self.setWindowIcon(QIcon('icons_speed.png'))
         #  Создаю поток для опроса параметров кву
-        self.thread_to_record = QThread()
+        self.thread = None
         # создадим объект для выполнения кода в другом потоке
-        self.vmu_req_thread = VMUSaveToFileThread()
+
         # перенесём объект в другой поток
-        self.vmu_req_thread.moveToThread(self.thread_to_record)
+
         # после чего подключим все сигналы и слоты
-        self.vmu_req_thread.new_vmu_params.connect(self.add_new_vmu_params)
-        self.vmu_req_thread.new_vmu_errors.connect(self.add_new_vmu_errors)
+
         # подключим сигнал старта потока к методу run у объекта, который должен выполнять код в другом потоке
-        self.thread_to_record.started.connect(self.vmu_req_thread.run)
+
         self.connect_btn.clicked.connect(self.using_q_thread)
 
-        # self.msg = MsgBoxAThread()
-        self.thread = None
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
@@ -429,7 +386,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # что хотя бы два пункта списка - строки( или придумать более изощерённую проверку)
         if len(list_of_params) < 2:
             self.thread.terminate()
-            self.finishedAThread()
+            self.thread = None
+            self.connect_btn.setText("Подключиться")
             # window.connect_btn.setText('Подключиться')
             # window.nodes_tree.setEnabled(True)
             # window.reset_faults.setEnabled(False)
@@ -481,39 +439,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def finishedAThread(self):
         self.thread = None
         self.connect_btn.setText("Подключиться")
-
-    def on_threadSignalAThread(self, value): # не используется
-        # self.msg.label.setText(str(value))
-        # Восстанавливаем визуализацию потокового окна, если его закрыли. Поток работает.
-        # .setVisible(true) или .show() устанавливает виджет в видимое состояние,
-        # если видны все его родительские виджеты до окна.
-        start_time = int(round(time.time() * 1000))
-        time_for_request = start_time
-        send_delay = 50  # задержка отправки в кан сообщений
-        len_param_list = len(req_list)
-        errors_counter = 0
-        params_counter = 0
-        ans_list = []
-        while True:
-            current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
-            param = can_adapter.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
-            ans_list.append(param)
-            if isinstance(param, str):
-                if param == 'Нет CAN шины больше секунды ' or param == 'Адаптер не подключен':
-                    self.add_new_vmu_params(list(param))
-                errors_counter += 1
-            params_counter += 1
-            # неправильно - если три подряд значения - текстовые - значит обрыв связи с блоком,
-            # следует послать запрос на обязательное сообщение( трижды на всякий случай),если нет - ошибка, стоп поток
-            if errors_counter > len_param_list / 3:
-                self.add_new_vmu_params(ans_list[:1])
-            if params_counter == len_param_list:
-                self.add_new_vmu_params(ans_list)
-                errors_counter = 0
-                params_counter = 0
-                ans_list = []
-
-        # потоки или процессы должны быть завершены    ###
 
     def closeEvent(self, event):
         reply = QMessageBox.question \
