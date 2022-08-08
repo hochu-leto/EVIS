@@ -65,15 +65,12 @@ import sys
 import traceback
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt, QThreadPool
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QTreeWidget, \
-    QDialog, QVBoxLayout, QLabel, QPushButton
-import datetime
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import pathlib
 import ctypes
 import struct
 import time
 import VMU_monitor_ui
-from QThreads2 import MsgBoxWorker
 from kvaser_power import Kvaser
 from marathon_power import CANMarathon
 from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list, \
@@ -137,8 +134,6 @@ class AThread(QThread):
                     self.threadSignalAThread.emit([param])
                 errors_counter += 1
             params_counter += 1
-            # неправильно - если три подряд значения - текстовые - значит обрыв связи с блоком,
-            # следует послать запрос на обязательное сообщение( трижды на всякий случай),если нет - ошибка, стоп поток
             if errors_counter > len_param_list / 3:
                 self.threadSignalAThread.emit(ans_list[:1])
             if params_counter == len_param_list:
@@ -146,12 +141,6 @@ class AThread(QThread):
                 errors_counter = 0
                 params_counter = 0
                 ans_list = []
-        # count = 0
-        # while count < 1000:
-        #     # time.sleep(1)
-        #     QThread.msleep(200)
-        #     count += 1
-        #     self.threadSignalAThread.emit(count)
 
 
 # запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
@@ -204,29 +193,6 @@ def show_empty_params_list(list_of_params: list, table: str):
     show_table.resizeColumnsToContents()
 
 
-def connect_vmu():
-    if not window.record_vmu_params:
-        # window.vmu_req_thread.recording_file_name = pathlib.Path(pathlib.Path.cwd(), 'VMU_records', 'vmu_record_' +
-        # datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.csv') adding_to_csv_file('name', vmu_params_list,
-        # window.vmu_req_thread.recording_file_name) разблокирую все кнопки и чекбоксы
-        window.connect_btn.setText('Отключиться')
-        window.nodes_tree.setEnabled(False)
-        window.reset_faults.setEnabled(True)
-        window.vmu_req_thread.running = True
-        window.record_vmu_params = True
-        window.thread_to_record.start()
-    else:
-        # поток останавливаем
-        window.vmu_req_thread.running = False
-        window.thread_to_record.terminate()
-        window.record_vmu_params = False
-        window.connect_btn.setText('Подключиться')
-        window.nodes_tree.setEnabled(True)
-        print('Останавливаю канал 1 марафона')
-        can_adapter.close_canal_can()
-    return True
-
-
 def zero_del(s):
     return '{:g}'.format(s)
 
@@ -273,8 +239,6 @@ def int_to_hex_str(x: int):
 
 def reset_fault_btn_pressed():
     pass
-    # window.vmu_req_thread.reset_fault_timer = 5
-    # window.vmu_req_thread.errors = []
 
 
 def float_to_int(f):
@@ -361,6 +325,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.thread.terminate()
             self.thread = None
             self.connect_btn.setText("Подключиться")
+            can_adapter.close_canal_can()
 
     def finishedAThread(self):
         self.thread = None
@@ -376,7 +341,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if self.thread:
                 self.thread.quit()
             del self.thread
-            super(VMUMonitorApp, self).closeEvent(event)
+            can_adapter.close_canal_can()
         else:
             event.ignore()
 
