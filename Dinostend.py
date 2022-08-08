@@ -115,18 +115,43 @@ sys.excepthook = log_uncaught_exceptions
 
 
 class AThread(QThread):
-    threadSignalAThread = pyqtSignal(int)
+    threadSignalAThread = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
 
     def run(self):
-        count = 0
-        while count < 1000:
-            # time.sleep(1)
-            QThread.msleep(200)
-            count += 1
-            self.threadSignalAThread.emit(count)
+        start_time = int(round(time.time() * 1000))
+        time_for_request = start_time
+        send_delay = 50  # задержка отправки в кан сообщений
+        len_param_list = len(req_list)
+        errors_counter = 0
+        params_counter = 0
+        ans_list = []
+        while True:
+            current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
+            param = can_adapter.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
+            ans_list.append(param)
+            if isinstance(param, str):
+                if param == 'Нет CAN шины больше секунды ' or param == 'Адаптер не подключен':
+                    self.threadSignalAThread.emit(list(param))
+                errors_counter += 1
+            params_counter += 1
+            # неправильно - если три подряд значения - текстовые - значит обрыв связи с блоком,
+            # следует послать запрос на обязательное сообщение( трижды на всякий случай),если нет - ошибка, стоп поток
+            if errors_counter > len_param_list / 3:
+                self.threadSignalAThread.emit(ans_list[:1])
+            if params_counter == len_param_list:
+                self.threadSignalAThread.emit(ans_list)
+                errors_counter = 0
+                params_counter = 0
+                ans_list = []
+        # count = 0
+        # while count < 1000:
+        #     # time.sleep(1)
+        #     QThread.msleep(200)
+        #     count += 1
+        #     self.threadSignalAThread.emit(count)
 
 
 class MsgBoxAThread(QDialog):
@@ -148,7 +173,6 @@ class MsgBoxAThread(QDialog):
 
         self.setGeometry(900, 65, 400, 80)
         self.setWindowTitle('MsgBox AThread(QThread)')
-
 
 
 # запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
@@ -395,7 +419,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.thread_to_record.started.connect(self.vmu_req_thread.run)
         self.connect_btn.clicked.connect(self.using_q_thread)
 
-        self.msg = MsgBoxAThread()
+        # self.msg = MsgBoxAThread()
         self.thread = None
 
     @pyqtSlot(list)
@@ -404,15 +428,18 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # но бывает, что параметр не прилетел в первый пункт списка, тогда нужно проверить,
         # что хотя бы два пункта списка - строки( или придумать более изощерённую проверку)
         if len(list_of_params) < 2:
-            window.connect_btn.setText('Подключиться')
-            window.nodes_tree.setEnabled(True)
-            window.reset_faults.setEnabled(False)
-            window.record_vmu_params = False
-            window.thread_to_record.running = False
-            try:
-                window.thread_to_record.terminate()
-            except Exception as e:
-                print(e)
+            self.thread.terminate()
+            self.finishedAThread()
+            # window.connect_btn.setText('Подключиться')
+            # window.nodes_tree.setEnabled(True)
+            # window.reset_faults.setEnabled(False)
+            # window.record_vmu_params = False
+            # window.thread_to_record.running = False
+            # try:
+            #
+            #     # window.thread_to_record.terminate()
+            # except Exception as e:
+            #     print(e)
             can_adapter.close_canal_can()
 
             QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
@@ -441,21 +468,22 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def using_q_thread(self):
         if self.thread is None:
             self.thread = AThread()
-            self.thread.threadSignalAThread.connect(self.on_threadSignalAThread)
+            self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
             self.thread.finished.connect(self.finishedAThread)
             self.thread.start()
-            self.connect_btn.setText("Stop AThread(QThread)")
+            self.connect_btn.setText("Отключиться")
         else:
             self.thread.terminate()
+            # здесь можно попробовать вставить finishedAThread
             self.thread = None
-            self.connect_btn.setText("Start AThread(QThread)")
+            self.connect_btn.setText("Подключиться")
 
     def finishedAThread(self):
         self.thread = None
-        self.connect_btn.setText("Start AThread(QThread)")
+        self.connect_btn.setText("Подключиться")
 
-    def on_threadSignalAThread(self, value):
-        self.msg.label.setText(str(value))
+    def on_threadSignalAThread(self, value): # не используется
+        # self.msg.label.setText(str(value))
         # Восстанавливаем визуализацию потокового окна, если его закрыли. Поток работает.
         # .setVisible(true) или .show() устанавливает виджет в видимое состояние,
         # если видны все его родительские виджеты до окна.
@@ -486,6 +514,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 ans_list = []
 
         # потоки или процессы должны быть завершены    ###
+
     def closeEvent(self, event):
         reply = QMessageBox.question \
             (self, 'Информация',
@@ -496,7 +525,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if self.thread:
                 self.thread.quit()
             del self.thread
-            self.msg.close()
+            # self.msg.close()
 
             super(VMUMonitorApp, self).closeEvent(event)
         else:
@@ -539,7 +568,6 @@ if __name__ == '__main__':
     if node_list and params_list_changed():
         window.show()  # Показываем окно
         app.exec_()  # и запускаем приложение
-
 
 # Заморочка под альтернативный поток
 
