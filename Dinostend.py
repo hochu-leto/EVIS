@@ -459,10 +459,31 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # Восстанавливаем визуализацию потокового окна, если его закрыли. Поток работает.
         # .setVisible(true) или .show() устанавливает виджет в видимое состояние,
         # если видны все его родительские виджеты до окна.
-        if not self.msg.isVisible():
-            self.msg.show()
-
-            # --END-- AThread(QThread) -------------------#
+        start_time = int(round(time.time() * 1000))
+        time_for_request = start_time
+        send_delay = 50  # задержка отправки в кан сообщений
+        len_param_list = len(req_list)
+        errors_counter = 0
+        params_counter = 0
+        ans_list = []
+        while True:
+            current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
+            param = can_adapter.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
+            ans_list.append(param)
+            if isinstance(param, str):
+                if param == 'Нет CAN шины больше секунды ' or param == 'Адаптер не подключен':
+                    self.add_new_vmu_params(list(param))
+                errors_counter += 1
+            params_counter += 1
+            # неправильно - если три подряд значения - текстовые - значит обрыв связи с блоком,
+            # следует послать запрос на обязательное сообщение( трижды на всякий случай),если нет - ошибка, стоп поток
+            if errors_counter > len_param_list / 3:
+                self.add_new_vmu_params(ans_list[:1])
+            if params_counter == len_param_list:
+                self.add_new_vmu_params(ans_list)
+                errors_counter = 0
+                params_counter = 0
+                ans_list = []
 
         # потоки или процессы должны быть завершены    ###
     def closeEvent(self, event):
