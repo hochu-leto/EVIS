@@ -126,6 +126,8 @@ class AThread(QThread):
         params_counter = 0
         ans_list = []
         while True:
+            print('bпоток работает')
+
             current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
             param = can_adapter.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
             ans_list.append(param)
@@ -287,8 +289,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
         if len(list_of_params) < 2:
-            self.thread.terminate()
+            # self.thread.terminate()
+            # self.thread.quit()
             self.thread = None
+            # del self.thread
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
             QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
@@ -315,6 +319,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             row += 1
 
     def connect_to_node(self):
+        print('кнопку нажал')
         if self.thread is None:
             self.thread = AThread()
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)

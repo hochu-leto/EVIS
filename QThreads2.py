@@ -276,6 +276,7 @@ class ExampleThread(Qt.QWidget):
     def progress_fn(self, n):
         self.progressBar.setValue(n)
         self.msgWorker.label.setText(str(n))
+
         # Восстанавливаем визуализацию потокового окна, если его закрыли. Поток работает.
         if not self.msgWorker.isVisible():
             self.msgWorker.show()
