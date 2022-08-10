@@ -63,7 +63,7 @@
 from pprint import pprint
 import sys
 import traceback
-from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt, QThreadPool
+from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt, QThreadPool, QTimer, QEventLoop
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import pathlib
@@ -115,34 +115,41 @@ class AThread(QThread):
     threadSignalAThread = pyqtSignal(list)
 
     def __init__(self):
+        from PyQt5.QtCore import QTimer
         super().__init__()
 
     def run(self):
-        start_time = int(round(time.time() * 1000))
-        time_for_request = start_time
-        send_delay = 50  # задержка отправки в кан сообщений
-        len_param_list = len(req_list)
-        errors_counter = 0
-        params_counter = 0
-        ans_list = []
-        while True:
+        def request_node():
             print('bпоток работает')
-
-            current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
-            param = can_adapter.can_request(current_node.req_id, current_node.ans_id, req_list[params_counter])
-            ans_list.append(param)
+            param = can_adapter.can_request(self.current_node.req_id, self.current_node.ans_id,
+                                            req_list[self.params_counter])
+            self.ans_list.append(param)
             if isinstance(param, str):
                 if param.strip() == 'Нет CAN шины больше секунды' or param == 'Адаптер не подключен':
                     self.threadSignalAThread.emit([param])
-                errors_counter += 1
-            params_counter += 1
-            if errors_counter > len_param_list / 3:
-                self.threadSignalAThread.emit(ans_list[:1])
-            if params_counter == len_param_list:
-                self.threadSignalAThread.emit(ans_list)
-                errors_counter = 0
-                params_counter = 0
-                ans_list = []
+                self.errors_counter += 1
+            self.params_counter += 1
+            if self.errors_counter > self.len_param_list / 3:
+                self.threadSignalAThread.emit(self.ans_list[:1])
+            if self.params_counter == self.len_param_list:
+                self.threadSignalAThread.emit(self.ans_list)
+                self.errors_counter = 0
+                self.params_counter = 0
+                self.ans_list = []
+
+        send_delay = 50  # задержка отправки в кан сообщений
+        self.len_param_list = len(req_list)
+        self.current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
+        self.errors_counter = 0
+        self.params_counter = 0
+        self.ans_list = []
+
+        timer = QTimer()
+        timer.timeout.connect(request_node)
+        timer.start(send_delay)
+        loop = QEventLoop()
+        loop.exec_()
+
 
 
 # запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
@@ -290,8 +297,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def add_new_vmu_params(self, list_of_params: list):
         if len(list_of_params) < 2:
             # self.thread.terminate()
-            # self.thread.quit()
-            self.thread = None
+            self.thread.quit()
+            self.thread.wait()
+
+            # self.thread = None
             # del self.thread
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
@@ -333,6 +342,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             can_adapter.close_canal_can()
 
     def finishedAThread(self):
+        # pass
         self.thread = None
         self.connect_btn.setText("Подключиться")
 
