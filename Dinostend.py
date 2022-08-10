@@ -115,18 +115,16 @@ class AThread(QThread):
     threadSignalAThread = pyqtSignal(list)
 
     def __init__(self):
-        from PyQt5.QtCore import QTimer
         super().__init__()
 
     def run(self):
         def request_node():
-            print('bпоток работает')
             param = can_adapter.can_request(self.current_node.req_id, self.current_node.ans_id,
                                             req_list[self.params_counter])
             self.ans_list.append(param)
             if isinstance(param, str):
-                if param.strip() == 'Нет CAN шины больше секунды' or param == 'Адаптер не подключен':
-                    self.threadSignalAThread.emit([param])
+                # if param.strip() == 'Нет CAN шины больше секунды' or param == 'Адаптер не подключен':
+                #     self.threadSignalAThread.emit([param])
                 self.errors_counter += 1
             self.params_counter += 1
             if self.errors_counter > self.len_param_list / 3:
@@ -278,30 +276,17 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
         self.setupUi(self)
-        #  иконку пока не надо
         self.setWindowIcon(QIcon('icons_speed.png'))
         #  Создаю поток для опроса параметров кву
         self.thread = None
-        # создадим объект для выполнения кода в другом потоке
-
-        # перенесём объект в другой поток
-
-        # после чего подключим все сигналы и слоты
-
-        # подключим сигнал старта потока к методу run у объекта, который должен выполнять код в другом потоке
-
         self.connect_btn.clicked.connect(self.connect_to_node)
 
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
         if len(list_of_params) < 2:
-            # self.thread.terminate()
             self.thread.quit()
             self.thread.wait()
-
-            # self.thread = None
-            # del self.thread
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
             QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
@@ -328,7 +313,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             row += 1
 
     def connect_to_node(self):
-        print('кнопку нажал')
         if self.thread is None:
             self.thread = AThread()
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
@@ -336,13 +320,14 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.thread.start()
             self.connect_btn.setText("Отключиться")
         else:
-            self.thread.terminate()
+            self.thread.quit()
+            self.thread.wait()
+            # self.thread.terminate()
             self.thread = None
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
 
     def finishedAThread(self):
-        # pass
         self.thread = None
         self.connect_btn.setText("Подключиться")
 
@@ -355,6 +340,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if reply == QMessageBox.Yes:
             if self.thread:
                 self.thread.quit()
+                self.thread.wait()
             del self.thread
             can_adapter.close_canal_can()
         else:
