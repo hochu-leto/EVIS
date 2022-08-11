@@ -23,7 +23,7 @@ from datetime import datetime
 
 error_codes = {
 
-    65535 - 0: 'Проблемы с адаптером',
+    65535 - 0: 'Адаптер не подключен',
     65535 - 1: 'generic (not specified) error',
     65535 - 2: 'device or recourse busy',
     65535 - 3: 'memory fault',
@@ -88,7 +88,7 @@ class CANMarathon:
         else:
             self.BCI_bt0 = self.BCI_125K_bt0  # и скорость 125
 
-        self.max_iteration = 4
+        self.max_iteration = 8
         self.is_canal_open = False
         self.log_file = pathlib.Path(pathlib.Path.cwd(),
                                      'Marathon_logs',
@@ -295,7 +295,7 @@ class CANMarathon:
             #     print('     в CiRcQueCancel так ' + str(result))
 
             try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 150)  # timeout = 100 миллисекунд
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 150 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
                 pprint(e)

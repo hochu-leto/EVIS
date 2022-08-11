@@ -77,17 +77,7 @@ from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, ad
     fill_node_list
 from sys import platform
 
-if platform == "linux" or platform == "linux2":
-    can_adapter = Kvaser(0, 125)
-    # linux
-elif platform == "darwin":
-    print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
-    pass
-    # OS X
-elif platform == "win32":
-    # can_adapter = Kvaser(0, 125)
-    can_adapter = CANMarathon()
-    # Windows...
+can_adapter = None
 
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU1.xlsx'
@@ -125,19 +115,22 @@ class AThread(QThread):
             self.params_counter += 1
 
             if isinstance(param, str):
-                # if param.strip() == 'Нет CAN шины больше секунды' or param == 'Адаптер не подключен':
-                #     self.threadSignalAThread.emit([param])
                 self.errors_counter += 1
-                if (self.errors_counter > self.len_param_list / 3) or self.errors_counter > 3:
+                # if (self.errors_counter > self.len_param_list / 3) or self.errors_counter > 3:
+                #     self.threadSignalAThread.emit([param])
+                #     return
+                if self.errors_counter > 3:
                     self.threadSignalAThread.emit([param])
                     return
+            else:
+                self.errors_counter = 0
             if self.params_counter == self.len_param_list:
                 self.threadSignalAThread.emit(self.ans_list)
                 self.errors_counter = 0
                 self.params_counter = 0
                 self.ans_list = []
 
-        send_delay = 50  # задержка отправки в кан сообщений
+        send_delay = 10  # задержка отправки в кан сообщений
         self.len_param_list = len(req_list)
         self.current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
         self.errors_counter = 0
@@ -149,7 +142,6 @@ class AThread(QThread):
         timer.start(send_delay)
         loop = QEventLoop()
         loop.exec_()
-
 
 
 # запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
@@ -283,16 +275,20 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.thread = None
         self.connect_btn.clicked.connect(self.connect_to_node)
 
-
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
+        global can_adapter
         if len(list_of_params) < 2:
+            err = str(list_of_params[0])
             if self.thread.isRunning:
                 self.thread.quit()
                 self.thread.wait()
-                QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
+                QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
             self.connect_btn.setText("Подключиться")
-            can_adapter.close_canal_can()
+            if can_adapter is not None:
+                can_adapter.close_canal_can()
+            if err == 'Адаптер не подключен':
+                can_adapter = None
         else:
             fill_vmu_params_values(list_of_params)
             self.show_new_vmu_params()
@@ -316,13 +312,29 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             row += 1
 
     def connect_to_node(self):
+        global can_adapter
+        if can_adapter is None:
+            if platform == "linux" or platform == "linux2":
+                can_adapter = Kvaser(0, 125)
+                # linux
+            elif platform == "darwin":
+                print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
+                pass
+                # OS X
+            elif platform == "win32":
+                can_adapter = Kvaser(0, 125)
+                mes = can_adapter.can_request(0, 0, [0])
+                if isinstance(mes, str):
+                    if mes == 'Адаптер не подключен':
+                        can_adapter = CANMarathon()
+                # Windows...
         if self.thread is None:
             self.thread = AThread()
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
             self.thread.finished.connect(self.finishedAThread)
             self.thread.start()
             self.connect_btn.setText("Отключиться")
-        #     сделать неактивной левую менюху выбора списка параметров
+            #     сделать неактивной левую менюху выбора списка параметров
             self.nodes_tree.setEnabled(False)
         else:
             self.thread.quit()
@@ -389,4 +401,3 @@ if __name__ == '__main__':
     if node_list and params_list_changed():
         window.show()  # Показываем окно
         app.exec_()  # и запускаем приложение
-

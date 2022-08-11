@@ -196,7 +196,6 @@ class Kvaser:
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
         if not isinstance(message, list):
             return error_codes[canERR_WRONG_DATA]
-        # print('реквест')
         # проверяю вообще подключен ли квасер, если да, то ошибки быть не должно
         i = 0
         while not isinstance(self.ch, canlib.Channel):
@@ -220,7 +219,6 @@ class Kvaser:
             else:
                 return str(ex)
 
-        no_msg = False
         last_frame_time = int(round(time.time() * 1000))
         while True:
             current_time = int(round(time.time() * 1000))
@@ -233,13 +231,9 @@ class Kvaser:
 
             try:
                 frame = self.ch.read()
-                no_msg = False
-            except (canlib.canNoMsg) as ex:
-                no_msg = True
             except canlib.canError as ex:
                 if ex.status in error_codes.keys():
                     return error_codes[ex.status]
                 return str(ex)
-            print(f'frane id = {frame.id}  no_msg = {no_msg}')
             if frame.id == can_id_ans:
                 return frame.data
