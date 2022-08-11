@@ -122,13 +122,15 @@ class AThread(QThread):
             param = can_adapter.can_request(self.current_node.req_id, self.current_node.ans_id,
                                             req_list[self.params_counter])
             self.ans_list.append(param)
+            self.params_counter += 1
+
             if isinstance(param, str):
                 # if param.strip() == 'Нет CAN шины больше секунды' or param == 'Адаптер не подключен':
                 #     self.threadSignalAThread.emit([param])
                 self.errors_counter += 1
-            self.params_counter += 1
-            if self.errors_counter > self.len_param_list / 3:
-                self.threadSignalAThread.emit(self.ans_list[:1])
+                if (self.errors_counter > self.len_param_list / 3) or self.errors_counter > 3:
+                    self.threadSignalAThread.emit([param])
+                    return
             if self.params_counter == self.len_param_list:
                 self.threadSignalAThread.emit(self.ans_list)
                 self.errors_counter = 0
@@ -285,11 +287,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
         if len(list_of_params) < 2:
-            self.thread.quit()
-            self.thread.wait()
+            if self.thread.isRunning:
+                self.thread.quit()
+                self.thread.wait()
+                QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
-            QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + str(list_of_params[0]), QMessageBox.Ok)
         else:
             fill_vmu_params_values(list_of_params)
             self.show_new_vmu_params()
@@ -319,10 +322,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.thread.finished.connect(self.finishedAThread)
             self.thread.start()
             self.connect_btn.setText("Отключиться")
+        #     сделать неактивной левую менюху выбора списка параметров
         else:
             self.thread.quit()
             self.thread.wait()
-            # self.thread.terminate()
             self.thread = None
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()

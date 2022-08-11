@@ -96,7 +96,7 @@ class Kvaser:
         else:
             self.bitrate = canlib.Bitrate.BITRATE_125K  # и скорость 125
 
-        self.wait_time = 1000
+        self.wait_time = 300
         self.max_iteration = 5
         # может, это не совсем верный подход, но я пытаюсь стандартизировать под марафон
         # self.ch = self.canal_open()
@@ -210,11 +210,6 @@ class Kvaser:
             data=message,
             flags=canlib.MessageFlag.EXT)
 
-        # print(' Отправляю    ', end=' ')
-        # for i in frame.data:
-        #     print(hex(i), end='   ')
-        # print()
-
         try:
             self.ch.write(frame)
         except canlib.canError as ex:
@@ -225,20 +220,19 @@ class Kvaser:
             else:
                 return str(ex)
 
-        # print('after can_write')
         no_msg = False
         last_frame_time = int(round(time.time() * 1000))
         while True:
             current_time = int(round(time.time() * 1000))
-            if current_time > (last_frame_time + self.wait_time):
-                return error_codes[canERR_NO_ECU_ANSWER]
 
-            if no_msg and current_time > (last_frame_time + self.wait_time / 4):
-                return error_codes[canlib.canERR_NOMSG]
+            if current_time > (last_frame_time + self.wait_time):
+                if frame.id == 0 or frame.id == can_id_req:
+                    return error_codes[canlib.canERR_NOMSG]
+                else:
+                    return error_codes[canERR_NO_ECU_ANSWER]
 
             try:
                 frame = self.ch.read()
-                # print(f'Принято сообщение с адреса  {hex(frame.id)}')
                 no_msg = False
             except (canlib.canNoMsg) as ex:
                 no_msg = True
@@ -246,9 +240,6 @@ class Kvaser:
                 if ex.status in error_codes.keys():
                     return error_codes[ex.status]
                 return str(ex)
-
+            print(f'frane id = {frame.id}  no_msg = {no_msg}')
             if frame.id == can_id_ans:
-                # for i in frame.data:
-                #     print(hex(i), end='   ')
-                # print()
                 return frame.data
