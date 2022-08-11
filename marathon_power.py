@@ -295,7 +295,7 @@ class CANMarathon:
             #     print('     в CiRcQueCancel так ' + str(result))
 
             try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 300)  # timeout = 300 миллисекунд
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 150)  # timeout = 100 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
                 pprint(e)

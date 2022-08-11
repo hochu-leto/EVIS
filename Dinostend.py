@@ -85,8 +85,8 @@ elif platform == "darwin":
     pass
     # OS X
 elif platform == "win32":
-    can_adapter = Kvaser(0, 125)
-    # can_adapter = CANMarathon()
+    # can_adapter = Kvaser(0, 125)
+    can_adapter = CANMarathon()
     # Windows...
 
 dir_path = str(pathlib.Path.cwd())
@@ -323,15 +323,18 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.thread.start()
             self.connect_btn.setText("Отключиться")
         #     сделать неактивной левую менюху выбора списка параметров
+            self.nodes_tree.setEnabled(False)
         else:
             self.thread.quit()
             self.thread.wait()
             self.thread = None
             self.connect_btn.setText("Подключиться")
+            self.nodes_tree.setEnabled(True)
             can_adapter.close_canal_can()
 
     def finishedAThread(self):
         self.thread = None
+        self.nodes_tree.setEnabled(True)
         self.connect_btn.setText("Подключиться")
 
     def closeEvent(self, event):
