@@ -63,19 +63,16 @@
 from pprint import pprint
 import sys
 import traceback
-from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt, QThreadPool, QTimer, QEventLoop
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, \
-    QAbstractScrollArea, QSizePolicy
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import pathlib
 import ctypes
 import struct
-import time
 import VMU_monitor_ui
 from kvaser_power import Kvaser
 from marathon_power import CANMarathon
-from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list, \
-    fill_node_list
+from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, fill_node_list
 from sys import platform
 
 can_adapter = None
@@ -83,15 +80,12 @@ can_adapter = None
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU1.xlsx'
 vmu_errors_file = 'kvu_error_codes_my.xlsx'
-VMU_ID_PDO = 0x00000403
-command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus', 'rr_sus', 'rl_sus'}
 
 
 # Если при ошибке в слотах приложение просто падает без стека,
 # есть хороший способ ловить такие ошибки:
 def log_uncaught_exceptions(ex_cls, ex, tb):
     text = '{}: {}:\n'.format(ex_cls.__name__, ex)
-    # import traceback
     text += ''.join(traceback.format_tb(tb))
 
     print(text)
@@ -117,9 +111,6 @@ class AThread(QThread):
 
             if isinstance(param, str):
                 self.errors_counter += 1
-                # if (self.errors_counter > self.len_param_list / 3) or self.errors_counter > 3:
-                #     self.threadSignalAThread.emit([param])
-                #     return
                 if self.errors_counter > 3:
                     self.threadSignalAThread.emit([param])
                     return
@@ -315,27 +306,23 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def connect_to_node(self):
         global can_adapter
         if can_adapter is None:
-            if platform == "linux" or platform == "linux2":
+            if platform == "linux" or platform == "linux2":  # linux
                 can_adapter = Kvaser(0, 125)
-                # linux
-            elif platform == "darwin":
+            elif platform == "darwin":  # OS X
                 print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
-                pass
-                # OS X
-            elif platform == "win32":
+            elif platform == "win32":  # Windows...
                 can_adapter = Kvaser(0, 125)
                 mes = can_adapter.can_request(0, 0, [0])
                 if isinstance(mes, str):
                     if mes == 'Адаптер не подключен':
                         can_adapter = CANMarathon()
-                # Windows...
+
         if self.thread is None:
             self.thread = AThread()
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
             self.thread.finished.connect(self.finishedAThread)
             self.thread.start()
             self.connect_btn.setText("Отключиться")
-            #     сделать неактивной левую менюху выбора списка параметров
             self.nodes_tree.setEnabled(False)
         else:
             self.thread.quit()
@@ -351,11 +338,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.connect_btn.setText("Подключиться")
 
     def closeEvent(self, event):
-        reply = QMessageBox.question \
-            (self, 'Информация',
-             "Вы уверены, что хотите закрыть приложение?",
-             QMessageBox.Yes,
-             QMessageBox.No)
+        reply = QMessageBox.question(self, 'Информация',
+                                     "Вы уверены, что хотите закрыть приложение?",
+                                     QMessageBox.Yes,
+                                     QMessageBox.No)
         if reply == QMessageBox.Yes:
             if self.thread:
                 self.thread.quit()
