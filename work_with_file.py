@@ -21,30 +21,41 @@ def fill_bookmarks_list(file_name):
 
 
 def fill_node_list(file_name):
-
     need_fields = {'name', 'address', 'type'}
     file = pandas.ExcelFile(file_name)
     bookmark_dict = {}
     if 'nodes' not in file.sheet_names:
         QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
         return
-    node_sheet = file.parse(sheet_name='nodes')
-    node_list = node_sheet.to_dict(orient='records')
-    for sheet_name in file.sheet_names:
+    # sheet "nodes" is founded
+    for sheet_name in file.sheet_names:  # пробегаюсь по всем листам документа
         sheet = file.parse(sheet_name=sheet_name)
         headers = list(sheet.columns.values)
-        if set(need_fields).issubset(headers):
-            sheet_params_list = sheet.to_dict(orient='records')
-            bookmark_dict[sheet_name] = sheet_params_list
+        if set(need_fields).issubset(headers):  # если в заголовках есть все нужные поля
+            sheet_params_list = sheet.to_dict(orient='records')  # то запихиваю весь этот лист со всеми
+            bookmark_dict[sheet_name] = sheet_params_list  # строками в словарь,где ключ - название страницы
 
+    node_sheet = file.parse(sheet_name='nodes')
+    node_list = node_sheet.to_dict(orient='records')    # парсим лист "nodes"
     for node in node_list:
         node_name = node['name']
         node_params_list = {}
-        for params_list in bookmark_dict.keys():
+        for params_list in bookmark_dict.keys():  # бегу по словарю со списками параметров
+            prev_group_name = ''
+            p_list = []
             if node_name in params_list:
-                node_params_list[params_list.replace(node_name + ' ', '')] = bookmark_dict[params_list]
+                for param in bookmark_dict[params_list]:
+                    if str(param['name']) != 'nan':
+                        if 'group ' in param['name']:
+                            node_params_list[prev_group_name] = p_list.copy()
+                            p_list = []
+                            prev_group_name = param['name'].replace('group ', '')
+                        else:
+                            p_list.append(param)
+                node_params_list[prev_group_name] = p_list.copy()
+                del node_params_list['']
         if node_params_list:
-            node['params_list'] = node_params_list
+            node['params_list'] = node_params_list.copy()
         node['req_id'] = check_id(node['req_id'])
         node['ans_id'] = check_id(node['ans_id'])
 
@@ -70,8 +81,13 @@ def fill_vmu_list(vmu_params_list):
                 if isinstance(par['address'], str):
                     if '0x' in par['address']:
                         par['address'] = par['address'].rsplit('x')[1]
-                    par['address'] = int(par['address'], 16)
-                if str(par['scale']) == 'nan':
+                        par['address'] = int(par['address'], 16)
+                    elif '0b' in par['address']:
+                        par['address'] = par['address'].rsplit('b')[1]
+                        par['address'] = int(par['address'], 2)
+                    else:
+                        par['address'] = int(par['address'])
+                if str(par['scale']) == 'nan' or par['scale'] == 0:
                     par['scale'] = 1
                 if str(par['scaleB']) == 'nan':
                     par['scaleB'] = 0
@@ -92,7 +108,7 @@ def make_vmu_error_dict(file_name):
 def feel_req_list(p_list: list):
     req_list = []
     for par in p_list:
-        address = par['address']
+        address = int(par['address'])
         MSB = ((address & 0xFF0000) >> 16)
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
@@ -115,11 +131,11 @@ def adding_to_csv_file(name_or_value: str, vmu_params_list: list, recording_file
     data_string.append(dt)
     data.append(data_string)
     df = pandas.DataFrame(data)
-    df.to_csv(recording_file_name,
-              mode='a',
-              header=False,
-              index=False,
-              encoding='windows-1251')
+    # df.to_csv(recording_file_name,
+    #           mode='a',
+    #           header=False,
+    #           index=False,
+    #           encoding='windows-1251')
 
 
 def dw2float(dw_array):

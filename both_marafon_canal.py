@@ -5,7 +5,7 @@ from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import two_chanell_ui
 from Dinostend import VMU_ID_PDO
-from dll_power import CANMarathon
+from marathon_power import CANMarathon
 from work_with_file import adding_to_csv_file
 
 marathon = CANMarathon()
