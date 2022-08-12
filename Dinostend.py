@@ -65,7 +65,8 @@ import sys
 import traceback
 from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt, QThreadPool, QTimer, QEventLoop
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, \
+    QAbstractScrollArea, QSizePolicy
 import pathlib
 import ctypes
 import struct
@@ -94,7 +95,7 @@ def log_uncaught_exceptions(ex_cls, ex, tb):
     text += ''.join(traceback.format_tb(tb))
 
     print(text)
-    Qt.QMessageBox.critical(None, 'Error', text)
+    QMessageBox.critical(None, 'Error', text)
     quit()
 
 
@@ -360,7 +361,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 self.thread.quit()
                 self.thread.wait()
             del self.thread
-            can_adapter.close_canal_can()
+            if can_adapter is not None:
+                can_adapter.close_canal_can()
         else:
             event.ignore()
 
@@ -368,10 +370,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
-
-    # window.connect_btn.clicked.connect(connect_vmu)
-
-    window.reset_faults.clicked.connect(reset_fault_btn_pressed)
+    window.setWindowTitle('Параметры всех блоков нижнего уровня EVO1')
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
 
     node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
@@ -399,5 +398,7 @@ if __name__ == '__main__':
     window.nodes_tree.setCurrentItem(window.nodes_tree.topLevelItem(0).child(0))
 
     if node_list and params_list_changed():
+        window.vmu_param_table.adjustSize()
+        window.nodes_tree.adjustSize()
         window.show()  # Показываем окно
         app.exec_()  # и запускаем приложение
