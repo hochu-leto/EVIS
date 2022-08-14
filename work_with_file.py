@@ -51,6 +51,8 @@ def fill_node_list(file_name):
                             p_list = []
                             prev_group_name = param['name'].replace('group ', '')
                         else:
+                            #  получается, что здесь я не проверяю наличие нужных поле у параметра
+                            #  это происходит только при заполнении списка vmu_params_list
                             p_list.append(param)
                 node_params_list[prev_group_name] = p_list.copy()
                 del node_params_list['']
@@ -91,6 +93,11 @@ def fill_vmu_list(vmu_params_list):
                     par['scale'] = 1
                 if str(par['scaleB']) == 'nan':
                     par['scaleB'] = 0
+
+                print(par.keys())
+                if 'period' not in par.keys():
+                    pass
+
                 exit_list.append(par)
     return exit_list
 
