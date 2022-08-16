@@ -175,7 +175,7 @@ def params_list_changed():
         # param_list = window.nodes_tree.currentItem().text(0)
         if hasattr(evo_nodes[node], 'params_list'):
             vmu_params_list = fill_vmu_list(evo_nodes[node].params_list[param_list])
-            req_list = feel_req_list(vmu_params_list)
+            req_list = feel_req_list(window.current_node.protocol, vmu_params_list)
             show_empty_params_list(vmu_params_list, 'vmu_param_table')
             if is_run and window.thread.isFinished():
                 window.connect_to_node()
@@ -226,7 +226,8 @@ def fill_vmu_params_values(ans_list: list):
                               + int_to_hex_str(message[2]) \
                               + int_to_hex_str(message[1]) \
                               + int_to_hex_str(message[3])
-
+                # для реек вот так  address_ans = '0x' + int_to_hex_str(data[4]) + int_to_hex_str(data[5]) наверное
+                # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
                 value = (message[7] << 24) + \
                         (message[6] << 16) + \
                         (message[5] << 8) + message[4]
@@ -291,7 +292,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.setupUi(self)
         self.setWindowIcon(QIcon('icons_speed.png'))
         #  Создаю поток для опроса параметров кву
-        # self.thread = None
         self.thread = AThread()
 
     @pyqtSlot(list)
@@ -359,9 +359,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def finishedAThread(self):
         pass
-        # self.thread = None
-        # self.nodes_tree.setEnabled(True)
-        # self.connect_btn.setText("ПоТОК остановился")
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Информация',

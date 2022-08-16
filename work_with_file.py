@@ -4,6 +4,13 @@ from pprint import pprint
 import pandas
 from PyQt5.QtWidgets import QMessageBox
 
+value_type_dict = {'UINT16': 0x2B,
+                   'INT16': 0x2B,
+                   'UINT32': 0x23,
+                   'INT32': 0x23,
+                   'UINT8': 0x2F,
+                   'INT8': 0x2F,
+                   'DATA': 0x23}
 
 def fill_bookmarks_list(file_name):
     need_fields = {'name', 'address', 'type'}
@@ -113,14 +120,23 @@ def make_vmu_error_dict(file_name):
     return ex_dict
 
 
-def feel_req_list(p_list: list):
+def feel_req_list(protocol: str, p_list: list):
     req_list = []
     for par in p_list:
+        if par['type'] in value_type_dict.keys():
+            value_type = value_type_dict[par['type']]
+        else:
+            value_type = 0x2B
         address = int(par['address'])
         MSB = ((address & 0xFF0000) >> 16)
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
-        data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
+        if protocol == 'CANOpen':
+            data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
+        elif protocol == 'MODBUS':
+            data = [0, 0, 0, 0, LSB, MSB, value_type, 0x03]
+        else:
+            data = bytearray([0, 0, 0, 0, 0, 0, 0, 0])
         req_list.append(data)
     return req_list
 
