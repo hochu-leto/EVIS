@@ -98,12 +98,31 @@ sys.excepthook = log_uncaught_exceptions
 
 class AThread(QThread):
     threadSignalAThread = pyqtSignal(list)
+    max_iteration = 1000
+    iter_count = 1
 
     def __init__(self):
         super().__init__()
 
     def run(self):
+        def emitting():
+            self.threadSignalAThread.emit(self.ans_list)
+            self.params_counter = 0
+            self.errors_counter = 0
+            self.ans_list = []
+            self.iter_count += 1
+            if self.iter_count > self.max_iteration:
+                self.iter_count = 1
+
         def request_node():
+            if not self.iter_count == 1:
+                while not self.iter_count % vmu_params_list[self.params_counter]['period'] == 0:
+                    self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
+                    self.params_counter += 1
+                    if self.params_counter == self.len_param_list:
+                        emitting()
+                        return
+
             param = can_adapter.can_request(self.current_node.req_id, self.current_node.ans_id,
                                             req_list[self.params_counter])
             self.ans_list.append(param)
@@ -116,11 +135,9 @@ class AThread(QThread):
                     return
             else:
                 self.errors_counter = 0
+
             if self.params_counter == self.len_param_list:
-                self.threadSignalAThread.emit(self.ans_list)
-                self.errors_counter = 0
-                self.params_counter = 0
-                self.ans_list = []
+                emitting()
 
         send_delay = 10  # задержка отправки в кан сообщений
         self.len_param_list = len(req_list)
