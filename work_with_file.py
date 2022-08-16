@@ -95,8 +95,10 @@ def fill_vmu_list(vmu_params_list):
                     par['scaleB'] = 0
 
                 print(par.keys())
-                if 'period' not in par.keys():
-                    pass
+                if 'period' not in par.keys() or str(par['period']) == 'nan' or par['period'] <= 0:
+                    par['period'] = 1
+                elif par['period'] > 1000:
+                    par['period'] = 1000
 
                 exit_list.append(par)
     return exit_list
