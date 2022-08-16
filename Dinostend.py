@@ -167,7 +167,7 @@ def params_list_changed():
     if param_list in list(evo_nodes.keys()):
         return False
     else:
-        if window.thread:
+        if window.thread.isRunning():
             is_run = True
             window.connect_to_node()
 
@@ -177,7 +177,7 @@ def params_list_changed():
             vmu_params_list = fill_vmu_list(evo_nodes[node].params_list[param_list])
             req_list = feel_req_list(vmu_params_list)
             show_empty_params_list(vmu_params_list, 'vmu_param_table')
-            if is_run and window.thread is None:
+            if is_run and window.thread.isFinished():
                 window.connect_to_node()
             return True
         else:
@@ -291,15 +291,15 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.setupUi(self)
         self.setWindowIcon(QIcon('icons_speed.png'))
         #  Создаю поток для опроса параметров кву
-        self.thread = None
+        # self.thread = None
+        self.thread = AThread()
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
         global can_adapter
-        if len(list_of_params) < 2:
+        if len(list_of_params) < 2 and isinstance(list_of_params[0], str):
             err = str(list_of_params[0])
-            # if self.thread.isRunning:
-            if self.thread:
+            if self.thread.isRunning():
                 self.thread.quit()
                 self.thread.wait()
                 QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
@@ -344,33 +344,24 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                     if mes == 'Адаптер не подключен':
                         can_adapter = CANMarathon()
 
-        if self.thread is None:
-            print('поток ', self.thread)
-
-            self.thread = AThread()
+        if not self.thread.isRunning():
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
             self.thread.finished.connect(self.finishedAThread)
+            self.thread.iter_count = 1
             self.thread.start()
             self.connect_btn.setText("Отключиться")
-            print('запускаю поток ', self.thread)
             # self.nodes_tree.setEnabled(False)
         else:
-            print('останавливаю поток ', self.thread)
-
             self.thread.quit()
             self.thread.wait()
-            while not self.thread.isFinished():
-                pass
-            self.thread = None
             self.connect_btn.setText("Подключиться")
-            # self.nodes_tree.setEnabled(True)
             can_adapter.close_canal_can()
-            print('поток ', self.thread)
 
     def finishedAThread(self):
-        self.thread = None
+        pass
+        # self.thread = None
         # self.nodes_tree.setEnabled(True)
-        self.connect_btn.setText("ПоТОК остановился")
+        # self.connect_btn.setText("ПоТОК остановился")
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Информация',
