@@ -222,15 +222,19 @@ class Kvaser:
         last_frame_time = int(round(time.time() * 1000))
         while True:
             current_time = int(round(time.time() * 1000))
-
             if current_time > (last_frame_time + self.wait_time):
                 if frame.id == 0 or frame.id == can_id_req:
+                    print('frame.id = ', frame.id, 'can_id_req = ', can_id_req)
+
                     return error_codes[canlib.canERR_NOMSG]
                 else:
+                    print(error_codes[canERR_NO_ECU_ANSWER], 'canERR_NO_ECU_ANSWER = ', canERR_NO_ECU_ANSWER)
                     return error_codes[canERR_NO_ECU_ANSWER]
 
             try:
                 frame = self.ch.read()
+            except canlib.CanNoMsg as ex:
+                pass
             except canlib.canError as ex:
                 if ex.status in error_codes.keys():
                     return error_codes[ex.status]
