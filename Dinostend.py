@@ -60,9 +60,11 @@
 марафон очень долго отдупляет что нет шины - по такой ошибке следует прерывать опрос и сразу выдавать предупреждение
 
 """
+import time
 from pprint import pprint
 import sys
 import traceback
+
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
@@ -115,6 +117,7 @@ class AThread(QThread):
                 self.iter_count = 1
 
         def request_node():
+
             if not self.iter_count == 1:
                 while not self.iter_count % vmu_params_list[self.params_counter]['period'] == 0:
                     self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
@@ -159,16 +162,23 @@ class AThread(QThread):
 
 def params_list_changed():
     global vmu_params_list, req_list
+    is_run = False
     param_list = window.nodes_tree.currentItem().text(0)
     if param_list in list(evo_nodes.keys()):
         return False
     else:
+        if window.thread:
+            is_run = True
+            window.connect_to_node()
+
         node = window.nodes_tree.currentItem().parent().text(0)
-        param_list = window.nodes_tree.currentItem().text(0)
+        # param_list = window.nodes_tree.currentItem().text(0)
         if hasattr(evo_nodes[node], 'params_list'):
             vmu_params_list = fill_vmu_list(evo_nodes[node].params_list[param_list])
             req_list = feel_req_list(vmu_params_list)
             show_empty_params_list(vmu_params_list, 'vmu_param_table')
+            if is_run and window.thread is None:
+                window.connect_to_node()
             return True
         else:
             QMessageBox.critical(None, "Ошибка ", 'В этом блоке нет параметров\n Проверь файл с блоками',
@@ -282,14 +292,14 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.setWindowIcon(QIcon('icons_speed.png'))
         #  Создаю поток для опроса параметров кву
         self.thread = None
-        self.connect_btn.clicked.connect(self.connect_to_node)
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
         global can_adapter
         if len(list_of_params) < 2:
             err = str(list_of_params[0])
-            if self.thread.isRunning:
+            # if self.thread.isRunning:
+            if self.thread:
                 self.thread.quit()
                 self.thread.wait()
                 QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
@@ -335,24 +345,32 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                         can_adapter = CANMarathon()
 
         if self.thread is None:
+            print('поток ', self.thread)
+
             self.thread = AThread()
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
             self.thread.finished.connect(self.finishedAThread)
             self.thread.start()
             self.connect_btn.setText("Отключиться")
-            self.nodes_tree.setEnabled(False)
+            print('запускаю поток ', self.thread)
+            # self.nodes_tree.setEnabled(False)
         else:
+            print('останавливаю поток ', self.thread)
+
             self.thread.quit()
             self.thread.wait()
+            while not self.thread.isFinished():
+                pass
             self.thread = None
             self.connect_btn.setText("Подключиться")
-            self.nodes_tree.setEnabled(True)
+            # self.nodes_tree.setEnabled(True)
             can_adapter.close_canal_can()
+            print('поток ', self.thread)
 
     def finishedAThread(self):
         self.thread = None
-        self.nodes_tree.setEnabled(True)
-        self.connect_btn.setText("Подключиться")
+        # self.nodes_tree.setEnabled(True)
+        self.connect_btn.setText("ПоТОК остановился")
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Информация',
@@ -375,6 +393,7 @@ if __name__ == '__main__':
     window = VMUMonitorApp()
     window.setWindowTitle('Параметры всех блоков нижнего уровня EVO1')
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
+    window.connect_btn.clicked.connect(window.connect_to_node)
 
     node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
