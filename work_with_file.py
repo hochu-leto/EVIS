@@ -98,7 +98,7 @@ def fill_vmu_list(vmu_params_list):
                         par['address'] = int(par['address'])
                 if str(par['scale']) == 'nan' or par['scale'] == 0:
                     par['scale'] = 1
-                if str(par['scaleB']) == 'nan':
+                if 'scaleB' not in par.keys() or str(par['scaleB']) == 'nan':
                     par['scaleB'] = 0
 
                 if 'period' not in par.keys() or str(par['period']) == 'nan' or par['period'] <= 0:

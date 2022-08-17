@@ -175,7 +175,7 @@ def params_list_changed():
         # param_list = window.nodes_tree.currentItem().text(0)
         if hasattr(evo_nodes[node], 'params_list'):
             vmu_params_list = fill_vmu_list(evo_nodes[node].params_list[param_list])
-            req_list = feel_req_list(window.current_node.protocol, vmu_params_list)
+            req_list = feel_req_list(evo_nodes[node].protocol, vmu_params_list)
             show_empty_params_list(vmu_params_list, 'vmu_param_table')
             if is_run and window.thread.isFinished():
                 window.connect_to_node()
