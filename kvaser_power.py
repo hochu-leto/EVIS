@@ -203,11 +203,15 @@ class Kvaser:
             i += 1
             if i == self.max_iteration:
                 return self.ch
+        if can_id_req > 0x0000FFF:
+            flags = canlib.MessageFlag.EXT
+        else:
+            flags = canlib.MessageFlag.STD
 
         frame = Frame(
             id_=can_id_req,
             data=message,
-            flags=canlib.MessageFlag.EXT)
+            flags=flags)
 
         try:
             self.ch.write(frame)
