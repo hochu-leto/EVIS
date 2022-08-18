@@ -236,12 +236,13 @@ class CANMarathon:
         buffer = self.Buffer()
 
         buffer.id = ctypes.c_uint32(can_id_req)
-
+        # print(hex(buffer.id), end='    ')
         j = 0
         for i in message:
             buffer.data[j] = ctypes.c_uint8(i)
+            # print(hex(buffer.data[j]), end=' ')
             j += 1
-
+        # print()
         buffer.len = len(message)
         #  от длины iD устанавливаем протокол расширенный
         if can_id_req > 0xFFF:
@@ -323,6 +324,10 @@ class CANMarathon:
                     # print()
                     # попался нужный ид
                     if can_id_ans == buffer.id:
+                        # print(hex(buffer.id), end='    ')
+                        # for i in buffer.data:
+                        #     print(hex(i), end=' ')
+                        # print()
                         return buffer.data
                     # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
                     else:

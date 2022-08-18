@@ -66,7 +66,7 @@ import sys
 import traceback
 
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import pathlib
 import ctypes
@@ -218,19 +218,28 @@ def zero_del(s):
 
 
 def fill_vmu_params_values(ans_list: list):
+    # node = window.nodes_tree.currentItem().parent().text(0)
+    protocol = window.thread.current_node.protocol
     for message in ans_list:
         if message:
             if not isinstance(message, str):
-                #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
-                address_ans = '0x' \
-                              + int_to_hex_str(message[2]) \
-                              + int_to_hex_str(message[1]) \
-                              + int_to_hex_str(message[3])
-                # для реек вот так  address_ans = '0x' + int_to_hex_str(data[4]) + int_to_hex_str(data[5]) наверное
-                # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
-                value = (message[7] << 24) + \
-                        (message[6] << 16) + \
-                        (message[5] << 8) + message[4]
+                if protocol == 'CANOpen':
+                    #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
+                    address_ans = '0x' \
+                                  + int_to_hex_str(message[2]) \
+                                  + int_to_hex_str(message[1]) \
+                                  + int_to_hex_str(message[3])
+                    value = (message[7] << 24) + \
+                            (message[6] << 16) + \
+                            (message[5] << 8) + message[4]
+                elif protocol == 'MODBUS':
+                    # для реек вот так  address_ans = '0x' + int_to_hex_str(data[4]) + int_to_hex_str(data[5]) наверное
+                    # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
+                    address_ans = '0x' + int_to_hex_str(message[4]) + int_to_hex_str(message[5])
+                    value = (message[3] << 24) + (message[2] << 16) + (message[1] << 8) + message[0]
+                else:
+                    address_ans = 0
+                    value = 0
                 # ищу в списке параметров како-то с тем же адресом, что в ответе
                 for par in vmu_params_list:
                     if hex(par["address"]) == address_ans:
@@ -249,6 +258,8 @@ def fill_vmu_params_values(ans_list: list):
                         elif par['type'] == 'FLOAT':
                             par['value'] = bytes_to_float(message[-4:])
                         # print(par['value'])
+                        if 'degree' in par.keys() and str(par['degree']) != 'nan':
+                            par['value'] = par['value'] * 10 ** int(par['degree'])
                         par['value'] = (par['value'] / par['scale'] - par['scaleB'])
                         par['value'] = zero_del(par['value'])
                         break
@@ -285,7 +296,7 @@ class NodeOfEVO(object):
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
-
+    current_node = evo_nodes[node]
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
@@ -327,8 +338,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         for par in vmu_params_list:
             value_item = QTableWidgetItem(str(par['value']))
             value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
+            # value_item.setBackground(QColor('red'))
+
             self.vmu_param_table.setItem(row, 1, value_item)
             row += 1
+        self.vmu_param_table.resizeColumnsToContents()
 
     def connect_to_node(self):
         global can_adapter

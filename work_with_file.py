@@ -128,15 +128,17 @@ def feel_req_list(protocol: str, p_list: list):
         else:
             value_type = 0x2B
         address = int(par['address'])
+        print('address =   ', address)
         MSB = ((address & 0xFF0000) >> 16)
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
         if protocol == 'CANOpen':
             data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
         elif protocol == 'MODBUS':
-            data = [0, 0, 0, 0, LSB, MSB, value_type, 0x03]
+            data = [0, 0, 0, 0, sub_index, LSB, value_type, 0x03]
         else:
             data = bytearray([0, 0, 0, 0, 0, 0, 0, 0])
+        # pprint(data)
         req_list.append(data)
     return req_list
 
