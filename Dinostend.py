@@ -282,13 +282,28 @@ def bytes_to_float(b: list):
     return struct.unpack('<f', bytearray(b))[0]
 
 
-def check_node_online(all_node_list: dict):
-    # pprint(all_node_list)
-    for name_node, nd in all_node_list.items():
-        serial_req = nd.serial_number.split(', ')
+def check_node_online(all_node_dict: dict):
+    exit_dict = {}
+    for name_node, nd in all_node_dict.items():
+        serial_req = [int(i, 16) for i in nd.serial_number.split(', ')]
         node_serial = can_adapter.can_request(nd.req_id, nd.ans_id, serial_req)
-        print(type(serial_req), serial_req, node_serial)
-    return all_node_list
+        print(name_node, serial_req, node_serial)
+        if not isinstance(node_serial,str):
+            if nd.protocol == 'CANOpen':
+                node_serial = (node_serial[7] << 24) + \
+                        (node_serial[6] << 16) + \
+                        (node_serial[5] << 8) + node_serial[4]
+            elif nd.protocol == 'MODBUS':
+                node_serial = (node_serial[3] << 24) + (node_serial[2] << 16) + (node_serial[1] << 8) + node_serial[0]
+            if name_node == 'Инвертор_МЭИ':
+                node_serial = bytes_to_float(node_serial[-4:])  # мега-костыль
+            else:
+                node_serial = ctypes.c_int32(node_serial).node_serial
+            exit_dict[name_node + f' s/n {node_serial}'] = nd
+    if not exit_dict:
+        return all_node_dict, False
+    window.show_nodes_tree(exit_dict)
+    return exit_dict, True
 
 
 class NodeOfEVO(object):
@@ -345,17 +360,33 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def show_new_vmu_params(self):
         row = 0
-        p = 150 / window.thread.max_iteration
 
         for par in vmu_params_list:
             value_item = QTableWidgetItem(str(par['value']))
             value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
-            color_opacity = int(p * par['period']) + 3
+            color_opacity = int((150 / window.thread.max_iteration) * par['period']) + 3
             value_item.setBackground(QColor(0, 255, 255, color_opacity))
 
             self.vmu_param_table.setItem(row, 1, value_item)
             row += 1
         self.vmu_param_table.resizeColumnsToContents()
+
+    def show_nodes_tree(self, nodes:dict):
+        self.nodes_tree.setColumnCount(1)
+        self.nodes_tree.header().close()
+        items = []
+        for node in evo_nodes.values():
+            item = QTreeWidgetItem()
+            item.setText(0, node.name)
+            if hasattr(node, 'params_list'):
+                for param_list in node.params_list.keys():
+                    child_item = QTreeWidgetItem()
+                    child_item.setText(0, str(param_list))
+                    item.addChild(child_item)
+            items.append(item)
+
+        self.nodes_tree.insertTopLevelItems(0, items)
+        self.nodes_tree.setCurrentItem(window.nodes_tree.topLevelItem(0).child(0))
 
     def connect_to_node(self):
         global can_adapter, evo_nodes
@@ -373,7 +404,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                         can_adapter = CANMarathon()
 
         if not self.node_list_defined:
-            evo_nodes = check_node_online(evo_nodes)
+            evo_nodes, check = check_node_online(evo_nodes)
+            self.node_list_defined = check
 
         if not self.thread.isRunning():
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
@@ -422,21 +454,7 @@ if __name__ == '__main__':
     for node in node_list:
         evo_nodes[node['name']] = NodeOfEVO(node)
 
-    window.nodes_tree.setColumnCount(1)
-    window.nodes_tree.header().close()
-    items = []
-    for node in evo_nodes.values():
-        item = QTreeWidgetItem()
-        item.setText(0, node.name)
-        if hasattr(node, 'params_list'):
-            for param_list in node.params_list.keys():
-                child_item = QTreeWidgetItem()
-                child_item.setText(0, str(param_list))
-                item.addChild(child_item)
-        items.append(item)
-
-    window.nodes_tree.insertTopLevelItems(0, items)
-    window.nodes_tree.setCurrentItem(window.nodes_tree.topLevelItem(0).child(0))
+    window.show_nodes_tree(evo_nodes)
 
     if node_list and params_list_changed():
         window.vmu_param_table.adjustSize()

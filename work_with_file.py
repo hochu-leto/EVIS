@@ -12,6 +12,7 @@ value_type_dict = {'UNSIGNED16': 0x2B,
                    'SIGNED8': 0x2F,
                    'FLOAT': 0x23}
 
+
 def fill_bookmarks_list(file_name):
     need_fields = {'name', 'address', 'type'}
     file = pandas.ExcelFile(file_name)
@@ -43,7 +44,7 @@ def fill_node_list(file_name):
             bookmark_dict[sheet_name] = sheet_params_list  # строками в словарь,где ключ - название страницы
 
     node_sheet = file.parse(sheet_name='nodes')
-    node_list = node_sheet.to_dict(orient='records')    # парсим лист "nodes"
+    node_list = node_sheet.to_dict(orient='records')  # парсим лист "nodes"
     for node in node_list:
         node_name = node['name']
         node_params_list = {}
