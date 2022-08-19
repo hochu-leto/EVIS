@@ -128,7 +128,7 @@ def feel_req_list(protocol: str, p_list: list):
         else:
             value_type = 0x2B
         address = int(par['address'])
-        print('address =   ', address)
+        # print('address =   ', address)
         MSB = ((address & 0xFF0000) >> 16)
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF

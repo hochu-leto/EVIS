@@ -193,6 +193,7 @@ def show_empty_params_list(list_of_params: list, table: str):
     row = 0
 
     for par in list_of_params:
+
         name_item = QTableWidgetItem(par['name'])
         name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
         show_table.setItem(row, 0, name_item)
@@ -237,7 +238,7 @@ def fill_vmu_params_values(ans_list: list):
                     # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
                     address_ans = '0x' + int_to_hex_str(message[4]) + int_to_hex_str(message[5])
                     value = (message[3] << 24) + (message[2] << 16) + (message[1] << 8) + message[0]
-                else:
+                else:   # нужно какое-то аварийное решение
                     address_ans = 0
                     value = 0
                 # ищу в списке параметров како-то с тем же адресом, что в ответе
@@ -296,7 +297,7 @@ class NodeOfEVO(object):
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
-    current_node = evo_nodes[node]
+
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
@@ -335,10 +336,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def show_new_vmu_params(self):
         row = 0
+        p = 150 / window.thread.max_iteration
+
         for par in vmu_params_list:
             value_item = QTableWidgetItem(str(par['value']))
             value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
-            # value_item.setBackground(QColor('red'))
+            color_opacity = int(p * par['period']) + 3
+            value_item.setBackground(QColor(0, 255, 255, color_opacity))
 
             self.vmu_param_table.setItem(row, 1, value_item)
             row += 1
