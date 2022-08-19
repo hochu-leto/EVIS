@@ -282,6 +282,15 @@ def bytes_to_float(b: list):
     return struct.unpack('<f', bytearray(b))[0]
 
 
+def check_node_online(all_node_list: dict):
+    # pprint(all_node_list)
+    for name_node, nd in all_node_list.items():
+        serial_req = nd.serial_number.split(', ')
+        node_serial = can_adapter.can_request(nd.req_id, nd.ans_id, serial_req)
+        print(type(serial_req), serial_req, node_serial)
+    return all_node_list
+
+
 class NodeOfEVO(object):
     def __init__(self, *initial_data, **kwargs):
         for dictionary in initial_data:
@@ -294,9 +303,9 @@ class NodeOfEVO(object):
 # поток для сохранения настроечных параметров блока в файл
 # поток для ответа на апи
 #  поток для опроса и записи текущих в файл параметров кву
-
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
+    node_list_defined = False
 
     def __init__(self):
         super().__init__()
@@ -349,7 +358,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.vmu_param_table.resizeColumnsToContents()
 
     def connect_to_node(self):
-        global can_adapter
+        global can_adapter, evo_nodes
+
         if can_adapter is None:
             if platform == "linux" or platform == "linux2":  # linux
                 can_adapter = Kvaser(0, 125)
@@ -361,6 +371,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 if isinstance(mes, str):
                     if mes == 'Адаптер не подключен':
                         can_adapter = CANMarathon()
+
+        if not self.node_list_defined:
+            evo_nodes = check_node_online(evo_nodes)
 
         if not self.thread.isRunning():
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
