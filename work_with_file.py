@@ -4,13 +4,13 @@ from pprint import pprint
 import pandas
 from PyQt5.QtWidgets import QMessageBox
 
-value_type_dict = {'UINT16': 0x2B,
-                   'INT16': 0x2B,
-                   'UINT32': 0x23,
-                   'INT32': 0x23,
-                   'UINT8': 0x2F,
-                   'INT8': 0x2F,
-                   'DATA': 0x23}
+value_type_dict = {'UNSIGNED16': 0x2B,
+                   'SIGNED16': 0x2B,
+                   'UNSIGNED32': 0x23,
+                   'SIGNED32': 0x23,
+                   'UNSIGNED8': 0x2F,
+                   'SIGNED8': 0x2F,
+                   'FLOAT': 0x23}
 
 def fill_bookmarks_list(file_name):
     need_fields = {'name', 'address', 'type'}

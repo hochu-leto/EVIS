@@ -236,7 +236,7 @@ def fill_vmu_params_values(ans_list: list):
                 elif protocol == 'MODBUS':
                     # для реек вот так  address_ans = '0x' + int_to_hex_str(data[4]) + int_to_hex_str(data[5]) наверное
                     # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
-                    address_ans = '0x' + int_to_hex_str(message[4]) + int_to_hex_str(message[5])
+                    address_ans = hex((message[5] << 8) + message[4])
                     value = (message[3] << 24) + (message[2] << 16) + (message[1] << 8) + message[0]
                 else:   # нужно какое-то аварийное решение
                     address_ans = 0
@@ -260,7 +260,7 @@ def fill_vmu_params_values(ans_list: list):
                             par['value'] = bytes_to_float(message[-4:])
                         # print(par['value'])
                         if 'degree' in par.keys() and str(par['degree']) != 'nan':
-                            par['value'] = par['value'] * 10 ** int(par['degree'])
+                            par['value'] = par['value'] / 10 ** int(par['degree'])
                         par['value'] = (par['value'] / par['scale'] - par['scaleB'])
                         par['value'] = zero_del(par['value'])
                         break
