@@ -214,10 +214,6 @@ def show_empty_params_list(list_of_params: list, table: str):
     show_table.resizeColumnsToContents()
 
 
-def zero_del(s):
-    return '{:g}'.format(s)
-
-
 def fill_vmu_params_values(ans_list: list):
     # node = window.nodes_tree.currentItem().parent().text(0)
     protocol = window.thread.current_node.protocol
@@ -264,6 +260,11 @@ def fill_vmu_params_values(ans_list: list):
                         par['value'] = (par['value'] / par['scale'] - par['scaleB'])
                         par['value'] = zero_del(par['value'])
                         break
+
+
+def zero_del(s):
+    return f'{s:>8}'
+    # return '{:g}'.format(s)
 
 
 def int_to_hex_str(x: int):
