@@ -4,6 +4,14 @@ from pprint import pprint
 import pandas
 from PyQt5.QtWidgets import QMessageBox
 
+value_type_dict = {'UNSIGNED16': 0x2B,
+                   'SIGNED16': 0x2B,
+                   'UNSIGNED32': 0x23,
+                   'SIGNED32': 0x23,
+                   'UNSIGNED8': 0x2F,
+                   'SIGNED8': 0x2F,
+                   'FLOAT': 0x23}
+
 
 def fill_bookmarks_list(file_name):
     need_fields = {'name', 'address', 'type'}
@@ -36,7 +44,7 @@ def fill_node_list(file_name):
             bookmark_dict[sheet_name] = sheet_params_list  # строками в словарь,где ключ - название страницы
 
     node_sheet = file.parse(sheet_name='nodes')
-    node_list = node_sheet.to_dict(orient='records')    # парсим лист "nodes"
+    node_list = node_sheet.to_dict(orient='records')  # парсим лист "nodes"
     for node in node_list:
         node_name = node['name']
         node_params_list = {}
@@ -51,6 +59,8 @@ def fill_node_list(file_name):
                             p_list = []
                             prev_group_name = param['name'].replace('group ', '')
                         else:
+                            #  получается, что здесь я не проверяю наличие нужных поле у параметра
+                            #  это происходит только при заполнении списка vmu_params_list
                             p_list.append(param)
                 node_params_list[prev_group_name] = p_list.copy()
                 del node_params_list['']
@@ -89,8 +99,14 @@ def fill_vmu_list(vmu_params_list):
                         par['address'] = int(par['address'])
                 if str(par['scale']) == 'nan' or par['scale'] == 0:
                     par['scale'] = 1
-                if str(par['scaleB']) == 'nan':
+                if 'scaleB' not in par.keys() or str(par['scaleB']) == 'nan':
                     par['scaleB'] = 0
+
+                if 'period' not in par.keys() or str(par['period']) == 'nan' or par['period'] <= 0:
+                    par['period'] = 1
+                elif par['period'] > 1000:
+                    par['period'] = 1000
+
                 exit_list.append(par)
     return exit_list
 
@@ -105,14 +121,25 @@ def make_vmu_error_dict(file_name):
     return ex_dict
 
 
-def feel_req_list(p_list: list):
+def feel_req_list(protocol: str, p_list: list):
     req_list = []
     for par in p_list:
+        if par['type'] in value_type_dict.keys():
+            value_type = value_type_dict[par['type']]
+        else:
+            value_type = 0x2B
         address = int(par['address'])
+        # print('address =   ', address)
         MSB = ((address & 0xFF0000) >> 16)
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
-        data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
+        if protocol == 'CANOpen':
+            data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
+        elif protocol == 'MODBUS':
+            data = [0, 0, 0, 0, sub_index, LSB, value_type, 0x03]
+        else:
+            data = bytearray([0, 0, 0, 0, 0, 0, 0, 0])
+        # pprint(data)
         req_list.append(data)
     return req_list
 

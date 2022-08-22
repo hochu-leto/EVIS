@@ -4,9 +4,9 @@ from PyQt5.QtCore import QThread, QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import two_chanell_ui
-from Dinostend import VMU_ID_PDO
 from marathon_power import CANMarathon
-from work_with_file import adding_to_csv_file
+
+VMU_ID_PDO = 0x00000403
 
 marathon = CANMarathon()
 marathon2 = CANMarathon()

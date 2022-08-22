@@ -60,22 +60,21 @@
 марафон очень долго отдупляет что нет шины - по такой ошибке следует прерывать опрос и сразу выдавать предупреждение
 
 """
+import time
 from pprint import pprint
 import sys
 import traceback
-from PyQt5.QtCore import QThread, pyqtSignal, QObject, pyqtSlot, Qt, QThreadPool, QTimer, QEventLoop
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, \
-    QAbstractScrollArea, QSizePolicy
+
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop
+from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import pathlib
 import ctypes
 import struct
-import time
 import VMU_monitor_ui
 from kvaser_power import Kvaser
 from marathon_power import CANMarathon
-from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, adding_to_csv_file, fill_bookmarks_list, \
-    fill_node_list
+from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, fill_node_list
 from sys import platform
 
 can_adapter = None
@@ -83,15 +82,12 @@ can_adapter = None
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU1.xlsx'
 vmu_errors_file = 'kvu_error_codes_my.xlsx'
-VMU_ID_PDO = 0x00000403
-command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus', 'rr_sus', 'rl_sus'}
 
 
 # Если при ошибке в слотах приложение просто падает без стека,
 # есть хороший способ ловить такие ошибки:
 def log_uncaught_exceptions(ex_cls, ex, tb):
     text = '{}: {}:\n'.format(ex_cls.__name__, ex)
-    # import traceback
     text += ''.join(traceback.format_tb(tb))
 
     print(text)
@@ -104,12 +100,33 @@ sys.excepthook = log_uncaught_exceptions
 
 class AThread(QThread):
     threadSignalAThread = pyqtSignal(list)
+    max_iteration = 1000
+    iter_count = 1
 
     def __init__(self):
         super().__init__()
 
     def run(self):
+        def emitting():
+            self.threadSignalAThread.emit(self.ans_list)
+            self.params_counter = 0
+            self.errors_counter = 0
+            self.ans_list = []
+            self.iter_count += 1
+            if self.iter_count > self.max_iteration:
+                self.iter_count = 1
+
         def request_node():
+
+            if not self.iter_count == 1:
+                while not self.iter_count % vmu_params_list[self.params_counter]['period'] == 0:
+                    self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
+                    self.params_counter += 1
+                    if self.params_counter >= self.len_param_list:
+                        self.params_counter = 0
+                        emitting()
+                        return
+
             param = can_adapter.can_request(self.current_node.req_id, self.current_node.ans_id,
                                             req_list[self.params_counter])
             self.ans_list.append(param)
@@ -117,19 +134,15 @@ class AThread(QThread):
 
             if isinstance(param, str):
                 self.errors_counter += 1
-                # if (self.errors_counter > self.len_param_list / 3) or self.errors_counter > 3:
-                #     self.threadSignalAThread.emit([param])
-                #     return
                 if self.errors_counter > 3:
                     self.threadSignalAThread.emit([param])
                     return
             else:
                 self.errors_counter = 0
-            if self.params_counter == self.len_param_list:
-                self.threadSignalAThread.emit(self.ans_list)
-                self.errors_counter = 0
+
+            if self.params_counter >= self.len_param_list:
                 self.params_counter = 0
-                self.ans_list = []
+                emitting()
 
         send_delay = 10  # задержка отправки в кан сообщений
         self.len_param_list = len(req_list)
@@ -151,16 +164,23 @@ class AThread(QThread):
 
 def params_list_changed():
     global vmu_params_list, req_list
+    is_run = False
     param_list = window.nodes_tree.currentItem().text(0)
     if param_list in list(evo_nodes.keys()):
         return False
     else:
+        if window.thread.isRunning():
+            is_run = True
+            window.connect_to_node()
+
         node = window.nodes_tree.currentItem().parent().text(0)
-        param_list = window.nodes_tree.currentItem().text(0)
+        # param_list = window.nodes_tree.currentItem().text(0)
         if hasattr(evo_nodes[node], 'params_list'):
             vmu_params_list = fill_vmu_list(evo_nodes[node].params_list[param_list])
-            req_list = feel_req_list(vmu_params_list)
+            req_list = feel_req_list(evo_nodes[node].protocol, vmu_params_list)
             show_empty_params_list(vmu_params_list, 'vmu_param_table')
+            if is_run and window.thread.isFinished():
+                window.connect_to_node()
             return True
         else:
             QMessageBox.critical(None, "Ошибка ", 'В этом блоке нет параметров\n Проверь файл с блоками',
@@ -175,6 +195,7 @@ def show_empty_params_list(list_of_params: list, table: str):
     row = 0
 
     for par in list_of_params:
+
         name_item = QTableWidgetItem(par['name'])
         name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
         show_table.setItem(row, 0, name_item)
@@ -195,23 +216,29 @@ def show_empty_params_list(list_of_params: list, table: str):
     show_table.resizeColumnsToContents()
 
 
-def zero_del(s):
-    return '{:g}'.format(s)
-
-
 def fill_vmu_params_values(ans_list: list):
+    # node = window.nodes_tree.currentItem().parent().text(0)
+    protocol = window.thread.current_node.protocol
     for message in ans_list:
         if message:
             if not isinstance(message, str):
-                #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
-                address_ans = '0x' \
-                              + int_to_hex_str(message[2]) \
-                              + int_to_hex_str(message[1]) \
-                              + int_to_hex_str(message[3])
-
-                value = (message[7] << 24) + \
-                        (message[6] << 16) + \
-                        (message[5] << 8) + message[4]
+                if protocol == 'CANOpen':
+                    #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
+                    address_ans = '0x' \
+                                  + int_to_hex_str(message[2]) \
+                                  + int_to_hex_str(message[1]) \
+                                  + int_to_hex_str(message[3])
+                    value = (message[7] << 24) + \
+                            (message[6] << 16) + \
+                            (message[5] << 8) + message[4]
+                elif protocol == 'MODBUS':
+                    # для реек вот так  address_ans = '0x' + int_to_hex_str(data[4]) + int_to_hex_str(data[5]) наверное
+                    # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
+                    address_ans = hex((message[5] << 8) + message[4])
+                    value = (message[3] << 24) + (message[2] << 16) + (message[1] << 8) + message[0]
+                else:  # нужно какое-то аварийное решение
+                    address_ans = 0
+                    value = 0
                 # ищу в списке параметров како-то с тем же адресом, что в ответе
                 for par in vmu_params_list:
                     if hex(par["address"]) == address_ans:
@@ -230,9 +257,16 @@ def fill_vmu_params_values(ans_list: list):
                         elif par['type'] == 'FLOAT':
                             par['value'] = bytes_to_float(message[-4:])
                         # print(par['value'])
+                        if 'degree' in par.keys() and str(par['degree']) != 'nan':
+                            par['value'] = par['value'] / 10 ** int(par['degree'])
                         par['value'] = (par['value'] / par['scale'] - par['scaleB'])
-                        par['value'] = zero_del(par['value'])
+                        par['value'] = zero_del(round(par['value'], 4))
                         break
+
+
+def zero_del(s):
+    return f'{s:>8}'.rstrip('0').rstrip('.')
+    # return '{:g}'.format(s)
 
 
 def int_to_hex_str(x: int):
@@ -251,6 +285,31 @@ def bytes_to_float(b: list):
     return struct.unpack('<f', bytearray(b))[0]
 
 
+def check_node_online(all_node_dict: dict):
+    exit_dict = {}
+    for name_node, nd in all_node_dict.items():
+        serial_req = [int(i, 16) for i in nd.serial_number.split(', ')]
+        node_serial = can_adapter.can_request(nd.req_id, nd.ans_id, serial_req)
+        # print(name_node, serial_req, node_serial)
+        if not isinstance(node_serial, str):
+            if nd.protocol == 'CANOpen':
+                node_serial = (node_serial[7] << 24) + \
+                              (node_serial[6] << 16) + \
+                              (node_serial[5] << 8) + node_serial[4]
+            elif nd.protocol == 'MODBUS':
+                node_serial = node_serial[0]
+            else:
+                node_serial = ctypes.c_int32(node_serial)
+            nd.name = name_node + f' s/n {node_serial}'
+            exit_dict[nd.name] = nd
+    if not exit_dict:
+        return all_node_dict, False
+    window.nodes_tree.currentItemChanged.disconnect()
+    window.show_nodes_tree(exit_dict)
+    window.nodes_tree.currentItemChanged.connect(params_list_changed)
+    return exit_dict, True
+
+
 class NodeOfEVO(object):
     def __init__(self, *initial_data, **kwargs):
         for dictionary in initial_data:
@@ -263,9 +322,9 @@ class NodeOfEVO(object):
 # поток для сохранения настроечных параметров блока в файл
 # поток для ответа на апи
 #  поток для опроса и записи текущих в файл параметров кву
-
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
+    node_list_defined = False
 
     def __init__(self):
         super().__init__()
@@ -273,15 +332,14 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.setupUi(self)
         self.setWindowIcon(QIcon('icons_speed.png'))
         #  Создаю поток для опроса параметров кву
-        self.thread = None
-        self.connect_btn.clicked.connect(self.connect_to_node)
+        self.thread = AThread()
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
         global can_adapter
-        if len(list_of_params) < 2:
+        if len(list_of_params) < 2 and isinstance(list_of_params[0], str):
             err = str(list_of_params[0])
-            if self.thread.isRunning:
+            if self.thread.isRunning():
                 self.thread.quit()
                 self.thread.wait()
                 QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
@@ -306,56 +364,75 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def show_new_vmu_params(self):
         row = 0
+
         for par in vmu_params_list:
             value_item = QTableWidgetItem(str(par['value']))
             value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
+            color_opacity = int((150 / window.thread.max_iteration) * par['period']) + 3
+            value_item.setBackground(QColor(0, 255, 255, color_opacity))
+
             self.vmu_param_table.setItem(row, 1, value_item)
             row += 1
+        self.vmu_param_table.resizeColumnsToContents()
+
+    def show_nodes_tree(self, nodes: dict):
+        self.nodes_tree.clear()
+        self.nodes_tree.setColumnCount(1)
+        self.nodes_tree.header().close()
+        items = []
+        for node in nodes.values():
+            item = QTreeWidgetItem()
+            item.setText(0, node.name)
+            if hasattr(node, 'params_list'):
+                for param_list in node.params_list.keys():
+                    child_item = QTreeWidgetItem()
+                    child_item.setText(0, str(param_list))
+                    item.addChild(child_item)
+            items.append(item)
+
+        self.nodes_tree.insertTopLevelItems(0, items)
+        self.nodes_tree.setCurrentItem(window.nodes_tree.topLevelItem(0).child(0))
 
     def connect_to_node(self):
-        global can_adapter
+        global can_adapter, evo_nodes
+
         if can_adapter is None:
-            if platform == "linux" or platform == "linux2":
+            if platform == "linux" or platform == "linux2":  # linux
                 can_adapter = Kvaser(0, 125)
-                # linux
-            elif platform == "darwin":
+            elif platform == "darwin":  # OS X
                 print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
-                pass
-                # OS X
-            elif platform == "win32":
+            elif platform == "win32":  # Windows...
                 can_adapter = Kvaser(0, 125)
                 mes = can_adapter.can_request(0, 0, [0])
                 if isinstance(mes, str):
                     if mes == 'Адаптер не подключен':
                         can_adapter = CANMarathon()
-                # Windows...
-        if self.thread is None:
-            self.thread = AThread()
+
+        if not self.node_list_defined:
+            evo_nodes, check = check_node_online(evo_nodes)
+            self.node_list_defined = check
+
+        if not self.thread.isRunning():
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
             self.thread.finished.connect(self.finishedAThread)
+            self.thread.iter_count = 1
             self.thread.start()
             self.connect_btn.setText("Отключиться")
-            #     сделать неактивной левую менюху выбора списка параметров
-            self.nodes_tree.setEnabled(False)
+            # self.nodes_tree.setEnabled(False)
         else:
             self.thread.quit()
             self.thread.wait()
-            self.thread = None
             self.connect_btn.setText("Подключиться")
-            self.nodes_tree.setEnabled(True)
             can_adapter.close_canal_can()
 
     def finishedAThread(self):
-        self.thread = None
-        self.nodes_tree.setEnabled(True)
-        self.connect_btn.setText("Подключиться")
+        pass
 
     def closeEvent(self, event):
-        reply = QMessageBox.question \
-            (self, 'Информация',
-             "Вы уверены, что хотите закрыть приложение?",
-             QMessageBox.Yes,
-             QMessageBox.No)
+        reply = QMessageBox.question(self, 'Информация',
+                                     "Вы уверены, что хотите закрыть приложение?",
+                                     QMessageBox.Yes,
+                                     QMessageBox.No)
         if reply == QMessageBox.Yes:
             if self.thread:
                 self.thread.quit()
@@ -372,6 +449,7 @@ if __name__ == '__main__':
     window = VMUMonitorApp()
     window.setWindowTitle('Параметры всех блоков нижнего уровня EVO1')
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
+    window.connect_btn.clicked.connect(window.connect_to_node)
 
     node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
@@ -381,21 +459,7 @@ if __name__ == '__main__':
     for node in node_list:
         evo_nodes[node['name']] = NodeOfEVO(node)
 
-    window.nodes_tree.setColumnCount(1)
-    window.nodes_tree.header().close()
-    items = []
-    for node in evo_nodes.values():
-        item = QTreeWidgetItem()
-        item.setText(0, node.name)
-        if hasattr(node, 'params_list'):
-            for param_list in node.params_list.keys():
-                child_item = QTreeWidgetItem()
-                child_item.setText(0, str(param_list))
-                item.addChild(child_item)
-        items.append(item)
-
-    window.nodes_tree.insertTopLevelItems(0, items)
-    window.nodes_tree.setCurrentItem(window.nodes_tree.topLevelItem(0).child(0))
+    window.show_nodes_tree(evo_nodes)
 
     if node_list and params_list_changed():
         window.vmu_param_table.adjustSize()
