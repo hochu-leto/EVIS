@@ -324,23 +324,24 @@ class NodeOfEVO(object):
 #  поток для опроса и записи текущих в файл параметров кву
 def check_node_errors():
     for nd in evo_nodes.values():
-        err_req = [int(i, 16) for i in nd.errors_req.split(', ')]
-        errors = can_adapter.can_request(nd.req_id, nd.ans_id, err_req)
-        if not isinstance(errors, str):
-            errors_str = ''
-            # надо как-то проверить когда нет ошибок и когда нет ответа
-            if nd.protocol == 'CANOpen':
-                errors = (errors[7] << 24) + \
-                              (errors[6] << 16) + \
-                              (errors[5] << 8) + errors[4]
-            elif nd.protocol == 'MODBUS':
-                errors = errors[0]
-            else:
-                errors = ctypes.c_int32(errors)
-            if errors != 0:
-                for err_nom, err_str in nd.errors_list.items():
-                    if errors & err_nom:
-                        errors_str += err_str + '\n'
+        if str(nd.errors_req) != 'nan' and str(nd.errors_list) != 'nan':
+            err_req = [int(i, 16) for i in nd.errors_req.split(', ')]
+            errors = can_adapter.can_request(nd.req_id, nd.ans_id, err_req)
+            if not isinstance(errors, str):
+                errors_str = ''
+                # надо как-то проверить когда нет ошибок и когда нет ответа
+                if nd.protocol == 'CANOpen':
+                    errors = (errors[7] << 24) + \
+                                  (errors[6] << 16) + \
+                                  (errors[5] << 8) + errors[4]
+                elif nd.protocol == 'MODBUS':
+                    errors = errors[0]
+                else:
+                    errors = ctypes.c_int32(errors)
+                if errors != 0:
+                    for err_nom, err_str in nd.errors_list.items():
+                        if errors & err_nom:
+                            errors_str += err_str + '\n'
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
