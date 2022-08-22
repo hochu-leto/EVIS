@@ -322,6 +322,27 @@ class NodeOfEVO(object):
 # поток для сохранения настроечных параметров блока в файл
 # поток для ответа на апи
 #  поток для опроса и записи текущих в файл параметров кву
+def check_node_errors():
+    for nd in evo_nodes.values():
+        err_req = [int(i, 16) for i in nd.errors_req.split(', ')]
+        errors = can_adapter.can_request(nd.req_id, nd.ans_id, err_req)
+        if not isinstance(errors, str):
+            errors_str = ''
+            # надо как-то проверить когда нет ошибок и когда нет ответа
+            if nd.protocol == 'CANOpen':
+                errors = (errors[7] << 24) + \
+                              (errors[6] << 16) + \
+                              (errors[5] << 8) + errors[4]
+            elif nd.protocol == 'MODBUS':
+                errors = errors[0]
+            else:
+                errors = ctypes.c_int32(errors)
+            if errors != 0:
+                for err_nom, err_str in nd.errors_list.items():
+                    if errors & err_nom:
+                        errors_str += err_str + '\n'
+
+
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
     node_list_defined = False
@@ -410,6 +431,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         if not self.node_list_defined:
             evo_nodes, check = check_node_online(evo_nodes)
+            self.read_errors_btn.setEnabled(check)
             self.node_list_defined = check
 
         if not self.thread.isRunning():
@@ -450,6 +472,7 @@ if __name__ == '__main__':
     window.setWindowTitle('Параметры всех блоков нижнего уровня EVO1')
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.connect_btn.clicked.connect(window.connect_to_node)
+    window.read_errors_btn.clicked.connect(check_node_errors)
 
     node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))
