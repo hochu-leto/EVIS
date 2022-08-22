@@ -122,7 +122,8 @@ class AThread(QThread):
                 while not self.iter_count % vmu_params_list[self.params_counter]['period'] == 0:
                     self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
                     self.params_counter += 1
-                    if self.params_counter == self.len_param_list:
+                    if self.params_counter >= self.len_param_list:
+                        self.params_counter = 0
                         emitting()
                         return
 
@@ -139,7 +140,8 @@ class AThread(QThread):
             else:
                 self.errors_counter = 0
 
-            if self.params_counter == self.len_param_list:
+            if self.params_counter >= self.len_param_list:
+                self.params_counter = 0
                 emitting()
 
         send_delay = 10  # задержка отправки в кан сообщений
@@ -214,10 +216,6 @@ def show_empty_params_list(list_of_params: list, table: str):
     show_table.resizeColumnsToContents()
 
 
-def zero_del(s):
-    return '{:g}'.format(s)
-
-
 def fill_vmu_params_values(ans_list: list):
     # node = window.nodes_tree.currentItem().parent().text(0)
     protocol = window.thread.current_node.protocol
@@ -238,7 +236,7 @@ def fill_vmu_params_values(ans_list: list):
                     # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
                     address_ans = hex((message[5] << 8) + message[4])
                     value = (message[3] << 24) + (message[2] << 16) + (message[1] << 8) + message[0]
-                else:   # нужно какое-то аварийное решение
+                else:  # нужно какое-то аварийное решение
                     address_ans = 0
                     value = 0
                 # ищу в списке параметров како-то с тем же адресом, что в ответе
@@ -262,8 +260,13 @@ def fill_vmu_params_values(ans_list: list):
                         if 'degree' in par.keys() and str(par['degree']) != 'nan':
                             par['value'] = par['value'] / 10 ** int(par['degree'])
                         par['value'] = (par['value'] / par['scale'] - par['scaleB'])
-                        par['value'] = zero_del(par['value'])
+                        par['value'] = zero_del(round(par['value'], 4))
                         break
+
+
+def zero_del(s):
+    return f'{s:>8}'.rstrip('0').rstrip('.')
+    # return '{:g}'.format(s)
 
 
 def int_to_hex_str(x: int):
@@ -287,22 +290,23 @@ def check_node_online(all_node_dict: dict):
     for name_node, nd in all_node_dict.items():
         serial_req = [int(i, 16) for i in nd.serial_number.split(', ')]
         node_serial = can_adapter.can_request(nd.req_id, nd.ans_id, serial_req)
-        print(name_node, serial_req, node_serial)
-        if not isinstance(node_serial,str):
+        # print(name_node, serial_req, node_serial)
+        if not isinstance(node_serial, str):
             if nd.protocol == 'CANOpen':
                 node_serial = (node_serial[7] << 24) + \
-                        (node_serial[6] << 16) + \
-                        (node_serial[5] << 8) + node_serial[4]
+                              (node_serial[6] << 16) + \
+                              (node_serial[5] << 8) + node_serial[4]
             elif nd.protocol == 'MODBUS':
-                node_serial = (node_serial[3] << 24) + (node_serial[2] << 16) + (node_serial[1] << 8) + node_serial[0]
-            if name_node == 'Инвертор_МЭИ':
-                node_serial = bytes_to_float(node_serial[-4:])  # мега-костыль
+                node_serial = node_serial[0]
             else:
-                node_serial = ctypes.c_int32(node_serial).node_serial
-            exit_dict[name_node + f' s/n {node_serial}'] = nd
+                node_serial = ctypes.c_int32(node_serial)
+            nd.name = name_node + f' s/n {node_serial}'
+            exit_dict[nd.name] = nd
     if not exit_dict:
         return all_node_dict, False
+    window.nodes_tree.currentItemChanged.disconnect()
     window.show_nodes_tree(exit_dict)
+    window.nodes_tree.currentItemChanged.connect(params_list_changed)
     return exit_dict, True
 
 
@@ -371,11 +375,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             row += 1
         self.vmu_param_table.resizeColumnsToContents()
 
-    def show_nodes_tree(self, nodes:dict):
+    def show_nodes_tree(self, nodes: dict):
+        self.nodes_tree.clear()
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
         items = []
-        for node in evo_nodes.values():
+        for node in nodes.values():
             item = QTreeWidgetItem()
             item.setText(0, node.name)
             if hasattr(node, 'params_list'):
