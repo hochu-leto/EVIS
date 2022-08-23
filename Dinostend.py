@@ -100,6 +100,7 @@ sys.excepthook = log_uncaught_exceptions
 
 class AThread(QThread):
     threadSignalAThread = pyqtSignal(list)
+    err_thread_signal = pyqtSignal(str)
     max_iteration = 1000
     iter_count = 1
 
@@ -117,7 +118,6 @@ class AThread(QThread):
                 self.iter_count = 1
 
         def request_node():
-
             if not self.iter_count == 1:
                 while not self.iter_count % vmu_params_list[self.params_counter]['period'] == 0:
                     self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
@@ -144,7 +144,16 @@ class AThread(QThread):
                 self.params_counter = 0
                 emitting()
 
+        def request_errors():
+            timer.stop()
+            strg = 'Время подумать'
+            self.err_thread_signal.emit(strg)
+            time.sleep(1)
+            timer.start(send_delay)
+            pass
+
         send_delay = 10  # задержка отправки в кан сообщений
+        err_req_delay = 1500
         self.len_param_list = len(req_list)
         self.current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
         self.errors_counter = 0
@@ -154,6 +163,9 @@ class AThread(QThread):
         timer = QTimer()
         timer.timeout.connect(request_node)
         timer.start(send_delay)
+        err_timer = QTimer()
+        err_timer.timeout.connect(request_errors)
+        err_timer.start(err_req_delay)
         loop = QEventLoop()
         loop.exec_()
 
@@ -329,25 +341,28 @@ def check_node_errors():
             if ';' in nd.errors_req:
                 err_req_list = nd.errors_req.split(';')
             else:
-                err_req_list = {nd.errors_req}
-            err_req = [int(i, 16) for i in nd.errors_req.split(', ')]
+                err_req_list = [nd.errors_req]
             import ast
             node_errors_list = ast.literal_eval(nd.errors_list)
-            errors = can_adapter.can_request(nd.req_id, nd.ans_id, err_req)
-            pprint(errors)
-            if not isinstance(errors, str):
-                if nd.protocol == 'CANOpen':
-                    errors = (errors[5] << 8) + errors[4]
-                elif nd.protocol == 'MODBUS':
-                    errors = errors[0]
-                else:
-                    errors = ctypes.c_int32(errors)
-                if errors != 0:
-                    for err_nom, err_str in node_errors_list.items():
-                        if errors & err_nom:
-                            errors_str += nd.name + ':  ' + err_str + '\n'
+            for errors_req in err_req_list:
+                err_req = [int(i, 16) for i in errors_req.split(', ')]
+
+                errors = can_adapter.can_request(nd.req_id, nd.ans_id, err_req)
+                pprint(errors)
+                if not isinstance(errors, str):
+                    if nd.protocol == 'CANOpen':
+                        errors = (errors[5] << 8) + errors[4]
+                    elif nd.protocol == 'MODBUS':
+                        errors = errors[0]
+                    else:
+                        errors = ctypes.c_int32(errors)
+                    if errors != 0:
+                        for err_nom, err_str in node_errors_list.items():
+                            if errors & err_nom:
+                                errors_str += nd.name + ':  ' + err_str + '\n'
     window.errors_browser.setText(errors_str)
     pprint(errors_str)
+
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
@@ -379,15 +394,17 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             fill_vmu_params_values(list_of_params)
             self.show_new_vmu_params()
 
-    @pyqtSlot(list)
-    def add_new_vmu_errors(self, list_of_errors: list):
-        err = ''
-        for er in list_of_errors:
-            if er in vmu_errors_dict.keys():
-                err += vmu_errors_dict[er] + '\n'
-            else:
-                err += 'Неизведанная ошибка ' + str(er) + '\n'
-        window.errors_browser.setText(err)
+    @pyqtSlot(str)
+    def add_new_errors(self, list_of_errors: str):
+
+        # err = ''
+        # for er in list_of_errors:
+        #     if er in vmu_errors_dict.keys():
+        #         err += vmu_errors_dict[er] + '\n'
+        #     else:
+        #         err += 'Неизведанная ошибка ' + str(er) + '\n'
+        # window.errors_browser.setText(err)
+        window.errors_browser.setText(list_of_errors)
 
     def show_new_vmu_params(self):
         row = 0
@@ -442,6 +459,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         if not self.thread.isRunning():
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
+            self.thread.err_thread_signal.connect(self.add_new_errors)
             self.thread.finished.connect(self.finishedAThread)
             self.thread.iter_count = 1
             self.thread.start()
