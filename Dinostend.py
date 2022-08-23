@@ -341,8 +341,8 @@ def check_node_errors():
                 if errors != 0:
                     for err_nom, err_str in nd.errors_list.items():
                         if errors & err_nom:
-                            errors_str += err_str + '\n'
-
+                            errors_str += nd.name + ':  ' + err_str + '\n'
+    pprint(errors_str)
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
