@@ -323,6 +323,7 @@ def check_node_online(all_node_dict: dict):
 
 
 class NodeOfEVO(object):
+    # нужно всё же чётко задавать поля объекта
     def __init__(self, *initial_data, **kwargs):
         for dictionary in initial_data:
             for key in dictionary:
@@ -335,7 +336,7 @@ class NodeOfEVO(object):
 # поток для ответа на апи
 #  поток для опроса и записи текущих в файл параметров кву
 def check_node_errors():
-    errors_str = ''
+    errors_str = window.errors_str
     for nd in evo_nodes.values():
         if str(nd.errors_req) != 'nan' and str(nd.errors_list) != 'nan':
             if ';' in nd.errors_req:
@@ -359,7 +360,9 @@ def check_node_errors():
                     if errors != 0:
                         for err_nom, err_str in node_errors_list.items():
                             if errors & err_nom:
-                                errors_str += nd.name + ':  ' + err_str + '\n'
+                                if (nd.name + ':  ' + err_str ) not in errors_str:
+                                    errors_str += nd.name + ':  ' + err_str + '\n'
+    #         надо придумать как выделить название блока цветом
     window.errors_browser.setText(errors_str)
     pprint(errors_str)
 
@@ -367,6 +370,7 @@ def check_node_errors():
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
     node_list_defined = False
+    errors_str = ''
 
     def __init__(self):
         super().__init__()
