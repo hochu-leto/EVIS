@@ -146,11 +146,39 @@ class AThread(QThread):
 
         def request_errors():
             timer.stop()
-            strg = 'Время подумать'
-            self.err_thread_signal.emit(strg)
-            time.sleep(1)
+            errors_str = window.err_str
+            for nd in evo_nodes.values():
+                if str(nd.errors_req) != 'nan' and str(nd.errors_list) != 'nan':
+                    if ';' in nd.errors_req:
+                        err_req_list = nd.errors_req.split(';')
+                    else:
+                        err_req_list = [nd.errors_req]
+                    import ast
+                    node_errors_list = ast.literal_eval(nd.errors_list)
+                    big_error = 0
+                    j = 0
+                    for errors_req in err_req_list:
+                        err_req = [int(i, 16) for i in errors_req.split(', ')]
+                        errors = can_adapter.can_request(nd.req_id, nd.ans_id, err_req)
+                        if not isinstance(errors, str):
+                            if nd.protocol == 'CANOpen':
+                                errors = (errors[5] << 8) + errors[4]
+                            elif nd.protocol == 'MODBUS':
+                                errors = errors[0]
+                            else:
+                                errors = ctypes.c_int32(errors)
+                            print(f'{nd.name}  {hex(errors)}')
+                            big_error += errors << j * 8
+
+                            if big_error != 0:
+                                for err_nom, err_str in node_errors_list.items():
+                                    if big_error & err_nom:
+                                        if (nd.name + ':  ' + err_str) not in errors_str:
+                                            errors_str += nd.name + ':  ' + err_str + '\n'
+                            j += 1
+            window.err_str = errors_str
+            self.err_thread_signal.emit(errors_str)
             timer.start(send_delay)
-            pass
 
         send_delay = 10  # задержка отправки в кан сообщений
         err_req_delay = 1500
@@ -298,22 +326,31 @@ def bytes_to_float(b: list):
 
 
 def check_node_online(all_node_dict: dict):
+    def check_value(nod: NodeOfEVO, adr):
+        if str(adr) == 'nan':
+            return False
+        l_req = [int(i, 16) for i in adr.split(', ')]
+        value = can_adapter.can_request(nod.req_id, nod.ans_id, l_req)
+        if not isinstance(value, str):
+            if nd.protocol == 'CANOpen':
+                value = (value[7] << 24) + \
+                        (value[6] << 16) + \
+                        (value[5] << 8) + value[4]
+            elif nd.protocol == 'MODBUS':
+                value = value[0]
+            else:
+                value = ctypes.c_int32(value)
+            return value
+        else:
+            return False
+
     exit_dict = {}
     for name_node, nd in all_node_dict.items():
-        serial_req = [int(i, 16) for i in nd.serial_number.split(', ')]
-        node_serial = can_adapter.can_request(nd.req_id, nd.ans_id, serial_req)
-        # print(name_node, serial_req, node_serial)
-        if not isinstance(node_serial, str):
-            if nd.protocol == 'CANOpen':
-                node_serial = (node_serial[7] << 24) + \
-                              (node_serial[6] << 16) + \
-                              (node_serial[5] << 8) + node_serial[4]
-            elif nd.protocol == 'MODBUS':
-                node_serial = node_serial[0]
-            else:
-                node_serial = ctypes.c_int32(node_serial)
-            nd.name = name_node + f' s/n {node_serial}'
-            exit_dict[nd.name] = nd
+        node_serial = check_value(nd, nd.serial_number)
+        if node_serial:
+            nd.serial = node_serial  # name_node + f' s/n {node_serial}'
+            nd.firmware = check_value(nd, nd.firm_version)
+            exit_dict[name_node] = nd
     if not exit_dict:
         return all_node_dict, False
     window.nodes_tree.currentItemChanged.disconnect()
@@ -329,44 +366,21 @@ class NodeOfEVO(object):
                 setattr(self, key, dictionary[key])
         for key in kwargs:
             setattr(self, key, kwargs[key])
+        self.serial = '---'
+        self.firmware = '---'
 
 
 # поток для сохранения настроечных параметров блока в файл
 # поток для ответа на апи
 #  поток для опроса и записи текущих в файл параметров кву
 def check_node_errors():
-    errors_str = ''
-    for nd in evo_nodes.values():
-        if str(nd.errors_req) != 'nan' and str(nd.errors_list) != 'nan':
-            if ';' in nd.errors_req:
-                err_req_list = nd.errors_req.split(';')
-            else:
-                err_req_list = [nd.errors_req]
-            import ast
-            node_errors_list = ast.literal_eval(nd.errors_list)
-            for errors_req in err_req_list:
-                err_req = [int(i, 16) for i in errors_req.split(', ')]
-
-                errors = can_adapter.can_request(nd.req_id, nd.ans_id, err_req)
-                pprint(errors)
-                if not isinstance(errors, str):
-                    if nd.protocol == 'CANOpen':
-                        errors = (errors[5] << 8) + errors[4]
-                    elif nd.protocol == 'MODBUS':
-                        errors = errors[0]
-                    else:
-                        errors = ctypes.c_int32(errors)
-                    if errors != 0:
-                        for err_nom, err_str in node_errors_list.items():
-                            if errors & err_nom:
-                                errors_str += nd.name + ':  ' + err_str + '\n'
-    window.errors_browser.setText(errors_str)
-    pprint(errors_str)
+    pass
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
     node_list_defined = False
+    err_str = ''
 
     def __init__(self):
         super().__init__()
@@ -424,9 +438,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
         items = []
-        for node in nodes.values():
+        for name, node in nodes.items():
             item = QTreeWidgetItem()
-            item.setText(0, node.name)
+            item.setText(0, name)
             if hasattr(node, 'params_list'):
                 for param_list in node.params_list.keys():
                     child_item = QTreeWidgetItem()
