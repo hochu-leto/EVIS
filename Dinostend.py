@@ -316,10 +316,6 @@ def int_to_hex_str(x: int):
     return hex(x)[2:].zfill(2)
 
 
-def reset_fault_btn_pressed():
-    pass
-
-
 def float_to_int(f):
     return int(struct.unpack('<I', struct.pack('<f', f))[0])
 
@@ -329,24 +325,6 @@ def bytes_to_float(b: list):
 
 
 def check_node_online(all_node_dict: dict):
-    def check_value(nod: NodeOfEVO, adr):
-        if str(adr) == 'nan':
-            return False
-        l_req = [int(i, 16) for i in adr.split(', ')]
-        value = can_adapter.can_request(nod.req_id, nod.ans_id, l_req)
-        if not isinstance(value, str):
-            if nd.protocol == 'CANOpen':
-                value = (value[7] << 24) + \
-                        (value[6] << 16) + \
-                        (value[5] << 8) + value[4]
-            elif nd.protocol == 'MODBUS':
-                value = value[0]
-            else:
-                value = ctypes.c_int32(value)
-            return value
-        else:
-            return False
-
     exit_dict = {}
     for name_node, nd in all_node_dict.items():
         node_serial = check_value(nd, nd.serial_number)
@@ -359,7 +337,24 @@ def check_node_online(all_node_dict: dict):
     window.nodes_tree.currentItemChanged.disconnect()
     window.show_nodes_tree(exit_dict)
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
+    params_list_changed()
     return exit_dict, True
+
+
+def erase_errors():
+    window.errors_browser.setTextBackgroundColor(QColor('red'))
+    is_run = False
+    if window.thread.isRunning():
+        is_run = True
+        window.connect_to_node()
+    for nod in evo_nodes.values():
+        fuck_the_errors = check_value(nod, nod.errors_erase)
+        print(f'{nod.name}  {fuck_the_errors}')
+    window.err_str = ''
+    window.errors_browser.setText(window.err_str)
+    window.errors_browser.setTextBackgroundColor(QColor('white'))
+    if is_run and window.thread.isFinished():
+        window.connect_to_node()
 
 
 class NodeOfEVO(object):
@@ -376,8 +371,24 @@ class NodeOfEVO(object):
 # поток для сохранения настроечных параметров блока в файл
 # поток для ответа на апи
 #  поток для опроса и записи текущих в файл параметров кву
-def check_node_errors():
-    pass
+
+def check_value(nod: NodeOfEVO, adr):
+    if str(adr) == 'nan':
+        return False
+    l_req = [int(i, 16) for i in adr.split(', ')]
+    value = can_adapter.can_request(nod.req_id, nod.ans_id, l_req)
+    if not isinstance(value, str):
+        if nod.protocol == 'CANOpen':
+            value = (value[7] << 24) + \
+                    (value[6] << 16) + \
+                    (value[5] << 8) + value[4]
+        elif nod.protocol == 'MODBUS':
+            value = value[0]
+        else:
+            value = ctypes.c_int32(value)
+        return value
+    else:
+        return False
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
@@ -413,15 +424,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     @pyqtSlot(str)
     def add_new_errors(self, list_of_errors: str):
+        self.errors_browser.setText(list_of_errors)
 
-        # err = ''
-        # for er in list_of_errors:
-        #     if er in vmu_errors_dict.keys():
-        #         err += vmu_errors_dict[er] + '\n'
-        #     else:
-        #         err += 'Неизведанная ошибка ' + str(er) + '\n'
-        # window.errors_browser.setText(err)
-        window.errors_browser.setText(list_of_errors)
+    def double_click(self):
+        if not self.thread.isRunning():
+            self.connect_to_node()
 
     def show_new_vmu_params(self):
         row = 0
@@ -455,11 +462,20 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0).child(0))
         self.show_node_name(nodes[self.nodes_tree.topLevelItem(0).text(0)])
 
-    def show_node_name(self, nod:NodeOfEVO):
+    def show_node_name(self, nod: NodeOfEVO):
         self.node_name_lab.setText(nod.name)
         self.node_fm_lab.setText(f'Серийный номер: {nod.serial}')
-        self.node_s_n_lab.setText(f'Версия ПО: {nod.firmware}')
 
+        if str(nod.firmware).isdigit():
+            fm = int(nod.firmware)
+            if fm > 0xFFFF:
+                text = int_to_hex_str((fm & 0xFF00) >> 8) + '.' + int_to_hex_str(fm & 0xFF)
+                text = text.upper()
+            else:
+                text = fm
+        else:
+            text = nod.firmware
+        self.node_s_n_lab.setText(f'Версия ПО: {text}')
 
     def connect_to_node(self):
         global can_adapter, evo_nodes
@@ -478,6 +494,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         if not self.node_list_defined:
             evo_nodes, check = check_node_online(evo_nodes)
+            self.reset_faults.setEnabled(check)
             self.node_list_defined = check
 
         if not self.thread.isRunning():
@@ -518,7 +535,9 @@ if __name__ == '__main__':
     window = VMUMonitorApp()
     window.setWindowTitle('Параметры всех блоков нижнего уровня EVO1')
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
+    window.nodes_tree.doubleClicked.connect(window.double_click)
     window.connect_btn.clicked.connect(window.connect_to_node)
+    window.reset_faults.clicked.connect(erase_errors)
 
     node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     vmu_errors_dict = make_vmu_error_dict(pathlib.Path(dir_path, 'Tables', vmu_errors_file))

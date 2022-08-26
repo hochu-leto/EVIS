@@ -88,7 +88,7 @@ class Kvaser:
     }
 
     def __init__(self, channel=0, bit=125):
-        self.openFlags = canlib.Open.ACCEPT_VIRTUAL
+        self.openFlags = canlib.Open.OVERRIDE_EXCLUSIVE
         self.outputControl = canlib.Driver.NORMAL
         self.can_canal_number = channel  # по умолчанию нулевой канал
         if bit in self.can_bitrate.keys():
