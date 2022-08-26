@@ -66,7 +66,7 @@ import sys
 import traceback
 
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtGui import QIcon, QColor, QPalette
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import pathlib
 import ctypes
@@ -184,7 +184,11 @@ class AThread(QThread):
         err_req_delay = 1500
         self.len_param_list = len(req_list)
         # в момент подключения, парента может не быть
-        self.current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
+        try:
+            self.current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
+        except:
+            self.current_node = evo_nodes[window.nodes_tree.currentItem().text(0)]
+
         self.errors_counter = 0
         self.params_counter = 0
         self.ans_list = []
@@ -342,6 +346,7 @@ def check_node_online(all_node_dict: dict):
 
 
 def erase_errors():
+    # не работает
     window.errors_browser.setTextBackgroundColor(QColor('red'))
     is_run = False
     if window.thread.isRunning():
