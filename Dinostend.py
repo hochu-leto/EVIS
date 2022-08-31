@@ -95,7 +95,7 @@ vmu_rtcon = 0x00000583
 invertor_set = 0x00000499
 bku_vmu_suspension = 0x18FF83A5
 command_list = {'power', 'speed', 'front_steer', 'rear_steer', 'fl_sus', 'fr_sus', 'rr_sus', 'rl_sus'}
-
+убери это
 
 # запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
 # записать в мэишный инвертор параметр    00000601 8 HEX   20  01  21  00
