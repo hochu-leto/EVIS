@@ -82,9 +82,7 @@ class AThread(QThread):
 
     def __init__(self):
         super().__init__()
-        self.ans_list = []
-        self.params_counter = 0
-        self.errors_counter = 0
+
 
     def run(self):
         def emitting():  # передача заполненного списка параметров
@@ -174,7 +172,9 @@ class AThread(QThread):
         except:
             self.current_node = evo_nodes[window.nodes_tree.currentItem().text(0)]
         self.len_param_list = len(req_list)
-
+        self.ans_list = []
+        self.params_counter = 0
+        self.errors_counter = 0
         timer = QTimer()
         timer.timeout.connect(request_node)
         timer.start(send_delay)
@@ -196,14 +196,15 @@ def params_list_changed():
     param_list = window.nodes_tree.currentItem().text(0)
     # если текущая строка - не группа параметров, а название блока
     if param_list in list(evo_nodes.keys()):
-        window.show_node_name(evo_nodes[param_list])
-        return False
+        node = param_list
+        param_list = list(evo_nodes[node].params_list.keys())[0]    # хитрожопно
+    else:
+        node = window.nodes_tree.currentItem().parent().text(0)
 
     if window.thread.isRunning():
         is_run = True
         window.connect_to_node()
 
-    node = window.nodes_tree.currentItem().parent().text(0)
     window.show_node_name(evo_nodes[node])
     if hasattr(evo_nodes[node], 'params_list'):
         # обновляю текущий список параметров по той группе, на которой сейчас курсор
