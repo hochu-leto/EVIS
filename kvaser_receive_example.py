@@ -4,9 +4,9 @@ from canlib import canlib, Frame
 from canlib.canlib import ChannelData
 
 def setUpChannel(channel=0,
-                 # openFlags=canlib.Open.ACCEPT_VIRTUAL,
+                 openFlags=canlib.Open.ACCEPT_VIRTUAL,
                  # openFlags=canlib.Open.NOFLAG,
-                 openFlags=canlib.Open.EXCLUSIVE,
+                 # openFlags=canlib.Open.EXCLUSIVE,
                  outputControl=canlib.Driver.NORMAL):
     for i in range(10):
         chdata = 0
