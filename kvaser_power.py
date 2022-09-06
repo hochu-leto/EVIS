@@ -2,6 +2,8 @@ import time
 
 from canlib import canlib, Frame
 
+from AdapterCAN import AdapterCAN
+
 '''
     canStatus = {
     canOK = 0,
@@ -80,7 +82,7 @@ error_codes = {
 }
 
 
-class Kvaser:
+class Kvaser(AdapterCAN):
     can_bitrate = {
         125: canlib.Bitrate.BITRATE_125K,
         250: canlib.Bitrate.BITRATE_250K,

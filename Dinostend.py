@@ -41,7 +41,7 @@ import sys
 import traceback
 
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop
-from PyQt5.QtGui import QIcon, QColor, QPalette
+from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import pathlib
 import ctypes
@@ -49,8 +49,7 @@ import struct
 import VMU_monitor_ui
 from kvaser_power import Kvaser
 from marathon_power import CANMarathon
-from work_with_file import fill_vmu_list, make_vmu_error_dict, feel_req_list, fill_node_list
-from sys import platform
+from work_with_file import fill_vmu_list, feel_req_list, fill_node_list
 
 can_adapter = None
 
@@ -82,7 +81,6 @@ class AThread(QThread):
 
     def __init__(self):
         super().__init__()
-
 
     def run(self):
         def emitting():  # передача заполненного списка параметров
@@ -197,7 +195,7 @@ def params_list_changed():
     # если текущая строка - не группа параметров, а название блока
     if param_list in list(evo_nodes.keys()):
         node = param_list
-        param_list = list(evo_nodes[node].params_list.keys())[0]    # хитрожопно
+        param_list = list(evo_nodes[node].params_list.keys())[0]  # хитрожопно
     else:
         node = window.nodes_tree.currentItem().parent().text(0)
 
@@ -478,11 +476,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         global can_adapter, evo_nodes
 
         if can_adapter is None:
-            if platform == "linux" or platform == "linux2":  # linux
+            if sys.platform == "linux" or sys.platform == "linux2":  # linux
                 can_adapter = Kvaser(0, 125)
-            elif platform == "darwin":  # OS X
+            elif sys.platform == "darwin":  # OS X
                 print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
-            elif platform == "win32":  # Windows...
+            elif sys.platform == "win32":  # Windows...
                 can_adapter = Kvaser(0, 125)
                 mes = can_adapter.can_request(0, 0, [0])
                 if isinstance(mes, str):

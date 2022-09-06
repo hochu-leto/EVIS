@@ -21,6 +21,8 @@ from ctypes import *
 # define ECITOUT    13           /* time out occured */
 from datetime import datetime
 
+from AdapterCAN import AdapterCAN
+
 error_codes = {
 
     65535 - 0: 'Адаптер не подключен',
@@ -32,7 +34,7 @@ error_codes = {
     65535 - 6: 'invalid parameter - номер канала, переданный в качестве параметра, выходит за '
                'пределы поддерживаемого числа каналов, либо канал не был открыт;',
     65535 - 7: 'can not access resource',
-    65535 - 8: 'function or feature not implemented',
+    65535 - 8: 'function or feature not implemented - скорость шины не определена',
     65535 - 9: 'Адаптер не подключен',  # input/output error
     65535 - 10: 'no such device or object',
     65535 - 11: 'call was interrupted by event',
@@ -45,15 +47,16 @@ error_codes = {
 
 from pprint import pprint
 
-class CANMarathon:
+
+class CANMarathon(AdapterCAN):
     BCI_125K_bt0 = 0x03
     BCI_250K_bt0 = 0x01
     BCI_500K_bt0 = 0x00
     BCI_ALL_bt1 = 0x1c
     can_bitrate = {
-        125:BCI_125K_bt0,
-        250:BCI_250K_bt0,
-        500:BCI_500K_bt0
+        125: BCI_125K_bt0,
+        250: BCI_250K_bt0,
+        500: BCI_500K_bt0
     }
 
     class Buffer(Structure):
@@ -560,6 +563,51 @@ class CANMarathon:
         #  выход из цикла попыток
         self.close_canal_can()
         return err
+
+    def check_bitrate(self):
+        # если канал закрыт, его нда открыть
+        for name_bit, bit in self.can_bitrate.items():
+            self.BCI_bt0 = bit
+            err = self.canal_open()
+            if err:
+                return err
+            array_cw = self.Cw * 1
+            cw = array_cw((self.can_canal_number, 0x01, 0))
+            self.lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
+            buffer = self.Buffer()
+            for itr_global in range(self.max_iteration):
+                # CiRcQueCancel Принудительно очищает (стирает) содержимое приемной очереди канала.
+                # наверное, надо почистить очередь перед опросом. но это неточно. совсем неточно
+                result = 0
+                try:
+                    result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
+                except Exception as e:
+                    print('CiRcQueCancel do not work')
+                    pprint(e)
+                    exit()
+                try:
+                    result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 300 миллисекунд
+                except Exception as e:
+                    print('CiWaitEvent do not work')
+                    pprint(e)
+                    exit()
+                if result > 0 and cw[0].wflags & 0x01:
+                    # и тогда читаем этот кадр из очереди
+                    try:
+                        result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), 1)
+                    except Exception as e:
+                        print('CiRead do not work')
+                        pprint(e)
+                        exit()
+                    if result >= 0:
+                        print(hex(buffer.id), end='    ')
+                        for e in buffer.data:
+                            print(hex(e), end=' ')
+                        print()
+                        return name_bit
+                        # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
+            self.close_canal_can()
+        return error_codes[65535 - 8]
 
 
 if __name__ == "__main__":
