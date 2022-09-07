@@ -586,7 +586,7 @@ class CANMarathon(AdapterCAN):
                     pprint(e)
                     exit()
                 try:
-                    result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 300 миллисекунд
+                    result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 30)  # timeout = 30 миллисекунд
                 except Exception as e:
                     print('CiWaitEvent do not work')
                     pprint(e)
@@ -604,6 +604,7 @@ class CANMarathon(AdapterCAN):
                         for e in buffer.data:
                             print(hex(e), end=' ')
                         print()
+                        self.close_canal_can()
                         return name_bit
                         # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
             self.close_canal_can()

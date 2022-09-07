@@ -105,13 +105,19 @@ class Kvaser(AdapterCAN):
     def check_bitrate(self):
         for name_bit, bit in self.can_bitrate.items():
             self.bitrate = bit
-            self.ch = self.canal_open()
+            i = 0
+            while not isinstance(self.ch, canlib.Channel):
+                self.ch = self.canal_open()
+                i += 1
+                if i == self.max_iteration:
+                    return self.ch
             last_frame_time = int(round(time.time() * 1000))
             while True:
                 current_time = int(round(time.time() * 1000))
                 try:
                     frame = self.ch.read()
                     if frame.id != 0:
+                        self.ch = None
                         return name_bit
                 except canlib.CanNoMsg as ex:
                     pass
@@ -122,6 +128,7 @@ class Kvaser(AdapterCAN):
 
                 if current_time > (last_frame_time + self.wait_time):
                     break
+        self.ch = None
         return error_codes[canlib.canERR_NOCHANNELS]
 
     def canal_open(self):

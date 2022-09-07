@@ -47,11 +47,12 @@ import pathlib
 import ctypes
 import struct
 import VMU_monitor_ui
+from CANAdater import CANAdapter
 from kvaser_power import Kvaser
 from marathon_power import CANMarathon
 from work_with_file import fill_vmu_list, feel_req_list, fill_node_list
 
-can_adapter = None
+can_adapter = CANAdapter()
 
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU1.xlsx'
@@ -410,10 +411,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 self.thread.wait()
                 QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
             self.connect_btn.setText("Подключиться")
-            if can_adapter is not None:
+            if can_adapter.isDefined:
                 can_adapter.close_canal_can()
             if err == 'Адаптер не подключен':
-                can_adapter = None
+                can_adapter.isDefined = False
         else:
             fill_vmu_params_values(list_of_params)
             self.show_new_vmu_params()
@@ -475,17 +476,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def connect_to_node(self):
         global can_adapter, evo_nodes
 
-        if can_adapter is None:
-            if sys.platform == "linux" or sys.platform == "linux2":  # linux
-                can_adapter = Kvaser(0, 125)
-            elif sys.platform == "darwin":  # OS X
-                print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
-            elif sys.platform == "win32":  # Windows...
-                can_adapter = Kvaser(0, 125)
-                mes = can_adapter.can_request(0, 0, [0])
-                if isinstance(mes, str):
-                    if mes == 'Адаптер не подключен':
-                        can_adapter = CANMarathon()
+        if not can_adapter.isDefined:
+            can_adapter = CANAdapter()
 
         if not self.node_list_defined:
             evo_nodes, check = check_node_online(evo_nodes)
@@ -519,7 +511,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 self.thread.quit()
                 self.thread.wait()
             del self.thread
-            if can_adapter is not None:
+            if can_adapter.isDefined:
                 can_adapter.close_canal_can()
         else:
             event.ignore()
