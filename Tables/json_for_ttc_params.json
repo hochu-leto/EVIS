@@ -1,0 +1,2028 @@
+{
+  "HOW_TO_MANUAL": {
+    "main_goal": "This file is used to automatically generate database source files: db_data.hpp and data_ids.h Each record can have the following fields",
+    "possible_records_fields": {
+      "comment" :"Add a comment to all files to group records. Optional.",
+      "index" :"eIndex to access the element by Database. Mandatory.",
+      "data_type" :"Storage data type. Should include namespace if required. Mandatory.",
+      "task_id" :"Task ID of the task, that can change this record (one of enum eTaskid element). Mandatory.",
+      "eeprom_addr" :"Address to store the paramater in the EEPROM. Not storable, if not specified. Optional.",
+      "default_value" :"Initialisation value for the parameter. Mandatory.",
+      "include" :"Additional includes for the parameters. Has same notation, as main 'include' section. Optional.",
+      "internal_name" :"Additionally specify name inside Database::Storage struct. If not specified, lowercase of eIndex is used. Optional." ,
+      "storage_format" : {
+        "true" : "parameter initialization is with assignment ('int k=12')",
+        "false_or_omitted": "braced-initializer is used ('int k{12}').", 
+        "Optional": true
+      }
+    },
+    "generator_call": {
+      "example command": "python ./src/database/db_generator/db_generator.py --file ./path_to_this_json/db_state.json",
+      "--file_option": "JSON file to parse. Default value: 'db_state.json' in the same folder as 'db_generator.py'"
+    },
+    "implementation_details": "Bottle SimpleTemplate Engine used to generate code file content. For each file to be generated a special template file .tmpl is prepared (see db_geerator/templates/).",
+    "backups": "Before generating the database a backup of code files is saved in the folder db_bkp"
+  },
+  
+  "include": [
+    {
+      "file": "db_data_hpp",
+      "paths": [
+        "database/db_data_base.hpp",
+        "steering_control_types.hpp",
+        "abs_sensors/abs_types.hpp",
+        "j1939/j1939_address_claimer.hpp",
+        "error_monitoring/error_monitoring_types.hpp",
+        "mainfsm/mainfsm_task.hpp",
+        "data_to_bku/data_to_bku_types.hpp",
+        "charging/charging_types.hpp",
+        "lights_control_task.hpp",
+        "suspension/suspension_j1939_types.hpp",
+        "motor_control/motor_control_types.hpp",
+        "parking_brake_task.hpp",
+        "brakes/brakes_defines.hpp",
+        "voltage_monitoring.hpp"
+      ]
+    }
+  ],
+
+  "records": [
+    {
+      "index": "CO_PRODUCER_HB",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "default_value": "500"
+    },
+    {
+      "index": "GLOBAL_MANUAL_ENABLE",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "default_value": "false"
+    },
+    {
+      "index": "SYSTEM_BKU_ONLINE",
+      "data_type": "bool",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "SYSTEM_BKU_MSG_TIMEOUT",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "1",
+      "default_value": "200"
+    },
+    {
+      "index": "SYSTEM_MAINLOOP_TIME",
+      "data_type": "ubyte4",
+      "task_id": "UNDEFINED",
+      "default_value": "0"
+    },
+    {
+      "index": "SYSTEM_MAINLOOP_MAX_TIME",
+      "data_type": "ubyte4",
+      "task_id": "UNDEFINED",
+      "default_value": "0"
+    },
+    {
+      "comment": "// power management\n"
+    },
+    {
+      "index": "POWER_TURNOFF_INPUT",
+      "data_type": "bool",
+      "task_id": "DISCRETE_INPUT",
+      "default_value": "false"
+    },
+    {
+      "index": "POWER_BKU_TURNOFF_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "5",
+      "default_value": "10000"
+    },
+    {
+      "comment": "// Lights Control Task\n"
+    },
+    {
+      "index": "LIGHTS_BKU_TURN_CTRL",
+      "data_type": "evo_lights_control::TurnsCtrlType",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "LIGHTS_BKU_ENABLE_HEAD",
+      "data_type": "evo_lights_control::BoolCtrlType",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "LIGHTS_BKU_ENABLE_BACK",
+      "data_type": "evo_lights_control::BoolCtrlType",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "LIGHTS_BKU_ENABLE_STOP",
+      "data_type": "evo_lights_control::BoolCtrlType",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "LIGHTS_BRAKES_ENABLE_STOP",
+      "data_type": "bool",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "false"
+    },
+    {
+      "index": "LIGHTS_MANUAL_HEAD_CTRL",
+      "data_type": "bool",
+      "task_id": "DISCRETE_INPUT",
+      "default_value": "false"
+    },
+    {
+      "comment": "// parameters\n"
+    },
+    {
+      "index": "LIGHTS_TURNS_PERIOD_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "10",
+      "default_value": "1000"
+    },
+    {
+      "comment": "// EEPROM\n"
+    },
+    {
+      "index": "EEPROM_CMD_READ",
+      "data_type": "uint32_t",
+      "task_id": "CANOPEN",
+      "default_value": "0"
+    },
+    {
+      "index": "EEPROM_CMD_WRITE",
+      "data_type": "uint32_t",
+      "task_id": "CANOPEN",
+      "default_value": "0"
+    },
+    {
+      "comment": "// Steering conrol tomsk task\n"
+    },
+    {
+      "index": "STEERING_AUTOPILOT_CMD_FRONT",
+      "data_type": "evo_steering::AutopilotCommand",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "STEERING_AUTOPILOT_CMD_REAR",
+      "data_type": "evo_steering::AutopilotCommand",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "STEERING_AUTOPILOT_CUR_POS_FRONT",
+      "data_type": "evo_steering::CurrentPositionForAutopilot",
+      "task_id": "STEERING_FRONT",
+      "default_value": "0.f"
+    },
+    {
+      "index": "STEERING_AUTOPILOT_CUR_POS_REAR",
+      "data_type": "evo_steering::CurrentPositionForAutopilot",
+      "task_id": "STEERING_REAR",
+      "default_value": "0.f"
+    },
+    {
+      "index": "STEERING_AUTOPILOT_CUR_STATUS_FRONT",
+      "data_type": "evo_steering::StatusForAutopilot",
+      "task_id": "STEERING_FRONT",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_AUTOPILOT_CUR_STATUS_REAR",
+      "data_type": "evo_steering::StatusForAutopilot",
+      "task_id": "STEERING_REAR",
+      "default_value": "0"
+    },
+    {
+      "comment": "// servo interface\n"
+    },
+    {
+      "index": "STEERING_SERVO_RUN_FRONT",
+      "data_type": "bool",
+      "task_id": "STEERING_FRONT",
+      "default_value": "false"
+    },
+    {
+      "index": "STEERING_SERVO_ONLINE_FRONT",
+      "data_type": "bool",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "STEERING_SERVO_CMD_FRONT",
+      "data_type": "evo_steering::TomskServoPosition",
+      "task_id": "STEERING_FRONT"
+    },
+    {
+      "index": "STEERING_SERVO_CUR_POS_FRONT",
+      "data_type": "evo_steering::TomskServoPosition",
+      "task_id": "J1939"
+    },
+    {
+      "index": "STEERING_SERVO_RUN_REAR",
+      "data_type": "bool",
+      "task_id": "STEERING_REAR",
+      "default_value": "false"
+    },
+    {
+      "index": "STEERING_SERVO_ONLINE_REAR",
+      "data_type": "bool",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "STEERING_SERVO_CMD_REAR",
+      "data_type": "evo_steering::TomskServoPosition",
+      "task_id": "STEERING_REAR"
+    },
+    {
+      "index": "STEERING_SERVO_CUR_POS_REAR",
+      "data_type": "evo_steering::TomskServoPosition",
+      "task_id": "J1939"
+    },
+    {
+      "index": "STEERING_SERVO_STATUS_FRONT",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_SERVO_TEMP_FRONT",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_SERVO_MOTORTEMP_FRONT",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_SERVO_CURRENT_FRONT",
+      "data_type": "uint16_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_SERVO_STATUS_REAR",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_SERVO_TEMP_REAR",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_SERVO_MOTORTEMP_REAR",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_SERVO_CURRENT_REAR",
+      "data_type": "uint16_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "comment": "// manual\n"
+    },
+    {
+      "index": "STEERING_MANUAL_CMD_FRONT",
+      "data_type": "evo_steering::SteeringPositionInternal",
+      "task_id": "CANOPEN",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_MANUAL_CMD_REAR",
+      "data_type": "evo_steering::SteeringPositionInternal",
+      "task_id": "CANOPEN",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_PARAM_ZERO_FRONT",
+      "data_type": "evo_steering::SteeringPositionInternal",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "20",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_PARAM_MAX_FRONT",
+      "data_type": "evo_steering::SteeringPositionInternal",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "24",
+      "default_value": "evo_steering::SteeringPositionInternal::max_value_internal() / 2"
+    },
+    {
+      "index": "STEERING_PARAM_MIN_FRONT",
+      "data_type": "evo_steering::SteeringPositionInternal",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "28",
+      "default_value": "-evo_steering::SteeringPositionInternal::max_value_internal() / 2"
+    },
+    {
+      "index": "STEERING_PARAM_INVERT_FRONT",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "32",
+      "default_value": "false"
+    },
+    {
+      "index": "STEERING_PARAM_FRONT_TASK_ACTIVE",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "35",
+      "default_value": "true"
+    },
+    {
+      "index": "STEERING_PARAM_ZERO_REAR",
+      "data_type": "evo_steering::SteeringPositionInternal",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "38",
+      "default_value": "0"
+    },
+    {
+      "index": "STEERING_PARAM_MAX_REAR",
+      "data_type": "evo_steering::SteeringPositionInternal",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "42",
+      "default_value": "evo_steering::SteeringPositionInternal::max_value_internal() / 2"
+    },
+    {
+      "index": "STEERING_PARAM_MIN_REAR",
+      "data_type": "evo_steering::SteeringPositionInternal",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "46",
+      "default_value": "-evo_steering::SteeringPositionInternal::max_value_internal() / 2"
+    },
+    {
+      "index": "STEERING_PARAM_INVERT_REAR",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "50",
+      "default_value": "false"
+    },
+    {
+      "index": "STEERING_PARAM_REAR_TASK_ACTIVE",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "53",
+      "default_value": "true"
+    },
+    {
+      "index": "STEERING_PARAM_MSG_TIMEOUT",
+      "data_type": "ubyte2",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "56",
+      "default_value": "300"
+    },
+    {
+      "comment": "// Parking brake\n"
+    },
+    {
+      "index": "PARKING_BRAKE_CMD_HOLD_BKU",
+      "data_type": "evo_parking_brake::BrakeHeldBkuType",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "PARKING_BRAKE_CMD_HOLD_FORCE",
+      "data_type": "bool",
+      "task_id": "MAINFSM",
+      "default_value": "false"
+    },
+    {
+      "index": "PARKING_BRAKE_CMD_HOLD_CANOPEN",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "default_value": "false"
+    },
+    {
+      "index": "PARKING_BRAKE_HELD_CANOPEN",
+      "data_type": "bool",
+      "task_id": "PARKING_BRAKE",
+      "default_value": "false"
+    },
+    {
+      "index": "PARKING_BRAKE_HELD_BKU",
+      "data_type": "evo_parking_brake::BrakeHeldBkuType",
+      "task_id": "PARKING_BRAKE",
+      "default_value": "false"
+    },
+    {
+      "index": "PARKING_BRAKE_STATUS_BKU",
+      "data_type": "evo_parking_brake::BrakeStatusToBkuType",
+      "task_id": "PARKING_BRAKE",
+      "default_value": "0"
+    },
+    {
+      "comment": "// ABS\n"
+    },
+    {
+      "comment": "// wheels\n"
+    },
+    {
+      "index": "ABS_WHEEL_FREQ_FL",
+      "data_type": "evo_abs::FreqType",
+      "task_id": "ABS",
+      "default_value": "0.f"
+    },
+    {
+      "index": "ABS_WHEEL_FREQ_FR",
+      "data_type": "evo_abs::FreqType",
+      "task_id": "ABS",
+      "default_value": "0.f"
+    },
+    {
+      "index": "ABS_WHEEL_FREQ_RL",
+      "data_type": "evo_abs::FreqType",
+      "task_id": "ABS",
+      "default_value": "0.f"
+    },
+    {
+      "index": "ABS_WHEEL_FREQ_RR",
+      "data_type": "evo_abs::FreqType",
+      "task_id": "ABS",
+      "default_value": "0.f"
+    },
+    {
+      "index": "ABS_WHEEL_FREQ_FL_CANOPEN",
+      "data_type": "evo_abs::CanopenFreqType",
+      "task_id": "ABS",
+      "default_value": "0.f"
+    },
+    {
+      "index": "ABS_WHEEL_FREQ_FR_CANOPEN",
+      "data_type": "evo_abs::CanopenFreqType",
+      "task_id": "ABS",
+      "default_value": "0.f"
+    },
+    {
+      "index": "ABS_WHEEL_FREQ_RL_CANOPEN",
+      "data_type": "evo_abs::CanopenFreqType",
+      "task_id": "ABS",
+      "default_value": "0.f"
+    },
+    {
+      "index": "ABS_WHEEL_FREQ_RR_CANOPEN",
+      "data_type": "evo_abs::CanopenFreqType",
+      "task_id": "ABS",
+      "default_value": "0.f"
+    },
+    {
+      "comment": "// signals\n"
+    },
+    {
+      "index": "ABS_VELOCITY",
+      "data_type": "evo_abs::VelocityType",
+      "task_id": "ABS",
+      "default_value": "0.f"
+    },
+    {
+      "index": "ABS_WHEEL_TICK_COUNT",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "69",
+      "default_value": "48"
+    },
+    {
+      "index": "ABS_WHEEL_DIAMETER",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "73",
+      "default_value": "600"
+    },
+    {
+      "index": "ABS_WHEEL_MIN_SPEED_THRESHOLD",
+      "data_type": "evo_abs::RotationSpeedRpmType",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "79",
+      "default_value": "10.f"
+    },
+    {
+      "index": "ABS_MOTOR_MIN_SPEED_THRESHOLD",
+      "data_type": "evo_abs::RotationSpeedRpmType",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "85",
+      "default_value": "500.f"
+    },
+    {
+      "index": "ABS_WARNING_COUNT_THRESHOLD",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "91",
+      "default_value": "2"
+    },
+    {
+      "index": "ABS_FAILURE_COUNT_THRESHOLD",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "95",
+      "default_value": "4"
+    },
+    {
+      "index": "ABS_SENSOR_MAPPING_FL",
+      "data_type": "evo_abs::eSensorMapping",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "99",
+      "default_value": "evo_abs::eSensorMapping::INPUT_1"
+    },
+    {
+      "index": "ABS_SENSOR_MAPPING_FR",
+      "data_type": "evo_abs::eSensorMapping",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "102",
+      "default_value": "evo_abs::eSensorMapping::INPUT_2"
+    },
+    {
+      "index": "ABS_SENSOR_MAPPING_RL",
+      "data_type": "evo_abs::eSensorMapping",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "105",
+      "default_value": "evo_abs::eSensorMapping::INPUT_3"
+    },
+    {
+      "index": "ABS_SENSOR_MAPPING_RR",
+      "data_type": "evo_abs::eSensorMapping",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "108",
+      "default_value": "evo_abs::eSensorMapping::INPUT_4"
+    },
+    {
+      "index": "ABS_FILTER_FACTOR",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "111",
+      "default_value": "0"
+    },
+    {
+      "index": "ABS_MIN_VELOCITY_THRESHOLD",
+      "data_type": "evo_abs::VelocityType",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "114",
+      "default_value": "0.1f"
+    },
+    {
+      "comment": "// iolib errors task\n"
+    },
+    {
+      "index": "IOLIB_ERROR_CODE",
+      "data_type": "ubyte1",
+      "task_id": "IOLIB_ERRORS",
+      "default_value": "0"
+    },
+    {
+      "index": "IOLIB_ERROR_DEVICE",
+      "data_type": "ubyte1",
+      "task_id": "IOLIB_ERRORS",
+      "default_value": "0"
+    },
+    {
+      "index": "IOLIB_CFG_FLASH_ERRORS",
+      "data_type": "uint16_t",
+      "task_id": "IOLIB_ERRORS",
+      "eeprom_addr": "118",
+      "default_value": "0"
+    },
+    {
+      "index": "IOLIB_FLASH_ERRORS",
+      "data_type": "uint16_t",
+      "task_id": "IOLIB_ERRORS",
+      "eeprom_addr": "122",
+      "default_value": "0"
+    },
+    {
+      "index": "IOLIB_RAM_ERRORS",
+      "data_type": "uint16_t",
+      "task_id": "IOLIB_ERRORS",
+      "eeprom_addr": "126",
+      "default_value": "0"
+    },
+    {
+      "comment": "// BMS\n"
+    },
+    {
+      "index": "BMS_CAP_NOMINAL",
+      "data_type": "evo_charging::BatteryCapacityType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_CAP_ACTUAL",
+      "data_type": "evo_charging::BatteryCapacityType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_VOL_CELL_MAX",
+      "data_type": "evo_charging::CellVoltageType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_VOL_CELL_MIN",
+      "data_type": "evo_charging::CellVoltageType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_BAT_STATE",
+      "data_type": "evo_charging::StatusType",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "BMS_VOL_BATTERY",
+      "data_type": "evo_charging::VoltageType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_CUR_CHARGE",
+      "data_type": "evo_charging::CurrentType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_TEMP_MAX",
+      "data_type": "evo_charging::TemperatureType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_TEMP_MIN",
+      "data_type": "evo_charging::TemperatureType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_MAX_CH_VOL",
+      "data_type": "evo_charging::VoltageType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_MAX_CH_CUR",
+      "data_type": "evo_charging::CurrentType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BMS_CONTROL",
+      "data_type": "evo_charging::StatusType",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "BMS_STATUS_BKU",
+      "data_type": "evo_charging::StatusType",
+      "task_id": "CHARGING",
+      "default_value": "1"
+    },
+    {
+      "index": "CCS_OUT_VOL",
+      "data_type": "evo_charging::VoltageType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "CCS_OUT_CUR",
+      "data_type": "evo_charging::CurrentType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "CCS_STATUS",
+      "data_type": "evo_charging::StatusType",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "BMS_MULTIMSG_PAGE_DEBUG",
+      "data_type": "uint32_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "comment": "// BMS control\n"
+    },
+    {
+      "index": "SYSTEM_BZU_ONLINE",
+      "data_type": "bool",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "SYSTEM_BMS_ONLINE",
+      "data_type": "bool",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "CHARGER_PP",
+      "data_type": "evo_j1939::J1939BoolValue",
+      "task_id": "DISCRETE_INPUT",
+      "default_value": "false"
+    },
+    {
+      "comment": "// BMS parameters\n"
+    },
+    {
+      "index": "CHARGER_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "130",
+      "default_value": "3000"
+    },
+    {
+      "index": "CHARGER_PSTED_VOLTAGE_THRES",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "134",
+      "default_value": "330"
+    },
+    {
+      "index": "CHARGER_IGNORE_VOLT_ERR_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "138",
+      "default_value": "3000"
+    },
+    {
+      "index": "BMS_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "142",
+      "default_value": "3000"
+    },
+    {
+      "comment": "// power voltage monitoring\n"
+    },
+    {
+      "index": "SYSTEM_24V_VOLTAGE",
+      "data_type": "uint16_t",
+      "task_id": "VOLTAGE_MONITORING",
+      "default_value": "24000"
+    },
+    {
+      "index": "SYSTEM_12V_VOLTAGE",
+      "data_type": "uint16_t",
+      "task_id": "VOLTAGE_MONITORING",
+      "default_value": "12000"
+    },
+    {
+      "index": "SYSTEM_24V_VOLTAGE_TO_BKU",
+      "data_type": "evo_voltage::BkuValueV24",
+      "task_id": "VOLTAGE_MONITORING",
+      "default_value": "24000"
+    },
+    {
+      "index": "SYSTEM_24V_VOLTAGE_UPPER_LIM",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "150",
+      "default_value": "28000"
+    },
+    {
+      "index": "SYSTEM_12V_VOLTAGE_UPPER_LIM",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "154",
+      "default_value": "15000"
+    },
+    {
+      "index": "SYSTEM_24V_VOLTAGE_LOWER_LIM",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "158",
+      "default_value": "23000"
+    },
+    {
+      "index": "SYSTEM_12V_VOLTAGE_LOWER_LIM",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "162",
+      "default_value": "11000"
+    },
+    {
+      "comment": "// PSTED\n"
+    },
+    {
+      "comment": "// task parameters\n"
+    },
+    {
+      "index": "SYSTEM_PSTED_ONLINE",
+      "data_type": "bool",
+      "task_id": "J1939",
+      "default_value": "true"
+    },
+    {
+      "index": "PSTED_MANUAL_REFTORQUE",
+      "data_type": "evo_motor_drive::CanopenRefTorqueType",
+      "task_id": "CANOPEN",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_OK_FLAG",
+      "data_type": "bool",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "false"
+    },
+    {
+      "comment": "// invertor cmd \n"
+    },
+    {
+      "index": "PSTED_OUT_RUN",
+      "data_type": "bool",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "false"
+    },
+    {
+      "index": "PSTED_OUT_EM_STOP",
+      "data_type": "bool",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "false"
+    },
+    {
+      "index": "PSTED_OUT_REF_MAIN_VALUE",
+      "data_type": "int16_t",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_OUT_REF_FLUX_CURRENT",
+      "data_type": "evo_motor_drive::CanopenRefFluxCurrentType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_OUT_REF_ANGLE",
+      "data_type": "evo_motor_drive::CanopenRefAngleType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_OUT_MOTOR_VELOCITY_LIMIT",
+      "data_type": "uint16_t",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_OUT_BMS_VOLTAGE",
+      "data_type": "evo_motor_drive::CanopenBmsVoltageType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "comment": "// invertor status data \n"
+    },
+    {
+      "index": "PSTED_STATUS",
+      "data_type": "evo_motor_drive::InvertorStatus",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_TORQUE",
+      "data_type": "evo_motor_drive::CanopenCurTorqueType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_MOTOR_SPEED",
+      "data_type": "evo_motor_drive::CanopenCurRpmType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_CURRENT",
+      "data_type": "evo_motor_drive::CanopenCurCurrentType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_POWER",
+      "data_type": "evo_motor_drive::CanopenCurPowerType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_VOLTAGE",
+      "data_type": "evo_motor_drive::CanopenCurHighVoltageType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_PHASE_VOLTAGE",
+      "data_type": "evo_motor_drive::CanopenCurOutputVoltageType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_MOTOR_TEMP",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_FLUXCOIL_TEMP",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_INV_RADIATOR_TEMP",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_INV_INTERNAL_TEMP",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_ISOLATION_STATUS",
+      "data_type": "evo_motor_drive::IsolationStatus",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_ERRORS_1",
+      "data_type": "uint32_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_ERRORS_2",
+      "data_type": "uint16_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_WARNINGS",
+      "data_type": "uint16_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "comment": "// psted parameters to/from BKU  \n"
+    },
+    {
+      "index": "PSTED_BKU_REF_TORQUE",
+      "data_type": "evo_motor_drive::TorqueType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_BKU_STATUS",
+      "data_type": "evo_motor_drive::InvertorStatus",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_BKU_TORQUE",
+      "data_type": "evo_motor_drive::TorqueType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_BKU_MOTOR_SPEED",
+      "data_type": "evo_motor_drive::RpmType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_BKU_CURRENT",
+      "data_type": "evo_motor_drive::CurrentType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_BKU_POWER",
+      "data_type": "evo_motor_drive::PowerType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_BKU_VOLTAGE",
+      "data_type": "evo_motor_drive::VoltageType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_BKU_MOTOR_TEMP",
+      "data_type": "evo_motor_drive::TemperatureType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_BKU_FLUXCOIL_TEMP",
+      "data_type": "evo_motor_drive::TemperatureType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_BKU_INVERTOR_TEMP",
+      "data_type": "evo_motor_drive::TemperatureType",
+      "task_id": "MOTOR_DRIVE",
+      "default_value": "0.f"
+    },
+    {
+      "comment": "// stored parameters  \n"
+    },
+    {
+      "index": "PSTED_TORQUE_INVERT",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "170",
+      "default_value": "false"
+    },
+    {
+      "index": "PSTED_RAMP_MAX_TORQUE",
+      "data_type": "evo_motor_drive::CanopenRampTorqueLimit",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "173",
+      "default_value": "0.f"
+    },
+    {
+      "index": "PSTED_RAMP_TIME_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "177",
+      "default_value": "0"
+    },
+    {
+      "index": "PSTED_ONLINE_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "181",
+      "default_value": "1000"
+    },
+    {
+      "index": "PSTED_CONTROL_MODE",
+      "data_type": "evo_motor_drive::eControlMode",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "600",
+      "default_value": "evo_motor_drive::eControlMode::TORQUE"
+    },
+    {
+      "index": "PSTED_MAX_STATOR_CURRENT",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "604",
+      "default_value": "50"
+    },
+    {
+      "index": "PSTED_IF_TO_IQ_MULT",
+      "data_type": "evo_motor_drive::CanopenIfToIqType",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "608",
+      "default_value": "0.07f"
+    },
+    {
+      "index": "PSTED_DEFAULT_ANGLE",
+      "data_type": "evo_motor_drive::CanopenRefAngleType",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "612",
+      "default_value": "-20"
+    },
+    {
+      "index": "PSTED_DEFAULT_MOTOR_VELOCITY_LIMIT",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "616",
+      "default_value": "2000"
+    },
+    {
+      "comment": "// Pneumatic suspension\n"
+    },
+    {
+      "comment": "// signal\n"
+    },
+    {
+      "index": "SUSPENSION_ENABLE_PIN_SIGNAL",
+      "data_type": "bool",
+      "task_id": "DISCRETE_INPUT",
+      "default_value": "false"
+    },
+    {
+      "comment": "// bku commands\n"
+    },
+    {
+      "index": "SUSPENSION_BKU_ENABLE",
+      "data_type": "evo_suspension::EnableType",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "SUSPENSION_BKU_HEIGHT_CMD_1",
+      "data_type": "evo_suspension::HeightType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_HEIGHT_CMD_2",
+      "data_type": "evo_suspension::HeightType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_HEIGHT_CMD_3",
+      "data_type": "evo_suspension::HeightType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_HEIGHT_CMD_4",
+      "data_type": "evo_suspension::HeightType",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "comment": "// BKU feedback\n"
+    },
+    {
+      "index": "SUSPENSION_BKU_HEIGHT_CUR_1",
+      "data_type": "evo_suspension::HeightType",
+      "task_id": "SUSPENSION",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_HEIGHT_CUR_2",
+      "data_type": "evo_suspension::HeightType",
+      "task_id": "SUSPENSION",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_HEIGHT_CUR_3",
+      "data_type": "evo_suspension::HeightType",
+      "task_id": "SUSPENSION",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_HEIGHT_CUR_4",
+      "data_type": "evo_suspension::HeightType",
+      "task_id": "SUSPENSION",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_PRESSURE_CUR_1",
+      "data_type": "evo_suspension::PressureType",
+      "task_id": "SUSPENSION",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_PRESSURE_CUR_2",
+      "data_type": "evo_suspension::PressureType",
+      "task_id": "SUSPENSION",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_PRESSURE_CUR_3",
+      "data_type": "evo_suspension::PressureType",
+      "task_id": "SUSPENSION",
+      "default_value": "0.f"
+    },
+    {
+      "index": "SUSPENSION_BKU_PRESSURE_CUR_4",
+      "data_type": "evo_suspension::PressureType",
+      "task_id": "SUSPENSION",
+      "default_value": "0.f"
+    },
+    {
+      "comment": "// current measurements\n"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_CUR_1",
+      "data_type": "int16_t",
+      "task_id": "SUSPENSION",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_CUR_2",
+      "data_type": "int16_t",
+      "task_id": "SUSPENSION",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_CUR_3",
+      "data_type": "int16_t",
+      "task_id": "SUSPENSION",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_CUR_4",
+      "data_type": "int16_t",
+      "task_id": "SUSPENSION",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_PRESSURE_CUR_1",
+      "data_type": "uint16_t",
+      "task_id": "SUSPENSION",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_PRESSURE_CUR_2",
+      "data_type": "uint16_t",
+      "task_id": "SUSPENSION",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_PRESSURE_CUR_3",
+      "data_type": "uint16_t",
+      "task_id": "SUSPENSION",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_PRESSURE_CUR_4",
+      "data_type": "uint16_t",
+      "task_id": "SUSPENSION",
+      "default_value": "0"
+    },
+    {
+      "comment": "// status\n"
+    },
+    {
+      "index": "SUSPENSION_TASK_DETAILED_STATUS",
+      "data_type": "uint32_t",
+      "task_id": "SUSPENSION",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_PRESSURE_MAX",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "201",
+      "default_value": "8000"
+    },
+    {
+      "index": "SUSPENSION_PRESSURE_MIN",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "205",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_TOLERANCE",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "209",
+      "default_value": "10"
+    },
+    {
+      "index": "SUSPENSION_PRESSURE_SENSOR_FILTER_PARAM",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "213",
+      "default_value": "100"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_SENSOR_FILTER_PARAM",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "216",
+      "default_value": "100"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_INVERT_1",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "219",
+      "default_value": "false"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_INVERT_2",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "222",
+      "default_value": "false"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_INVERT_3",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "225",
+      "default_value": "false"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_INVERT_4",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "228",
+      "default_value": "false"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_H_OFFSET_1",
+      "data_type": "int16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "231",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_H_OFFSET_2",
+      "data_type": "int16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "235",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_H_OFFSET_3",
+      "data_type": "int16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "239",
+      "default_value": "0"
+    },
+    {
+      "index": "SUSPENSION_HEIGHT_H_OFFSET_4",
+      "data_type": "int16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "243",
+      "default_value": "0"
+    },
+    {
+      "comment": "// Input signals\n"
+    },
+    {
+      "index": "INPUT_RED_BUTTON",
+      "data_type": "evo_j1939::J1939BoolValue",
+      "task_id": "DISCRETE_INPUT",
+      "default_value": "false"
+    },
+    {
+      "index": "INPUT_ANTIFREEZE_SENSOR",
+      "data_type": "bool",
+      "task_id": "DISCRETE_INPUT",
+      "default_value": "false"
+    },
+    {
+      "index": "INPUT_BRAKE_FLUID_SENSOR",
+      "data_type": "bool",
+      "task_id": "DISCRETE_INPUT",
+      "default_value": "false"
+    },
+    {
+      "comment": "// Brakes\n"
+    },
+    {
+      "index": "BRAKE_ACC_PRESSURE_MAX",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "300",
+      "default_value": "870"
+    },
+    {
+      "index": "BRAKE_ACC_PRESSURE_MIN",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "304",
+      "default_value": "700"
+    },
+    {
+      "index": "BRAKE_ACC_PRESSURE_CRITICAL",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "308",
+      "default_value": "400"
+    },
+    {
+      "index": "BRAKE_ACC_CRITICAL_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "312",
+      "default_value": "2000"
+    },
+    {
+      "index": "BRAKE_SLA_VOLT_MAX",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "316",
+      "default_value": "6000"
+    },
+    {
+      "index": "BRAKE_SLA_VOLT_MIN",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "320",
+      "default_value": "2350"
+    },
+    {
+      "index": "BRAKE_SLR_VOLT_MAX",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "324",
+      "default_value": "6000"
+    },
+    {
+      "index": "BRAKE_SLR_VOLT_MIN",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "328",
+      "default_value": "1900"
+    },
+    {
+      "index": "BRAKE_PID_PROP_NUM",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "332",
+      "default_value": "5"
+    },
+    {
+      "index": "BRAKE_PID_PROP_DENOM",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "336",
+      "default_value": "2"
+    },
+    {
+      "index": "BRAKE_PID_INT_NUM",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "340",
+      "default_value": "5"
+    },
+    {
+      "index": "BRAKE_PID_INT_DENOM",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "344",
+      "default_value": "1000"
+    },
+    {
+      "index": "BRAKE_TASK_ACTIVE",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "348",
+      "default_value": "true"
+    },
+    {
+      "index": "BRAKE_MIN_VALID_CMD_VALUE",
+      "data_type": "evo_hydraulic_brakes::BrakeRelativeCO",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "351",
+      "default_value": "0.02f"
+    },
+    {
+      "index": "BRAKE_MAX_ALLOW_PRESSURE_AT_ZERO",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "355",
+      "default_value": "10"
+    },
+    {
+      "index": "BRAKE_ADC_FILTER_FACTOR",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "359",
+      "default_value": "10"
+    },
+    {
+      "index": "BRAKE_CURVE_TIME_1",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "362",
+      "default_value": "100"
+    },
+    {
+      "index": "BRAKE_CURVE_TIME_2",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "366",
+      "default_value": "1000"
+    },
+    {
+      "index": "BRAKE_CURVE_TIME_3",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "370",
+      "default_value": "2000"
+    },
+    {
+      "index": "BRAKE_CURVE_TIME_4",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "374",
+      "default_value": "3000"
+    },
+    {
+      "index": "BRAKE_CURVE_TIME_5",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "378",
+      "default_value": "4000"
+    },
+    {
+      "index": "BRAKE_CURVE_PRESSURE_1",
+      "data_type": "evo_hydraulic_brakes::BrakeRelativeCO",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "382",
+      "default_value": "0.1f"
+    },
+    {
+      "index": "BRAKE_CURVE_PRESSURE_2",
+      "data_type": "evo_hydraulic_brakes::BrakeRelativeCO",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "385",
+      "default_value": "0.2f"
+    },
+    {
+      "index": "BRAKE_CURVE_PRESSURE_3",
+      "data_type": "evo_hydraulic_brakes::BrakeRelativeCO",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "388",
+      "default_value": "0.4f"
+    },
+    {
+      "index": "BRAKE_CURVE_PRESSURE_4",
+      "data_type": "evo_hydraulic_brakes::BrakeRelativeCO",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "391",
+      "default_value": "0.7f"
+    },
+    {
+      "index": "BRAKE_CURVE_PRESSURE_5",
+      "data_type": "evo_hydraulic_brakes::BrakeRelativeCO",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "394",
+      "default_value": "0.9f"
+    },
+    {
+      "index": "BRAKE_EMERGENCY_STOP_POWER",
+      "data_type": "evo_hydraulic_brakes::BrakeRelativeCO",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "397",
+      "default_value": "0.3f"
+    },
+    {
+      "index": "BRAKE_FRONT_CONTOUR_ENABLE",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "401",
+      "default_value": "true"
+    },
+    {
+      "index": "BRAKE_REAR_CONTOUR_ENABLE",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "404",
+      "default_value": "true"
+    },
+    {
+      "index": "BRAKE_PUMP_LOWER_THRES",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "407",
+      "default_value": "2000"
+    },
+    {
+      "index": "BRAKE_PUMP_UPPER_THRES",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "411",
+      "default_value": "4000"
+    },
+    {
+      "index": "BRAKE_VELOCITY_CONTROL_ENABLE",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "415",
+      "default_value": "true"
+    },
+    {
+      "index": "BRAKE_DIRECT_UNITS_CONTROL",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "default_value": "false"
+    },
+    {
+      "index": "BRAKE_CMD_BKU",
+      "data_type": "evo_hydraulic_brakes::BrakeValue",
+      "task_id": "J1939",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BRAKE_CMD_CANOPEN",
+      "data_type": "evo_hydraulic_brakes::BrakeRelativeCO",
+      "task_id": "CANOPEN",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BRAKE_CONT_REAR_CUR_PRESSURE_CANOPEN",
+      "data_type": "uint16_t",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_CONT_FRONT_CUR_PRESSURE_CANOPEN",
+      "data_type": "uint16_t",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_PUMP_ENABLED",
+      "data_type": "bool",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "false"
+    },
+    {
+      "index": "BRAKE_ACC_CUR_PRESSURE",
+      "data_type": "uint16_t",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_MANUAL_PUMP_EN",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "default_value": "false"
+    },
+    {
+      "index": "BRAKE_SOL_ACCUM_REAR_MANUAL_CTRL",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_SOL_REL_REAR_MANUAL_CTRL",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_SOL_ACCUM_FRONT_MANUAL_CTRL",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_SOL_REL_FRONT_MANUAL_CTRL",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_ACC_ERRORS",
+      "data_type": "uint8_t",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_CONT_REAR_ERRORS",
+      "data_type": "uint8_t",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_CONT_FRONT_ERRORS",
+      "data_type": "uint8_t",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_BKU_STATUS",
+      "data_type": "evo_hydraulic_brakes::BrakesStatusType",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "0"
+    },
+    {
+      "index": "BRAKE_BKU_CONT_REAR",
+      "data_type": "evo_hydraulic_brakes::BrakesPercentType",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "0.f"
+    },
+    {
+      "index": "BRAKE_BKU_CONT_FRONT",
+      "data_type": "evo_hydraulic_brakes::BrakesPercentType",
+      "task_id": "HYDRAULIC_BRAKES",
+      "default_value": "0.f"
+    },
+    {
+      "comment": "// state machine\n"
+    },
+    {
+      "index": "MAINFSM_ENABLE_STEERING",
+      "data_type": "bool",
+      "task_id": "MAINFSM",
+      "default_value": "false"
+    },
+    {
+      "index": "MAINFSM_ENABLE_PSTED",
+      "data_type": "bool",
+      "task_id": "MAINFSM",
+      "default_value": "false"
+    },
+    {
+      "index": "MAINFSM_ENABLE_BRAKES",
+      "data_type": "bool",
+      "task_id": "MAINFSM",
+      "default_value": "false"
+    },
+    {
+      "index": "MAINFSM_ENGAGE_BRAKES",
+      "data_type": "bool",
+      "task_id": "MAINFSM",
+      "default_value": "false"
+    },
+    {
+      "index": "MAINFSM_ENABLE_PARKING_BRAKE",
+      "data_type": "bool",
+      "task_id": "MAINFSM",
+      "default_value": "false"
+    },
+    {
+      "index": "MAINFSM_TURN_OFF_SIGNAL",
+      "data_type": "bool",
+      "task_id": "MAINFSM",
+      "default_value": "false"
+    },
+    {
+      "index": "MAINFSM_ENABLE_ALARM_LIGHTS",
+      "data_type": "bool",
+      "task_id": "MAINFSM",
+      "default_value": "false"
+    },
+    {
+      "index": "MAINFSM_CURRENT_STATE",
+      "data_type": "evo_n1_mainfsm::StateMachine::StateId",
+      "task_id": "MAINFSM",
+      "default_value": "evo_n1_mainfsm::StateMachine::StateId::UNDEFINED"
+    },
+    {
+      "index": "MAINFSM_STARTUP_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "504",
+      "default_value": "2000"
+    },
+    {
+      "index": "VEHICLE_STOP_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "500",
+      "default_value": "5000"
+    },
+    {
+      "comment": "// Error monitoring\n"
+    },
+    {
+      "index": "ERR_MON_INIT_OK",
+      "data_type": "bool",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "false"
+    },
+    {
+      "index": "ERR_MON_INIT_FAIL",
+      "data_type": "bool",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "false"
+    },
+    {
+      "index": "ERR_MON_CRITICAL_ERR",
+      "data_type": "bool",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "false"
+    },
+    {
+      "index": "ERR_MON_RESET_ERRORS",
+      "data_type": "bool",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "false"
+    },
+    {
+      "index": "CANOPEN_LISTER_FAULT_VALUE",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "CANOPEN_LISTER_FAULT_NUM",
+      "data_type": "uint8_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "CANOPEN_LISTER_WARNING_VALUE",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "CANOPEN_LISTER_WARNING_NUM",
+      "data_type": "uint8_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "CANOPEN_LISTER_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "508",
+      "default_value": "1500"
+    },
+    {
+      "index": "J1939_LISTER_CODE_VALUE",
+      "data_type": "evo_n1_error_monitoring::CodeValue",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "J1939_LISTER_FAULT_NUM",
+      "data_type": "evo_n1_error_monitoring::CodesNumValue",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "J1939_LISTER_WARNING_NUM",
+      "data_type": "evo_n1_error_monitoring::CodesNumValue",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "J1939_LISTER_MSG_COUNTER",
+      "data_type": "uint8_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "VMU_WORK_MODE_CMD_ARMED",
+      "data_type": "evo_n1_data_to_bku::FlagType",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "READY_TO_MOVE_TO_BKU",
+      "data_type": "evo_n1_data_to_bku::FlagType",
+      "task_id": "MAINFSM",
+      "default_value": "false"
+    },
+    {
+      "index": "VMU_CONTROL_MODE_TO_BKU",
+      "data_type": "evo_n1_data_to_bku::VmuControlModeType",
+      "task_id": "COMMON_DATA_TO_BKU",
+      "default_value": "static_cast<int>(evo_n1_data_to_bku::VmuControlMode::BKU)"
+    },
+    {
+      "index": "LOG_LAST_IDX",
+      "data_type": "uint8_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_0",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_1",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_2",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_3",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_4",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_5",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_6",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_7",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_8",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "LOG_FAULT_9",
+      "data_type": "uint16_t",
+      "task_id": "ERROR_MONITORING",
+      "default_value": "0"
+    },
+    {
+      "index": "RESET_ERRORS_CMD_BKU",
+      "data_type": "uint32_t",
+      "task_id": "J1939",
+      "default_value": "0"
+    },
+    {
+      "index": "RESET_ERRORS_CMD_CANOPEN",
+      "data_type": "uint32_t",
+      "task_id": "CANOPEN",
+      "default_value": "0"
+    },
+    {
+      "index": "SYSTEM_JOYSTICK_ONLINE",
+      "data_type": "bool",
+      "task_id": "J1939",
+      "default_value": "false"
+    },
+    {
+      "index": "JOYSTICK_ENABLE",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "default_value": "false"
+    },
+    {
+      "index": "JOYSTICK_TIMEOUT_MS",
+      "data_type": "uint16_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "550",
+      "default_value": "1000"
+    },
+    {
+      "index": "COOLING_FAN_ENABLE",
+      "data_type": "bool",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "556",
+      "default_value": "true"
+    },
+    {
+      "index": "COOLING_MOTOR_TEMP_MIN",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "562",
+      "default_value": "40"
+    },
+    {
+      "index": "COOLING_MOTOR_TEMP_MAX",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "568",
+      "default_value": "50"
+    },
+    {
+      "index": "COOLING_INVERTOR_TEMP_MIN",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "574",
+      "default_value": "40"
+    },
+    {
+      "index": "COOLING_INVERTOR_TEMP_MAX",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "580",
+      "default_value": "50"
+    },
+    {
+      "index": "COOLING_COIL_TEMP_MIN",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "586",
+      "default_value": "40"
+    },
+    {
+      "index": "COOLING_COIL_TEMP_MAX",
+      "data_type": "uint8_t",
+      "task_id": "CANOPEN",
+      "eeprom_addr": "592",
+      "default_value": "50"
+    }
+  ]
+}
+

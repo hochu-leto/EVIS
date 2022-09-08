@@ -23,7 +23,7 @@ class CANAdapter:
                 self.search_chanells(CANMarathon)
 
     def search_chanells(self, adapter: AdapterCAN):
-        print(f'Пробую {adapter.__name__}')
+        print(f'Пробую найти {adapter.__name__}')
         i = 0
         while True:
             can_adapter = adapter(channel=i)
@@ -45,7 +45,8 @@ class CANAdapter:
         if can_id_req in list(self.id_nones_dict.keys()):
             adapter = self.id_nones_dict[can_id_req]
             return adapter.can_request(can_id_req, can_id_ans, message)
-        answer = 'Адаптеры отсутствуют'
+        answer = 'Поключение к ВАТС отсутствует\n' \
+                 'Вставь USB-CAN в между ВАТС и компьютером'
         for adapter in self.can_adapters.values():
             answer = adapter.can_request(can_id_req, can_id_ans, message)
             if not isinstance(answer, str):

@@ -128,6 +128,7 @@ class Kvaser(AdapterCAN):
 
                 if current_time > (last_frame_time + self.wait_time):
                     break
+
         self.ch = None
         return error_codes[canlib.canERR_NOCHANNELS]
 

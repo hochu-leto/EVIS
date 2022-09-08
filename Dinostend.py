@@ -528,7 +528,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
-    window.setWindowTitle('Параметры всех блоков нижнего уровня EVO1')
+    window.setWindowTitle('Electric Vehicle Information System')
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.connect_btn.clicked.connect(window.connect_to_node)
