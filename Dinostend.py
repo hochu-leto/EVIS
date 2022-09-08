@@ -48,8 +48,6 @@ import ctypes
 import struct
 import VMU_monitor_ui
 from CANAdater import CANAdapter
-from kvaser_power import Kvaser
-from marathon_power import CANMarathon
 from work_with_file import fill_vmu_list, feel_req_list, fill_node_list
 
 can_adapter = CANAdapter()
@@ -140,6 +138,7 @@ class AThread(QThread):
                     node_errors_list = ast.literal_eval(nd.errors_list)
                     big_error = 0
                     j = 0
+                    # список адресов ошибок нужен для старого ПСТЭД и КВУ где ошибки раскиданы по 4м адресам
                     for errors_req in err_req_list:
                         # список - фрейм(кан-пакет) по которому запрашиваем ошибки
                         err_req = [int(i, 16) for i in errors_req.split(', ')]
@@ -152,7 +151,11 @@ class AThread(QThread):
                                 errors = errors[0]
                             else:
                                 errors = ctypes.c_int32(errors)
-                            big_error += errors << j * 8
+                            # не пойму нахер это надо
+                            if errors > 0xff:   # если я правильно понял, это мегакостыль для ТТС
+                                big_error = errors
+                            else:
+                                big_error += errors << j * 8
 
                             if big_error != 0:
                                 for err_nom, err_str in node_errors_list.items():
