@@ -122,9 +122,9 @@ class AThread(QThread):
                 emitting()
 
         def request_errors():
+            errors_str = window.err_str
             # опрос ошибок, на это время опрос параметров отключается
             timer.stop()
-            errors_str = window.err_str
             for nd in evo_nodes.values():
                 if str(nd.errors_req) != 'nan' and str(nd.errors_list) != 'nan':
                     # ну здесь такое себе. по-хорошему нужно сделать функцию по которой каждый блок
@@ -138,6 +138,8 @@ class AThread(QThread):
                     node_errors_list = ast.literal_eval(nd.errors_list)
                     big_error = 0
                     j = 0
+                    err_string = ''
+
                     # список адресов ошибок нужен для старого ПСТЭД и КВУ где ошибки раскиданы по 4м адресам
                     for errors_req in err_req_list:
                         # список - фрейм(кан-пакет) по которому запрашиваем ошибки
@@ -151,17 +153,20 @@ class AThread(QThread):
                                 errors = errors[0]
                             else:
                                 errors = ctypes.c_int32(errors)
+                            print(f'{errors=}  ')
                             # не пойму нахер это надо
                             if errors > 0xff:   # если я правильно понял, это мегакостыль для ТТС
-                                big_error = errors
+                                if errors in list(node_errors_list.keys()):
+                                    err_string = nd.name + ':  ' + node_errors_list[errors]
                             else:
                                 big_error += errors << j * 8
+                                if big_error != 0:
+                                    for err_nom, err_str in node_errors_list.items():
+                                        if big_error & err_nom:
+                                            err_string = nd.name + ':  ' + err_str
 
-                            if big_error != 0:
-                                for err_nom, err_str in node_errors_list.items():
-                                    if big_error & err_nom:
-                                        if (nd.name + ':  ' + err_str) not in errors_str:
-                                            errors_str += nd.name + ':  ' + err_str + '\n'
+                            if err_string and err_string not in errors_str:
+                                errors_str += err_string + '\n'
                             j += 1
             window.err_str = errors_str
             self.err_thread_signal.emit(errors_str)

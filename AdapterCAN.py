@@ -1,4 +1,7 @@
 class AdapterCAN:
+    # def __init__(self, channel=0, bit=125):
+
+
     def check_bitrate(self):
         pass
 

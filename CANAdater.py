@@ -7,11 +7,12 @@ from marathon_power import CANMarathon
 
 
 class CANAdapter:
-    id_nones_dict = {}
     isDefined = False
 
     def __init__(self):
+        self.id_nones_dict = {}
         self.can_adapters = {}
+        print('Ищу адаптеры')
         if platform == "linux" or platform == "linux2":  # linux
             self.search_chanells(Kvaser)
         elif platform == "darwin":  # OS X
@@ -22,6 +23,7 @@ class CANAdapter:
                 self.search_chanells(CANMarathon)
 
     def search_chanells(self, adapter: AdapterCAN):
+        print(f'Пробую {adapter.__name__}')
         i = 0
         while True:
             can_adapter = adapter(channel=i)
@@ -31,6 +33,8 @@ class CANAdapter:
             #       если же битрейт возвращает число, при этом меняется битрейт самого канала
             #       или адаптер на 125 имеется, запоминаем его
             self.isDefined = True
+            print(f'Нашёл {adapter.__name__} канал {i}, скорость {bit}')
+
             self.can_adapters[bit] = can_adapter
             i += 1
 
