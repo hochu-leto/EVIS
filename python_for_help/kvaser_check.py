@@ -6,7 +6,7 @@ ch.busOn()
 while True:
     try:
         frame = ch.read()
-        print(frame.id, end='   ')
+        print(hex(frame.id), end='   ')
         for bit in frame.data:
             print(hex(bit), end=' ')
         print()

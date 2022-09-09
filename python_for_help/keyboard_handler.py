@@ -1,6 +1,6 @@
 import time
 
-from Dinostend import BRAKE_TIMER
+from EVIS import BRAKE_TIMER
 
 # шляпа нерабочая
 

@@ -53,6 +53,8 @@ def fill_node_list(file_name):
             p_list = []
             if node_name in params_list:
                 for param in bookmark_dict[params_list]:
+                    if str(param['type']) != 'nan':
+                        param['type'] = param['type'].strip()
                     if str(param['name']) != 'nan':
                         if 'group ' in param['name']:
                             node_params_list[prev_group_name] = p_list.copy()

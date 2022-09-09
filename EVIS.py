@@ -111,7 +111,7 @@ class AThread(QThread):
 
             if isinstance(param, str):
                 self.errors_counter += 1
-                if self.errors_counter > 3:
+                if self.errors_counter >= self.max_errors:
                     self.threadSignalAThread.emit([param])
                     return
             else:
@@ -178,7 +178,11 @@ class AThread(QThread):
             self.current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
         except:
             self.current_node = evo_nodes[window.nodes_tree.currentItem().text(0)]
+        self.max_errors = 3
         self.len_param_list = len(req_list)
+        if self.len_param_list < self.max_errors:
+            self.max_errors = self.len_param_list
+
         self.ans_list = []
         self.params_counter = 0
         self.errors_counter = 0
@@ -294,6 +298,8 @@ def fill_vmu_params_values(ans_list: list):
                             par['value'] = ctypes.c_int32(value).value
                         elif par['type'] == 'FLOAT':
                             par['value'] = bytes_to_float(message[-4:])
+                        else:
+                            par['value'] = ctypes.c_int32(value).value
                         if 'degree' in par.keys() and str(par['degree']) != 'nan':
                             par['value'] = par['value'] / 10 ** int(par['degree'])
                         par['value'] = (par['value'] / par['scale'] - par['scaleB'])
@@ -404,7 +410,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
         self.setupUi(self)
-        self.setWindowIcon(QIcon('icons_speed.png'))
+        self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
         self.thread = AThread()
 
@@ -463,7 +469,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             items.append(item)
 
         self.nodes_tree.insertTopLevelItems(0, items)
-        self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0).child(0))
+        self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0)) #.child(0))
         self.show_node_name(nodes[self.nodes_tree.topLevelItem(0).text(0)])
 
     def show_node_name(self, nod: NodeOfEVO):

@@ -45,8 +45,7 @@ class CANAdapter:
         if can_id_req in list(self.id_nones_dict.keys()):
             adapter = self.id_nones_dict[can_id_req]
             return adapter.can_request(can_id_req, can_id_ans, message)
-        answer = 'Поключение к ВАТС отсутствует\n' \
-                 'Вставь USB-CAN в между ВАТС и компьютером'
+        answer = 'Проверь соединение с ВАТС'
         for adapter in self.can_adapters.values():
             answer = adapter.can_request(can_id_req, can_id_ans, message)
             if not isinstance(answer, str):

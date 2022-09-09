@@ -1,5 +1,4 @@
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, pyqtSlot
-from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
 import can_monitor_ui
