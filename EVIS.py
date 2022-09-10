@@ -182,7 +182,6 @@ class AThread(QThread):
         self.len_param_list = len(req_list)
         if self.len_param_list < self.max_errors:
             self.max_errors = self.len_param_list
-
         self.ans_list = []
         self.params_counter = 0
         self.errors_counter = 0
@@ -428,6 +427,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if can_adapter.isDefined:
                 can_adapter.close_canal_can()
             if err == 'Адаптер не подключен':
+                self.node_list_defined = False
                 can_adapter.isDefined = False
         else:
             fill_vmu_params_values(list_of_params)
@@ -494,7 +494,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             can_adapter = CANAdapter()
 
         if not self.node_list_defined:
-            evo_nodes, check = check_node_online(evo_nodes)
+            evo_nodes, check = check_node_online(full_nodes_dict)
             self.reset_faults.setEnabled(check)
             self.node_list_defined = check
 
@@ -547,7 +547,7 @@ if __name__ == '__main__':
         # в принципе здесь словарь не нужен, достаточно списка. но всё пока работает на словаре.
         # Просто и там и там есть названия блоков - дублируются.
         evo_nodes[node['name']] = NodeOfEVO(node)
-
+    full_nodes_dict = evo_nodes.copy()
     window.show_nodes_tree(evo_nodes)
 
     if node_list and params_list_changed():
