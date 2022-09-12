@@ -63,6 +63,7 @@ def fill_node_list(file_name):
                         else:
                             #  получается, что здесь я не проверяю наличие нужных поле у параметра
                             #  это происходит только при заполнении списка vmu_params_list
+                            #  здесь нужно в список добавлять объект Параметр с полями и методами
                             p_list.append(param)
                 node_params_list[prev_group_name] = p_list.copy()
                 del node_params_list['']
