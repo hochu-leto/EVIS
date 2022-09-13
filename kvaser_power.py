@@ -104,6 +104,8 @@ class Kvaser(AdapterCAN):
 
     def check_bitrate(self):
         for name_bit, bit in self.can_bitrate.items():
+            print(f'Проверяю битрейт {name_bit}')
+
             self.bitrate = bit
             i = 0
             if isinstance(self.ch, canlib.Channel):
@@ -122,9 +124,11 @@ class Kvaser(AdapterCAN):
                 try:
                     frame = self.ch.read()
                     if frame.id != 0:
+                        # проверить это
+
                         self.ch.busOff()
-                        self.ch.close()
-                        self.ch = None
+                        # self.ch.close()
+                        # self.ch = None
                         return name_bit
                 except canlib.CanNoMsg as ex:
                     pass
@@ -227,6 +231,8 @@ class Kvaser(AdapterCAN):
             i += 1
             if i == self.max_iteration:
                 return self.ch
+        # проверить это
+        self.ch.busOn()
         if can_id_req > 0x0000FFF:
             flags = canlib.MessageFlag.EXT
         else:
@@ -267,4 +273,6 @@ class Kvaser(AdapterCAN):
                     return error_codes[ex.status]
                 return str(ex)
             if frame.id == can_id_ans:
+                # проверить это
+                self.ch.busOff()
                 return frame.data

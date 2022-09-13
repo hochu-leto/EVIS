@@ -169,7 +169,7 @@ class AThread(QThread):
                                 errors = errors[0]
                             else:
                                 errors = ctypes.c_int32(errors)
-                            print(f'{errors=}  ')
+                            # print(f'{errors=}  ')
                             # не пойму нахер это надо
                             if errors > 0xff:   # если я правильно понял, это мегакостыль для ТТС
                                 if errors in list(node_errors_list.keys()):
@@ -495,7 +495,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.node_fm_lab.setText(f'Серийный номер: {nod.serial}')
 
         if str(nod.firmware).isdigit():
-            print(f'Блок {nod.name} - {nod.firmware=}')
+            print(f'Блок {nod.name} - {nod.firmware=} -  {nod.serial}')
             fm = int(nod.firmware)
             if fm > 0xFFFF:
                 text = int_to_hex_str((fm & 0xFF00) >> 8) + '.' + int_to_hex_str(fm & 0xFF)

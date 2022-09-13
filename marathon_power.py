@@ -567,6 +567,7 @@ class CANMarathon(AdapterCAN):
     def check_bitrate(self):
         # если канал закрыт, его нда открыть
         for name_bit, bit in self.can_bitrate.items():
+            print(f'Проверяю битрейт {name_bit}')
             self.BCI_bt0 = bit
             err = self.canal_open()
             if err:
@@ -586,7 +587,7 @@ class CANMarathon(AdapterCAN):
                     pprint(e)
                     exit()
                 try:
-                    result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 30)  # timeout = 30 миллисекунд
+                    result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 50)  # timeout = 30 миллисекунд
                 except Exception as e:
                     print('CiWaitEvent do not work')
                     pprint(e)
