@@ -354,7 +354,6 @@ def check_node_online(all_node_dict: dict):
     window.nodes_tree.currentItemChanged.disconnect()
     window.show_nodes_tree(exit_dict)
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
-    params_list_changed()
     return exit_dict, True
 
 
@@ -514,6 +513,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         if not self.node_list_defined:
             evo_nodes, check = check_node_online(full_nodes_dict)
+            params_list_changed()
             self.reset_faults.setEnabled(check)
             self.node_list_defined = check
 
