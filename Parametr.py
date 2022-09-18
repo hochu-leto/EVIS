@@ -1,9 +1,7 @@
 import ctypes
-
-from pyqt5_plugins.examplebutton import QtWidgets
+import struct
 
 import CANAdater
-from EVIS import float_to_int, int_to_hex_str, bytes_to_float, zero_del
 from EVONode import EVONode
 
 empty_par = {'name': '',
@@ -35,13 +33,13 @@ example_par = {'name': 'fghjk',
                'degree': 3}
 
 type_values = {
-    'UNSIGNED8': {'min': 0, 'max': 255, 'type': 0x2F},
-    'SIGNED8': {'min': -128, 'max': 127, 'type': 0x2F},
-    'UNSIGNED16': {'min': 0, 'max': 65535, 'type': 0x2B},
-    'SIGNED16': {'min': -32768, 'max': 32767, 'type': 0x2B},
-    'UNSIGNED32': {'min': 0, 'max': 4294967295, 'type': 0x23},
-    'SIGNED32': {'min': -2147483648, 'max': 2147483647, 'type': 0x23},
-    'FLOAT': {'min': -2147483648, 'max': 2147483647, 'type': 0x23},
+    'UNSIGNED8': {'min': 0, 'max': 255, 'type': 0x2F, 'func': ctypes.c_uint8},
+    'SIGNED8': {'min': -128, 'max': 127, 'type': 0x2F, 'func': ctypes.c_int8},
+    'UNSIGNED16': {'min': 0, 'max': 65535, 'type': 0x2B, 'func': ctypes.c_uint16},
+    'SIGNED16': {'min': -32768, 'max': 32767, 'type': 0x2B, 'func': ctypes.c_int16},
+    'UNSIGNED32': {'min': 0, 'max': 4294967295, 'type': 0x23, 'func': ctypes.c_uint32},
+    'SIGNED32': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_int32},
+    'FLOAT': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_uint8},
 
 }
 
@@ -86,7 +84,7 @@ class Parametr:
         self.min_value = type_values[self.type]['min']
         self.max_value = type_values[self.type]['max']
         # из editable и соответствующего списка
-        self.widget = QtWidgets
+        self.widget = 'QtWidgets'
         # что ставить, если node не передали - emptyNode - который получается, если в EVONode ничего не передать
         self.node = node
         self.req_list = []
@@ -120,43 +118,54 @@ class Parametr:
         if self.node.protocol == 'CANOpen':
             #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
             address_ans = '0x' \
-                          + int_to_hex_str(message[2]) \
-                          + int_to_hex_str(message[1]) \
-                          + int_to_hex_str(message[3])
-            value = (message[7] << 24) + \
-                    (message[6] << 16) + \
-                    (message[5] << 8) + message[4]
-        elif protocol == 'MODBUS':
+                          + int_to_hex_str(value_data[2]) \
+                          + int_to_hex_str(value_data[1]) \
+                          + int_to_hex_str(value_data[3])
+            value = (value_data[7] << 24) + \
+                    (value_data[6] << 16) + \
+                    (value_data[5] << 8) + value_data[4]
+        elif self.node.protocol == 'MODBUS':
             # для реек вот так  address_ans = '0x' + int_to_hex_str(data[4]) + int_to_hex_str(data[5]) наверное
             # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
-            address_ans = hex((message[5] << 8) + message[4])
-            value = (message[3] << 24) + (message[2] << 16) + (message[1] << 8) + message[0]
+            address_ans = hex((value_data[5] << 8) + value_data[4])
+            value = (value_data[3] << 24) + (value_data[2] << 16) + (value_data[1] << 8) + value_data[0]
         else:  # нужно какое-то аварийное решение
             address_ans = 0
             value = 0
         # ищу в списке параметров како-то с тем же адресом, что в ответе
-        for par in vmu_params_list:
-            # здесь должно быть какое-то самоопределение параметра
-            if hex(par["address"]) == address_ans:
-                if par['type'] == 'UNSIGNED8':
-                    par['value'] = ctypes.c_uint8(value).value
-                elif par['type'] == 'UNSIGNED16':
-                    par['value'] = ctypes.c_uint16(value).value
-                elif par['type'] == 'UNSIGNED32':
-                    par['value'] = ctypes.c_uint32(value).value
-                elif par['type'] == 'SIGNED8':
-                    par['value'] = ctypes.c_int8(value).value
-                elif par['type'] == 'SIGNED16':
-                    par['value'] = ctypes.c_int16(value).value
-                elif par['type'] == 'SIGNED32':
-                    par['value'] = ctypes.c_int32(value).value
-                elif par['type'] == 'FLOAT':
-                    par['value'] = bytes_to_float(message[-4:])
-                else:
-                    par['value'] = ctypes.c_int32(value).value
-                if 'degree' in par.keys() and str(par['degree']) != 'nan':
-                    par['value'] = par['value'] / 10 ** int(par['degree'])
-                par['value'] = (par['value'] / par['scale'] - par['scaleB'])
-                par['value'] = zero_del(round(par['value'], 4))
+        if address_ans == self.address:
+            if self.type in type_values.keys():
+                self.type = 'UNSIGNED32'
+            self.value = type_values[self.type]['func'](value).value
+            if self.type == 'FLOAT':
+                self.value = bytes_to_float(value_data[-4:])
+
+            if self.degree:
+                self.value /= 10 ** self.degree
+            self.value /= self.scale
+            self.value -= self.scaleB
+            self.value = zero_del(round(self.value, 4))
+            return self.value
+        else:
+            return 'Адрес не совпадает'
+
     def set_value(self):
         pass
+
+
+
+def zero_del(s):
+    return f'{s:>8}'.rstrip('0').rstrip('.')
+
+
+def int_to_hex_str(x: int):
+    return hex(x)[2:].zfill(2)
+
+
+def float_to_int(f):
+    return int(struct.unpack('<I', struct.pack('<f', f))[0])
+
+
+def bytes_to_float(b: list):
+    return struct.unpack('<f', bytearray(b))[0]
+
