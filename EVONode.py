@@ -1,3 +1,7 @@
+import ctypes
+
+import CANAdater
+
 empty_node = {
     'name': 'NoName',
     'req_id': 0x500,
@@ -27,7 +31,7 @@ class EVONode:
                          or str(nod[name]) == 'nan' \
                 else (nod[name] if not isinstance(nod[name], str)
                       else (int(nod[name], 16) if '0x' in nod[name]
-                            else value))
+                            else value))    # надо включать регулярку
             return v
 
         def check_string(name: str, s=''):
@@ -49,11 +53,45 @@ class EVONode:
         self.errors_dict = err_dict
         self.group_params_dict = group_par_dict
 
-    def get_serial_number(self):
-        pass
+    def get_list(self, address: int, adapter: CANAdater):
+        MSB = ((address & 0xFF0000) >> 16)
+        LSB = ((address & 0xFF00) >> 8)
+        sub_index = address & 0xFF
+        r_list = []
+        if self.protocol == 'CANOpen':
+            r_list = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
+        if self.protocol == 'MODBUS':
+            r_list = [0, 0, 0, 0, sub_index, LSB, 0x2B, 0x03]
+        value = adapter.can_request(self.request_id, self.answer_id, r_list)
+        if isinstance(value, str):
+            return value
+        if self.protocol == 'CANOpen':
+            value = (value[7] << 24) + \
+                    (value[6] << 16) + \
+                    (value[5] << 8) + value[4]
+        elif self.protocol == 'MODBUS':
+            value = value[0]
+        else:
+            value = ctypes.c_int32(value)
+        return value
 
-    def get_firmware_version(self):
-        pass
+    def get_serial_number(self, adapter: CANAdater):
+        if self.serial_number != '---':
+            return self.serial_number
+        serial_list = self.get_list(self.request_serial_number, adapter)
+        if isinstance(serial_list, str):
+            serial_list = '---'
+        self.serial_number = serial_list
+        return self.serial_number
+
+    def get_firmware_version(self, adapter: CANAdater):
+        if self.firmware_version != '---':
+            return self.firmware_version
+        f_list = self.get_list(self.request_firmware_version, adapter)
+        if isinstance(f_list, str):
+            f_list = '---'
+        self.firmware_version = f_list
+        return self.firmware_version
 
     def get_nodetr(self, address=0, name_nodetr=''):
         pass
@@ -61,10 +99,10 @@ class EVONode:
     def change_nodetr(self, address=0, name_nodetr=''):
         pass
 
-    def check_errors(self):
+    def check_errors(self, adapter: CANAdater):
         pass
 
-    def erase_errors(self):
+    def erase_errors(self, adapter: CANAdater):
         pass
 
     def is_connected(self):  # возможно, это нужно сделать просто полем
