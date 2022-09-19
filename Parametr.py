@@ -3,7 +3,7 @@ import struct
 
 import CANAdater
 from EVONode import EVONode
-from work_with_file import bytes_to_float, zero_del, int_to_hex_str, float_to_int
+from helper import bytes_to_float, zero_del, int_to_hex_str, float_to_int
 
 empty_par = {'name': '',
              'address': '',

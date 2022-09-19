@@ -1,4 +1,5 @@
 import datetime
+import struct
 from pprint import pprint
 
 import pandas
@@ -233,31 +234,3 @@ def adding_to_csv_file(name_or_value: str, vmu_params_list: list, recording_file
     #           index=False,
     #           encoding='windows-1251')
 
-
-def dw2float(dw_array):
-    assert (len(dw_array) == 4)
-    dw = int.from_bytes(dw_array, byteorder='little', signed=False)
-    s = -1 if (dw >> 31) == 1 \
-        else 1  # Знак
-    e = (dw >> 23) & 0xFF  # Порядок
-    m = ((dw & 0x7FFFFF) | 0x800000) if e != 0 \
-        else ((dw & 0x7FFFFF) << 1)  # Мантисса
-    m1 = m * (2 ** (-23))  # Мантисса в float
-    return s * m1 * (2 ** (e - 127))
-
-
-
-def zero_del(s):
-    return f'{s:>8}'.rstrip('0').rstrip('.')
-
-
-def int_to_hex_str(x: int):
-    return hex(x)[2:].zfill(2)
-
-
-def float_to_int(f):
-    return int(struct.unpack('<I', struct.pack('<f', f))[0])
-
-
-def bytes_to_float(b: list):
-    return struct.unpack('<f', bytearray(b))[0]
