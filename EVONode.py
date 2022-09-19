@@ -1,6 +1,7 @@
 import ctypes
 
 import CANAdater
+from work_with_file import int_to_hex_str
 
 empty_node = {
     'name': 'NoName',
@@ -94,12 +95,16 @@ class EVONode:
         return self.firmware_version
 
     def cut_firmware(self):
-        fm = int(nod.firmware)
-        if fm > 0xFFFF:
-            text = int_to_hex_str((fm & 0xFF00) >> 8) + '.' + int_to_hex_str(fm & 0xFF)
-            text = text.upper()
-        else:
-            text = fm
+        if isinstance(self.firmware_version, int):
+            fm = self.firmware_version
+            if fm > 0xFFFF:
+                text = int_to_hex_str((fm & 0xFF00) >> 8) + \
+                       '.' + int_to_hex_str(fm & 0xFF)
+                text = text.upper()
+            else:
+                text = str(fm)
+            return text
+        return self.firmware_version
 
     def get_nodetr(self, address=0, name_nodetr=''):
         pass

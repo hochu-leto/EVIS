@@ -3,6 +3,7 @@ import struct
 
 import CANAdater
 from EVONode import EVONode
+from work_with_file import bytes_to_float, zero_del, int_to_hex_str, float_to_int
 
 empty_par = {'name': '',
              'address': '',
@@ -151,21 +152,3 @@ class Parametr:
 
     def set_value(self):
         pass
-
-
-
-def zero_del(s):
-    return f'{s:>8}'.rstrip('0').rstrip('.')
-
-
-def int_to_hex_str(x: int):
-    return hex(x)[2:].zfill(2)
-
-
-def float_to_int(f):
-    return int(struct.unpack('<I', struct.pack('<f', f))[0])
-
-
-def bytes_to_float(b: list):
-    return struct.unpack('<f', bytearray(b))[0]
-

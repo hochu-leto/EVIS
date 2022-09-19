@@ -65,7 +65,8 @@ import struct
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from work_with_file import fill_vmu_list, feel_req_list, fill_node_list, full_node_list
+from work_with_file import fill_vmu_list, feel_req_list, fill_node_list, full_node_list, zero_del, int_to_hex_str, \
+    bytes_to_float
 
 can_adapter = CANAdapter()
 
@@ -325,22 +326,6 @@ def fill_vmu_params_values(ans_list: list):
                         break
 
 
-def zero_del(s):
-    return f'{s:>8}'.rstrip('0').rstrip('.')
-
-
-def int_to_hex_str(x: int):
-    return hex(x)[2:].zfill(2)
-
-
-def float_to_int(f):
-    return int(struct.unpack('<I', struct.pack('<f', f))[0])
-
-
-def bytes_to_float(b: list):
-    return struct.unpack('<f', bytearray(b))[0]
-
-
 def check_node_online(all_node_dict: dict):
     exit_dict = {}
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
@@ -471,12 +456,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             row += 1
         self.vmu_param_table.resizeColumnsToContents()
 
-    def show_nodes_tree(self, nodes: dict, nds=0):
+    def show_nodes_tree(self, nodes: dict, nds: list):
         self.nodes_tree.clear()
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
         items = []
-        if nds != 0:
+        if nds:
             for nd in nds:
                 item = QTreeWidgetItem()
                 item.setText(0, nd.name)
@@ -501,6 +486,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.show_node_name(nodes[self.nodes_tree.topLevelItem(0).text(0)], nds[0])
 
     def show_node_name(self, nod: NodeOfEVO, nd: EVONode):
+
+        if nd:
+            self.node_name_lab.setText(nd.name)
+            self.node_s_n_lab.setText(f'Серийный номер: {nd.serial_number}')
+            self.node_fm_lab.setText(f'Версия ПО: {nd.cut_firmware()}')
+            return
 
         self.node_name_lab.setText(nod.name)
         self.node_s_n_lab.setText(f'Серийный номер: {nod.serial}')
