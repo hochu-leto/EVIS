@@ -64,7 +64,7 @@ import ctypes
 import struct
 import VMU_monitor_ui
 from CANAdater import CANAdapter
-from work_with_file import fill_vmu_list, feel_req_list, fill_node_list
+from work_with_file import fill_vmu_list, feel_req_list, fill_node_list, full_node_list
 
 can_adapter = CANAdapter()
 
@@ -470,26 +470,37 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             row += 1
         self.vmu_param_table.resizeColumnsToContents()
 
-    def show_nodes_tree(self, nodes: dict):
+    def show_nodes_tree(self, nodes: dict, nds=0):
         self.nodes_tree.clear()
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
         items = []
-        for name, node in nodes.items():
-            item = QTreeWidgetItem()
-            item.setText(0, name)
-            if hasattr(node, 'params_list'):
-                for param_list in node.params_list.keys():
+        if nds != 0:
+            for nd in nds:
+                item = QTreeWidgetItem()
+                item.setText(0, nd.name)
+                for param_list in nd.params_list.keys():
                     child_item = QTreeWidgetItem()
                     child_item.setText(0, str(param_list))
                     item.addChild(child_item)
-            items.append(item)
+                items.append(item)
+        else:
+            for name, node in nodes.items():
+                item = QTreeWidgetItem()
+                item.setText(0, name)
+                if hasattr(node, 'params_list'):
+                    for param_list in node.params_list.keys():
+                        child_item = QTreeWidgetItem()
+                        child_item.setText(0, str(param_list))
+                        item.addChild(child_item)
+                items.append(item)
 
         self.nodes_tree.insertTopLevelItems(0, items)
         self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0))
         self.show_node_name(nodes[self.nodes_tree.topLevelItem(0).text(0)])
 
-    def show_node_name(self, nod: NodeOfEVO):
+    def show_node_name(self, nod: NodeOfEVO, nd = 0):
+
         self.node_name_lab.setText(nod.name)
         self.node_fm_lab.setText(f'Серийный номер: {nod.serial}')
 
@@ -560,12 +571,14 @@ if __name__ == '__main__':
     window.reset_faults.clicked.connect(erase_errors)
 
     node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
-
+    # а теперь объекты
+    alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     evo_nodes = {}
     for node in node_list:
         # в принципе здесь словарь не нужен, достаточно списка. но всё пока работает на словаре.
         # Просто и там и там есть названия блоков - дублируются.
         evo_nodes[node['name']] = NodeOfEVO(node)
+
     full_nodes_dict = evo_nodes.copy()
     window.show_nodes_tree(evo_nodes)
 
