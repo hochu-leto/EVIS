@@ -53,7 +53,7 @@ class EVONode:
         self.errors_dict = err_dict
         self.group_params_dict = group_par_dict
 
-    def get_list(self, address: int, adapter: CANAdater):
+    def get_val(self, address: int, adapter: CANAdater):
         MSB = ((address & 0xFF0000) >> 16)
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
@@ -76,22 +76,30 @@ class EVONode:
         return value
 
     def get_serial_number(self, adapter: CANAdater):
-        if self.serial_number != '---':
+        if not isinstance(self.serial_number, str):
             return self.serial_number
-        serial_list = self.get_list(self.request_serial_number, adapter)
+        serial_list = self.get_val(self.request_serial_number, adapter)
         if isinstance(serial_list, str):
             serial_list = '---'
         self.serial_number = serial_list
         return self.serial_number
 
     def get_firmware_version(self, adapter: CANAdater):
-        if self.firmware_version != '---':
+        if not isinstance(self.firmware_version, str):
             return self.firmware_version
-        f_list = self.get_list(self.request_firmware_version, adapter)
+        f_list = self.get_val(self.request_firmware_version, adapter)
         if isinstance(f_list, str):
             f_list = '---'
         self.firmware_version = f_list
         return self.firmware_version
+
+    def cut_firmware(self):
+        fm = int(nod.firmware)
+        if fm > 0xFFFF:
+            text = int_to_hex_str((fm & 0xFF00) >> 8) + '.' + int_to_hex_str(fm & 0xFF)
+            text = text.upper()
+        else:
+            text = fm
 
     def get_nodetr(self, address=0, name_nodetr=''):
         pass

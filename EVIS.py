@@ -64,6 +64,7 @@ import ctypes
 import struct
 import VMU_monitor_ui
 from CANAdater import CANAdapter
+from EVONode import EVONode
 from work_with_file import fill_vmu_list, feel_req_list, fill_node_list, full_node_list
 
 can_adapter = CANAdapter()
@@ -497,12 +498,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         self.nodes_tree.insertTopLevelItems(0, items)
         self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0))
-        self.show_node_name(nodes[self.nodes_tree.topLevelItem(0).text(0)])
+        self.show_node_name(nodes[self.nodes_tree.topLevelItem(0).text(0)], nds[0])
 
-    def show_node_name(self, nod: NodeOfEVO, nd = 0):
+    def show_node_name(self, nod: NodeOfEVO, nd: EVONode):
 
         self.node_name_lab.setText(nod.name)
-        self.node_fm_lab.setText(f'Серийный номер: {nod.serial}')
+        self.node_s_n_lab.setText(f'Серийный номер: {nod.serial}')
 
         if str(nod.firmware).isdigit():
             print(f'Блок {nod.name} - {nod.firmware=} -  {nod.serial}')
@@ -514,7 +515,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 text = fm
         else:
             text = nod.firmware
-        self.node_s_n_lab.setText(f'Версия ПО: {text}')
+        self.node_fm_lab.setText(f'Версия ПО: {text}')
 
     def connect_to_node(self):
         global can_adapter, evo_nodes
