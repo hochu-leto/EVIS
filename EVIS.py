@@ -66,13 +66,13 @@ import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
 from Parametr import Parametr
-from work_with_file import fill_vmu_list, feel_req_list, fill_node_list, full_node_list
+from work_with_file import fill_node_list, full_node_list
 from helper import bytes_to_float, zero_del, int_to_hex_str
 
 can_adapter = CANAdapter()
 
 dir_path = str(pathlib.Path.cwd())
-vmu_param_file = 'table_for_params_new_VMU1.xlsx'
+vmu_param_file = 'table_for_params_new_VMU2.xlsx'
 vmu_errors_file = 'kvu_error_codes_my.xlsx'
 
 
@@ -133,7 +133,6 @@ class AThread(QThread):
                     return
             else:
                 self.errors_counter = 0
-                param = zero_del(round(param, 4))
             self.ans_list.append(param)
             self.params_counter += 1
             # это можно совместить с таким же условием выше
@@ -496,7 +495,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def show_new_vmu_params(self):
         row = 0
         for par in self.thread.current_params_list:
-            value_item = QTableWidgetItem(str(par.value))
+            value_item = QTableWidgetItem(zero_del(par.value))
             value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
             # подкрашиваем в голубой в зависимости от периода опроса
             color_opacity = int((150 / window.thread.max_iteration) * par.period) + 3
