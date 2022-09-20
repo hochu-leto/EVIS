@@ -55,7 +55,8 @@ class Parametr:
 
         def check_value(value, name: str):
             v = value if name not in list(param.keys()) \
-                         or str(param[name]) == 'nan' \
+                         or str(param[name]) == 'nan'\
+                         or param[name] == 0\
                 else (param[name] if not isinstance(param[name], str)
                       else (param[name] if param[name].isdigit()
                             else value))
@@ -126,16 +127,16 @@ class Parametr:
                     (value_data[6] << 16) + \
                     (value_data[5] << 8) + value_data[4]
         elif self.node.protocol == 'MODBUS':
-            # для реек вот так  address_ans = '0x' + int_to_hex_str(data[4]) + int_to_hex_str(data[5]) наверное
+            # для реек вот так  address_ans = '0x' + int_to_hex_str(data[5]) + int_to_hex_str(data[4]) наверное
             # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
-            address_ans = hex((value_data[5] << 8) + value_data[4])
+            address_ans = '0x' + int_to_hex_str(value_data[5]) + int_to_hex_str(value_data[4])
             value = (value_data[3] << 24) + (value_data[2] << 16) + (value_data[1] << 8) + value_data[0]
         else:  # нужно какое-то аварийное решение
             address_ans = 0
             value = 0
         # ищу в списке параметров како-то с тем же адресом, что в ответе
-        if address_ans == self.address:
-            if self.type in type_values.keys():
+        if address_ans.upper() == self.address.upper():
+            if self.type not in type_values.keys():
                 self.type = 'UNSIGNED32'
             self.value = type_values[self.type]['func'](value).value
             if self.type == 'FLOAT':
@@ -145,7 +146,6 @@ class Parametr:
                 self.value /= 10 ** self.degree
             self.value /= self.scale
             self.value -= self.scaleB
-            self.value = zero_del(round(self.value, 4))
             return self.value
         else:
             return 'Адрес не совпадает'

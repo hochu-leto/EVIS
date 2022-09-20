@@ -79,10 +79,10 @@ class EVONode:
     def get_serial_number(self, adapter: CANAdater):
         if not isinstance(self.serial_number, str):
             return self.serial_number
-        serial_list = self.get_val(self.request_serial_number, adapter)
-        if isinstance(serial_list, str):
-            serial_list = '---'
-        self.serial_number = serial_list
+        serial = self.get_val(self.request_serial_number, adapter)
+        if isinstance(serial, str):
+            serial = '---'
+        self.serial_number = serial
         return self.serial_number
 
     def get_firmware_version(self, adapter: CANAdater):

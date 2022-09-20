@@ -125,8 +125,6 @@ class AThread(QThread):
                         return
 
             param = self.current_params_list[self.params_counter].get_value(can_adapter)
-            self.ans_list.append(param)
-            self.params_counter += 1
 
             if isinstance(param, str):
                 self.errors_counter += 1
@@ -135,6 +133,9 @@ class AThread(QThread):
                     return
             else:
                 self.errors_counter = 0
+                param = zero_del(round(param, 4))
+            self.ans_list.append(param)
+            self.params_counter += 1
             # это можно совместить с таким же условием выше
             if self.params_counter >= self.len_param_list:
                 self.params_counter = 0
@@ -193,10 +194,10 @@ class AThread(QThread):
 
         send_delay = 10  # задержка отправки в кан сообщений
         err_req_delay = 1500
-        try:
-            self.current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
-        except:
-            self.current_node = evo_nodes[window.nodes_tree.currentItem().text(0)]
+        # try:
+        #     self.current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
+        # except:
+        # self.current_node = evo_nodes[window.nodes_tree.currentItem().text(0)]
         self.max_errors = 3
         self.len_param_list = len(self.current_params_list)
         if self.len_param_list < self.max_errors:
@@ -243,21 +244,23 @@ def params_list_changed():
 
     for nod in alt_node_list:
         if current_node in nod.name:
+            window.thread.current_node = nod
             if current_group_params:
-                current_params_list = nod.group_params_dict[current_group_params]
+                window.thread.current_params_list = nod.group_params_dict[current_group_params]
             else:
-                current_params_list = nod.group_params_dict[list(nod.group_params_dict.keys())[0]]
+                window.thread.current_params_list = nod.group_params_dict[list(nod.group_params_dict.keys())[0]]
             break
 
     if window.thread.isRunning():
         is_run = True
         window.connect_to_node()
 
-    window.show_node_name(nod)  # evo_nodes[node],
-    show_empty_params_list(current_params_list, 'vmu_param_table')
+    window.show_node_name(window.thread.current_node)  # evo_nodes[node],
+    show_empty_params_list(window.thread.current_params_list, 'vmu_param_table')
     if is_run and window.thread.isFinished():
         window.connect_to_node()
-    return current_params_list
+    return True
+    # return current_params_list
     # if hasattr(evo_nodes[node], 'params_list'):
     #     # обновляю текущий список параметров по той группе, на которой сейчас курсор
     #     vmu_params_list = fill_vmu_list(evo_nodes[node].params_list[param_list])
@@ -356,21 +359,37 @@ def fill_vmu_params_values(ans_list: list):
                         break
 
 
-def check_node_online(all_node_dict: dict):
-    exit_dict = {}
+# def check_node_online_old(all_node_dict: dict):
+#     exit_dict = {}
+#     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
+#     for name_node, nd in all_node_dict.items():
+#         node_serial = check_value(nd, nd.serial_number)
+#         if node_serial:
+#             nd.serial = node_serial
+#             nd.firmware = check_value(nd, nd.firm_version)
+#             exit_dict[name_node] = nd
+#     if not exit_dict:
+#         return all_node_dict, False
+#     window.nodes_tree.currentItemChanged.disconnect()
+#     window.show_nodes_tree(exit_dict)
+#     window.nodes_tree.currentItemChanged.connect(params_list_changed)
+#     return exit_dict, True
+#
+
+def check_node_online(all_node_list: list):
+    exit_list = []
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
-    for name_node, nd in all_node_dict.items():
-        node_serial = check_value(nd, nd.serial_number)
-        if node_serial:
-            nd.serial = node_serial
-            nd.firmware = check_value(nd, nd.firm_version)
-            exit_dict[name_node] = nd
-    if not exit_dict:
-        return all_node_dict, False
+    for nd in all_node_list:
+        node_serial = nd.get_serial_number(can_adapter)
+        if not isinstance(node_serial, str):
+            nd.serial_number = nd.get_firmware_version(can_adapter)
+            exit_list.append(nd)
+    if not exit_list:
+        return all_node_list, False
     window.nodes_tree.currentItemChanged.disconnect()
-    window.show_nodes_tree(exit_dict)
+    window.show_nodes_tree({}, exit_list)
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
-    return exit_dict, True
+    return exit_list, True
 
 
 def erase_errors():
@@ -413,24 +432,24 @@ class NodeOfEVO(object):
 
 # поток для сохранения настроечных параметров блока в файл
 # поток для ответа на апи
-
-def check_value(nod: NodeOfEVO, adr):
-    if str(adr) == 'nan':
-        return False
-    l_req = [int(i, 16) for i in adr.split(', ')]
-    value = can_adapter.can_request(nod.req_id, nod.ans_id, l_req)
-    if not isinstance(value, str):
-        if nod.protocol == 'CANOpen':
-            value = (value[7] << 24) + \
-                    (value[6] << 16) + \
-                    (value[5] << 8) + value[4]
-        elif nod.protocol == 'MODBUS':
-            value = value[0]
-        else:
-            value = ctypes.c_int32(value)
-        return value
-    else:
-        return False
+#
+# def check_value(nod: NodeOfEVO, adr):
+#     if str(adr) == 'nan':
+#         return False
+#     l_req = [int(i, 16) for i in adr.split(', ')]
+#     value = can_adapter.can_request(nod.req_id, nod.ans_id, l_req)
+#     if not isinstance(value, str):
+#         if nod.protocol == 'CANOpen':
+#             value = (value[7] << 24) + \
+#                     (value[6] << 16) + \
+#                     (value[5] << 8) + value[4]
+#         elif nod.protocol == 'MODBUS':
+#             value = value[0]
+#         else:
+#             value = ctypes.c_int32(value)
+#         return value
+#     else:
+#         return False
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
@@ -545,7 +564,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             can_adapter = CANAdapter()
 
         if not self.node_list_defined:
-            evo_nodes, check = check_node_online(full_nodes_dict)
+            evo_nodes, check = check_node_online(alt_node_list)
             params_list_changed()
             self.reset_faults.setEnabled(check)
             self.node_list_defined = check
@@ -603,8 +622,8 @@ if __name__ == '__main__':
 
     full_nodes_dict = evo_nodes.copy()
     window.show_nodes_tree(evo_nodes, alt_node_list)
-    window.thread.current_params_list = params_list_changed()
-    if node_list and window.thread.current_params_list:
+    # window.thread.current_params_list =
+    if node_list and params_list_changed():
         window.vmu_param_table.adjustSize()
         window.nodes_tree.adjustSize()
         window.show()  # Показываем окно

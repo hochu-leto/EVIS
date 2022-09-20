@@ -6,7 +6,7 @@ def zero_del(s):
 
 
 def int_to_hex_str(x: int):
-    return hex(x)[2:].zfill(2)
+    return hex(x)[2:].zfill(2).upper()
 
 
 def float_to_int(f):
