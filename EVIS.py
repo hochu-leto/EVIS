@@ -61,7 +61,6 @@ from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import pathlib
 import ctypes
-import struct
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
@@ -73,7 +72,6 @@ can_adapter = CANAdapter()
 
 dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU2.xlsx'
-vmu_errors_file = 'kvu_error_codes_my.xlsx'
 
 
 # Если при ошибке в слотах приложение просто падает без стека,
@@ -144,59 +142,17 @@ class AThread(QThread):
             errors_str = window.err_str
             # опрос ошибок, на это время опрос параметров отключается
             timer.stop()
-            for nd in alt_node_list:
+            for nd in window.current_nodes_list:
                 errors = nd.check_errors(can_adapter)
-                # if str(nd.errors_req) != 'nan' and str(nd.errors_list) != 'nan':
-                #     # ну здесь такое себе. по-хорошему нужно сделать функцию по которой каждый блок
-                #     # выдаёт свои ошибки в зависимости от протокола. а пока так.
-                #     # это список адресов для побайтных ошибок через ;
-                #     if ';' in nd.errors_req:
-                #         err_req_list = nd.errors_req.split(';')
-                #     else:
-                #         err_req_list = [nd.errors_req]
-                #     import ast
-                #     node_errors_list = ast.literal_eval(nd.errors_list)
-                #     big_error = 0
-                #     j = 0
-                #     err_string = ''
-                #
-                #     # список адресов ошибок нужен для старого ПСТЭД и КВУ где ошибки раскиданы по 4м адресам
-                #     for errors_req in err_req_list:
-                #         # список - фрейм(кан-пакет) по которому запрашиваем ошибки
-                #         err_req = [int(i, 16) for i in errors_req.split(', ')]
-                #         errors = can_adapter.can_request(nd.req_id, nd.ans_id, err_req)
-                #         if not isinstance(errors, str):
-                #             # тоже фигня, надо функцию выдачи ошибок от блока
-                #             if nd.protocol == 'CANOpen':
-                #                 errors = (errors[7] << 24) + (errors[6] << 16) + (errors[5] << 8) + errors[4]
-                #             elif nd.protocol == 'MODBUS':
-                #                 errors = errors[0]
-                #             else:
-                #                 errors = ctypes.c_int32(errors)
-                #             # print(f'{errors=}  ')
-                #             # не пойму нахер это надо
-                #             if errors > 0xff:  # если я правильно понял, это мегакостыль для ТТС
-                #                 if errors in list(node_errors_list.keys()):
-                #                     err_string = nd.name + ':  ' + node_errors_list[errors]
-                #             else:
-                #                 big_error += errors << j * 8
-                #                 if big_error != 0:
-                #                     for err_nom, err_str in node_errors_list.items():
-                #                         if big_error & err_nom:
-                #                             err_string = nd.name + ':  ' + err_str
-
-                if errors and errors not in errors_str:
-                    errors_str += errors + '\n'
+                for error in errors:
+                    if error not in errors_str:
+                        errors_str += f'{nd.name} : {error} \n'
             window.err_str = errors_str
             self.err_thread_signal.emit(errors_str)
             timer.start(send_delay)
 
         send_delay = 10  # задержка отправки в кан сообщений
         err_req_delay = 1500
-        # try:
-        #     self.current_node = evo_nodes[window.nodes_tree.currentItem().parent().text(0)]
-        # except:
-        # self.current_node = evo_nodes[window.nodes_tree.currentItem().text(0)]
         self.max_errors = 3
         self.len_param_list = len(self.current_params_list)
         if self.len_param_list < self.max_errors:
@@ -216,32 +172,16 @@ class AThread(QThread):
         loop.exec_()
 
 
-# запросить у мэишного инвертора параметр 00000601 8 HEX   40  01  21  00
-# записать в мэишный инвертор параметр    00000601 8 HEX   20  01  21  00
-
 def params_list_changed():
-    # global vmu_params_list, req_list
     is_run = False
-    nod = ''
-    current_params_list = []
     current_group_params = ''
-
-    # cursor_text = window.nodes_tree.currentItem().text(0)
-    # # если текущая строка - не группа параметров, а название блока
-    # if cursor_text in list(evo_nodes.keys()):
-    #     node = cursor_text
-    #     param_list = list(evo_nodes[node].params_list.keys())[0]  # хитрожопно
-    # else:
-    #     node = window.nodes_tree.currentItem().parent().text(0)
-    #     param_list = cursor_text
-
     try:
         current_node = window.nodes_tree.currentItem().parent().text(0)
         current_group_params = window.nodes_tree.currentItem().text(0)
     except AttributeError:
         current_node = window.nodes_tree.currentItem().text(0)
 
-    for nod in alt_node_list:
+    for nod in window.current_nodes_list:
         if current_node in nod.name:
             window.thread.current_node = nod
             if current_group_params:
@@ -254,24 +194,11 @@ def params_list_changed():
         is_run = True
         window.connect_to_node()
 
-    window.show_node_name(window.thread.current_node)  # evo_nodes[node],
+    window.show_node_name(window.thread.current_node)
     show_empty_params_list(window.thread.current_params_list, 'vmu_param_table')
     if is_run and window.thread.isFinished():
         window.connect_to_node()
     return True
-    # return current_params_list
-    # if hasattr(evo_nodes[node], 'params_list'):
-    #     # обновляю текущий список параметров по той группе, на которой сейчас курсор
-    #     vmu_params_list = fill_vmu_list(evo_nodes[node].params_list[param_list])
-    #     req_list = feel_req_list(evo_nodes[node].protocol, vmu_params_list)
-    #     show_empty_params_list(vmu_params_list, 'vmu_param_table')
-    #     if is_run and window.thread.isFinished():
-    #         window.connect_to_node()
-    #     return True
-    # else:
-    #     QMessageBox.critical(None, "Ошибка ", 'В этом блоке нет параметров\n Проверь файл с блоками',
-    #                          QMessageBox.Ok)
-    #     return False
 
 
 def show_empty_params_list(list_of_params: list, table: str):
@@ -281,15 +208,8 @@ def show_empty_params_list(list_of_params: list, table: str):
     row = 0
 
     for par in list_of_params:
-        if isinstance(par, Parametr):
-            name = par.name
-            unit = par.unit
-        else:
-            name = par['name']
-            if str(par['unit']) != 'nan':
-                unit = str(par['unit'])
-            else:
-                unit = ''
+        name = par.name
+        unit = par.unit
 
         name_item = QTableWidgetItem(name)
         name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
@@ -307,74 +227,6 @@ def show_empty_params_list(list_of_params: list, table: str):
     show_table.resizeColumnsToContents()
 
 
-# если завтра переход на объекты проканает, это вообще ненужная фигня
-def fill_vmu_params_values(ans_list: list):
-    protocol = window.thread.current_node.protocol
-    for message in ans_list:
-        if message:
-            if not isinstance(message, str):
-                #
-                if protocol == 'CANOpen':
-                    #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
-                    address_ans = '0x' \
-                                  + int_to_hex_str(message[2]) \
-                                  + int_to_hex_str(message[1]) \
-                                  + int_to_hex_str(message[3])
-                    value = (message[7] << 24) + \
-                            (message[6] << 16) + \
-                            (message[5] << 8) + message[4]
-                elif protocol == 'MODBUS':
-                    # для реек вот так  address_ans = '0x' + int_to_hex_str(data[4]) + int_to_hex_str(data[5]) наверное
-                    # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
-                    address_ans = hex((message[5] << 8) + message[4])
-                    value = (message[3] << 24) + (message[2] << 16) + (message[1] << 8) + message[0]
-                else:  # нужно какое-то аварийное решение
-                    address_ans = 0
-                    value = 0
-                # ищу в списке параметров како-то с тем же адресом, что в ответе
-                for par in vmu_params_list:
-                    # здесь должно быть какое-то самоопределение параметра
-                    if hex(par["address"]) == address_ans:
-                        if par['type'] == 'UNSIGNED8':
-                            par['value'] = ctypes.c_uint8(value).value
-                        elif par['type'] == 'UNSIGNED16':
-                            par['value'] = ctypes.c_uint16(value).value
-                        elif par['type'] == 'UNSIGNED32':
-                            par['value'] = ctypes.c_uint32(value).value
-                        elif par['type'] == 'SIGNED8':
-                            par['value'] = ctypes.c_int8(value).value
-                        elif par['type'] == 'SIGNED16':
-                            par['value'] = ctypes.c_int16(value).value
-                        elif par['type'] == 'SIGNED32':
-                            par['value'] = ctypes.c_int32(value).value
-                        elif par['type'] == 'FLOAT':
-                            par['value'] = bytes_to_float(message[-4:])
-                        else:
-                            par['value'] = ctypes.c_int32(value).value
-                        if 'degree' in par.keys() and str(par['degree']) != 'nan':
-                            par['value'] = par['value'] / 10 ** int(par['degree'])
-                        par['value'] = (par['value'] / par['scale'] - par['scaleB'])
-                        par['value'] = zero_del(round(par['value'], 4))
-                        break
-
-
-# def check_node_online_old(all_node_dict: dict):
-#     exit_dict = {}
-#     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
-#     for name_node, nd in all_node_dict.items():
-#         node_serial = check_value(nd, nd.serial_number)
-#         if node_serial:
-#             nd.serial = node_serial
-#             nd.firmware = check_value(nd, nd.firm_version)
-#             exit_dict[name_node] = nd
-#     if not exit_dict:
-#         return all_node_dict, False
-#     window.nodes_tree.currentItemChanged.disconnect()
-#     window.show_nodes_tree(exit_dict)
-#     window.nodes_tree.currentItemChanged.connect(params_list_changed)
-#     return exit_dict, True
-#
-
 def check_node_online(all_node_list: list):
     exit_list = []
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
@@ -386,7 +238,7 @@ def check_node_online(all_node_list: list):
     if not exit_list:
         return all_node_list, False
     window.nodes_tree.currentItemChanged.disconnect()
-    window.show_nodes_tree({}, exit_list)
+    window.show_nodes_tree(exit_list)
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     return exit_list, True
 
@@ -400,55 +252,14 @@ def erase_errors():
         is_run = True
         window.connect_to_node()
     # и трём все ошибки
-    for nod in evo_nodes.values():
-        fuck_the_errors = check_value(nod, nod.errors_erase)
-        print(f'{nod.name}  {fuck_the_errors}')
+    for nod in window.current_nodes_list:
+        nod.erase_errors(can_adapter)
     window.err_str = ''
     window.errors_browser.setText(window.err_str)
     window.errors_browser.setTextBackgroundColor(QColor('white'))
     # запускаем поток снова, если был остановлен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
-
-
-class NodeOfEVO(object):
-    # надо переделать чтоб все нужные поля определялись и
-    # были встроенные функции
-    # - запросить параметр
-    # - изменить параметр
-    # - запросить и удалить ошибки
-    # - запросить серийник и версию ПО
-
-    def __init__(self, *initial_data, **kwargs):
-        for dictionary in initial_data:
-            for key in dictionary:
-                setattr(self, key, dictionary[key])
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
-        self.serial = '---'
-        self.firmware = '---'
-
-
-# поток для сохранения настроечных параметров блока в файл
-# поток для ответа на апи
-#
-# def check_value(nod: NodeOfEVO, adr):
-#     if str(adr) == 'nan':
-#         return False
-#     l_req = [int(i, 16) for i in adr.split(', ')]
-#     value = can_adapter.can_request(nod.req_id, nod.ans_id, l_req)
-#     if not isinstance(value, str):
-#         if nod.protocol == 'CANOpen':
-#             value = (value[7] << 24) + \
-#                     (value[6] << 16) + \
-#                     (value[5] << 8) + value[4]
-#         elif nod.protocol == 'MODBUS':
-#             value = value[0]
-#         else:
-#             value = ctypes.c_int32(value)
-#         return value
-#     else:
-#         return False
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
@@ -459,6 +270,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
+        self.current_nodes_list = {}
         self.setupUi(self)
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
@@ -481,7 +293,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 self.node_list_defined = False
                 can_adapter.isDefined = False
         else:
-            # fill_vmu_params_values(list_of_params)
             self.show_new_vmu_params()
 
     @pyqtSlot(str)
@@ -504,66 +315,39 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             row += 1
         self.vmu_param_table.resizeColumnsToContents()
 
-    def show_nodes_tree(self, nodes: dict, nds: list):
+    def show_nodes_tree(self, nds: list):
         self.nodes_tree.clear()
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
         items = []
-        if nds:
-            for nd in nds:
-                item = QTreeWidgetItem()
-                item.setText(0, nd.name)
-                for param_list in nd.group_params_dict.keys():
-                    child_item = QTreeWidgetItem()
-                    child_item.setText(0, str(param_list))
-                    item.addChild(child_item)
-                items.append(item)
-        else:
-            for name, node in nodes.items():
-                item = QTreeWidgetItem()
-                item.setText(0, name)
-                if hasattr(node, 'params_list'):
-                    for param_list in node.params_list.keys():
-                        child_item = QTreeWidgetItem()
-                        child_item.setText(0, str(param_list))
-                        item.addChild(child_item)
-                items.append(item)
+
+        for nd in nds:
+            item = QTreeWidgetItem()
+            item.setText(0, nd.name)
+            for param_list in nd.group_params_dict.keys():
+                child_item = QTreeWidgetItem()
+                child_item.setText(0, str(param_list))
+                item.addChild(child_item)
+            items.append(item)
 
         self.nodes_tree.insertTopLevelItems(0, items)
         self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0))
-        self.show_node_name(nds[0])  # nodes[self.nodes_tree.topLevelItem(0).text(0)],
+        self.show_node_name(nds[0])
 
     def show_node_name(self, nd: EVONode):
-
-        if nd:
-            self.node_name_lab.setText(nd.name)
-            self.node_s_n_lab.setText(f'Серийный номер: {nd.serial_number}')
-            self.node_fm_lab.setText(f'Версия ПО: {nd.cut_firmware()}')
-            return
-        # nod: NodeOfEVO,
-        # self.node_name_lab.setText(nod.name)
-        # self.node_s_n_lab.setText(f'Серийный номер: {nod.serial}')
-        #
-        # if str(nod.firmware).isdigit():
-        #     print(f'Блок {nod.name} - {nod.firmware=} -  {nod.serial}')
-        #     fm = int(nod.firmware)
-        #     if fm > 0xFFFF:
-        #         text = int_to_hex_str((fm & 0xFF00) >> 8) + '.' + int_to_hex_str(fm & 0xFF)
-        #         text = text.upper()
-        #     else:
-        #         text = fm
-        # else:
-        #     text = nod.firmware
-        # self.node_fm_lab.setText(f'Версия ПО: {text}')
+        self.node_name_lab.setText(nd.name)
+        self.node_s_n_lab.setText(f'Серийный номер: {nd.serial_number}')
+        self.node_fm_lab.setText(f'Версия ПО: {nd.cut_firmware()}')
+        return
 
     def connect_to_node(self):
-        global can_adapter, evo_nodes
+        global can_adapter
 
         if not can_adapter.isDefined:
             can_adapter = CANAdapter()
 
         if not self.node_list_defined:
-            evo_nodes, check = check_node_online(alt_node_list)
+            self.current_nodes_list, check = check_node_online(alt_node_list)
             params_list_changed()
             self.reset_faults.setEnabled(check)
             self.node_list_defined = check
@@ -571,7 +355,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if not self.thread.isRunning():
             self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
             self.thread.err_thread_signal.connect(self.add_new_errors)
-            self.thread.finished.connect(self.finishedAThread)
             self.thread.iter_count = 1
             self.thread.start()
             self.connect_btn.setText("Отключиться")
@@ -581,9 +364,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.thread.wait()
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
-
-    def finishedAThread(self):
-        pass
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Информация',
@@ -610,19 +390,9 @@ if __name__ == '__main__':
     window.connect_btn.clicked.connect(window.connect_to_node)
     # window.reset_faults.clicked.connect(erase_errors)
 
-    node_list = fill_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
-    # а теперь объекты
     alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
-    evo_nodes = {}
-    for node in node_list:
-        # в принципе здесь словарь не нужен, достаточно списка. но всё пока работает на словаре.
-        # Просто и там и там есть названия блоков - дублируются.
-        evo_nodes[node['name']] = NodeOfEVO(node)
-
-    full_nodes_dict = evo_nodes.copy()
-    window.show_nodes_tree(evo_nodes, alt_node_list)
-    # window.thread.current_params_list =
-    if node_list and params_list_changed():
+    window.show_nodes_tree(alt_node_list)
+    if alt_node_list and params_list_changed():
         window.vmu_param_table.adjustSize()
         window.nodes_tree.adjustSize()
         window.show()  # Показываем окно

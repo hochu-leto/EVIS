@@ -52,6 +52,7 @@ class EVONode:
         self.error_erase = {'address': check_address('errors_erase'),
                             'value': check_address('v_errors_erase')}
         self.errors_dict = err_dict
+        self.current_errors_list = []
         self.group_params_dict = group_par_dict
 
     def get_val(self, address: int, adapter: CANAdater):
@@ -113,6 +114,7 @@ class EVONode:
         pass
 
     def check_errors(self, adapter: CANAdater):
+        #  на выходе - список текущих ошибок
         pass
 
     def erase_errors(self, adapter: CANAdater):
