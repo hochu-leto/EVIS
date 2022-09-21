@@ -117,6 +117,16 @@ class Parametr:
             self.req_list = [0, 0, 0, 0, sub_index, LSB, value_type, 0x03]
             self.set_list = data + [sub_index, LSB, value_type, 0x10]
 
+    def set_value(self, adapter: CANAdater, value):
+        self.value = (value if value < self.max_value else self.max_value) \
+            if value >= self.min_value else self.min_value
+        self.get_list()
+        value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.set_list)
+        if isinstance(value_data, str):
+            return value_data
+        else:
+            return ''
+
     def get_value(self, adapter: CANAdater):
         if not self.req_list:
             self.get_list()

@@ -56,8 +56,8 @@
 import sys
 import traceback
 
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop, QRegExp
+from PyQt5.QtGui import QIcon, QColor, QRegExpValidator
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
 import pathlib
 import ctypes
@@ -212,8 +212,13 @@ def show_empty_params_list(list_of_params: list, table: str):
         name = par.name
         unit = par.unit
 
+        if par.editable:
+            color_opacity = 30
+        else:
+            color_opacity = 0
         name_item = QTableWidgetItem(name)
         name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
+        name_item.setBackground(QColor(128, 128, 128, color_opacity))
         show_table.setItem(row, 0, name_item)
 
         value_item = QTableWidgetItem('')
@@ -307,13 +312,20 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_to_node()
 
     def show_new_vmu_params(self):
+        reg_ex = QRegExp("[0-9]{1,5}")
+
         row = 0
         for par in self.thread.current_params_list:
             value_item = QTableWidgetItem(zero_del(par.value))
-            value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
+            if par.editable:
+                flags = (value_item.flags() | Qt.ItemIsEditable)
+            else:
+                flags = value_item.flags() & ~Qt.ItemIsEditable
+            value_item.setFlags(flags)
             # подкрашиваем в голубой в зависимости от периода опроса
             color_opacity = int((150 / window.thread.max_iteration) * par.period) + 3
             value_item.setBackground(QColor(0, 255, 255, color_opacity))
+            value_item.setValidator(QRegExpValidator(reg_ex))
             self.vmu_param_table.setItem(row, 1, value_item)
             row += 1
         self.vmu_param_table.resizeColumnsToContents()
