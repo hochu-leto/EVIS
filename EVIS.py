@@ -95,6 +95,7 @@ class AThread(QThread):
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
+    current_node = EVONode()
 
     def __init__(self):
         super().__init__()
@@ -145,7 +146,7 @@ class AThread(QThread):
             for nd in window.current_nodes_list:
                 errors = nd.check_errors(can_adapter)
                 for error in errors:
-                    if error not in errors_str:
+                    if error and error not in errors_str:
                         errors_str += f'{nd.name} : {error} \n'
             window.err_str = errors_str
             self.err_thread_signal.emit(errors_str)
@@ -176,13 +177,13 @@ def params_list_changed():
     is_run = False
     current_group_params = ''
     try:
-        current_node = window.nodes_tree.currentItem().parent().text(0)
+        current_node_text = window.nodes_tree.currentItem().parent().text(0)
         current_group_params = window.nodes_tree.currentItem().text(0)
     except AttributeError:
-        current_node = window.nodes_tree.currentItem().text(0)
+        current_node_text = window.nodes_tree.currentItem().text(0)
 
     for nod in window.current_nodes_list:
-        if current_node in nod.name:
+        if current_node_text in nod.name:
             window.thread.current_node = nod
             if current_group_params:
                 window.thread.current_params_list = nod.group_params_dict[current_group_params]
@@ -233,7 +234,7 @@ def check_node_online(all_node_list: list):
     for nd in all_node_list:
         node_serial = nd.get_serial_number(can_adapter)
         if not isinstance(node_serial, str):
-            nd.serial_number = nd.get_firmware_version(can_adapter)
+            nd.firmware_version = nd.get_firmware_version(can_adapter)
             exit_list.append(nd)
     if not exit_list:
         return all_node_list, False
@@ -252,9 +253,11 @@ def erase_errors():
         is_run = True
         window.connect_to_node()
     # и трём все ошибки
-    for nod in window.current_nodes_list:
-        nod.erase_errors(can_adapter)
     window.err_str = ''
+    for nod in window.current_nodes_list:
+        for err in nod.erase_errors(can_adapter):
+            if err:
+                window.err_str += f'{nod.name}: {err} \n'
     window.errors_browser.setText(window.err_str)
     window.errors_browser.setTextBackgroundColor(QColor('white'))
     # запускаем поток снова, если был остановлен
@@ -331,8 +334,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             items.append(item)
 
         self.nodes_tree.insertTopLevelItems(0, items)
-        self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0))
-        self.show_node_name(nds[0])
+        if self.thread.current_node in nds:
+            self.show_node_name(self.thread.current_node)
+        #     а как установить ту группу, чоб была выбрана?
+        else:
+            self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0))
+            self.show_node_name(nds[0])
 
     def show_node_name(self, nd: EVONode):
         self.node_name_lab.setText(nd.name)
@@ -391,6 +398,7 @@ if __name__ == '__main__':
     # window.reset_faults.clicked.connect(erase_errors)
 
     alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+    window.current_nodes_list = alt_node_list
     window.show_nodes_tree(alt_node_list)
     if alt_node_list and params_list_changed():
         window.vmu_param_table.adjustSize()

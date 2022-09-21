@@ -2,7 +2,7 @@ import struct
 
 
 def zero_del(s):
-    return f'{s:>8}'.rstrip('0').rstrip('.')
+    return f'{round(s, 5):>8}'.rstrip('0').rstrip('.')
 
 
 def int_to_hex_str(x: int):
