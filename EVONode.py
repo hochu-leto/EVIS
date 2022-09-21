@@ -19,11 +19,11 @@ empty_node = {
 
 
 class EVONode:
-    __slots__ = ('name','request_id','answer_id',
-                 'protocol','request_serial_number',
-                 'serial_number','request_firmware_version',
-                 'firmware_version','error_request','error_erase',
-                 'errors_dict','current_errors_list','group_params_dict')
+    __slots__ = ('name', 'request_id', 'answer_id',
+                 'protocol', 'request_serial_number',
+                 'serial_number', 'request_firmware_version',
+                 'firmware_version', 'error_request', 'error_erase',
+                 'errors_dict', 'current_errors_list', 'group_params_dict')
 
     def __init__(self, nod=None, err_dict=None, group_par_dict=None):
         if group_par_dict is None:
@@ -38,7 +38,7 @@ class EVONode:
                          or str(nod[name]) == 'nan' \
                 else (nod[name] if not isinstance(nod[name], str)
                       else (int(nod[name], 16) if '0x' in nod[name]
-                            else value))    # надо включать регулярку
+                            else value))  # надо включать регулярку
             return v
 
         def check_string(name: str, s=''):
@@ -54,7 +54,7 @@ class EVONode:
         self.serial_number = '---'
         self.request_firmware_version = check_address('firm_version')
         self.firmware_version = '---'
-        self.error_request = nod['errors_req'].split(',')   # не могу придумать проверку
+        self.error_request = nod['errors_req'].split(',')  # не могу придумать проверку
         self.error_erase = {'address': check_address('errors_erase'),
                             'value': check_address('v_errors_erase')}
         self.errors_dict = err_dict
@@ -66,11 +66,14 @@ class EVONode:
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
         r_list = []
+
         if self.protocol == 'CANOpen':
             r_list = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
         if self.protocol == 'MODBUS':
             r_list = [0, 0, 0, 0, sub_index, LSB, 0x2B, 0x03]
+
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
+
         if isinstance(value, str):
             return value
         if self.protocol == 'CANOpen':
@@ -121,7 +124,22 @@ class EVONode:
 
     def check_errors(self, adapter: CANAdater):
         #  на выходе - список текущих ошибок
-        pass
+        error_list = []
+        e_str = ''
+        for adr in self.error_request:
+            adr_int = int(adr, 16)
+            error = self.get_val(adr_int, adapter)
+            if error < 128:
+                for e_num, e_name in self.errors_dict.items():
+
+                    pass
+            else:
+                if error in self.errors_dict.keys():
+                    e_str = self.errors_dict[error]
+            if e_str:
+                error_list.append(e_str)
+        self.current_errors_list = error_list
+        return error_list
 
     def erase_errors(self, adapter: CANAdater):
         #  на выходе - список оставшихся ошибок или пустой список, если ОК
