@@ -46,6 +46,12 @@ type_values = {
 
 
 class Parametr:
+    __slots__ = ('address', 'type',
+                 'editable', 'unit', 'description',
+                 'group', 'size', 'value', 'name',
+                 'scale', 'scaleB', 'period', 'degree',
+                 'min_value', 'max_value', 'widget',
+                 'node', 'req_list', 'set_list')
 
     def __init__(self, param=None, node=None):
         if param is None:
@@ -55,8 +61,8 @@ class Parametr:
 
         def check_value(value, name: str):
             v = value if name not in list(param.keys()) \
-                         or str(param[name]) == 'nan'\
-                         or param[name] == 0\
+                         or str(param[name]) == 'nan' \
+                         or param[name] == 0 \
                 else (param[name] if not isinstance(param[name], str)
                       else (param[name] if param[name].isdigit()
                             else value))
@@ -67,7 +73,6 @@ class Parametr:
                                 and str(param[name]) != 'nan' else s
             return st
 
-        self.name = check_string('name', 'NoName')
         self.address = check_string('address', '0x000000')
         self.type = check_string('type')
         self.type = self.type if self.type in type_values.keys() else 'UNSIGNED32'
@@ -77,6 +82,7 @@ class Parametr:
         self.group = check_string('group')  # неиспользуемое поле в подарок от Векторов
         self.size = check_string('size')  # это какой-то атавизм от блоков БУРР
         self.value = 0
+        self.name = check_string('name', 'NoName')
         self.scale = float(check_value(1, 'scale'))  # на что домножаем число из КАНа
         self.scaleB = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
         self.period = int(check_value(1, 'period'))  # период опроса параметра 1=каждый цикл 1000=очень редко

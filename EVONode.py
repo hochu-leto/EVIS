@@ -19,6 +19,12 @@ empty_node = {
 
 
 class EVONode:
+    __slots__ = ('name','request_id','answer_id',
+                 'protocol','request_serial_number',
+                 'serial_number','request_firmware_version',
+                 'firmware_version','error_request','error_erase',
+                 'errors_dict','current_errors_list','group_params_dict')
+
     def __init__(self, nod=None, err_dict=None, group_par_dict=None):
         if group_par_dict is None:
             group_par_dict = {}
@@ -118,6 +124,7 @@ class EVONode:
         pass
 
     def erase_errors(self, adapter: CANAdater):
+        #  на выходе - список оставшихся ошибок или пустой список, если ОК
         pass
 
     def is_connected(self):  # возможно, это нужно сделать просто полем
