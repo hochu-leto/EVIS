@@ -31,17 +31,3 @@ def dw2float(dw_array):
         else ((dw & 0x7FFFFF) << 1)  # Мантисса
     m1 = m * (2 ** (-23))  # Мантисса в float
     return s * m1 * (2 ** (e - 127))
-
-
-class MyQTableWidget(QTableWidget):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.value_is_changed = False
-
-    def keyPressEvent(self, e: QKeyEvent) -> None:
-        if e.key() == Qt.Key_Enter:
-            print("Key enter was pressed")
-        elif e.key() == Qt.Key_Return:
-            print(f"Key return was pressed {self.value_is_changed=}")
-            self.value_is_changed = True

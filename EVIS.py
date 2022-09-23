@@ -1,28 +1,31 @@
 """
 Сейчас программа умеет
- линуксе по квайзеру
- в виндовз сама определяет подключенный адаптер
- и подключается к машине по двойному щелчку на параметре или по кнопке
+     линуксе по квайзеру
+     в виндовз сама определяет подключенный адаптер
+     и подключается к машине по двойному щелчку на параметре или по кнопке
 
-Определяет все имеющиеся блоки по обоим КАН шинам
-При потере адаптера заново определяет все блоки
-Считывает все параметры из всех подключенных блоков
-Считывает все ошибки из всех подключенных блоков
-Удаляет все ошибки
+    Определяет все имеющиеся блоки по обоим КАН шинам
+    При потере адаптера заново определяет все блоки
+    Считывает все параметры из всех подключенных блоков
+    Считывает все ошибки из всех подключенных блоков
 
+    блок может сам
+    запросить и удалить ошибки
+    запросить серийник и версию ПО
+
+    параметр как отдельный самостоятельный объект, может сам
+    запросить параметр
+    изменить параметр
 
 следующие шаги
-- блок может сам
- -- запросить параметр
- -- изменить параметр
- -- запросить и удалить ошибки
-  -- запросить серийник и версию ПО
-- параметр как отдельный самостоятельный объект, может сам возвращать своё значение
+- выяснить и исправить почему не записываются параметры в КУВ ТТС и ТАБ
+- опрос и удаление ошибок ТАБа
+- возможность записи текущих параметров из открытого списка и сохранять запись в эксель файл
+- поиск по имени и описанию параметра
 - возможность выбрать параметры из разных блоков и сохранить их в отдельный список и
         хранить пользовательский список параметров в файле
         (вопрос как определять что этот список к этому блоку или к этой машине -
         при подключении к машине определить есть параметры из пользовательского списка на данной машине - как?)
-- возможность записи текущих параметров из открытого списка и сохранять запись в эксель файл
 - сохранение нужного значения параметра в блок - только для записываемых параметров
 - сохранение всех параметров блока в файл (сначала спросить какие из блоков следует сохранить)
 - сравнение всех параметров из файла с текущими из блоков
@@ -50,14 +53,12 @@
  из одного блока можно напрямую заливать в другой. Или их ограничить до минимума или предлагать делать изменение вручную
 - На каждый блок в экселе - лист со свойствами, лист со всеми возможными параметрами + один лист с заголовками
 и подзаголовком параметры для каждой страницы - парсить как для БУРР
-- парсить файлы настроек старого кву и инвертора
 
 """
 import sys
 import traceback
 from pprint import pprint
 
-from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QRegExpValidator, QKeyEvent
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QTableWidget, \
@@ -136,7 +137,6 @@ class AThread(QThread):
                 self.errors_counter = 0
             self.ans_list.append(param)
             self.params_counter += 1
-            # это можно совместить с таким же условием выше
             if self.params_counter >= self.len_param_list:
                 self.params_counter = 0
                 emitting()
@@ -175,11 +175,6 @@ class AThread(QThread):
         loop.exec_()
 
 
-def change_value():
-    pass
-    window.vmu_param_table.itemChanged.disconnect()
-
-
 def want_to_value_change():
     is_run = False
 
@@ -197,6 +192,7 @@ def want_to_value_change():
     #                         f'Столбец {current_cell.column()}, строка {current_cell.row()} \n '
     #                         f'возможно изменение {is_editable}, '
     #                         f'название ряда {f.text()}', QMessageBox.Ok)
+
     if is_editable and f.text().strip().upper() == 'ЗНАЧЕНИЕ':
         current_param = window.thread.current_params_list[c_row]
         dialog = DialogChange(current_param.name, c_text.strip())
@@ -206,10 +202,11 @@ def want_to_value_change():
             new_val = zero_del(current_param.get_value(can_adapter)).strip()
             next_cell = window.vmu_param_table.item(c_row, c_col + 1)
             if val == new_val:
-                next_cell.setBackground(QColor('green'))
+                next_cell.setBackground(QColor(0, 254, 0, 30))
             else:
-                next_cell.setBackground(QColor('red'))
-
+                next_cell.setBackground(QColor(254, 0, 0, 30))
+    # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
+    # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
     window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
 
     if is_run and window.thread.isFinished():
@@ -254,6 +251,7 @@ def show_empty_params_list(list_of_params: list, table: str):
     for par in list_of_params:
         name = par.name
         unit = par.unit
+        description = par.description
 
         if par.editable:
             color_opacity = 30
@@ -264,9 +262,14 @@ def show_empty_params_list(list_of_params: list, table: str):
         name_item.setBackground(QColor(0, 192, 0, color_opacity))
         show_table.setItem(row, 0, name_item)
 
+        desc_item = QTableWidgetItem(description)
+        desc_item.setFlags(desc_item.flags() & ~Qt.ItemIsEditable)
+        # desc_item.setBackground(QColor(0, 192, 0, color_opacity))
+        show_table.setItem(row, 1, desc_item)
+
         value_item = QTableWidgetItem('')
         value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, 1, value_item)
+        show_table.setItem(row, 2, value_item)
 
         unit_item = QTableWidgetItem(unit)
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
@@ -293,8 +296,6 @@ def check_node_online(all_node_list: list):
 
 
 def erase_errors():
-    # цвет не работает
-    window.errors_browser.setTextBackgroundColor(QColor('red'))
     is_run = False
     # останавливаем поток
     if window.thread.isRunning():
@@ -307,12 +308,9 @@ def erase_errors():
             if err:
                 window.err_str += f'{nod.name}: {err} \n'
     window.errors_browser.setText(window.err_str)
-    window.errors_browser.setTextBackgroundColor(QColor('white'))
     # запускаем поток снова, если был остановлен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
-
-
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
@@ -323,8 +321,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
-        self.current_nodes_list = {}
         self.setupUi(self)
+        self.current_nodes_list = {}
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
         self.thread = AThread()
@@ -357,7 +355,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_to_node()
 
     def show_new_vmu_params(self):
-
         row = 0
         for par in self.thread.current_params_list:
             value_item = QTableWidgetItem(zero_del(par.value))
@@ -369,7 +366,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             # подкрашиваем в голубой в зависимости от периода опроса
             color_opacity = int((150 / window.thread.max_iteration) * par.period) + 3
             value_item.setBackground(QColor(0, 255, 255, color_opacity))
-            self.vmu_param_table.setItem(row, 1, value_item)
+            self.vmu_param_table.setItem(row, 2, value_item)
             row += 1
         self.vmu_param_table.resizeColumnsToContents()
 
@@ -394,8 +391,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         self.nodes_tree.insertTopLevelItems(0, items)
         if cur_item in items:
-            # if self.thread.current_node in nds:
-            # if False:
             self.show_node_name(self.thread.current_node)
             self.nodes_tree.setCurrentItem(cur_item)
         #     а как установить ту группу, чоб была выбрана?
@@ -427,7 +422,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.thread.iter_count = 1
             self.thread.start()
             self.connect_btn.setText("Отключиться")
-            # self.nodes_tree.setEnabled(False)
         else:
             self.thread.quit()
             self.thread.wait()
@@ -449,12 +443,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             event.ignore()
 
-    # def keyPressEvent(self, e: QKeyEvent) -> None:
-    #     if e.key() == Qt.Key_Enter:
-    #         print("Key enter was pressed")
-    #     elif e.key() == Qt.Key_Return:
-    #         print("Key return was pressed")
-
 
 class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
@@ -470,14 +458,13 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
-    # dialog = DialogChange()
     window.setWindowTitle('Electric Vehicle Information System')
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
 
-    # window.reset_faults.clicked.connect(erase_errors)
+    window.reset_faults.clicked.connect(erase_errors)
 
     alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     window.current_nodes_list = alt_node_list

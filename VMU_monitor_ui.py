@@ -10,8 +10,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from helper import MyQTableWidget
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -135,7 +133,7 @@ class Ui_MainWindow(object):
         self.vmu_param_table.setSizePolicy(sizePolicy)
         self.vmu_param_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.vmu_param_table.setObjectName("vmu_param_table")
-        self.vmu_param_table.setColumnCount(3)
+        self.vmu_param_table.setColumnCount(4)
         self.vmu_param_table.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
         self.vmu_param_table.setHorizontalHeaderItem(0, item)
@@ -143,6 +141,8 @@ class Ui_MainWindow(object):
         self.vmu_param_table.setHorizontalHeaderItem(1, item)
         item = QtWidgets.QTableWidgetItem()
         self.vmu_param_table.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.vmu_param_table.setHorizontalHeaderItem(3, item)
         self.gridLayout_2.addWidget(self.vmu_param_table, 1, 1, 5, 3)
         self.gridLayout_2.setColumnStretch(1, 2)
         self.gridLayout_2.setColumnStretch(2, 3)
@@ -166,6 +166,8 @@ class Ui_MainWindow(object):
         item = self.vmu_param_table.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Параметр"))
         item = self.vmu_param_table.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Значение"))
+        item.setText(_translate("MainWindow", "Описание"))
         item = self.vmu_param_table.horizontalHeaderItem(2)
+        item.setText(_translate("MainWindow", "Значение"))
+        item = self.vmu_param_table.horizontalHeaderItem(3)
         item.setText(_translate("MainWindow", "Размерность"))
