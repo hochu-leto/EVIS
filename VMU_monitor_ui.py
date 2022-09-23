@@ -10,6 +10,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from helper import MyQTableWidget
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

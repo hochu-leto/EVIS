@@ -55,18 +55,20 @@
 """
 import sys
 import traceback
+from pprint import pprint
 
+from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop, QRegExp
-from PyQt5.QtGui import QIcon, QColor, QRegExpValidator
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem
+from PyQt5.QtGui import QIcon, QColor, QRegExpValidator, QKeyEvent
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QTableWidget, \
+    QDialog
 import pathlib
-import ctypes
 import VMU_monitor_ui
+import my_dialog
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from Parametr import Parametr
-from work_with_file import fill_node_list, full_node_list
-from helper import bytes_to_float, zero_del, int_to_hex_str
+from work_with_file import full_node_list
+from helper import zero_del
 
 can_adapter = CANAdapter()
 
@@ -165,12 +167,53 @@ class AThread(QThread):
         timer.timeout.connect(request_node)
         timer.start(send_delay)
 
-        # err_timer = QTimer()
-        # err_timer.timeout.connect(request_errors)
-        # err_timer.start(err_req_delay)
+        err_timer = QTimer()
+        err_timer.timeout.connect(request_errors)
+        err_timer.start(err_req_delay)
 
         loop = QEventLoop()
         loop.exec_()
+
+
+def change_value():
+    pass
+    window.vmu_param_table.itemChanged.disconnect()
+
+
+def want_to_value_change():
+    is_run = False
+
+    if window.thread.isRunning():
+        is_run = True
+        window.connect_to_node()
+
+    current_cell = window.vmu_param_table.currentItem()
+    c_row = current_cell.row()
+    c_col = current_cell.column()
+    c_text = current_cell.text()
+    is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
+    f = window.vmu_param_table.horizontalHeaderItem(current_cell.column())
+    # QMessageBox.information(window, "Выбрана ячейка",
+    #                         f'Столбец {current_cell.column()}, строка {current_cell.row()} \n '
+    #                         f'возможно изменение {is_editable}, '
+    #                         f'название ряда {f.text()}', QMessageBox.Ok)
+    if is_editable and f.text().strip().upper() == 'ЗНАЧЕНИЕ':
+        current_param = window.thread.current_params_list[c_row]
+        dialog = DialogChange(current_param.name, c_text.strip())
+        if dialog.exec_() == QDialog.Accepted:
+            val = dialog.lineEdit.text()
+            current_param.set_val(can_adapter, float(val))
+            new_val = zero_del(current_param.get_value(can_adapter)).strip()
+            next_cell = window.vmu_param_table.item(c_row, c_col + 1)
+            if val == new_val:
+                next_cell.setBackground(QColor('green'))
+            else:
+                next_cell.setBackground(QColor('red'))
+
+    window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
+
+    if is_run and window.thread.isFinished():
+        window.connect_to_node()
 
 
 def params_list_changed():
@@ -218,7 +261,7 @@ def show_empty_params_list(list_of_params: list, table: str):
             color_opacity = 0
         name_item = QTableWidgetItem(name)
         name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
-        name_item.setBackground(QColor(128, 128, 128, color_opacity))
+        name_item.setBackground(QColor(0, 192, 0, color_opacity))
         show_table.setItem(row, 0, name_item)
 
         value_item = QTableWidgetItem('')
@@ -270,6 +313,8 @@ def erase_errors():
         window.connect_to_node()
 
 
+
+
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
     node_list_defined = False
@@ -312,7 +357,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_to_node()
 
     def show_new_vmu_params(self):
-        reg_ex = QRegExp("[0-9]{1,5}")
 
         row = 0
         for par in self.thread.current_params_list:
@@ -325,12 +369,15 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             # подкрашиваем в голубой в зависимости от периода опроса
             color_opacity = int((150 / window.thread.max_iteration) * par.period) + 3
             value_item.setBackground(QColor(0, 255, 255, color_opacity))
-            value_item.setValidator(QRegExpValidator(reg_ex))
             self.vmu_param_table.setItem(row, 1, value_item)
             row += 1
         self.vmu_param_table.resizeColumnsToContents()
 
     def show_nodes_tree(self, nds: list):
+        cur_item = self.nodes_tree.currentItem()
+        current_param_list = self.thread.current_params_list
+        cur_node = self.thread.current_node
+
         self.nodes_tree.clear()
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
@@ -346,8 +393,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             items.append(item)
 
         self.nodes_tree.insertTopLevelItems(0, items)
-        if self.thread.current_node in nds:
+        if cur_item in items:
+            # if self.thread.current_node in nds:
+            # if False:
             self.show_node_name(self.thread.current_node)
+            self.nodes_tree.setCurrentItem(cur_item)
         #     а как установить ту группу, чоб была выбрана?
         else:
             self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0))
@@ -399,14 +449,34 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             event.ignore()
 
+    # def keyPressEvent(self, e: QKeyEvent) -> None:
+    #     if e.key() == Qt.Key_Enter:
+    #         print("Key enter was pressed")
+    #     elif e.key() == Qt.Key_Return:
+    #         print("Key return was pressed")
+
+
+class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
+
+    def __init__(self, value_name: str, value):
+        super().__init__()
+        self.setupUi(self)
+        self.value_name_lbl.setText(value_name)
+        self.lineEdit.setText(value)
+        reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
+        self.lineEdit.setValidator(QRegExpValidator(reg_ex))
+
 
 if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
+    # dialog = DialogChange()
     window.setWindowTitle('Electric Vehicle Information System')
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.connect_btn.clicked.connect(window.connect_to_node)
+    window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
+
     # window.reset_faults.clicked.connect(erase_errors)
 
     alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))

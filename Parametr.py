@@ -104,7 +104,7 @@ class Parametr:
         MSB = ((address & 0xFF0000) >> 16)
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
-        value = float_to_int(self.value) if self.type == 'FLOAT' else self.value
+        value = float_to_int(self.value) if self.type == 'FLOAT' else int(self.value)
         data = [value & 0xFF,
                 (value & 0xFF00) >> 8,
                 (value & 0xFF0000) >> 16,
@@ -117,9 +117,15 @@ class Parametr:
             self.req_list = [0, 0, 0, 0, sub_index, LSB, value_type, 0x03]
             self.set_list = data + [sub_index, LSB, value_type, 0x10]
 
-    def set_value(self, adapter: CANAdater, value):
+    def set_val(self, adapter: CANAdater, value):
+        value += self.scaleB
+        value *= self.scale
+        if self.degree:
+            value *= 10 ** self.degree
+
         self.value = (value if value < self.max_value else self.max_value) \
             if value >= self.min_value else self.min_value
+
         self.get_list()
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.set_list)
         if isinstance(value_data, str):
@@ -166,5 +172,3 @@ class Parametr:
         else:
             return 'Адрес не совпадает'
 
-    def set_value(self):
-        pass

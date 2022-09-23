@@ -1,4 +1,5 @@
 import ctypes
+import time
 
 import CANAdater
 from helper import int_to_hex_str
@@ -23,7 +24,8 @@ class EVONode:
                  'protocol', 'request_serial_number',
                  'serial_number', 'request_firmware_version',
                  'firmware_version', 'error_request', 'error_erase',
-                 'errors_list', 'current_errors_list', 'group_params_dict')
+                 'errors_list', 'current_errors_list', 'group_params_dict',
+                 'string_from_can')
 
     def __init__(self, nod=None, err_list=None, group_par_dict=None):
         if group_par_dict is None:
@@ -60,6 +62,7 @@ class EVONode:
         self.errors_list = err_list
         self.current_errors_list = set()
         self.group_params_dict = group_par_dict
+        self.string_from_can = ''
 
     def get_val(self, address: int, adapter: CANAdater):
         MSB = ((address & 0xFF0000) >> 16)
@@ -72,16 +75,24 @@ class EVONode:
         if self.protocol == 'MODBUS':
             r_list = [0, 0, 0, 0, sub_index, LSB, 0x2B, 0x03]
 
+            # value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
+            # time.sleep(1)
+            # print(self.name, end='    ')
+            # for byte in value:
+            #     print(hex(byte), end=' ')
+            # print()
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
 
         if isinstance(value, str):
             return value
-        print(self.name, end='    ')
-        for byte in value:
-            print(hex(byte), end=' ')
-        print()
+
         if self.protocol == 'CANOpen':
-            value = (value[7] << 24) + \
+            if value[0] == 0x41:
+                value = self.read_string_from_can(adapter)
+                if isinstance(value, str):
+                    return value
+            else:
+                value = (value[7] << 24) + \
                     (value[6] << 16) + \
                     (value[5] << 8) + value[4]
         elif self.protocol == 'MODBUS':
@@ -116,9 +127,15 @@ class EVONode:
     def get_serial_number(self, adapter: CANAdater):
         if not isinstance(self.serial_number, str):
             return self.serial_number
+
         serial = self.get_val(self.request_serial_number, adapter)
+
         if isinstance(serial, str):
-            serial = '---'
+            if self.string_from_can:
+                self.string_from_can = ''
+            else:
+                serial = '---'
+
         self.serial_number = serial
         print(f'{self.name} - {serial=}')
         return self.serial_number
@@ -128,7 +145,10 @@ class EVONode:
             return self.firmware_version
         f_list = self.get_val(self.request_firmware_version, adapter)
         if isinstance(f_list, str):
-            f_list = '---'
+            if self.string_from_can:
+                self.string_from_can = ''
+            else:
+                f_list = '---'
         self.firmware_version = f_list
         print(f'{self.name} - {f_list=}')
         return self.firmware_version
@@ -137,9 +157,11 @@ class EVONode:
         if isinstance(self.firmware_version, int):
             fm = self.firmware_version
             if fm > 0xFFFF:
-                text = int_to_hex_str((fm & 0xFF00) >> 8) + \
-                       '.' + int_to_hex_str(fm & 0xFF)
-                text = text.upper()
+                text = int_to_hex_str((fm & 0xFF000000) >> 24) + \
+                       int_to_hex_str((fm & 0xFF0000) >> 16) + \
+                       int_to_hex_str((fm & 0xFF00) >> 8) + \
+                       int_to_hex_str(fm & 0xFF)
+                # text = text.upper()
             else:
                 text = str(fm)
             return text
@@ -186,6 +208,18 @@ class EVONode:
         else:
             self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
         return self.current_errors_list
+
+    def read_string_from_can(self, adapter: CANAdater):
+        value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
+        if isinstance(value, str):
+            self.string_from_can = ''
+            return value
+
+        for byte in value:
+            self.string_from_can += chr(byte)
+
+        return int(self.string_from_can.strip()) if self.string_from_can.strip().isdigit() \
+            else self.string_from_can.strip()
 
     def is_connected(self):  # возможно, это нужно сделать просто полем
         pass
