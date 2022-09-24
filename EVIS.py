@@ -313,11 +313,6 @@ def erase_errors():
     if is_run and window.thread.isFinished():
         window.connect_to_node()
 
-def show_node():
-    window.nodes_tree.currentItemChanged.disconnect()
-    window.show_nodes_tree(window.current_nodes_list)
-    window.nodes_tree.currentItemChanged.connect(params_list_changed)
-
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
@@ -378,20 +373,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def show_nodes_tree(self, nds: list):
         cur_item = ''
-        # old_item = self.nodes_tree.currentItem()
-        # old_item_name = ''
-        # if old_item:
-        #     if old_item.pa
-        #     old_item_name = old_item.text()
+
         try:
-            old_item_name = window.nodes_tree.currentItem().parent().text(0)
+            old_item_name = window.nodes_tree.currentItem().text(0)
         except AttributeError:
-            if self.nodes_tree.currentItem():
-                old_item_name = window.nodes_tree.currentItem().text(0)
-            else:
-                old_item_name = ''
-        current_param_list = self.thread.current_params_list
-        cur_node = self.thread.current_node.name
+            old_item_name = ''
 
         self.nodes_tree.clear()
         self.nodes_tree.setColumnCount(1)
@@ -412,15 +398,14 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             items.append(item)
 
         self.nodes_tree.insertTopLevelItems(0, items)
+
         if not cur_item:
             cur_item = self.nodes_tree.topLevelItem(0)
-
         self.nodes_tree.setCurrentItem(cur_item)
 
-        if cur_node in nds:
-            self.show_node_name(self.thread.current_node)
-        else:
-            self.show_node_name(nds[0])
+        if self.thread.current_node not in nds:
+            self.thread.current_node = nds[0]
+        self.show_node_name(self.thread.current_node)
 
     def show_node_name(self, nd: EVONode):
         self.node_name_lab.setText(nd.name)
@@ -487,7 +472,6 @@ if __name__ == '__main__':
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
-    window.emergy_btn.clicked.connect(show_node)
 
     window.reset_faults.clicked.connect(erase_errors)
 
