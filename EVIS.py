@@ -216,6 +216,7 @@ def want_to_value_change():
 def params_list_changed():
     is_run = False
     current_group_params = ''
+    c = window.nodes_tree.currentItem()
     try:
         current_node_text = window.nodes_tree.currentItem().parent().text(0)
         current_group_params = window.nodes_tree.currentItem().text(0)
@@ -312,6 +313,11 @@ def erase_errors():
     if is_run and window.thread.isFinished():
         window.connect_to_node()
 
+def show_node():
+    window.nodes_tree.currentItemChanged.disconnect()
+    window.show_nodes_tree(window.current_nodes_list)
+    window.nodes_tree.currentItemChanged.connect(params_list_changed)
+
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
@@ -322,7 +328,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
         self.setupUi(self)
-        self.current_nodes_list = {}
+        self.current_nodes_list = []
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
         self.thread = AThread()
@@ -371,9 +377,21 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.vmu_param_table.resizeColumnsToContents()
 
     def show_nodes_tree(self, nds: list):
-        cur_item = self.nodes_tree.currentItem()
+        cur_item = ''
+        # old_item = self.nodes_tree.currentItem()
+        # old_item_name = ''
+        # if old_item:
+        #     if old_item.pa
+        #     old_item_name = old_item.text()
+        try:
+            old_item_name = window.nodes_tree.currentItem().parent().text(0)
+        except AttributeError:
+            if self.nodes_tree.currentItem():
+                old_item_name = window.nodes_tree.currentItem().text(0)
+            else:
+                old_item_name = ''
         current_param_list = self.thread.current_params_list
-        cur_node = self.thread.current_node
+        cur_node = self.thread.current_node.name
 
         self.nodes_tree.clear()
         self.nodes_tree.setColumnCount(1)
@@ -383,19 +401,25 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         for nd in nds:
             item = QTreeWidgetItem()
             item.setText(0, nd.name)
+            if old_item_name == nd.name:
+                cur_item = item
             for param_list in nd.group_params_dict.keys():
                 child_item = QTreeWidgetItem()
                 child_item.setText(0, str(param_list))
                 item.addChild(child_item)
+                if old_item_name == str(param_list):
+                    cur_item = child_item
             items.append(item)
 
         self.nodes_tree.insertTopLevelItems(0, items)
-        if cur_item in items:
+        if not cur_item:
+            cur_item = self.nodes_tree.topLevelItem(0)
+
+        self.nodes_tree.setCurrentItem(cur_item)
+
+        if cur_node in nds:
             self.show_node_name(self.thread.current_node)
-            self.nodes_tree.setCurrentItem(cur_item)
-        #     а как установить ту группу, чоб была выбрана?
         else:
-            self.nodes_tree.setCurrentItem(self.nodes_tree.topLevelItem(0))
             self.show_node_name(nds[0])
 
     def show_node_name(self, nd: EVONode):
@@ -463,6 +487,7 @@ if __name__ == '__main__':
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
+    window.emergy_btn.clicked.connect(show_node)
 
     window.reset_faults.clicked.connect(erase_errors)
 
