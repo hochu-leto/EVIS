@@ -199,7 +199,11 @@ def want_to_value_change():
         if dialog.exec_() == QDialog.Accepted:
             val = dialog.lineEdit.text()
             current_param.set_val(can_adapter, float(val))
-            new_val = zero_del(current_param.get_value(can_adapter)).strip()
+            value_data = current_param.get_value(can_adapter)
+            if isinstance(value_data, str):
+                new_val = ''
+            else:
+                new_val = zero_del(value_data).strip()
             next_cell = window.vmu_param_table.item(c_row, c_col + 1)
             if val == new_val:
                 next_cell.setBackground(QColor(0, 254, 0, 30))

@@ -232,7 +232,7 @@ class Kvaser(AdapterCAN):
             if i == self.max_iteration:
                 return self.ch
         # проверить это
-        self.ch.busOn()
+        # self.ch.busOn()
         if can_id_req > 0x0000FFF:
             flags = canlib.MessageFlag.EXT
         else:
