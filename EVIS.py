@@ -346,6 +346,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if can_adapter.isDefined:
                 can_adapter.close_canal_can()
             if err == 'Адаптер не подключен':
+                self.current_nodes_list = []
+                # можно было бы избавиться от этой переменной, проверять, что список не пустой, но пусть будет
                 self.node_list_defined = False
                 can_adapter.isDefined = False
         else:
