@@ -58,7 +58,7 @@ class EVONode:
         self.firmware_version = '---'
         self.error_request = nod['errors_req'].split(',')  # не могу придумать проверку
         self.error_erase = {'address': check_address('errors_erase'),
-                            'value': check_address('v_errors_erase')}
+                            'value': int(check_address('v_errors_erase'))}
         self.errors_list = err_list
         self.current_errors_list = set()
         self.group_params_dict = group_par_dict
@@ -102,6 +102,11 @@ class EVONode:
         return value
 
     def send_val(self, address: int, adapter: CANAdater, value=0):
+        try:
+            value = int(value)
+        except ValueError:
+            return 'Передаваемое значение должно быть INTEGER'
+
         data = [value & 0xFF,
                 (value & 0xFF00) >> 8,
                 (value & 0xFF0000) >> 16,

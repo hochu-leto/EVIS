@@ -33,6 +33,11 @@ example_par = {'name': 'fghjk',
                'size': 'nan',
                'degree': 3}
 
+
+def can_to_char(value):
+    pass
+
+
 type_values = {
     'UNSIGNED8': {'min': 0, 'max': 255, 'type': 0x2F, 'func': ctypes.c_uint8},
     'SIGNED8': {'min': -128, 'max': 127, 'type': 0x2F, 'func': ctypes.c_int8},
@@ -41,6 +46,7 @@ type_values = {
     'UNSIGNED32': {'min': 0, 'max': 4294967295, 'type': 0x23, 'func': ctypes.c_uint32},
     'SIGNED32': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_int32},
     'FLOAT': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_uint8},
+    'VISIBLE_STRING': {'min': 0, 'max': 255, 'type': 0x21, 'func': can_to_char}
 
 }
 
@@ -112,7 +118,7 @@ class Parametr:
 
         if self.node.protocol == 'CANOpen':
             self.req_list = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
-            self.set_list = [0x20, LSB, MSB, sub_index] + data
+            self.set_list = [value_type, LSB, MSB, sub_index] + data
         if self.node.protocol == 'MODBUS':
             self.req_list = [0, 0, 0, 0, sub_index, LSB, value_type, 0x03]
             self.set_list = data + [sub_index, LSB, value_type, 0x10]
@@ -171,4 +177,3 @@ class Parametr:
             return self.value
         else:
             return 'Адрес не совпадает'
-
