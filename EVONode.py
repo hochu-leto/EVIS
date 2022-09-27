@@ -172,12 +172,6 @@ class EVONode:
             return text
         return self.firmware_version
 
-    def get_nodetr(self, address=0, name_nodetr=''):
-        pass
-
-    def change_nodetr(self, address=0, name_nodetr=''):
-        pass
-
     def check_errors(self, adapter: CANAdater):
         #  на выходе - список текущих ошибок
         big_error = 0
@@ -225,6 +219,3 @@ class EVONode:
 
         return int(self.string_from_can.strip()) if self.string_from_can.strip().isdigit() \
             else self.string_from_can.strip()
-
-    def is_connected(self):  # возможно, это нужно сделать просто полем
-        pass
