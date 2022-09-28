@@ -3,7 +3,7 @@ import struct
 
 import CANAdater
 from EVONode import EVONode
-from helper import bytes_to_float, zero_del, int_to_hex_str, float_to_int
+from helper import bytes_to_float, int_to_hex_str, float_to_int
 
 empty_par = {'name': '',
              'address': '',
@@ -17,7 +17,10 @@ empty_par = {'name': '',
              'group': '',
              'period': '',
              'size': '',
-             'degree': ''}
+             'degree': '',
+             'min_value': '',
+             'max_value': '',
+             'widget': ''}
 
 example_par = {'name': 'fghjk',
                'address': '34567',
@@ -76,6 +79,7 @@ class Parametr:
 
         def check_string(name: str, s=''):
             st = param[name] if name in list(param.keys()) \
+                                and param[name] \
                                 and str(param[name]) != 'nan' else s
             return st
 
@@ -92,12 +96,12 @@ class Parametr:
         self.scale = float(check_value(1, 'scale'))  # на что домножаем число из КАНа
         self.scaleB = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
         self.period = int(check_value(1, 'period'))  # период опроса параметра 1=каждый цикл 1000=очень редко
-        self.period = 1000 if self.period > 1000 else self.period   # проверять горячие буквы, что входят в
+        self.period = 1000 if self.period > 1000 else self.period  # проверять горячие буквы, что входят в
         # статические параметры, чтоб период был = 1001
         self.degree = int(check_value(0, 'degree'))  # степень 10 на которую делится параметр из КАНа
 
-        self.min_value = type_values[self.type]['min']  # дописать на случай, если min_value имеется
-        self.max_value = type_values[self.type]['max']
+        self.min_value = check_value(type_values[self.type]['min'], 'min_value')
+        self.max_value = check_value(type_values[self.type]['max'], 'max_value')
         # из editable и соответствующего списка
         self.widget = 'QtWidgets'
         # что ставить, если node не передали - emptyNode - который получается, если в EVONode ничего не передать
@@ -178,3 +182,10 @@ class Parametr:
             return self.value
         else:
             return 'Адрес не совпадает'
+
+    def to_dict(self):
+        exit_dict = empty_par
+        for k in exit_dict.keys():
+            exit_dict[k] = self.__getattribute__(k)
+        exit_dict['editable'] = 1 if exit_dict['editable'] else 0
+        return exit_dict
