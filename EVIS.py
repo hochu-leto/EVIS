@@ -60,6 +60,7 @@ import traceback
 from pprint import pprint
 from time import sleep
 
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QRegExpValidator, QKeyEvent
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QTableWidget, \
@@ -322,11 +323,11 @@ def erase_errors():
 
 def save_to_file_pressed():
     print('btn is pressed')
-    if window.tr.isRunning():
-        window.tr.quit()
-    else:
-        window.tr.node_to_save = window.thread.current_node
-        window.tr.run()
+    window.save_to_file_btn.setEnabled(False)
+    window.vmu_param_table.cellDoubleClicked.disconnect()
+    window.tr.node_to_save = window.thread.current_node
+    window.tr.run()
+
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
@@ -343,7 +344,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.thread = AThread()
         self.tr = SaveToFileThread()
         self.tr.adapter = can_adapter
-
+        self.tr.SignalOfReady.connect(self.progress_bar_fulling)
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
@@ -370,6 +371,19 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def add_new_errors(self, list_of_errors: str):
         self.errors_browser.setText(list_of_errors)
 
+    @pyqtSlot(int, str, bool)
+    def progress_bar_fulling(self, percent: int, err: str, is_finished: bool):
+        window.node_nsme_pbar.setValue(percent)
+        if is_finished or err:
+            self.tr.quit()
+            self.tr.wait()
+            self.save_to_file_btn.setEnabled(True)
+            if is_finished:
+                QMessageBox.information(window, "Успешный успех!", 'Файл сохранён ' + '\n' + err, QMessageBox.Ok)
+            elif err:
+                QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
+            self.node_nsme_pbar.setValue(0)
+            window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
 
     def double_click(self):
         if not self.thread.isRunning():
@@ -488,6 +502,7 @@ if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
+
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.connect_btn.clicked.connect(window.connect_to_node)
@@ -495,12 +510,11 @@ if __name__ == '__main__':
     window.reset_faults.clicked.connect(erase_errors)
     alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
-
     window.current_nodes_list = alt_node_list
     window.show_nodes_tree(alt_node_list)
     if alt_node_list and params_list_changed():
-
         window.vmu_param_table.adjustSize()
         window.nodes_tree.adjustSize()
+
         window.show()  # Показываем окно
         app.exec_()  # и запускаем приложение
