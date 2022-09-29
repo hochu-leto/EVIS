@@ -1,8 +1,12 @@
 import datetime
+import struct
 from pprint import pprint
 
 import pandas
 from PyQt5.QtWidgets import QMessageBox
+
+from EVONode import EVONode
+from Parametr import Parametr
 
 value_type_dict = {'UNSIGNED16': 0x2B,
                    'SIGNED16': 0x2B,
@@ -53,6 +57,8 @@ def fill_node_list(file_name):
             p_list = []
             if node_name in params_list:
                 for param in bookmark_dict[params_list]:
+                    if str(param['type']) != 'nan':
+                        param['type'] = param['type'].strip()
                     if str(param['name']) != 'nan':
                         if 'group ' in param['name']:
                             node_params_list[prev_group_name] = p_list.copy()
@@ -61,6 +67,7 @@ def fill_node_list(file_name):
                         else:
                             #  получается, что здесь я не проверяю наличие нужных поле у параметра
                             #  это происходит только при заполнении списка vmu_params_list
+                            #  здесь нужно в список добавлять объект Параметр с полями и методами
                             p_list.append(param)
                 node_params_list[prev_group_name] = p_list.copy()
                 del node_params_list['']
@@ -70,6 +77,69 @@ def fill_node_list(file_name):
         node['ans_id'] = check_id(node['ans_id'])
 
     return node_list
+
+
+def full_node_list(file_name):
+    need_fields = {'name', 'address', 'type'}
+    file = pandas.ExcelFile(file_name)
+    bookmark_dict = {}
+    if not {'node', 'errors'}.issubset(file.sheet_names):
+        QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
+        return
+    # sheet "nodes" is founded
+    for sheet_name in file.sheet_names:  # пробегаюсь по всем листам документа
+        sheet = file.parse(sheet_name=sheet_name)
+        headers = list(sheet.columns.values)
+        if set(need_fields).issubset(headers):  # если в заголовках есть все нужные поля
+            sheet_params_list = sheet.to_dict(orient='records')  # то запихиваю весь этот лист со всеми
+            bookmark_dict[sheet_name] = sheet_params_list  # строками в словарь,где ключ - название страницы
+    # здесь я имею словарь ключ - имя блока , значение - словарь с параметрами ( не по группам)
+
+    err_sheet = file.parse(sheet_name='errors')
+    err_list = err_sheet.to_dict(orient='records')  # парсим лист "errors"
+    err_dict = {}
+    prev_node_name = ''
+    e_list = []
+    for er in err_list:
+        if 'node' in er['value_error']:
+            err_dict[prev_node_name] = e_list.copy()
+            e_list = []
+            prev_node_name = er['value_error'].replace('node ', '')
+        else:
+            e_list.append(er)
+    err_dict[prev_node_name] = e_list.copy()
+    del err_dict['']
+    # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с ошибками
+    nodes_list = []
+    node_sheet = file.parse(sheet_name='node')
+    node_list = node_sheet.to_dict(orient='records')  # парсим лист "node"
+    for node in node_list:
+        node_name = node['name']
+        node_params_list = {}
+        ev_node = EVONode(node, err_dict[node['name']])
+        for params_list in bookmark_dict.keys():  # бегу по словарю со списками параметров
+            prev_group_name = ''
+            p_list = []
+            if node_name in params_list:
+                for param in bookmark_dict[params_list]:
+                    if str(param['type']) != 'nan':
+                        param['type'] = param['type'].strip()
+                    if str(param['name']) != 'nan':
+                        if 'group ' in param['name']:
+                            node_params_list[prev_group_name] = p_list.copy()
+                            p_list = []
+                            prev_group_name = param['name'].replace('group ', '')
+                        else:
+                            p = Parametr(param, ev_node)
+                            p_list.append(p)
+                node_params_list[prev_group_name] = p_list.copy()
+                del node_params_list['']
+
+        if node_params_list:
+            ev_node.group_params_dict = node_params_list.copy()
+        nodes_list.append(ev_node)
+
+    return nodes_list
 
 
 def check_id(string: str):
@@ -164,14 +234,3 @@ def adding_to_csv_file(name_or_value: str, vmu_params_list: list, recording_file
     #           index=False,
     #           encoding='windows-1251')
 
-
-def dw2float(dw_array):
-    assert (len(dw_array) == 4)
-    dw = int.from_bytes(dw_array, byteorder='little', signed=False)
-    s = -1 if (dw >> 31) == 1 \
-        else 1  # Знак
-    e = (dw >> 23) & 0xFF  # Порядок
-    m = ((dw & 0x7FFFFF) | 0x800000) if e != 0 \
-        else ((dw & 0x7FFFFF) << 1)  # Мантисса
-    m1 = m * (2 ** (-23))  # Мантисса в float
-    return s * m1 * (2 ** (e - 127))

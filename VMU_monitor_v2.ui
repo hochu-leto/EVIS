@@ -96,6 +96,19 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="save_to_file_btn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Сохранить настройки</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLabel" name="node_s_n_lab">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -209,6 +222,11 @@
          <column>
           <property name="text">
            <string>Параметр</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Описание</string>
           </property>
          </column>
          <column>
