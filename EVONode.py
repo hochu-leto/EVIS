@@ -81,6 +81,8 @@ class EVONode:
             # for byte in value:
             #     print(hex(byte), end=' ')
             # print()
+        while adapter.is_busy:
+            pass
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
 
         if isinstance(value, str):
@@ -142,7 +144,7 @@ class EVONode:
                 serial = '---'
 
         self.serial_number = serial
-        print(f'{self.name} - {serial=}')
+        # print(f'{self.name} - {serial=}')
         return self.serial_number
 
     def get_firmware_version(self, adapter: CANAdater):
@@ -155,7 +157,7 @@ class EVONode:
             else:
                 f_list = '---'
         self.firmware_version = f_list
-        print(f'{self.name} - {f_list=}')
+        # print(f'{self.name} - {f_list=}')
         return self.firmware_version
 
     def cut_firmware(self):

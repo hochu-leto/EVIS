@@ -1,5 +1,6 @@
 import ctypes
 import struct
+from time import sleep
 
 import CANAdater
 from EVONode import EVONode
@@ -147,6 +148,10 @@ class Parametr:
     def get_value(self, adapter: CANAdater):
         if not self.req_list:
             self.get_list()
+        while adapter.is_busy:
+            sleep(0.002)
+            pass
+            # print(' busy')
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.req_list)
         if isinstance(value_data, str):
             return value_data
@@ -184,7 +189,7 @@ class Parametr:
             return 'Адрес не совпадает'
 
     def to_dict(self):
-        exit_dict = empty_par
+        exit_dict = empty_par.copy()
         for k in exit_dict.keys():
             exit_dict[k] = self.__getattribute__(k)
         exit_dict['editable'] = 1 if exit_dict['editable'] else 0

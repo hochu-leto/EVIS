@@ -102,11 +102,13 @@ class AThread(QThread):
     iter_count = 1
     current_params_list = []
     current_node = EVONode()
+    is_busy = False
 
     def __init__(self):
         super().__init__()
 
     def run(self):
+
         def emitting():  # передача заполненного списка параметров
             self.threadSignalAThread.emit(self.ans_list)
             self.params_counter = 0
@@ -117,6 +119,7 @@ class AThread(QThread):
                 self.iter_count = 1
 
         def request_node():
+            # print('reading request')
             if not self.iter_count == 1:
                 while not self.iter_count % self.current_params_list[self.params_counter].period == 0:
                     # если период опроса текущего параметра не кратен текущей итерации,
@@ -128,7 +131,6 @@ class AThread(QThread):
                         self.params_counter = 0
                         emitting()
                         return
-
             param = self.current_params_list[self.params_counter].get_value(can_adapter)
 
             if isinstance(param, str):
@@ -157,7 +159,7 @@ class AThread(QThread):
             self.err_thread_signal.emit(errors_str)
             timer.start(send_delay)
 
-        send_delay = 10  # задержка отправки в кан сообщений
+        send_delay = 13  # задержка отправки в кан сообщений
         err_req_delay = 1500
         self.max_errors = 3
         self.len_param_list = len(self.current_params_list)
@@ -322,10 +324,12 @@ def erase_errors():
 
 
 def save_to_file_pressed():
-    print('btn is pressed')
     window.save_to_file_btn.setEnabled(False)
     window.vmu_param_table.cellDoubleClicked.disconnect()
+    window.tr.adapter = can_adapter
     window.tr.node_to_save = window.thread.current_node
+    window.save_to_file_btn.setText(f'Сохраняются настройки блока: {window.tr.node_to_save.name}')
+
     window.tr.run()
 
 
@@ -377,13 +381,16 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if is_finished or err:
             self.tr.quit()
             self.tr.wait()
-            self.save_to_file_btn.setEnabled(True)
+
             if is_finished:
                 QMessageBox.information(window, "Успешный успех!", 'Файл сохранён ' + '\n' + err, QMessageBox.Ok)
             elif err:
                 QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
             self.node_nsme_pbar.setValue(0)
-            window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
+
+            self.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
+            self.save_to_file_btn.setEnabled(True)
+            self.save_to_file_btn.setText(f'Сохранить настройки блока: {self.thread.current_node.name}')
 
     def double_click(self):
         if not self.thread.isRunning():
@@ -407,7 +414,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def show_nodes_tree(self, nds: list):
         cur_item = ''
-
         try:
             old_item_name = window.nodes_tree.currentItem().text(0)
         except AttributeError:
@@ -445,6 +451,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.node_name_lab.setText(nd.name)
         self.node_s_n_lab.setText(f'Серийный номер: {nd.serial_number}')
         self.node_fm_lab.setText(f'Версия ПО: {nd.cut_firmware()}')
+        if self.save_to_file_btn.isEnabled():
+            self.save_to_file_btn.setText(f'Сохранить настройки блока: {nd.name}')
         return
 
     def connect_to_node(self):
