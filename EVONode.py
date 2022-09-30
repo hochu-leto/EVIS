@@ -1,5 +1,4 @@
 import ctypes
-import time
 
 import CANAdater
 from helper import int_to_hex_str

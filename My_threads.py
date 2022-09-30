@@ -7,6 +7,10 @@ from EVONode import EVONode
 from Parametr import Parametr, empty_par
 
 
+# поток для сохранения в файл настроек блока
+# возвращает сигналу о процентах выполнения, сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
+
+
 class SaveToFileThread(QThread):
     SignalOfReady = pyqtSignal(int, str, bool)
     err_thread_signal = pyqtSignal(str)
@@ -21,7 +25,6 @@ class SaveToFileThread(QThread):
         self.adapter = CANAdater
         self.node_to_save = EVONode
         self.finished.connect(self.finished_tread)
-        self.adapter_is_busy = False
 
     def finished_tread(self):
         self.killTimer(self.num_timer)
@@ -31,17 +34,12 @@ class SaveToFileThread(QThread):
         self.params_counter = 0
 
         def request_param():
-            # print('saving request')
             param = all_params_list[self.params_counter]
             while param.value:
                 self.params_counter += 1
                 param = all_params_list[self.params_counter]
-                # print(f' уже был {param.name} = {param.value}')
-            if param.address and int(param.address, 16) > 0:
+            if param.address and int(param.address, 16) > 0:  # нужно чтоб параметр группы не проскочил
                 param = all_params_list[self.params_counter].get_value(self.adapter)
-                # all_params_list[self.params_counter].value = param
-                # print(f' запросил {all_params_list[self.params_counter].name} = '
-                #       f'{all_params_list[self.params_counter].value}')
 
                 while isinstance(param, str):
                     self.errors_counter += 1
@@ -51,9 +49,8 @@ class SaveToFileThread(QThread):
                         self.params_counter = 0
                         self.SignalOfReady.emit(self.ready_persent,
                                                 f'{param} \n'
-                                                f' параметр {all_params_list[self.params_counter].name}', False)
+                                                f'поток сохранения прерван,повторите ', False)
                         timer.stop()
-                        print(' ng ', param)
                         return
 
             self.errors_counter = 0
@@ -66,7 +63,8 @@ class SaveToFileThread(QThread):
 
         send_delay = 3  # задержка отправки в кан сообщений
         all_params_list = []
-        for group_name, param_list in self.node_to_save.group_params_dict.items():
+        param_dict = self.node_to_save.group_params_dict.copy()
+        for group_name, param_list in param_dict.items():
             e_par = Parametr()
             e_par.name = f'group {group_name}'
             all_params_list.append(e_par)
@@ -101,4 +99,5 @@ class SaveToFileThread(QThread):
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.xlsx'
         df = pd.DataFrame(save_list, columns=p.to_dict().keys())
         df.to_excel(file_name, index=False)
+        # вместо строки ошибки отправляем название файла,куда сохранил настройки
         self.SignalOfReady.emit(100, file_name, True)

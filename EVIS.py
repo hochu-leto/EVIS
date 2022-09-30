@@ -1,8 +1,6 @@
 """
 Сейчас программа умеет
-     линуксе по квайзеру
-     в виндовз сама определяет подключенный адаптер
-     и подключается к машине по двойному щелчку на параметре или по кнопке
+    подключается к машине по двойному щелчку на параметре или по кнопке
 
     Определяет все имеющиеся блоки по обоим КАН шинам
     При потере адаптера заново определяет все блоки
@@ -16,24 +14,26 @@
     параметр как отдельный самостоятельный объект, может сам
     запросить параметр
     изменить параметр
-    сохранение нужного значения параметра в блок - только для записываемых параметров - а как для старого кву?
+    сохранение нужного значения параметра в блок - только для записываемых параметров - а как для старого кву
+
+    сохраняет все параметры текущего блока в эксель файл - можно парраллельно с основным потоком, но лучше отключаться
 
 следующие шаги
-- выяснить и исправить почему не записываются параметры в КВУ ТТС и ТАБ
-- опрос и удаление ошибок ТАБа
-- возможность записи текущих параметров из открытого списка и сохранять запись в эксель файл
-- поиск по имени и описанию параметра
+-  линуксе по квайзеру в виндовз сама определяет подключенный адаптер
 - возможность выбрать параметры из разных блоков и сохранить их в отдельный список и
         хранить пользовательский список параметров в файле
         (вопрос как определять что этот список к этому блоку или к этой машине -
         при подключении к машине определить есть параметры из пользовательского списка на данной машине - как?)
-- сохранение всех параметров блока в файл (сначала спросить какие из блоков следует сохранить)
 - сравнение всех параметров из файла с текущими из блоков
+- опрос и удаление ошибок ТАБа
+- возможность записи текущих параметров из открытого списка и сохранять запись в эксель файл
+- виджеты по управлению параметром
+- поиск по имени и описанию параметра
  -- здесь нужно научиться парсить файлы с параметрами из старых программ
         - рткон и бурр-сеттингс, чтоб можно было сравнивать с текущими
 - графики выбранных текущих параметров
 - автоматическое определение нужного периода опроса параметра и сохранение этого периода в свойства параметра в файл
-- виджеты по управлению параметром
+
 НА ПОДУМАТЬ
 - продумать реляционную БД для параметров
 - могут быть ещё и БМС БЗУ ИСН и иже с ними, хрен знает какие ещё блоки могут быть
@@ -57,14 +57,9 @@
 """
 import sys
 import traceback
-from pprint import pprint
-from time import sleep
-
-from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QRegExpValidator, QKeyEvent
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QTableWidget, \
-    QDialog
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QDialog
 import pathlib
 import VMU_monitor_ui
 import my_dialog
@@ -77,6 +72,7 @@ from helper import zero_del
 can_adapter = CANAdapter()
 
 dir_path = str(pathlib.Path.cwd())
+# файл где все блоки, параметры, ошибки
 vmu_param_file = 'table_for_params_new_VMU2.xlsx'
 
 
@@ -96,13 +92,14 @@ sys.excepthook = log_uncaught_exceptions
 
 # поток для опроса параметров и ошибок
 class AThread(QThread):
+    # сигнал со списком параметров из текущей группы
     threadSignalAThread = pyqtSignal(list)
+    # сигнал с ошибками
     err_thread_signal = pyqtSignal(str)
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
     current_node = EVONode()
-    is_busy = False
 
     def __init__(self):
         super().__init__()
@@ -119,7 +116,6 @@ class AThread(QThread):
                 self.iter_count = 1
 
         def request_node():
-            # print('reading request')
             if not self.iter_count == 1:
                 while not self.iter_count % self.current_params_list[self.params_counter].period == 0:
                     # если период опроса текущего параметра не кратен текущей итерации,
@@ -132,7 +128,7 @@ class AThread(QThread):
                         emitting()
                         return
             param = self.current_params_list[self.params_counter].get_value(can_adapter)
-
+            # если строка - значит ошибка
             if isinstance(param, str):
                 self.errors_counter += 1
                 if self.errors_counter >= self.max_errors:
@@ -140,6 +136,7 @@ class AThread(QThread):
                     return
             else:
                 self.errors_counter = 0
+            # тут всё просто, собираем весь список и отправляем кучкой
             self.ans_list.append(param)
             self.params_counter += 1
             if self.params_counter >= self.len_param_list:
@@ -159,7 +156,7 @@ class AThread(QThread):
             self.err_thread_signal.emit(errors_str)
             timer.start(send_delay)
 
-        send_delay = 13  # задержка отправки в кан сообщений
+        send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
         err_req_delay = 1500
         self.max_errors = 3
         self.len_param_list = len(self.current_params_list)
@@ -168,6 +165,7 @@ class AThread(QThread):
         self.ans_list = []
         self.params_counter = 0
         self.errors_counter = 0
+
         timer = QTimer()
         timer.timeout.connect(request_node)
         timer.start(send_delay)
@@ -180,9 +178,9 @@ class AThread(QThread):
         loop.exec_()
 
 
-def want_to_value_change():
+def want_to_value_change():  # меняем значение параметра
     is_run = False
-
+    # остановим поток, если он есть
     if window.thread.isRunning():
         is_run = True
         window.connect_to_node()
@@ -193,23 +191,22 @@ def want_to_value_change():
     c_text = current_cell.text()
     is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
     f = window.vmu_param_table.horizontalHeaderItem(current_cell.column())
-    # QMessageBox.information(window, "Выбрана ячейка",
-    #                         f'Столбец {current_cell.column()}, строка {current_cell.row()} \n '
-    #                         f'возможно изменение {is_editable}, '
-    #                         f'название ряда {f.text()}', QMessageBox.Ok)
 
     if is_editable and f.text().strip().upper() == 'ЗНАЧЕНИЕ':
         current_param = window.thread.current_params_list[c_row]
         dialog = DialogChange(current_param.name, c_text.strip())
         if dialog.exec_() == QDialog.Accepted:
             val = dialog.lineEdit.text()
+            # отправляю параметр, полученный из диалогового окна
             current_param.set_val(can_adapter, float(val))
+            # и сразу же проверяю записался ли он в блок
             value_data = current_param.get_value(can_adapter)
             if isinstance(value_data, str):
                 new_val = ''
             else:
                 new_val = zero_del(value_data).strip()
             next_cell = window.vmu_param_table.item(c_row, c_col + 1)
+            # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
             if val == new_val:
                 next_cell.setBackground(QColor(0, 254, 0, 30))
             else:
@@ -217,36 +214,37 @@ def want_to_value_change():
     # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
     # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
     window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
-
+    # и запускаю поток, если он был запущен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
 
 
-def params_list_changed():
+def params_list_changed():  # если мы в левом окошке выбираем разные блоки или группы параметров
     is_run = False
     current_group_params = ''
-    c = window.nodes_tree.currentItem()
     try:
         current_node_text = window.nodes_tree.currentItem().parent().text(0)
         current_group_params = window.nodes_tree.currentItem().text(0)
     except AttributeError:
         current_node_text = window.nodes_tree.currentItem().text(0)
-
+    # определяю что за блок выбран
     for nod in window.current_nodes_list:
         if current_node_text in nod.name:
             window.thread.current_node = nod
+            # если не выбрана какая-то конкретная, то выбираю первую группу блока
             if current_group_params:
                 window.thread.current_params_list = nod.group_params_dict[current_group_params]
             else:
                 window.thread.current_params_list = nod.group_params_dict[list(nod.group_params_dict.keys())[0]]
             break
-
+    # тормозим поток
     if window.thread.isRunning():
         is_run = True
         window.connect_to_node()
-
+    # отображаем имя блока, серийник и всё такое и обновляю список параметров в окошке справа
     window.show_node_name(window.thread.current_node)
     show_empty_params_list(window.thread.current_params_list, 'vmu_param_table')
+    # и запускаю поток, если он был запущен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
     return True
@@ -257,7 +255,7 @@ def show_empty_params_list(list_of_params: list, table: str):
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
     row = 0
-
+    # пока отображаю только три атрибута + само значение отображается позже
     for par in list_of_params:
         name = par.name
         unit = par.unit
@@ -297,8 +295,10 @@ def check_node_online(all_node_list: list):
         if not isinstance(node_serial, str):
             nd.firmware_version = nd.get_firmware_version(can_adapter)
             exit_list.append(nd)
+
     if not exit_list:
         return all_node_list, False
+
     window.nodes_tree.currentItemChanged.disconnect()
     window.show_nodes_tree(exit_list)
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
@@ -314,6 +314,7 @@ def erase_errors():
     # и трём все ошибки
     window.err_str = ''
     for nod in window.current_nodes_list:
+        # метод удаления ошибок должен вернуть список ошибок, если они остались
         for err in nod.erase_errors(can_adapter):
             if err:
                 window.err_str += f'{nod.name}: {err} \n'
@@ -323,13 +324,18 @@ def erase_errors():
         window.connect_to_node()
 
 
-def save_to_file_pressed():
+def save_to_file_pressed():  # если нужно записать текущий блок в файл
+    # останавливаем поток
+    if window.thread.isRunning():
+        window.connect_to_node()
+    window.connect_btn.setEnabled(False)
     window.save_to_file_btn.setEnabled(False)
-    window.vmu_param_table.cellDoubleClicked.disconnect()
+    # чтоб во время записи никто не поменял параметр, блокируем это
+    # window.vmu_param_table.cellDoubleClicked.disconnect()
     window.tr.adapter = can_adapter
     window.tr.node_to_save = window.thread.current_node
     window.save_to_file_btn.setText(f'Сохраняются настройки блока: {window.tr.node_to_save.name}')
-
+    # запускаем параллельный поток сохранения
     window.tr.run()
 
 
@@ -346,6 +352,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
         self.thread = AThread()
+        self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
+        self.thread.err_thread_signal.connect(self.add_new_errors)
+        #  И для сохранения
         self.tr = SaveToFileThread()
         self.tr.adapter = can_adapter
         self.tr.SignalOfReady.connect(self.progress_bar_fulling)
@@ -371,13 +380,15 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             self.show_new_vmu_params()
 
-    @pyqtSlot(str)
+    @pyqtSlot(str)  # добавляем ошибки в окошко
     def add_new_errors(self, list_of_errors: str):
         self.errors_browser.setText(list_of_errors)
 
     @pyqtSlot(int, str, bool)
     def progress_bar_fulling(self, percent: int, err: str, is_finished: bool):
+        # рисуем змейку прогресса
         window.node_nsme_pbar.setValue(percent)
+        # выходим из потока если есть строка ошибки или файл сохранён
         if is_finished or err:
             self.tr.quit()
             self.tr.wait()
@@ -388,11 +399,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
             self.node_nsme_pbar.setValue(0)
 
-            self.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
+            # self.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
+            self.connect_btn.setEnabled(True)
             self.save_to_file_btn.setEnabled(True)
             self.save_to_file_btn.setText(f'Сохранить настройки блока: {self.thread.current_node.name}')
 
-    def double_click(self):
+    def double_click(self):     # можно подключиться по двойному щелчку по группе параметров
         if not self.thread.isRunning():
             self.connect_to_node()
 
@@ -414,6 +426,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def show_nodes_tree(self, nds: list):
         cur_item = ''
+        # запоминаю где сейчас курсор - тупо по тексту
         try:
             old_item_name = window.nodes_tree.currentItem().text(0)
         except AttributeError:
@@ -425,29 +438,34 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         items = []
 
         for nd in nds:
+            # создаю основные вкладки - названия блоков
             item = QTreeWidgetItem()
             item.setText(0, nd.name)
             if old_item_name == nd.name:
+                # если если ранее выбранный блок среди имеющихся, запоминаю его
                 cur_item = item
             for param_list in nd.group_params_dict.keys():
+                # подвкладки - названия групп параметров
                 child_item = QTreeWidgetItem()
                 child_item.setText(0, str(param_list))
                 item.addChild(child_item)
+                # если ранее курсор стоял на группе, запоминаю ее
                 if old_item_name == str(param_list):
                     cur_item = child_item
             items.append(item)
 
         self.nodes_tree.insertTopLevelItems(0, items)
-
+        # если курсор стоял на блоке, который отсутвует в нынешнем списке, то курсор на самый первый блок...
         if not cur_item:
             cur_item = self.nodes_tree.topLevelItem(0)
         self.nodes_tree.setCurrentItem(cur_item)
-
+        # ... и текущий блок,соответсвенно, самый первый
         if self.thread.current_node not in nds:
             self.thread.current_node = nds[0]
         self.show_node_name(self.thread.current_node)
 
     def show_node_name(self, nd: EVONode):
+        # чтоб юзер понимал в каком блоке он находится
         self.node_name_lab.setText(nd.name)
         self.node_s_n_lab.setText(f'Серийный номер: {nd.serial_number}')
         self.node_fm_lab.setText(f'Версия ПО: {nd.cut_firmware()}')
@@ -457,10 +475,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def connect_to_node(self):
         global can_adapter
-
+        # такое бывает при первом подключении или если вырвали адаптер - надо заново его определить
         if not can_adapter.isDefined:
             can_adapter = CANAdapter()
-
+        # наверное, это можно объединить, если вырвали адаптер, список тоже нужно обновлять,\
+        # хотя когда теряем кан-шину также есть смысл обновить список подключенных блоков
+        # надо это добавить!
         if not self.node_list_defined:
             self.current_nodes_list, check = check_node_online(alt_node_list)
             params_list_changed()
@@ -468,8 +488,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.node_list_defined = check
 
         if not self.thread.isRunning():
-            self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
-            self.thread.err_thread_signal.connect(self.add_new_errors)
             self.thread.iter_count = 1
             self.thread.start()
             self.connect_btn.setText("Отключиться")
@@ -510,19 +528,21 @@ if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
-
+    # подключаю сигналы нажатия на окошки
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.nodes_tree.doubleClicked.connect(window.double_click)
-    window.connect_btn.clicked.connect(window.connect_to_node)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
+    # и сигналы нажатия на кнопки
+    window.connect_btn.clicked.connect(window.connect_to_node)
     window.reset_faults.clicked.connect(erase_errors)
-    alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
+    # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
+    alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     window.current_nodes_list = alt_node_list
     window.show_nodes_tree(alt_node_list)
+    # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
         window.vmu_param_table.adjustSize()
         window.nodes_tree.adjustSize()
-
         window.show()  # Показываем окно
         app.exec_()  # и запускаем приложение

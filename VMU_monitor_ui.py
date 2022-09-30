@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'VMU_monitor_fake.ui'
+# Form implementation generated from reading ui file 'VMU_monitor_v2.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #

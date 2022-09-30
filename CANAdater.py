@@ -1,4 +1,8 @@
-from pprint import pprint
+'''
+класс, к которому обращается программа, он уже определяет в какой операционке работаем, ищет подключенные адаптеры,
+(пока только МАРАФОН и Квасер) и определяет скорости кан-шин, к которым они подключены.
+Нормально работает пока только с марафоном
+'''
 from sys import platform
 
 import AdapterCAN
@@ -11,14 +15,14 @@ class CANAdapter:
     is_busy = False
 
     def __init__(self):
-        self.id_nones_dict = {}
-        self.can_adapters = {}
+        self.id_nones_dict = {}     # словарь блоков, где ключ - айди обращения к блоку, а значение - объект адаптера
+        self.can_adapters = {}  # словарь адаптеров,где ключ - цифра битрейта, а значение - объект адаптера
         print('Ищу адаптеры')
-        if platform == "linux" or platform == "linux2":  # linux
+        if platform == "linux" or platform == "linux2":  # linux - только квасер
             self.search_chanells(Kvaser)
         elif platform == "darwin":  # OS X
             print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
-        elif platform == "win32":  # Windows...
+        elif platform == "win32":  # Windows... - квасер в приоритете, если нет, то марафон
             self.search_chanells(Kvaser)
             if not self.can_adapters:
                 self.search_chanells(CANMarathon)
@@ -30,7 +34,6 @@ class CANAdapter:
             can_adapter = adapter(channel=i)
             bit = can_adapter.check_bitrate()  # пробежавшись по битрейту
             if isinstance(bit, str):  # и получив строку, понимаю, что адаптера нет совсем
-                print(f'Проблема адаптера {bit}')
                 break
             #       если же битрейт возвращает число, при этом меняется битрейт самого канала
             #       или адаптер на 125 имеется, запоминаем его
@@ -44,17 +47,23 @@ class CANAdapter:
     #   их битрейты совпадают и они просто будут перезаписаны в словаре
 
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
+        # если нужно опросить блок, айди которого уже есть в словаре,
+        # просто используем этот адаптер, который привязан к этому айди -
+        # так можно опрашивать сразу два кана(а может и три, если такой адаптер найдётся)
         if can_id_req in list(self.id_nones_dict.keys()):
             adapter = self.id_nones_dict[can_id_req]
-            self.is_busy = True
+            self.is_busy = True     # даю понять всем, что адаптер занят, чтоб два потока не обращались в одно время
             ans = adapter.can_request(can_id_req, can_id_ans, message)
             self.is_busy = False
             return ans
         answer = 'Проверь соединение с ВАТС'
+        # если в словаре нет айди блока, бегу по словарю(хотя это можно сделать списком) с имеющимся адаптерами
         for adapter in self.can_adapters.values():
             self.is_busy = True
             answer = adapter.can_request(can_id_req, can_id_ans, message)
-            self.is_busy = False
+            self.is_busy = False    # освобождаем адаптер
+            # если в ответе нет строки(ошибка), значит адаптер имеется,
+            # добавляем его в словарь с этим айди блока и возвращаем ответ
             if not isinstance(answer, str):
                 self.id_nones_dict[can_id_req] = adapter
                 return answer

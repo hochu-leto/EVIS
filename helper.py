@@ -1,8 +1,7 @@
+"""
+всякие вспомогательные функции
+"""
 import struct
-
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QKeyEvent
-from PyQt5.QtWidgets import QTableWidget
 
 
 def zero_del(s):

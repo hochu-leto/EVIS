@@ -1,5 +1,7 @@
+"""
+тот самый объект параметра, который имеет все нужные поля, умеет запрашивать своё значение и записывать в блок нужное
+"""
 import ctypes
-import struct
 from time import sleep
 
 import CANAdater
@@ -22,7 +24,7 @@ empty_par = {'name': '',
              'min_value': '',
              'max_value': '',
              'widget': ''}
-
+#  параметр для экспериментов
 example_par = {'name': 'fghjk',
                'address': '34567',
                'editable': 1,
@@ -38,6 +40,7 @@ example_par = {'name': 'fghjk',
                'degree': 3}
 
 
+# здесь когда-то будет возможность читать текст из посылки, пока нет
 def can_to_char(value):
     pass
 
@@ -55,6 +58,7 @@ type_values = {
 }
 
 
+# слоты для ускорения работы
 class Parametr:
     __slots__ = ('address', 'type',
                  'editable', 'unit', 'description',
@@ -110,6 +114,7 @@ class Parametr:
         self.req_list = []
         self.set_list = []
 
+    # формирует посылку в зависимости от протокола
     def get_list(self):
         value_type = type_values[self.type]['type']
         address = int(self.address, 16)
@@ -149,9 +154,8 @@ class Parametr:
         if not self.req_list:
             self.get_list()
         while adapter.is_busy:
-            sleep(0.002)
-            pass
-            # print(' busy')
+            sleep(0.0001)    # очень костыльный момент, ждёт миллисекунду, чтоб освободился адаптер
+            # на случай когда идёт чтение с двух каналов
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.req_list)
         if isinstance(value_data, str):
             return value_data
@@ -172,7 +176,7 @@ class Parametr:
         else:  # нужно какое-то аварийное решение
             address_ans = 0
             value = 0
-        # ищу в списке параметров како-то с тем же адресом, что в ответе
+        # принятый адрес должен совпадать с тем же адресом, что был отправлен
         if address_ans.upper() == self.address.upper():
             if self.type not in type_values.keys():
                 self.type = 'UNSIGNED32'
