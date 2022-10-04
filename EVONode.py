@@ -1,5 +1,4 @@
 import ctypes
-import time
 
 import CANAdater
 from helper import int_to_hex_str
@@ -56,7 +55,7 @@ class EVONode:
         self.serial_number = '---'
         self.request_firmware_version = check_address('firm_version')
         self.firmware_version = '---'
-        self.error_request = nod['errors_req'].split(',')  # не могу придумать проверку
+        self.error_request = check_string('errors_req').split(',')  # не могу придумать проверку
         self.error_erase = {'address': check_address('errors_erase'),
                             'value': int(check_address('v_errors_erase'))}
         self.errors_list = err_list

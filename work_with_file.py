@@ -116,7 +116,7 @@ def full_node_list(file_name):
     for node in node_list:
         node_name = node['name']
         node_params_list = {}
-        ev_node = EVONode(node, err_dict[node['name']])
+        ev_node = EVONode(node, err_dict[node['name']]) if node['name'] in err_dict.keys() else EVONode(node)
         for params_list in bookmark_dict.keys():  # бегу по словарю со списками параметров
             prev_group_name = ''
             p_list = []
@@ -135,8 +135,7 @@ def full_node_list(file_name):
                 node_params_list[prev_group_name] = p_list.copy()
                 del node_params_list['']
 
-        if node_params_list:
-            ev_node.group_params_dict = node_params_list.copy()
+        ev_node.group_params_dict = node_params_list.copy() if node_params_list else {'Пока здесь пусто': [Parametr()]}
         nodes_list.append(ev_node)
 
     return nodes_list
