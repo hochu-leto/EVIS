@@ -157,7 +157,7 @@ class AThread(QThread):
             timer.start(send_delay)
 
         send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
-        err_req_delay = 1500
+        err_req_delay = 500
         self.max_errors = 3
         self.len_param_list = len(self.current_params_list)
         if self.len_param_list < self.max_errors:
@@ -296,7 +296,8 @@ def check_node_online(all_node_list: list):
             nd.firmware_version = nd.get_firmware_version(can_adapter)
             exit_list.append(nd)
 
-    if not exit_list:
+    # if not exit_list:
+    if exit_list[0].cut_firmware() == 'EVOCARGO':
         return all_node_list, False
 
     window.nodes_tree.currentItemChanged.disconnect()

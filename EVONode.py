@@ -134,7 +134,7 @@ class EVONode:
         if not isinstance(self.serial_number, str):
             return self.serial_number
 
-        serial = self.get_val(self.request_serial_number, adapter)
+        serial = self.get_val(self.request_serial_number, adapter) if self.request_serial_number else 777
 
         if isinstance(serial, str):
             if self.string_from_can:
@@ -149,7 +149,7 @@ class EVONode:
     def get_firmware_version(self, adapter: CANAdater):
         if not isinstance(self.firmware_version, str):
             return self.firmware_version
-        f_list = self.get_val(self.request_firmware_version, adapter)
+        f_list = self.get_val(self.request_firmware_version, adapter) if self.request_firmware_version else 0
         if isinstance(f_list, str):
             if self.string_from_can:
                 self.string_from_can = ''
@@ -162,7 +162,9 @@ class EVONode:
     def cut_firmware(self):
         if isinstance(self.firmware_version, int):
             fm = self.firmware_version
-            if fm > 0xFFFF:
+            if not fm:
+                text = 'EVOCARGO'
+            elif fm > 0xFFFF:
                 text = int_to_hex_str((fm & 0xFF000000) >> 24) + \
                        int_to_hex_str((fm & 0xFF0000) >> 16) + \
                        int_to_hex_str((fm & 0xFF00) >> 8) + \
