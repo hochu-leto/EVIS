@@ -179,6 +179,17 @@ class AThread(QThread):
         loop.exec_()
 
 
+def save_to_eeprom():
+    err = ''
+    for node in window.current_nodes_list:
+        if node.save_to_eeprom:
+            err += node.send_val(node.save_to_eeprom, can_adapter, value=1)
+    if err:
+        QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
+    else:
+        QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохранены в EEPROM', QMessageBox.Ok)
+
+
 def want_to_value_change():  # меняем значение параметра
     is_run = False
     # остановим поток, если он есть
@@ -211,6 +222,8 @@ def want_to_value_change():  # меняем значение параметра
                 # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
                 if val == new_val:
                     next_cell.setBackground(QColor(0, 254, 0, 30))
+                    if window.thread.current_node.save_to_eeprom:
+                        window.save_eeprom_btn.setEnabled(True)
                 else:
                     next_cell.setBackground(QColor(254, 0, 0, 30))
     elif col_name == 'ПАРАМЕТР':
@@ -503,19 +516,21 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             can_adapter.close_canal_can()
 
     def closeEvent(self, event):
-        # reply = QMessageBox.question(self, 'Информация',
-        #                              "Вы уверены, что хотите закрыть приложение?",
-        #                              QMessageBox.Yes,
-        #                              QMessageBox.No)
-        reply = QMessageBox.question(self)
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Выход")
+        msg.setIcon(QMessageBox.Question)
+        msg.setText("Вы уверены, что хотите закрыть приложение?")
 
-        reply.addButton("Да", QMessageBox.YesRole)
-        reply.addButton("Нет", QMessageBox.NoRole)
-        if reply == QMessageBox.Yes:
+        buttonAceptar = msg.addButton("Да", QMessageBox.YesRole)
+        buttonCancelar = msg.addButton("Отменить", QMessageBox.RejectRole)
+        msg.setDefaultButton(buttonAceptar)
+        msg.exec_()
+
+        if msg.clickedButton() == buttonAceptar:
             if self.thread:
                 self.thread.quit()
                 self.thread.wait()
-            del self.thread
+                del self.thread
             if can_adapter.isDefined:
                 can_adapter.close_canal_can()
         else:
@@ -543,6 +558,7 @@ if __name__ == '__main__':
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
     # и сигналы нажатия на кнопки
     window.connect_btn.clicked.connect(window.connect_to_node)
+    window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне

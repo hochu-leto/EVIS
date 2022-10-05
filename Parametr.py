@@ -42,6 +42,13 @@ example_par = {'name': 'fghjk',
 
 # здесь когда-то будет возможность читать текст из посылки, пока нет
 def can_to_char(value):
+    # задел под чтение стрингов
+    # value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
+    # time.sleep(1)
+    # print(self.name, end='    ')
+    # for byte in value:
+    #     print(hex(byte), end=' ')
+    # print()
     pass
 
 

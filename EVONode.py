@@ -24,7 +24,7 @@ class EVONode:
                  'serial_number', 'request_firmware_version',
                  'firmware_version', 'error_request', 'error_erase',
                  'errors_list', 'current_errors_list', 'group_params_dict',
-                 'string_from_can')
+                 'string_from_can', 'load_from_eeprom', 'save_to_eeprom')
 
     def __init__(self, nod=None, err_list=None, group_par_dict=None):
         if group_par_dict is None:
@@ -55,13 +55,16 @@ class EVONode:
         self.serial_number = '---'
         self.request_firmware_version = check_address('firm_version')
         self.firmware_version = '---'
-        self.error_request = check_string('errors_req').split(',')  # не могу придумать проверку
+        error_request = check_string('errors_req').split(',')  # не могу придумать проверку
+        self.error_request = (check_address(i) for i in error_request)
         self.error_erase = {'address': check_address('errors_erase'),
                             'value': int(check_address('v_errors_erase'))}
         self.errors_list = err_list
         self.current_errors_list = set()
         self.group_params_dict = group_par_dict
         self.string_from_can = ''
+        self.save_to_eeprom = check_address('to_eeprom')
+        self.load_from_eeprom = check_address('from_eeprom')
 
     def get_val(self, address: int, adapter: CANAdater):
         MSB = ((address & 0xFF0000) >> 16)
@@ -73,13 +76,6 @@ class EVONode:
             r_list = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
         if self.protocol == 'MODBUS':
             r_list = [0, 0, 0, 0, sub_index, LSB, 0x2B, 0x03]
-
-            # value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
-            # time.sleep(1)
-            # print(self.name, end='    ')
-            # for byte in value:
-            #     print(hex(byte), end=' ')
-            # print()
         while adapter.is_busy:
             pass
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
