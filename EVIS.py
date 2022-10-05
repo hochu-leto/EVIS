@@ -55,6 +55,7 @@
 и подзаголовком параметры для каждой страницы - парсить как для БУРР
 
 """
+import os
 import sys
 import traceback
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop, QRegExp
@@ -74,6 +75,7 @@ can_adapter = CANAdapter()
 dir_path = str(pathlib.Path.cwd())
 # файл где все блоки, параметры, ошибки
 vmu_param_file = 'table_for_params_new_VMU2.xlsx'
+os.environ['KVDLLPATH'] = str(pathlib.Path(dir_path, 'canlib32.dll'))
 
 
 # Если при ошибке в слотах приложение просто падает без стека,

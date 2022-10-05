@@ -1,5 +1,9 @@
+import os
+import pathlib
 import time
+dir_path = str(pathlib.Path.cwd())
 
+os.environ['KVDLLPATH'] = str(pathlib.Path(dir_path, 'canlib32.dll'))
 from canlib import canlib, Frame
 
 from AdapterCAN import AdapterCAN
