@@ -55,6 +55,7 @@
 и подзаголовком параметры для каждой страницы - парсить как для БУРР
 
 """
+import os
 import sys
 import traceback
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop, QRegExp
@@ -372,7 +373,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if self.thread.isRunning():
                 self.thread.quit()
                 self.thread.wait()
-                QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
+                QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
             self.connect_btn.setText("Подключиться")
             if can_adapter.isDefined:
                 can_adapter.close_canal_can()
