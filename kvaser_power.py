@@ -1,9 +1,9 @@
 import os
 import pathlib
 import time
-dir_path = str(pathlib.Path.cwd())
 
-os.environ['KVDLLPATH'] = str(pathlib.Path(dir_path, 'canlib32.dll'))
+os.environ['KVDLLPATH'] = str(pathlib.Path(pathlib.Path.cwd(), 'Kvaser_Driver_and_dll'))
+
 from canlib import canlib, Frame
 
 from AdapterCAN import AdapterCAN

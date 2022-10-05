@@ -75,8 +75,6 @@ can_adapter = CANAdapter()
 dir_path = str(pathlib.Path.cwd())
 # файл где все блоки, параметры, ошибки
 vmu_param_file = 'table_for_params_new_VMU2.xlsx'
-os.environ['KVDLLPATH'] = str(pathlib.Path(dir_path, 'canlib32.dll'))
-
 
 # Если при ошибке в слотах приложение просто падает без стека,
 # есть хороший способ ловить такие ошибки:
@@ -370,7 +368,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if self.thread.isRunning():
                 self.thread.quit()
                 self.thread.wait()
-                QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
+                QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
             self.connect_btn.setText("Подключиться")
             if can_adapter.isDefined:
                 can_adapter.close_canal_can()
@@ -529,6 +527,15 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 if __name__ == '__main__':
     app = QApplication([])
     window = VMUMonitorApp()
+    # reply = QMessageBox.question(None, 'Информация',
+    #                              str(os.environ.get('KVDLLPATH')),
+    #                              QMessageBox.Yes,
+    #                              QMessageBox.No)
+    # if reply == QMessageBox.Yes:
+    #     pass
+
+    # app = QApplication([])
+    # window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
     # подключаю сигналы нажатия на окошки
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
@@ -548,3 +555,5 @@ if __name__ == '__main__':
         window.nodes_tree.adjustSize()
         window.show()  # Показываем окно
         app.exec_()  # и запускаем приложение
+
+
