@@ -189,28 +189,31 @@ def want_to_value_change():  # меняем значение параметра
     c_row = current_cell.row()
     c_col = current_cell.column()
     c_text = current_cell.text()
-    is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
-    f = window.vmu_param_table.horizontalHeaderItem(current_cell.column())
+    col_name = window.vmu_param_table.horizontalHeaderItem(current_cell.column()).text().strip().upper()
+    current_param = window.thread.current_params_list[c_row]
 
-    if is_editable and f.text().strip().upper() == 'ЗНАЧЕНИЕ':
-        current_param = window.thread.current_params_list[c_row]
-        dialog = DialogChange(current_param.name, c_text.strip())
-        if dialog.exec_() == QDialog.Accepted:
-            val = dialog.lineEdit.text()
-            # отправляю параметр, полученный из диалогового окна
-            current_param.set_val(can_adapter, float(val))
-            # и сразу же проверяю записался ли он в блок
-            value_data = current_param.get_value(can_adapter)
-            if isinstance(value_data, str):
-                new_val = ''
-            else:
-                new_val = zero_del(value_data).strip()
-            next_cell = window.vmu_param_table.item(c_row, c_col + 1)
-            # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
-            if val == new_val:
-                next_cell.setBackground(QColor(0, 254, 0, 30))
-            else:
-                next_cell.setBackground(QColor(254, 0, 0, 30))
+    if col_name == 'ЗНАЧЕНИЕ':
+        is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
+        if is_editable:
+            dialog = DialogChange(current_param.name, c_text.strip())
+            if dialog.exec_() == QDialog.Accepted:
+                val = dialog.lineEdit.text()
+                # отправляю параметр, полученный из диалогового окна
+                current_param.set_val(can_adapter, float(val))
+                # и сразу же проверяю записался ли он в блок
+                value_data = current_param.get_value(can_adapter)
+                if isinstance(value_data, str):
+                    new_val = ''
+                else:
+                    new_val = zero_del(value_data).strip()
+                next_cell = window.vmu_param_table.item(c_row, c_col + 1)
+                # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
+                if val == new_val:
+                    next_cell.setBackground(QColor(0, 254, 0, 30))
+                else:
+                    next_cell.setBackground(QColor(254, 0, 0, 30))
+    elif col_name == 'ПАРАМЕТР':
+        print(c_text, current_param.name)
     # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
     # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
     window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
@@ -405,7 +408,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.save_to_file_btn.setEnabled(True)
             self.save_to_file_btn.setText(f'Сохранить настройки блока: {self.thread.current_node.name}')
 
-    def double_click(self):     # можно подключиться по двойному щелчку по группе параметров
+    def double_click(self):  # можно подключиться по двойному щелчку по группе параметров
         if not self.thread.isRunning():
             self.connect_to_node()
 
@@ -499,10 +502,14 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             can_adapter.close_canal_can()
 
     def closeEvent(self, event):
-        reply = QMessageBox.question(self, 'Информация',
-                                     "Вы уверены, что хотите закрыть приложение?",
-                                     QMessageBox.Yes,
-                                     QMessageBox.No)
+        # reply = QMessageBox.question(self, 'Информация',
+        #                              "Вы уверены, что хотите закрыть приложение?",
+        #                              QMessageBox.Yes,
+        #                              QMessageBox.No)
+        reply = QMessageBox.question(self)
+
+        reply.addButton("Да", QMessageBox.YesRole)
+        reply.addButton("Нет", QMessageBox.NoRole)
         if reply == QMessageBox.Yes:
             if self.thread:
                 self.thread.quit()
