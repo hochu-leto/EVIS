@@ -120,8 +120,8 @@ class EVONode:
         r_list = []
 
         if self.protocol == 'CANOpen':
-            r_list = [0x20, LSB, MSB, sub_index] + data
-        if self.protocol == 'MODBUS':
+            r_list = [0x23, LSB, MSB, sub_index] + data     # вообще - это колхоз - нужно определять тип переменной
+        if self.protocol == 'MODBUS':                       # , которой я хочу отправить
             r_list = data + [sub_index, LSB, 0x2B, 0x10]
 
         value = adapter.can_request(self.request_id, self.answer_id, r_list)

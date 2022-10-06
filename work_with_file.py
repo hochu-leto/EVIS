@@ -135,7 +135,7 @@ def full_node_list(file_name):
                 node_params_list[prev_group_name] = p_list.copy()
                 del node_params_list['']
 
-        ev_node.group_params_dict = node_params_list.copy() if node_params_list else {'Пока здесь пусто': [Parametr()]}
+        ev_node.group_params_dict = node_params_list.copy() if node_params_list else {'Пустой список': []}
         nodes_list.append(ev_node)
 
     return nodes_list

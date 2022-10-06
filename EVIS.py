@@ -192,10 +192,8 @@ def save_to_eeprom():
 
 
 def want_to_value_change():  # меняем значение параметра
-    is_run = False
     # остановим поток, если он есть
     if window.thread.isRunning():
-        is_run = True
         window.connect_to_node()
 
     current_cell = window.vmu_param_table.currentItem()
