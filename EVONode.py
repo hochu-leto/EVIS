@@ -56,7 +56,12 @@ class EVONode:
         self.request_firmware_version = check_address('firm_version')
         self.firmware_version = '---'
         error_request = check_string('errors_req').split(',')  # не могу придумать проверку
-        self.error_request = (check_address(i) for i in error_request)
+        # self.error_request = []
+        # for i in error_request:
+        #     if i:
+        #         self.error_request.append(int(i, 16))
+
+        self.error_request = (int(i, 16) for i in error_request if i)
         self.error_erase = {'address': check_address('errors_erase'),
                             'value': int(check_address('v_errors_erase'))}
         self.errors_list = err_list
@@ -173,11 +178,12 @@ class EVONode:
 
     def check_errors(self, adapter: CANAdater):
         #  на выходе - список текущих ошибок
+        if not self.error_request or not self.errors_list:
+            return self.current_errors_list
         big_error = 0
         j = 0
         for adr in self.error_request:
-            adr_int = int(adr, 16)
-            error = self.get_val(adr_int, adapter)
+            error = self.get_val(adr, adapter)
             if isinstance(error, int):
                 if error <= 128:
                     big_error += error << j * 8

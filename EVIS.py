@@ -188,6 +188,7 @@ def save_to_eeprom():
         QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
     else:
         QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохранены в EEPROM', QMessageBox.Ok)
+        window.save_eeprom_btn.setEnabled(False)
 
 
 def want_to_value_change():  # меняем значение параметра
@@ -210,6 +211,7 @@ def want_to_value_change():  # меняем значение параметра
             dialog = DialogChange(current_param.name, c_text.strip())
             if dialog.exec_() == QDialog.Accepted:
                 val = dialog.lineEdit.text()
+                val = val if val and val != '-' else '0'
                 # отправляю параметр, полученный из диалогового окна
                 current_param.set_val(can_adapter, float(val))
                 # и сразу же проверяю записался ли он в блок
@@ -231,9 +233,9 @@ def want_to_value_change():  # меняем значение параметра
     # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
     # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
     window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
-    # и запускаю поток, если он был запущен
-    if is_run and window.thread.isFinished():
-        window.connect_to_node()
+    # и запускаю поток даже если он был выключен
+    # if is_run and window.thread.isFinished():
+    window.connect_to_node()
 
 
 def params_list_changed():  # если мы в левом окошке выбираем разные блоки или группы параметров
@@ -503,6 +505,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.current_nodes_list, check = check_node_online(alt_node_list)
             params_list_changed()
             self.reset_faults.setEnabled(check)
+            self.save_to_file_btn.setEnabled(check)
             self.node_list_defined = check
 
         if not self.thread.isRunning():
@@ -561,6 +564,7 @@ if __name__ == '__main__':
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
+    window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
     window.current_nodes_list = alt_node_list
