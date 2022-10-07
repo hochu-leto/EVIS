@@ -3,6 +3,7 @@
 """
 import struct
 
+NewParamsList = 'Новый список'
 
 def zero_del(s):
     return f'{round(s, 5):>8}'.rstrip('0').rstrip('.')

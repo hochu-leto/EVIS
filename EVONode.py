@@ -56,11 +56,6 @@ class EVONode:
         self.request_firmware_version = check_address('firm_version')
         self.firmware_version = '---'
         error_request = check_string('errors_req').split(',')  # не могу придумать проверку
-        # self.error_request = []
-        # for i in error_request:
-        #     if i:
-        #         self.error_request.append(int(i, 16))
-
         self.error_request = (int(i, 16) for i in error_request if i)
         self.error_erase = {'address': check_address('errors_erase'),
                             'value': int(check_address('v_errors_erase'))}

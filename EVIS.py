@@ -68,14 +68,13 @@ from CANAdater import CANAdapter
 from EVONode import EVONode
 from My_threads import SaveToFileThread
 from work_with_file import full_node_list
-from helper import zero_del
+from helper import zero_del, NewParamsList
 
 can_adapter = CANAdapter()
 
 dir_path = str(pathlib.Path.cwd())
 # файл где все блоки, параметры, ошибки
 vmu_param_file = 'table_for_params_new_VMU2.xlsx'
-
 
 # Если при ошибке в слотах приложение просто падает без стека,
 # есть хороший способ ловить такие ошибки:
@@ -117,6 +116,9 @@ class AThread(QThread):
                 self.iter_count = 1
 
         def request_node():
+            if not self.len_param_list:
+                self.threadSignalAThread.emit(['Пустой список'])
+                return
             if not self.iter_count == 1:
                 while not self.iter_count % self.current_params_list[self.params_counter].period == 0:
                     # если период опроса текущего параметра не кратен текущей итерации,
@@ -193,8 +195,6 @@ def save_to_eeprom():
 
 def want_to_value_change():  # меняем значение параметра
     # остановим поток, если он есть
-    if window.thread.isRunning():
-        window.connect_to_node()
 
     current_cell = window.vmu_param_table.currentItem()
     c_row = current_cell.row()
@@ -204,6 +204,9 @@ def want_to_value_change():  # меняем значение параметра
     current_param = window.thread.current_params_list[c_row]
 
     if col_name == 'ЗНАЧЕНИЕ':
+        if window.thread.isRunning():
+            window.connect_to_node()
+
         is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
         if is_editable:
             dialog = DialogChange(current_param.name, c_text.strip())
@@ -226,14 +229,21 @@ def want_to_value_change():  # меняем значение параметра
                         window.save_eeprom_btn.setEnabled(True)
                 else:
                     next_cell.setBackground(QColor(254, 0, 0, 30))
+
+                    # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
+                    # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
+                window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
+                # и запускаю поток если он был включен
+                # if is_run and window.thread.isFinished():
+                window.connect_to_node()
+
     elif col_name == 'ПАРАМЕТР':
         print(c_text, current_param.name)
-    # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
-    # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
-    window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
-    # и запускаю поток даже если он был выключен
-    # if is_run and window.thread.isFinished():
-    window.connect_to_node()
+        user_node = window.current_nodes_list[len(window.current_nodes_list) - 1]
+        if NewParamsList in user_node.group_params_dict.keys():
+            user_node.group_params_dict[NewParamsList].append(current_param)
+        else:
+            user_node.group_params_dict[NewParamsList] = [current_param]
 
 
 def params_list_changed():  # если мы в левом окошке выбираем разные блоки или группы параметров
@@ -421,6 +431,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_btn.setEnabled(True)
             self.save_to_file_btn.setEnabled(True)
             self.save_to_file_btn.setText(f'Сохранить настройки блока: {self.thread.current_node.name}')
+            self.connect_to_node()
 
     def double_click(self):  # можно подключиться по двойному щелчку по группе параметров
         if not self.thread.isRunning():

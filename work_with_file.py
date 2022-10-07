@@ -5,6 +5,7 @@ from pprint import pprint
 import pandas
 from PyQt5.QtWidgets import QMessageBox
 
+from helper import NewParamsList
 from EVONode import EVONode
 from Parametr import Parametr
 
@@ -135,7 +136,7 @@ def full_node_list(file_name):
                 node_params_list[prev_group_name] = p_list.copy()
                 del node_params_list['']
 
-        ev_node.group_params_dict = node_params_list.copy() if node_params_list else {'Пустой список': []}
+        ev_node.group_params_dict = node_params_list.copy() if node_params_list else {NewParamsList: []}
         nodes_list.append(ev_node)
 
     return nodes_list
