@@ -66,7 +66,7 @@ import VMU_monitor_ui
 import my_dialog
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from My_threads import SaveToFileThread
+from My_threads import SaveToFileThread, MainThread
 from work_with_file import full_node_list
 from helper import zero_del, NewParamsList
 
@@ -91,96 +91,96 @@ sys.excepthook = log_uncaught_exceptions
 
 
 # поток для опроса параметров и ошибок
-class AThread(QThread):
-    # сигнал со списком параметров из текущей группы
-    threadSignalAThread = pyqtSignal(list)
-    # сигнал с ошибками
-    err_thread_signal = pyqtSignal(str)
-    max_iteration = 1000
-    iter_count = 1
-    current_params_list = []
-    current_node = EVONode()
-
-    def __init__(self):
-        super().__init__()
-
-    def run(self):
-
-        def emitting():  # передача заполненного списка параметров
-            self.threadSignalAThread.emit(self.ans_list)
-            self.params_counter = 0
-            self.errors_counter = 0
-            self.ans_list = []
-            self.iter_count += 1
-            if self.iter_count > self.max_iteration:  # это нужно для периода опроса от 1 до 1000 и снова
-                self.iter_count = 1
-
-        def request_node():
-            if not self.len_param_list:
-                self.threadSignalAThread.emit(['Пустой список'])
-                return
-            if not self.iter_count == 1:
-                while not self.iter_count % self.current_params_list[self.params_counter].period == 0:
-                    # если период опроса текущего параметра не кратен текущей итерации,
-                    # заполняем его нулями, чтоб в таблице осталось его старое значение
-                    # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
-                    self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
-                    self.params_counter += 1
-                    if self.params_counter >= self.len_param_list:
-                        self.params_counter = 0
-                        emitting()
-                        return
-            param = self.current_params_list[self.params_counter].get_value(can_adapter)
-            # если строка - значит ошибка
-            if isinstance(param, str):
-                self.errors_counter += 1
-                if self.errors_counter >= self.max_errors:
-                    self.threadSignalAThread.emit([param])
-                    return
-            else:
-                self.errors_counter = 0
-            # тут всё просто, собираем весь список и отправляем кучкой
-            self.ans_list.append(param)
-            self.params_counter += 1
-            if self.params_counter >= self.len_param_list:
-                self.params_counter = 0
-                emitting()
-
-        def request_errors():
-            errors_str = window.err_str
-            # опрос ошибок, на это время опрос параметров отключается
-            timer.stop()
-            for nd in window.current_nodes_list:
-                errors = nd.check_errors(can_adapter)
-                for error in errors:
-                    if error and error not in errors_str:
-                        errors_str += f'{nd.name} : {error} \n'
-            window.err_str = errors_str
-            self.err_thread_signal.emit(errors_str)
-            timer.start(send_delay)
-
-        send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
-        err_req_delay = 500
-        self.max_errors = 3
-        self.len_param_list = len(self.current_params_list)
-        if self.len_param_list < self.max_errors:
-            self.max_errors = self.len_param_list
-        self.ans_list = []
-        self.params_counter = 0
-        self.errors_counter = 0
-
-        timer = QTimer()
-        timer.timeout.connect(request_node)
-        timer.start(send_delay)
-
-        err_timer = QTimer()
-        err_timer.timeout.connect(request_errors)
-        err_timer.start(err_req_delay)
-
-        loop = QEventLoop()
-        loop.exec_()
-
-
+# class AThread(QThread):
+#     # сигнал со списком параметров из текущей группы
+#     threadSignalAThread = pyqtSignal(list)
+#     # сигнал с ошибками
+#     err_thread_signal = pyqtSignal(str)
+#     max_iteration = 1000
+#     iter_count = 1
+#     current_params_list = []
+#     current_node = EVONode()
+#
+#     def __init__(self):
+#         super().__init__()
+#
+#     def run(self):
+#
+#         def emitting():  # передача заполненного списка параметров
+#             self.threadSignalAThread.emit(self.ans_list)
+#             self.params_counter = 0
+#             self.errors_counter = 0
+#             self.ans_list = []
+#             self.iter_count += 1
+#             if self.iter_count > self.max_iteration:  # это нужно для периода опроса от 1 до 1000 и снова
+#                 self.iter_count = 1
+#
+#         def request_node():
+#             if not self.len_param_list:
+#                 self.threadSignalAThread.emit(['Пустой список'])
+#                 return
+#             if not self.iter_count == 1:
+#                 while not self.iter_count % self.current_params_list[self.params_counter].period == 0:
+#                     # если период опроса текущего параметра не кратен текущей итерации,
+#                     # заполняем его нулями, чтоб в таблице осталось его старое значение
+#                     # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
+#                     self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
+#                     self.params_counter += 1
+#                     if self.params_counter >= self.len_param_list:
+#                         self.params_counter = 0
+#                         emitting()
+#                         return
+#             param = self.current_params_list[self.params_counter].get_value(can_adapter)
+#             # если строка - значит ошибка
+#             if isinstance(param, str):
+#                 self.errors_counter += 1
+#                 if self.errors_counter >= self.max_errors:
+#                     self.threadSignalAThread.emit([param])
+#                     return
+#             else:
+#                 self.errors_counter = 0
+#             # тут всё просто, собираем весь список и отправляем кучкой
+#             self.ans_list.append(param)
+#             self.params_counter += 1
+#             if self.params_counter >= self.len_param_list:
+#                 self.params_counter = 0
+#                 emitting()
+#
+#         def request_errors():
+#             errors_str = window.err_str
+#             # опрос ошибок, на это время опрос параметров отключается
+#             timer.stop()
+#             for nd in window.current_nodes_list:
+#                 errors = nd.check_errors(can_adapter)
+#                 for error in errors:
+#                     if error and error not in errors_str:
+#                         errors_str += f'{nd.name} : {error} \n'
+#             window.err_str = errors_str
+#             self.err_thread_signal.emit(errors_str)
+#             timer.start(send_delay)
+#
+#         send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
+#         err_req_delay = 500
+#         self.max_errors = 3
+#         self.len_param_list = len(self.current_params_list)
+#         if self.len_param_list < self.max_errors:
+#             self.max_errors = self.len_param_list
+#         self.ans_list = []
+#         self.params_counter = 0
+#         self.errors_counter = 0
+#
+#         timer = QTimer()
+#         timer.timeout.connect(request_node)
+#         timer.start(send_delay)
+#
+#         err_timer = QTimer()
+#         err_timer.timeout.connect(request_errors)
+#         err_timer.start(err_req_delay)
+#
+#         loop = QEventLoop()
+#         loop.exec_()
+#
+#
 def save_to_eeprom():
     err = ''
     for node in window.current_nodes_list:
@@ -340,13 +340,13 @@ def erase_errors():
         is_run = True
         window.connect_to_node()
     # и трём все ошибки
-    window.err_str = ''
+    window.thread.errors_str = ''
     for nod in window.current_nodes_list:
         # метод удаления ошибок должен вернуть список ошибок, если они остались
         for err in nod.erase_errors(can_adapter):
             if err:
-                window.err_str += f'{nod.name}: {err} \n'
-    window.errors_browser.setText(window.err_str)
+                window.thread.errors_str += f'{nod.name}: {err} \n'
+    window.errors_browser.setText(window.thread.errors_str)
     # запускаем поток снова, если был остановлен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
@@ -379,9 +379,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.current_nodes_list = []
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
-        self.thread = AThread()
+        self.thread = MainThread()
+        self.thread.current_nodes_list = self.current_nodes_list
         self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
         self.thread.err_thread_signal.connect(self.add_new_errors)
+        self.thread.adapter = can_adapter
         #  И для сохранения
         self.tr = SaveToFileThread()
         self.tr.adapter = can_adapter
@@ -584,3 +586,12 @@ if __name__ == '__main__':
         window.nodes_tree.adjustSize()
         window.show()  # Показываем окно
         app.exec_()  # и запускаем приложение
+# предлагать сохранить список избранного, если он не пустой при выходе
+# позволять изменять название списка по двойному щелчку если он не пустой и сразу дописывать его в таблицу
+# сообщать на секунду, что параметр добавлен в новый список
+# подсказка как добавить в новый список параметры
+# параметры в новом списке не должны дублироваться - использовать множество
+# по двойному щелчку в новом списке параметр из него улетает
+# как вообще проверять валидность параметров из списка избранного при следующей загрузке
+# - может их вообще нет в этих блоках
+

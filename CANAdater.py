@@ -12,9 +12,10 @@ from marathon_power import CANMarathon
 
 class CANAdapter:
     isDefined = False
-    is_busy = False
+
 
     def __init__(self):
+        self.is_busy = False
         self.id_nones_dict = {}     # словарь блоков, где ключ - айди обращения к блоку, а значение - объект адаптера
         self.can_adapters = {}  # словарь адаптеров,где ключ - цифра битрейта, а значение - объект адаптера
         print('Ищу адаптеры')
