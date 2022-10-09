@@ -56,19 +56,19 @@
 
 """
 import sys
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop, QRegExp
-from PyQt5.QtGui import QIcon, QColor, QRegExpValidator, QKeyEvent, QPixmap
+from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtGui import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen
 import pathlib
+
 import VMU_monitor_ui
-import my_dialog
 from CANAdater import CANAdapter
 from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread
 from Parametr import Parametr
 from work_with_file import full_node_list
-from helper import zero_del, NewParamsList, log_uncaught_exceptions
+from helper import zero_del, NewParamsList, log_uncaught_exceptions, InfoMessage, DialogChange
 
 can_adapter = CANAdapter()
 
@@ -240,12 +240,13 @@ def want_to_value_change():  # меняем значение параметра
             if p:
                 user_node.group_params_dict[NewParamsList].remove(p)
                 text = 'удалён из списка Избранное'
-                show_empty_params_list(user_node.group_params_dict[NewParamsList])
+                show_empty_params_list(window.thread.current_params_list)
             else:
                 user_node.group_params_dict[NewParamsList].append(new_param)
         else:
             user_node.group_params_dict[NewParamsList] = [new_param]
-        QMessageBox.information(window, "Успешный успех!", f'Параметр {current_param.name} {text}', QMessageBox.Ok)
+        info_m = InfoMessage(f'Параметр {current_param.name} {text}')
+        info_m.exec_()
 
 
 def params_list_changed():  # если мы в левом окошке выбираем разные блоки или группы параметров
@@ -325,7 +326,6 @@ def check_node_online(all_node_list: list):
             nd.firmware_version = nd.get_firmware_version(can_adapter)
             exit_list.append(nd)
 
-    # if not exit_list:
     if exit_list[0].cut_firmware() == 'EVOCARGO':
         return all_node_list, False
 
@@ -360,8 +360,6 @@ def save_to_file_pressed():  # если нужно записать текущи
         window.connect_to_node()
     window.connect_btn.setEnabled(False)
     window.save_to_file_btn.setEnabled(False)
-    # чтоб во время записи никто не поменял параметр, блокируем это
-    # window.vmu_param_table.cellDoubleClicked.disconnect()
     window.tr.adapter = can_adapter
     window.tr.node_to_save = window.thread.current_node
     window.save_to_file_btn.setText(f'Сохраняются настройки блока: {window.tr.node_to_save.name}')
@@ -431,7 +429,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
             self.node_nsme_pbar.setValue(0)
 
-            # self.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
             self.connect_btn.setEnabled(True)
             self.save_to_file_btn.setEnabled(True)
             self.save_to_file_btn.setText(f'Сохранить настройки блока: {self.thread.current_node.name}')
@@ -553,17 +550,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             event.ignore()
 
 
-class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
-
-    def __init__(self, value_name: str, value):
-        super().__init__()
-        self.setupUi(self)
-        self.value_name_lbl.setText(value_name)
-        self.lineEdit.setText(value)
-        reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
-        self.lineEdit.setValidator(QRegExpValidator(reg_ex))
-
-
 if __name__ == '__main__':
 
     app = QApplication([])
@@ -595,8 +581,5 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 # предлагать сохранить список избранного, если он не пустой при выходе
 # позволять изменять название списка по двойному щелчку если он не пустой и сразу дописывать его в таблицу
-# сообщать на секунду, что параметр добавлен в новый список
-# параметры в новом списке не должны дублироваться - использовать множество
-# по двойному щелчку в новом списке параметр из него улетает
 # как вообще проверять валидность параметров из списка избранного при следующей загрузке
-# - может их вообще нет в этих блоках
+# - может их вообще нет в этих блоках - проверять есть ли блок с таким именем после # в названии параметра

@@ -4,9 +4,37 @@
 import struct
 import traceback
 
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import QTimer, Qt, QRegExp
+from PyQt5.QtGui import QFont, QRegExpValidator
+from PyQt5.QtWidgets import QMessageBox, QDialog
+
+import Dialog_params
+import my_dialog
 
 NewParamsList = 'Новый список'
+
+
+class InfoMessage(QDialog, Dialog_params.Ui_Dialog_params):
+
+    def __init__(self, info: str):
+        super().__init__()
+        self.setupUi(self)
+        self.info_lbl.setText(info)
+        self.info_lbl.setFont(QFont('MS Shell Dlg 2', 10))
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        QTimer.singleShot(1700, self.close)
+
+
+class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
+
+    def __init__(self, value_name: str, value):
+        super().__init__()
+        self.setupUi(self)
+        self.value_name_lbl.setText(value_name)
+        self.lineEdit.setText(value)
+        reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
+        self.lineEdit.setValidator(QRegExpValidator(reg_ex))
+
 
 
 # Если при ошибке в слотах приложение просто падает без стека,
