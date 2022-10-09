@@ -132,7 +132,8 @@ class MainThread(QThread):
 
         def request_node():
             if not self.len_param_list:
-                self.threadSignalAThread.emit(['Пустой список'])
+                self.threadSignalAThread.emit(['Пустой список \n Сюда можно добавить параметры двойным кликом по '
+                                               'названию'])
                 return
             if not self.iter_count == 1:
                 while not self.iter_count % self.current_params_list[self.params_counter].period == 0:

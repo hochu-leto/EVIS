@@ -2,8 +2,23 @@
 всякие вспомогательные функции
 """
 import struct
+import traceback
+
+from PyQt5.QtWidgets import QMessageBox
 
 NewParamsList = 'Новый список'
+
+
+# Если при ошибке в слотах приложение просто падает без стека,
+# есть хороший способ ловить такие ошибки:
+def log_uncaught_exceptions(ex_cls, ex, tb):
+    text = '{}: {}:\n'.format(ex_cls.__name__, ex)
+    text += ''.join(traceback.format_tb(tb))
+
+    print(text)
+    QMessageBox.critical(None, 'Error', text)
+    quit()
+
 
 def zero_del(s):
     return f'{round(s, 5):>8}'.rstrip('0').rstrip('.')

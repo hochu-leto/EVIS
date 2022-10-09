@@ -55,38 +55,26 @@
 и подзаголовком параметры для каждой страницы - парсить как для БУРР
 
 """
-import os
 import sys
-import traceback
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, Qt, QTimer, QEventLoop, QRegExp
-from PyQt5.QtGui import QIcon, QColor, QRegExpValidator, QKeyEvent
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QDialog
+from PyQt5.QtGui import QIcon, QColor, QRegExpValidator, QKeyEvent, QPixmap
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
+    QSplashScreen
 import pathlib
 import VMU_monitor_ui
 import my_dialog
 from CANAdater import CANAdapter
 from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread
+from Parametr import Parametr
 from work_with_file import full_node_list
-from helper import zero_del, NewParamsList
+from helper import zero_del, NewParamsList, log_uncaught_exceptions
 
 can_adapter = CANAdapter()
 
 dir_path = str(pathlib.Path.cwd())
 # файл где все блоки, параметры, ошибки
 vmu_param_file = 'table_for_params_new_VMU2.xlsx'
-
-# Если при ошибке в слотах приложение просто падает без стека,
-# есть хороший способ ловить такие ошибки:
-def log_uncaught_exceptions(ex_cls, ex, tb):
-    text = '{}: {}:\n'.format(ex_cls.__name__, ex)
-    text += ''.join(traceback.format_tb(tb))
-
-    print(text)
-    QMessageBox.critical(None, 'Error', text)
-    quit()
-
-
 sys.excepthook = log_uncaught_exceptions
 
 
@@ -238,12 +226,26 @@ def want_to_value_change():  # меняем значение параметра
                 window.connect_to_node()
 
     elif col_name == 'ПАРАМЕТР':
-        print(c_text, current_param.name)
         user_node = window.current_nodes_list[len(window.current_nodes_list) - 1]
+        new_param = Parametr(current_param.to_dict(), current_param.node)
+        if window.thread.current_node != user_node:
+            new_param.name = f'{new_param.name}#{new_param.node.name}'
+        text = 'добавлен в список Избранное'
         if NewParamsList in user_node.group_params_dict.keys():
-            user_node.group_params_dict[NewParamsList].append(current_param)
+            p = None
+            for par in user_node.group_params_dict[NewParamsList]:
+                if par.name in new_param.name:
+                    p = par
+
+            if p:
+                user_node.group_params_dict[NewParamsList].remove(p)
+                text = 'удалён из списка Избранное'
+                show_empty_params_list(user_node.group_params_dict[NewParamsList])
+            else:
+                user_node.group_params_dict[NewParamsList].append(new_param)
         else:
-            user_node.group_params_dict[NewParamsList] = [current_param]
+            user_node.group_params_dict[NewParamsList] = [new_param]
+        QMessageBox.information(window, "Успешный успех!", f'Параметр {current_param.name} {text}', QMessageBox.Ok)
 
 
 def params_list_changed():  # если мы в левом окошке выбираем разные блоки или группы параметров
@@ -277,7 +279,7 @@ def params_list_changed():  # если мы в левом окошке выби�
     return True
 
 
-def show_empty_params_list(list_of_params: list, table: str):
+def show_empty_params_list(list_of_params: list, table='vmu_param_table'):
     show_table = getattr(window, table)
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
@@ -563,7 +565,11 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
 
 if __name__ == '__main__':
+
     app = QApplication([])
+    splash = QSplashScreen()
+    splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
+    splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
     # подключаю сигналы нажатия на окошки
@@ -585,13 +591,12 @@ if __name__ == '__main__':
         window.vmu_param_table.adjustSize()
         window.nodes_tree.adjustSize()
         window.show()  # Показываем окно
+        splash.finish(window)
         app.exec_()  # и запускаем приложение
 # предлагать сохранить список избранного, если он не пустой при выходе
 # позволять изменять название списка по двойному щелчку если он не пустой и сразу дописывать его в таблицу
 # сообщать на секунду, что параметр добавлен в новый список
-# подсказка как добавить в новый список параметры
 # параметры в новом списке не должны дублироваться - использовать множество
 # по двойному щелчку в новом списке параметр из него улетает
 # как вообще проверять валидность параметров из списка избранного при следующей загрузке
 # - может их вообще нет в этих блоках
-
