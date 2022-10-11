@@ -56,8 +56,8 @@
 
 """
 import sys
-from PyQt5.QtCore import pyqtSlot, Qt
-from PyQt5.QtGui import QIcon, QColor, QPixmap
+from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
+from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen
 import pathlib
@@ -78,97 +78,6 @@ vmu_param_file = 'table_for_params_new_VMU2.xlsx'
 sys.excepthook = log_uncaught_exceptions
 
 
-# поток для опроса параметров и ошибок
-# class AThread(QThread):
-#     # сигнал со списком параметров из текущей группы
-#     threadSignalAThread = pyqtSignal(list)
-#     # сигнал с ошибками
-#     err_thread_signal = pyqtSignal(str)
-#     max_iteration = 1000
-#     iter_count = 1
-#     current_params_list = []
-#     current_node = EVONode()
-#
-#     def __init__(self):
-#         super().__init__()
-#
-#     def run(self):
-#
-#         def emitting():  # передача заполненного списка параметров
-#             self.threadSignalAThread.emit(self.ans_list)
-#             self.params_counter = 0
-#             self.errors_counter = 0
-#             self.ans_list = []
-#             self.iter_count += 1
-#             if self.iter_count > self.max_iteration:  # это нужно для периода опроса от 1 до 1000 и снова
-#                 self.iter_count = 1
-#
-#         def request_node():
-#             if not self.len_param_list:
-#                 self.threadSignalAThread.emit(['Пустой список'])
-#                 return
-#             if not self.iter_count == 1:
-#                 while not self.iter_count % self.current_params_list[self.params_counter].period == 0:
-#                     # если период опроса текущего параметра не кратен текущей итерации,
-#                     # заполняем его нулями, чтоб в таблице осталось его старое значение
-#                     # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
-#                     self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
-#                     self.params_counter += 1
-#                     if self.params_counter >= self.len_param_list:
-#                         self.params_counter = 0
-#                         emitting()
-#                         return
-#             param = self.current_params_list[self.params_counter].get_value(can_adapter)
-#             # если строка - значит ошибка
-#             if isinstance(param, str):
-#                 self.errors_counter += 1
-#                 if self.errors_counter >= self.max_errors:
-#                     self.threadSignalAThread.emit([param])
-#                     return
-#             else:
-#                 self.errors_counter = 0
-#             # тут всё просто, собираем весь список и отправляем кучкой
-#             self.ans_list.append(param)
-#             self.params_counter += 1
-#             if self.params_counter >= self.len_param_list:
-#                 self.params_counter = 0
-#                 emitting()
-#
-#         def request_errors():
-#             errors_str = window.err_str
-#             # опрос ошибок, на это время опрос параметров отключается
-#             timer.stop()
-#             for nd in window.current_nodes_list:
-#                 errors = nd.check_errors(can_adapter)
-#                 for error in errors:
-#                     if error and error not in errors_str:
-#                         errors_str += f'{nd.name} : {error} \n'
-#             window.err_str = errors_str
-#             self.err_thread_signal.emit(errors_str)
-#             timer.start(send_delay)
-#
-#         send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
-#         err_req_delay = 500
-#         self.max_errors = 3
-#         self.len_param_list = len(self.current_params_list)
-#         if self.len_param_list < self.max_errors:
-#             self.max_errors = self.len_param_list
-#         self.ans_list = []
-#         self.params_counter = 0
-#         self.errors_counter = 0
-#
-#         timer = QTimer()
-#         timer.timeout.connect(request_node)
-#         timer.start(send_delay)
-#
-#         err_timer = QTimer()
-#         err_timer.timeout.connect(request_errors)
-#         err_timer.start(err_req_delay)
-#
-#         loop = QEventLoop()
-#         loop.exec_()
-#
-#
 def save_to_eeprom():
     err = ''
     for node in window.current_nodes_list:
@@ -198,6 +107,8 @@ def want_to_value_change():  # меняем значение параметра
         is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
         if is_editable:
             dialog = DialogChange(current_param.name, c_text.strip())
+            reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
+            dialog.lineEdit.setValidator(QRegExpValidator(reg_ex))
             if dialog.exec_() == QDialog.Accepted:
                 val = dialog.lineEdit.text()
                 val = val if val and val != '-' else '0'
@@ -221,12 +132,12 @@ def want_to_value_change():  # меняем значение параметра
                     # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
                     # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
                 window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
-                # и запускаю поток если он был включен
-                # if is_run and window.thread.isFinished():
+                # и запускаю поток
                 window.connect_to_node()
 
     elif col_name == 'ПАРАМЕТР':
         user_node = window.current_nodes_list[len(window.current_nodes_list) - 1]
+        print(user_node.name)
         new_param = Parametr(current_param.to_dict(), current_param.node)
         if window.thread.current_node != user_node:
             new_param.name = f'{new_param.name}#{new_param.node.name}'
@@ -236,7 +147,6 @@ def want_to_value_change():  # меняем значение параметра
             for par in user_node.group_params_dict[NewParamsList]:
                 if par.name in new_param.name:
                     p = par
-
             if p:
                 user_node.group_params_dict[NewParamsList].remove(p)
                 text = 'удалён из списка Избранное'
@@ -245,6 +155,13 @@ def want_to_value_change():  # меняем значение параметра
                 user_node.group_params_dict[NewParamsList].append(new_param)
         else:
             user_node.group_params_dict[NewParamsList] = [new_param]
+            item = QTreeWidgetItem()
+            item.setText(0, NewParamsList)
+            rowcount = window.nodes_tree.topLevelItemCount() - 1
+            window.nodes_tree.topLevelItem(rowcount).addChild(item)
+            print(rowcount, window.nodes_tree.topLevelItem(rowcount).text(0))
+            window.nodes_tree.show()
+
         info_m = InfoMessage(f'Параметр {current_param.name} {text}')
         info_m.exec_()
 
@@ -435,6 +352,24 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_to_node()
 
     def double_click(self):  # можно подключиться по двойному щелчку по группе параметров
+        if self.nodes_tree.currentItem().text(0) == NewParamsList:
+            if self.thread.current_params_list:
+                dialog = DialogChange('Можно изменить название списка', NewParamsList)
+                if dialog.exec_() == QDialog.Accepted:
+                    val = dialog.lineEdit.text()
+                    if val and val != NewParamsList:
+                        user_node = self.current_nodes_list[len(window.current_nodes_list) - 1]
+                        user_node.group_params_dict[val] = user_node.group_params_dict[NewParamsList].copy()
+                        del user_node.group_params_dict[NewParamsList]
+                        child_item = QTreeWidgetItem()
+                        child_item.setText(0, val)
+                        self.nodes_tree.currentItem().parent().addChild(child_item)
+                        self.nodes_tree.currentItem().parent().removeChild(self.nodes_tree.currentItem())
+                    else:
+                        print('Некорректное имя списка')
+            else:
+                print('Список пуст')
+
         if not self.thread.isRunning():
             self.connect_to_node()
 
@@ -480,16 +415,16 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 child_item.setText(0, str(param_list))
                 item.addChild(child_item)
                 # если ранее курсор стоял на группе, запоминаю ее
-                if old_item_name == str(param_list):
+                if old_item_name == str(param_list):    # не работает для рулевых - нужно запоминать и имя блока тоже
                     cur_item = child_item
             items.append(item)
 
         self.nodes_tree.insertTopLevelItems(0, items)
-        # если курсор стоял на блоке, который отсутвует в нынешнем списке, то курсор на самый первый блок...
+        # если курсор стоял на блоке, который отсутствует в нынешнем списке, то курсор на самый первый блок...
         if not cur_item:
             cur_item = self.nodes_tree.topLevelItem(0)
         self.nodes_tree.setCurrentItem(cur_item)
-        # ... и текущий блок,соответсвенно, самый первый
+        # ... и текущий блок,соответственно, самый первый
         if self.thread.current_node not in nds:
             self.thread.current_node = nds[0]
         self.show_node_name(self.thread.current_node)
@@ -555,7 +490,7 @@ if __name__ == '__main__':
     app = QApplication([])
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
-    splash.show()
+    # splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
     # подключаю сигналы нажатия на окошки
@@ -579,7 +514,11 @@ if __name__ == '__main__':
         window.show()  # Показываем окно
         splash.finish(window)
         app.exec_()  # и запускаем приложение
+
 # предлагать сохранить список избранного, если он не пустой при выходе
 # позволять изменять название списка по двойному щелчку если он не пустой и сразу дописывать его в таблицу
 # как вообще проверять валидность параметров из списка избранного при следующей загрузке
 # - может их вообще нет в этих блоках - проверять есть ли блок с таким именем после # в названии параметра
+# убрать сообщение о добавлении параметра в строку логов
+# писать НАН если в списке параметров есть параметр с тем блоком,
+# который не подключен или лучше вообще его выкидывать из списка

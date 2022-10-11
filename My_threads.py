@@ -35,23 +35,26 @@ class SaveToFileThread(QThread):
 
         def request_param():
             param = all_params_list[self.params_counter]
-            while param.value:
-                self.params_counter += 1
-                param = all_params_list[self.params_counter]
-            if param.address and int(param.address, 16) > 0:  # нужно чтоб параметр группы не проскочил
-                param = all_params_list[self.params_counter].get_value(self.adapter)
-
-                while isinstance(param, str):
-                    self.errors_counter += 1
+            # я проверяю, если параметр уже известен, его опрашивать не надо,
+            # но если они все известны, возникает выход за пределы словаря
+            # while param.value:
+            #     self.params_counter += 1
+            #     param = all_params_list[self.params_counter]
+            if not param.value:
+                if param.address and int(param.address, 16) > 0:  # нужно чтоб параметр группы не проскочил
                     param = all_params_list[self.params_counter].get_value(self.adapter)
-                    if self.errors_counter >= self.max_errors:
-                        self.errors_counter = 0
-                        self.params_counter = 0
-                        self.SignalOfReady.emit(self.ready_persent,
-                                                f'{param} \n'
-                                                f'поток сохранения прерван,повторите ', False)
-                        timer.stop()
-                        return
+
+                    while isinstance(param, str):
+                        self.errors_counter += 1
+                        param = all_params_list[self.params_counter].get_value(self.adapter)
+                        if self.errors_counter >= self.max_errors:
+                            self.errors_counter = 0
+                            self.params_counter = 0
+                            self.SignalOfReady.emit(self.ready_persent,
+                                                    f'{param} \n'
+                                                    f'поток сохранения прерван,повторите ', False)
+                            timer.stop()
+                            return
 
             self.errors_counter = 0
             self.params_counter += 1

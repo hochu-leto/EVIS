@@ -1,6 +1,4 @@
 import datetime
-import struct
-from pprint import pprint
 
 import pandas
 from PyQt5.QtWidgets import QMessageBox
@@ -58,8 +56,6 @@ def fill_node_list(file_name):
             p_list = []
             if node_name in params_list:
                 for param in bookmark_dict[params_list]:
-                    if str(param['type']) != 'nan':
-                        param['type'] = param['type'].strip()
                     if str(param['name']) != 'nan':
                         if 'group ' in param['name']:
                             node_params_list[prev_group_name] = p_list.copy()
@@ -83,6 +79,7 @@ def fill_node_list(file_name):
 def full_node_list(file_name):
     need_fields = {'name', 'address', 'type'}
     file = pandas.ExcelFile(file_name)
+
     bookmark_dict = {}
     if not {'node', 'errors'}.issubset(file.sheet_names):
         QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
@@ -111,27 +108,42 @@ def full_node_list(file_name):
     err_dict[prev_node_name] = e_list.copy()
     del err_dict['']
     # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с ошибками
-    nodes_list = []
+
     node_sheet = file.parse(sheet_name='node')
     node_list = node_sheet.to_dict(orient='records')  # парсим лист "node"
+    node_dict = {}
     for node in node_list:
-        node_name = node['name']
-        node_params_list = {}
         ev_node = EVONode(node, err_dict[node['name']]) if node['name'] in err_dict.keys() else EVONode(node)
+        node_dict[node['name']] = ev_node
+    # не совсем вдуплил, но здесь у меня есть словарь, где ключи - названия блоков, а значения - объекты блоков
+
+    # ну и финалочка - раскидываю по блокам словари, где ключи - названия групп парметров,
+    # а значения - списки объектов параметров
+    nodes_list = []
+    for node_name, ev_node in node_dict.items():
+        node_params_list = {}
         for params_list in bookmark_dict.keys():  # бегу по словарю со списками параметров
             prev_group_name = ''
             p_list = []
             if node_name in params_list:
                 for param in bookmark_dict[params_list]:
-                    if str(param['type']) != 'nan':
-                        param['type'] = param['type'].strip()
+                    # if str(param['type']) != 'nan':
+                    #     param['type'] = param['type'].strip()
                     if str(param['name']) != 'nan':
                         if 'group ' in param['name']:
                             node_params_list[prev_group_name] = p_list.copy()
                             p_list = []
                             prev_group_name = param['name'].replace('group ', '')
                         else:
-                            p = Parametr(param, ev_node)
+                            if '#' in param['name']:
+                                # это для Избранного, где названия параметров через # -
+                                # там нужно узнать с какого блока этот параметр возможно, в будущем,
+                                # я перейду на постгрес и там будет ещё одна промежуточная таблица,
+                                # чтоб не заморачиваться с названиями
+                                nod_name = param['name'].split('#')[1]
+                                p = Parametr(param, node_dict[nod_name])
+                            else:
+                                p = Parametr(param, ev_node)
                             p_list.append(p)
                 node_params_list[prev_group_name] = p_list.copy()
                 del node_params_list['']

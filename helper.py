@@ -32,8 +32,7 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         self.setupUi(self)
         self.value_name_lbl.setText(value_name)
         self.lineEdit.setText(value)
-        reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
-        self.lineEdit.setValidator(QRegExpValidator(reg_ex))
+
 
 
 
@@ -74,3 +73,16 @@ def dw2float(dw_array):
         else ((dw & 0x7FFFFF) << 1)  # Мантисса
     m1 = m * (2 ** (-23))  # Мантисса в float
     return s * m1 * (2 ** (e - 127))
+
+#
+# пока просто не нужный код, может, потом пригодится
+#
+# root = self.nodes_tree.invisibleRootItem()
+# child_count = root.childCount()
+# the_best = root.child(child_count - 1)
+# the_best_count = the_best.childCount()
+#
+# for i in range(the_best_count):
+#     item = the_best.child(i)
+#     group_param_name = item.text(0)
+#     print(group_param_name)
