@@ -85,14 +85,15 @@ def save_to_eeprom():
             err += node.send_val(node.save_to_eeprom, can_adapter, value=1)
     if err:
         QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
+        window.log_lbl.setText('Настройки в память НЕ сохранены, ошибка ' + err)
     else:
         QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохранены в EEPROM', QMessageBox.Ok)
+        window.log_lbl.setText('Настройки сохранены в EEPROM')
         window.save_eeprom_btn.setEnabled(False)
 
 
-def want_to_value_change():  # меняем значение параметра
-    # остановим поток, если он есть
-
+def want_to_value_change():
+    #  над разбивать, как минимум, на две функции
     current_cell = window.vmu_param_table.currentItem()
     c_row = current_cell.row()
     c_col = current_cell.column()
@@ -100,7 +101,9 @@ def want_to_value_change():  # меняем значение параметра
     col_name = window.vmu_param_table.horizontalHeaderItem(current_cell.column()).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
 
+    # меняем значение параметра
     if col_name == 'ЗНАЧЕНИЕ':
+        # остановим поток, если он есть
         if window.thread.isRunning():
             window.connect_to_node()
 
@@ -128,16 +131,15 @@ def want_to_value_change():  # меняем значение параметра
                         window.save_eeprom_btn.setEnabled(True)
                 else:
                     next_cell.setBackground(QColor(254, 0, 0, 30))
-
                     # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
                     # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
                 window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
                 # и запускаю поток
                 window.connect_to_node()
-
+# добавляю параметр в Избранное/Новый список
+# пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
         user_node = window.current_nodes_list[len(window.current_nodes_list) - 1]
-        print(user_node.name)
         new_param = Parametr(current_param.to_dict(), current_param.node)
         if window.thread.current_node != user_node:
             new_param.name = f'{new_param.name}#{new_param.node.name}'
@@ -159,11 +161,10 @@ def want_to_value_change():  # меняем значение параметра
             item.setText(0, NewParamsList)
             rowcount = window.nodes_tree.topLevelItemCount() - 1
             window.nodes_tree.topLevelItem(rowcount).addChild(item)
-            print(rowcount, window.nodes_tree.topLevelItem(rowcount).text(0))
             window.nodes_tree.show()
-
-        info_m = InfoMessage(f'Параметр {current_param.name} {text}')
-        info_m.exec_()
+        window.log_lbl.setText(f'Параметр {current_param.name} {text}')
+        # info_m = InfoMessage(f'Параметр {current_param.name} {text}')
+        # info_m.exec_()
 
 
 def params_list_changed():  # если мы в левом окошке выбираем разные блоки или группы параметров
@@ -342,13 +343,15 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
             if is_finished:
                 QMessageBox.information(window, "Успешный успех!", 'Файл сохранён ' + '\n' + err, QMessageBox.Ok)
+                self.log_lbl.setText('Сохранён файл с настройками ' + err)
             elif err:
                 QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
+                self.log_lbl.setText('Файл не сохранён, ошибка ' + err)
             self.node_nsme_pbar.setValue(0)
 
             self.connect_btn.setEnabled(True)
             self.save_to_file_btn.setEnabled(True)
-            self.save_to_file_btn.setText(f'Сохранить настройки блока: {self.thread.current_node.name}')
+            self.save_to_file_btn.setText(f'Сохранить настройки блока: \n {self.thread.current_node.name} в файл')
             self.connect_to_node()
 
     def double_click(self):  # можно подключиться по двойному щелчку по группе параметров
@@ -435,18 +438,20 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.node_s_n_lab.setText(f'Серийный номер: {nd.serial_number}')
         self.node_fm_lab.setText(f'Версия ПО: {nd.cut_firmware()}')
         if self.save_to_file_btn.isEnabled():
-            self.save_to_file_btn.setText(f'Сохранить настройки блока: {nd.name}')
+            self.save_to_file_btn.setText(f'Сохранить настройки блока:\n {nd.name} в файл')
         return
 
     def connect_to_node(self):
         global can_adapter
         # такое бывает при первом подключении или если вырвали адаптер - надо заново его определить
         if not can_adapter.isDefined:
+            self.log_lbl.setText('Определяется подключенный адаптер...')
             can_adapter = CANAdapter()
         # наверное, это можно объединить, если вырвали адаптер, список тоже нужно обновлять,\
         # хотя когда теряем кан-шину также есть смысл обновить список подключенных блоков
         # надо это добавить!
         if not self.node_list_defined:
+            self.log_lbl.setText('Определяются имеющиеся на шине CAN блоки...')
             self.current_nodes_list, check = check_node_online(alt_node_list)
             params_list_changed()
             self.reset_faults.setEnabled(check)
@@ -516,9 +521,6 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # предлагать сохранить список избранного, если он не пустой при выходе
-# позволять изменять название списка по двойному щелчку если он не пустой и сразу дописывать его в таблицу
-# как вообще проверять валидность параметров из списка избранного при следующей загрузке
-# - может их вообще нет в этих блоках - проверять есть ли блок с таким именем после # в названии параметра
-# убрать сообщение о добавлении параметра в строку логов
-# писать НАН если в списке параметров есть параметр с тем блоком,
+# позволять изменять название списка по двойному щелчку если он не пустой - и сразу дописывать его в таблицу
+# если в списке параметров есть параметр с тем блоком,
 # который не подключен или лучше вообще его выкидывать из списка

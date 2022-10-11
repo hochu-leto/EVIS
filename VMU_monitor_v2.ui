@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1086</width>
-    <height>870</height>
+    <height>861</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -57,7 +57,7 @@
           <item>
            <widget class="QLabel" name="node_fm_lab">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -75,7 +75,7 @@
           <item>
            <widget class="QLabel" name="node_name_lab">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -98,7 +98,7 @@
           <item>
            <widget class="QLabel" name="node_s_n_lab">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -117,6 +117,16 @@
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="2" column="1" rowspan="3" colspan="3">
+        <widget class="QTextBrowser" name="errors_browser">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
         </widget>
        </item>
        <item row="1" column="2" colspan="2">
@@ -187,16 +197,6 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1" rowspan="3" colspan="3">
-        <widget class="QTextBrowser" name="errors_browser">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
        <item row="3" column="0">
         <widget class="QPushButton" name="reset_faults">
          <property name="enabled">
@@ -210,32 +210,6 @@
          </property>
          <property name="text">
           <string>Сброс ошибок</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="3">
-        <widget class="QProgressBar" name="node_nsme_pbar">
-         <property name="value">
-          <number>0</number>
-         </property>
-         <property name="textVisible">
-          <bool>false</bool>
-         </property>
-         <property name="invertedAppearance">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="3">
-        <widget class="QPushButton" name="save_to_file_btn">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Сохранить настройки</string>
          </property>
         </widget>
        </item>
@@ -254,6 +228,19 @@
          </column>
         </widget>
        </item>
+       <item row="4" column="0">
+        <widget class="QPushButton" name="pushButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Всё починить</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="3">
         <widget class="QPushButton" name="save_eeprom_btn">
          <property name="enabled">
@@ -265,24 +252,73 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
          <property name="layoutDirection">
           <enum>Qt::RightToLeft</enum>
          </property>
          <property name="text">
-          <string>Сохранить в память</string>
+          <string>Сохранить в EEPROM</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QPushButton" name="pushButton">
+       <item row="5" column="0" rowspan="2">
+        <widget class="QPushButton" name="save_to_file_btn">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Всё починить</string>
+          <string>Сохранить настройки 
+ в файл</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1" colspan="3">
+        <widget class="QProgressBar" name="node_nsme_pbar">
+         <property name="value">
+          <number>0</number>
+         </property>
+         <property name="textVisible">
+          <bool>false</bool>
+         </property>
+         <property name="invertedAppearance">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1" colspan="3">
+        <widget class="QLabel" name="log_lbl">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="text">
+          <string>Загрузился</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
