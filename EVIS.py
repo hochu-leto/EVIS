@@ -65,21 +65,23 @@ import pathlib
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from My_threads import SaveToFileThread, MainThread, list_to_save
+from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file
 from Parametr import Parametr
 from work_with_file import full_node_list
-from helper import zero_del, NewParamsList, log_uncaught_exceptions, InfoMessage, DialogChange
+from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, InfoMessage
 
 can_adapter = CANAdapter()
 
 dir_path = str(pathlib.Path.cwd())
 # файл где все блоки, параметры, ошибки
 vmu_param_file = 'table_for_params_new_VMU2.xlsx'
+vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 sys.excepthook = log_uncaught_exceptions
 
 
 def modify_file():
-    list_to_save(window.thread.current_node.group_params_dict, 'first_file.xlsx', window.thread.current_node.name)
+
+    save_params_dict_to_file(window.thread.current_node.group_params_dict, 'first_file.xlsx', window.thread.current_node.name)
 
 
 def save_to_eeprom():
@@ -284,7 +286,7 @@ def save_to_file_pressed():  # если нужно записать текущи
     window.save_to_file_btn.setEnabled(False)
     window.tr.adapter = can_adapter
     window.tr.node_to_save = window.thread.current_node
-    window.save_to_file_btn.setText(f'Сохраняются настройки блока: {window.tr.node_to_save.name}')
+    window.save_to_file_btn.setText(f'Сохраняются настройки блока:\n {window.tr.node_to_save.name}')
     # запускаем параллельный поток сохранения
     window.tr.run()
 
@@ -359,31 +361,43 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_to_node()
 
     def double_click(self):  # можно подключиться по двойному щелчку по группе параметров
+        # для Нового списка даю возможность изменить его название
         if self.nodes_tree.currentItem().text(0) == NewParamsList:
             if self.thread.current_params_list:
                 dialog = DialogChange('Можно изменить название списка', NewParamsList)
                 if dialog.exec_() == QDialog.Accepted:
                     val = dialog.lineEdit.text()
                     if val and val != NewParamsList:
+                        # берём последний в списке блоков блок - Это Избранное
                         user_node = self.current_nodes_list[len(window.current_nodes_list) - 1]
+                        # создаём в его словаре параметров ещё одну пару - копию нового списка
                         user_node.group_params_dict[val] = user_node.group_params_dict[NewParamsList].copy()
+                        # а Новый список удаляем
                         del user_node.group_params_dict[NewParamsList]
+                        # создаём новый итем для дерева
                         child_item = QTreeWidgetItem()
                         child_item.setText(0, val)
                         self.nodes_tree.currentItem().parent().addChild(child_item)
+                        # а старый итем стираем
+                        # может, это и неправильно и надо использовать модель-виев, но я пока не дорос
                         self.nodes_tree.currentItem().parent().removeChild(self.nodes_tree.currentItem())
+                        self.log_lbl.setText(f'Добавление списка {val} в файл')
+                        save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file)
                     else:
                         print('Некорректное имя списка')
+                        self.log_lbl.setText('Некорректное имя списка')
             else:
                 print('Список пуст')
-
+                self.log_lbl.setText('Список пуст')
+        # для всех остальных - просто подключаемся
         if not self.thread.isRunning():
             self.connect_to_node()
 
     def show_new_vmu_params(self):
         row = 0
         for par in self.thread.current_params_list:
-            value_item = QTableWidgetItem(zero_del(par.value))
+            v_name = par.value if isinstance(par.value, str) else zero_del(par.value)
+            value_item = QTableWidgetItem(v_name)
             if par.editable:
                 flags = (value_item.flags() | Qt.ItemIsEditable)
             else:
@@ -457,6 +471,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if not self.node_list_defined:
             self.log_lbl.setText('Определяются имеющиеся на шине CAN блоки...')
             self.current_nodes_list, check = check_node_online(alt_node_list)
+            self.thread.current_nodes_list = self.current_nodes_list
             params_list_changed()
             self.reset_faults.setEnabled(check)
             self.save_to_file_btn.setEnabled(check)
@@ -474,6 +489,24 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             can_adapter.close_canal_can()
 
     def closeEvent(self, event):
+        # может, есть смысл сделать из этого функцию, дабы не повторять дважды
+        user_node_dict = self.current_nodes_list[len(window.current_nodes_list) - 1].group_params_dict
+
+        if NewParamsList in user_node_dict.keys():
+            if user_node_dict[NewParamsList]:
+                dialog = DialogChange(f'В {NewParamsList} добавлены параметры \n'
+                                      f' нужно сохранить этот список?', NewParamsList)
+                if dialog.exec_() == QDialog.Accepted:
+                    val = dialog.lineEdit.text()
+                    self.log_lbl.setText(f'Добавление списка {val} в файл')
+                    if val and val != NewParamsList:
+                        user_node_dict[val] = user_node_dict[NewParamsList].copy()
+                        del user_node_dict[NewParamsList]
+                        save_params_dict_to_file(user_node_dict, vmu_param_file)
+                    else:
+                        self.log_lbl.setText('Некорректное имя списка')
+            else:
+                self.log_lbl.setText('Список не сохранён')
         msg = QMessageBox(self)
         msg.setWindowTitle("Выход")
         msg.setIcon(QMessageBox.Question)
@@ -500,7 +533,7 @@ if __name__ == '__main__':
     app = QApplication([])
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
-    # splash.show()
+    splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
     # подключаю сигналы нажатия на окошки
@@ -511,12 +544,14 @@ if __name__ == '__main__':
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
-    window.pushButton.clicked.connect(modify_file)
+    # window.pushButton.clicked.connect(modify_file)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
-    alt_node_list = full_node_list(pathlib.Path(dir_path, 'Tables', vmu_param_file))
+    alt_node_list = full_node_list(vmu_param_file)
     window.current_nodes_list = alt_node_list
+    window.thread.current_nodes_list = window.current_nodes_list
+
     window.show_nodes_tree(alt_node_list)
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
@@ -527,6 +562,3 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # предлагать сохранить список избранного, если он не пустой при выходе
-# позволять изменять название списка по двойному щелчку если он не пустой - и сразу дописывать его в таблицу
-# если в списке параметров есть параметр с тем блоком,
-# который не подключен или лучше вообще его выкидывать из списка

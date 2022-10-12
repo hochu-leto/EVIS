@@ -97,10 +97,10 @@ class SaveToFileThread(QThread):
                 par['name'] = p.name
             else:
                 par = p.to_dict().copy()
-            save_list.append(par.copy())
-
             self.ready_persent += l
             self.SignalOfReady.emit(self.ready_persent, '', False)
+
+            save_list.append(par.copy())
 
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.xlsx'
@@ -154,7 +154,7 @@ class MainThread(QThread):
                         self.params_counter = 0
                         emitting()
                         return
-            if current_param.node in self.current_nodes_list:
+            if current_param.node.name in (node.name for node in self.current_nodes_list):
                 param = current_param.get_value(self.adapter)
                 # если строка - значит ошибка
                 if isinstance(param, str):
@@ -166,7 +166,10 @@ class MainThread(QThread):
                     self.errors_counter = 0
             else:
                 param = 'Блок не подключен'
+                current_param.value = param
             # тут всё просто, собираем весь список и отправляем кучкой
+            # какая-то херня. мне, по-факту этот список вообще нахер не нужен, сюда можно чисто ошибки пихать
+            # , значения всё равно в текущем списке параметров
             self.ans_list.append(param)
             self.params_counter += 1
             if self.params_counter >= self.len_param_list:
@@ -206,7 +209,7 @@ class MainThread(QThread):
         loop.exec_()
 
 
-def list_to_save(param_d: dict, file_name: str, sheet_name=None):
+def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
     if sheet_name is None:
         sheet_name = 'Избранное'
     all_params_list = []
@@ -219,8 +222,6 @@ def list_to_save(param_d: dict, file_name: str, sheet_name=None):
             all_params_list.append(param.to_dict().copy())
 
     df = pd.DataFrame(all_params_list, columns=empty_par.keys())
-    # df.to_excel(file_name, index=False)
-    # надо перезаписывать лист избранное, если он уже есть
-    with ExcelWriter(file_name, mode="a" if os.path.exists(file_name) else "w") as writer:
+    with ExcelWriter(file_name, mode="a" if os.path.exists(file_name) else "w", if_sheet_exists='overlay') as writer:
         df.to_excel(writer, index=False, sheet_name=sheet_name)
 

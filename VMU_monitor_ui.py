@@ -167,7 +167,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.save_eeprom_btn, 0, 3, 1, 1)
         self.save_to_file_btn = QtWidgets.QPushButton(self.groupBox_3)
         self.save_to_file_btn.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.save_to_file_btn.sizePolicy().hasHeightForWidth())

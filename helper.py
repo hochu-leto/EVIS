@@ -64,7 +64,9 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         self.setupUi(self)
         self.value_name_lbl.setText(value_name)
         self.lineEdit.setText(value)
-
+        # self.setIcon(QMessageBox.Information)
+        # self.setWindowIcon(QMessageBox.Information)
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
 
 
