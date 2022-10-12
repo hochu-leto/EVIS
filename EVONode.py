@@ -1,7 +1,7 @@
 import ctypes
 
 import CANAdater
-from helper import int_to_hex_str
+from helper import int_to_hex_str, empty_par
 
 empty_node = {
     'name': 'NoName',

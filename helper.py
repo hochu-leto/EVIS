@@ -13,6 +13,38 @@ import my_dialog
 
 NewParamsList = 'Новый список'
 
+empty_par = {'name': '',
+             'address': '',
+             'editable': '',
+             'description': '',
+             'scale': '',
+             'scaleB': '',
+             'unit': '',
+             'value': '',
+             'type': '',
+             'group': '',
+             'period': '',
+             'size': '',
+             'degree': '',
+             'min_value': '',
+             'max_value': '',
+             'widget': ''}
+#  параметр для экспериментов
+example_par = {'name': 'fghjk',
+               'address': '34567',
+               'editable': 1,
+               'description': 'ytfjll hkvlbjkkj',
+               'scale': 10,
+               'scaleB': -40,
+               'unit': 'A',
+               'value': '23',
+               'type': 'SIGNED16',
+               'group': '1',
+               'period': '20',
+               'size': 'nan',
+               'degree': 3}
+
+
 
 class InfoMessage(QDialog, Dialog_params.Ui_Dialog_params):
 

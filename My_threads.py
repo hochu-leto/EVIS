@@ -1,14 +1,18 @@
 import datetime
+import os
 
 import pandas as pd
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
+from pandas import ExcelWriter
+
 import CANAdater
 from EVONode import EVONode
-from Parametr import Parametr, empty_par
+from Parametr import Parametr
 
 
 # поток для сохранения в файл настроек блока
 # возвращает сигналу о процентах выполнения, сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
+from helper import empty_par
 
 
 class SaveToFileThread(QThread):
@@ -93,10 +97,10 @@ class SaveToFileThread(QThread):
                 par['name'] = p.name
             else:
                 par = p.to_dict().copy()
+            save_list.append(par.copy())
+
             self.ready_persent += l
             self.SignalOfReady.emit(self.ready_persent, '', False)
-
-            save_list.append(par.copy())
 
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.xlsx'
@@ -138,8 +142,9 @@ class MainThread(QThread):
                 self.threadSignalAThread.emit(['Пустой список \n Сюда можно добавить параметры двойным кликом по '
                                                'названию нужного параметра'])
                 return
+            current_param = self.current_params_list[self.params_counter]
             if not self.iter_count == 1:
-                while not self.iter_count % self.current_params_list[self.params_counter].period == 0:
+                while not self.iter_count % current_param.period == 0:
                     # если период опроса текущего параметра не кратен текущей итерации,
                     # заполняем его нулями, чтоб в таблице осталось его старое значение
                     # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
@@ -149,15 +154,18 @@ class MainThread(QThread):
                         self.params_counter = 0
                         emitting()
                         return
-            param = self.current_params_list[self.params_counter].get_value(self.adapter)
-            # если строка - значит ошибка
-            if isinstance(param, str):
-                self.errors_counter += 1
-                if self.errors_counter >= self.max_errors:
-                    self.threadSignalAThread.emit([param])
-                    return
+            if current_param.node in self.current_nodes_list:
+                param = current_param.get_value(self.adapter)
+                # если строка - значит ошибка
+                if isinstance(param, str):
+                    self.errors_counter += 1
+                    if self.errors_counter >= self.max_errors:
+                        self.threadSignalAThread.emit([param])
+                        return
+                else:
+                    self.errors_counter = 0
             else:
-                self.errors_counter = 0
+                param = 'Блок не подключен'
             # тут всё просто, собираем весь список и отправляем кучкой
             self.ans_list.append(param)
             self.params_counter += 1
@@ -166,7 +174,6 @@ class MainThread(QThread):
                 emitting()
 
         def request_errors():
-
             # опрос ошибок, на это время опрос параметров отключается
             timer.stop()
             for nd in self.current_nodes_list:
@@ -197,3 +204,23 @@ class MainThread(QThread):
 
         loop = QEventLoop()
         loop.exec_()
+
+
+def list_to_save(param_d: dict, file_name: str, sheet_name=None):
+    if sheet_name is None:
+        sheet_name = 'Избранное'
+    all_params_list = []
+    param_dict = param_d.copy()
+    for group_name, param_list in param_dict.items():
+        par = empty_par.copy()
+        par['name'] = f'group {group_name}'
+        all_params_list.append(par)
+        for param in param_list:
+            all_params_list.append(param.to_dict().copy())
+
+    df = pd.DataFrame(all_params_list, columns=empty_par.keys())
+    # df.to_excel(file_name, index=False)
+    # надо перезаписывать лист избранное, если он уже есть
+    with ExcelWriter(file_name, mode="a" if os.path.exists(file_name) else "w") as writer:
+        df.to_excel(writer, index=False, sheet_name=sheet_name)
+

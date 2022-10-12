@@ -65,7 +65,7 @@ import pathlib
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from My_threads import SaveToFileThread, MainThread
+from My_threads import SaveToFileThread, MainThread, list_to_save
 from Parametr import Parametr
 from work_with_file import full_node_list
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, InfoMessage, DialogChange
@@ -76,6 +76,10 @@ dir_path = str(pathlib.Path.cwd())
 # файл где все блоки, параметры, ошибки
 vmu_param_file = 'table_for_params_new_VMU2.xlsx'
 sys.excepthook = log_uncaught_exceptions
+
+
+def modify_file():
+    list_to_save(window.thread.current_node.group_params_dict, 'first_file.xlsx', window.thread.current_node.name)
 
 
 def save_to_eeprom():
@@ -136,8 +140,8 @@ def want_to_value_change():
                 window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
                 # и запускаю поток
                 window.connect_to_node()
-# добавляю параметр в Избранное/Новый список
-# пока редактирование старых списков не предусмотрено
+    # добавляю параметр в Избранное/Новый список
+    # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
         user_node = window.current_nodes_list[len(window.current_nodes_list) - 1]
         new_param = Parametr(current_param.to_dict(), current_param.node)
@@ -418,7 +422,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 child_item.setText(0, str(param_list))
                 item.addChild(child_item)
                 # если ранее курсор стоял на группе, запоминаю ее
-                if old_item_name == str(param_list):    # не работает для рулевых - нужно запоминать и имя блока тоже
+                if old_item_name == str(param_list):  # не работает для рулевых - нужно запоминать и имя блока тоже
                     cur_item = child_item
             items.append(item)
 
@@ -457,6 +461,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.reset_faults.setEnabled(check)
             self.save_to_file_btn.setEnabled(check)
             self.node_list_defined = check
+            self.log_lbl.setText(f'Обнаружено {check * len(self.current_nodes_list)} блоков')
 
         if not self.thread.isRunning():
             self.thread.iter_count = 1
@@ -506,6 +511,7 @@ if __name__ == '__main__':
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
+    window.pushButton.clicked.connect(modify_file)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне

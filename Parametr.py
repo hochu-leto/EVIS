@@ -6,38 +6,7 @@ from time import sleep
 
 import CANAdater
 from EVONode import EVONode
-from helper import bytes_to_float, int_to_hex_str, float_to_int
-
-empty_par = {'name': '',
-             'address': '',
-             'editable': '',
-             'description': '',
-             'scale': '',
-             'scaleB': '',
-             'unit': '',
-             'value': '',
-             'type': '',
-             'group': '',
-             'period': '',
-             'size': '',
-             'degree': '',
-             'min_value': '',
-             'max_value': '',
-             'widget': ''}
-#  параметр для экспериментов
-example_par = {'name': 'fghjk',
-               'address': '34567',
-               'editable': 1,
-               'description': 'ytfjll hkvlbjkkj',
-               'scale': 10,
-               'scaleB': -40,
-               'unit': 'A',
-               'value': '23',
-               'type': 'SIGNED16',
-               'group': '1',
-               'period': '20',
-               'size': 'nan',
-               'degree': 3}
+from helper import bytes_to_float, int_to_hex_str, float_to_int, empty_par
 
 
 # здесь когда-то будет возможность читать текст из посылки, пока нет
