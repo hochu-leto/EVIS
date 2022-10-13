@@ -1,30 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>value_changer_dialog</class>
- <widget class="QDialog" name="value_changer_dialog">
+ <class>Dialog_params</class>
+ <widget class="QDialog" name="Dialog_params">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>424</width>
-    <height>117</height>
+    <height>99</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Введи новое значение</string>
+   <string>Информация</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="value_name_lbl">
+    <widget class="QLabel" name="info_lbl">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
       <string>TextLabel</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLineEdit" name="lineEdit"/>
-   </item>
-   <item row="2" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -41,7 +47,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>value_changer_dialog</receiver>
+   <receiver>Dialog_params</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -57,7 +63,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>value_changer_dialog</receiver>
+   <receiver>Dialog_params</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

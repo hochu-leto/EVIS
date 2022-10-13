@@ -14,20 +14,20 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_value_changer_dialog(object):
     def setupUi(self, value_changer_dialog):
         value_changer_dialog.setObjectName("value_changer_dialog")
-        value_changer_dialog.resize(236, 117)
-        self.formLayout = QtWidgets.QFormLayout(value_changer_dialog)
-        self.formLayout.setObjectName("formLayout")
+        value_changer_dialog.resize(424, 117)
+        self.gridLayout = QtWidgets.QGridLayout(value_changer_dialog)
+        self.gridLayout.setObjectName("gridLayout")
         self.value_name_lbl = QtWidgets.QLabel(value_changer_dialog)
         self.value_name_lbl.setObjectName("value_name_lbl")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.value_name_lbl)
+        self.gridLayout.addWidget(self.value_name_lbl, 0, 0, 1, 1)
         self.lineEdit = QtWidgets.QLineEdit(value_changer_dialog)
         self.lineEdit.setObjectName("lineEdit")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.lineEdit)
+        self.gridLayout.addWidget(self.lineEdit, 1, 0, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(value_changer_dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.buttonBox)
+        self.gridLayout.addWidget(self.buttonBox, 2, 0, 1, 1)
 
         self.retranslateUi(value_changer_dialog)
         self.buttonBox.accepted.connect(value_changer_dialog.accept) # type: ignore
