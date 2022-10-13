@@ -21,6 +21,7 @@ imports:
     <a href="#CANAdater">CANAdater</a>
  &#8226;   <a href="#EVONode">EVONode</a>
  &#8226;   <a href="#My_threads">My_threads</a>
+ &#8226;   <a href="#Parametr">Parametr</a>
  &#8226;   <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
  &#8226;   <a href="#PyQt5.QtGui">PyQt5.QtGui</a>
  &#8226;   <a href="#PyQt5.QtWidgets">PyQt5.QtWidgets</a>
@@ -164,7 +165,6 @@ imports:
  &#8226;   <a href="#keyword">keyword</a>
  &#8226;   <a href="#linecache">linecache</a>
  &#8226;   <a href="#locale">locale</a>
- &#8226;   <a href="#my_dialog">my_dialog</a>
  &#8226;   <a href="#operator">operator</a>
  &#8226;   <a href="#pathlib">pathlib</a>
  &#8226;   <a href="#pyi_rth_inspect.py">pyi_rth_inspect.py</a>
@@ -642,6 +642,25 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="Dialog_params"></a>
+  <a target="code" href="///C:/workspace/PycharmProjects/VMU_monitor/Dialog_params.py" type="text/plain"><tt>Dialog_params</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#PyQt5">PyQt5</a>
+ &#8226;   <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
+ &#8226;   <a href="#PyQt5.QtGui">PyQt5.QtGui</a>
+ &#8226;   <a href="#PyQt5.QtWidgets">PyQt5.QtWidgets</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#helper">helper</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="EVONode"></a>
   <a target="code" href="///C:/workspace/PycharmProjects/VMU_monitor/EVONode.py" type="text/plain"><tt>EVONode</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
@@ -694,6 +713,8 @@ imports:
  &#8226;   <a href="#Parametr">Parametr</a>
  &#8226;   <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
  &#8226;   <a href="#datetime">datetime</a>
+ &#8226;   <a href="#helper">helper</a>
+ &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#pandas">pandas</a>
 
   </div>
@@ -731,7 +752,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#My_threads">My_threads</a>
+    <a href="#EVIS.py">EVIS.py</a>
+ &#8226;   <a href="#My_threads">My_threads</a>
  &#8226;   <a href="#work_with_file">work_with_file</a>
 
   </div>
@@ -761,7 +783,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
+    <a href="#Dialog_params">Dialog_params</a>
+ &#8226;   <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
  &#8226;   <a href="#PyQt5.QtGui">PyQt5.QtGui</a>
  &#8226;   <a href="#PyQt5.QtWidgets">PyQt5.QtWidgets</a>
  &#8226;   <a href="#PyQt5.sip">PyQt5.sip</a>
@@ -783,12 +806,14 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#EVIS.py">EVIS.py</a>
+    <a href="#Dialog_params">Dialog_params</a>
+ &#8226;   <a href="#EVIS.py">EVIS.py</a>
  &#8226;   <a href="#My_threads">My_threads</a>
  &#8226;   <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
  &#8226;   <a href="#PyQt5.QtGui">PyQt5.QtGui</a>
  &#8226;   <a href="#PyQt5.QtWidgets">PyQt5.QtWidgets</a>
  &#8226;   <a href="#VMU_monitor_ui">VMU_monitor_ui</a>
+ &#8226;   <a href="#helper">helper</a>
  &#8226;   <a href="#my_dialog">my_dialog</a>
 
   </div>
@@ -806,10 +831,12 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#EVIS.py">EVIS.py</a>
+    <a href="#Dialog_params">Dialog_params</a>
+ &#8226;   <a href="#EVIS.py">EVIS.py</a>
  &#8226;   <a href="#PyQt5.QtGui">PyQt5.QtGui</a>
  &#8226;   <a href="#PyQt5.QtWidgets">PyQt5.QtWidgets</a>
  &#8226;   <a href="#VMU_monitor_ui">VMU_monitor_ui</a>
+ &#8226;   <a href="#helper">helper</a>
  &#8226;   <a href="#my_dialog">my_dialog</a>
 
   </div>
@@ -828,9 +855,11 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#EVIS.py">EVIS.py</a>
+    <a href="#Dialog_params">Dialog_params</a>
+ &#8226;   <a href="#EVIS.py">EVIS.py</a>
  &#8226;   <a href="#PyQt5.QtWidgets">PyQt5.QtWidgets</a>
  &#8226;   <a href="#VMU_monitor_ui">VMU_monitor_ui</a>
+ &#8226;   <a href="#helper">helper</a>
  &#8226;   <a href="#my_dialog">my_dialog</a>
  &#8226;   <a href="#pandas.io.clipboard">pandas.io.clipboard</a>
  &#8226;   <a href="#work_with_file">work_with_file</a>
@@ -9811,14 +9840,22 @@ imported by:
   <a target="code" href="///C:/workspace/PycharmProjects/VMU_monitor/helper.py" type="text/plain"><tt>helper</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#struct">struct</a>
+    <a href="#Dialog_params">Dialog_params</a>
+ &#8226;   <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
+ &#8226;   <a href="#PyQt5.QtGui">PyQt5.QtGui</a>
+ &#8226;   <a href="#PyQt5.QtWidgets">PyQt5.QtWidgets</a>
+ &#8226;   <a href="#my_dialog">my_dialog</a>
+ &#8226;   <a href="#struct">struct</a>
+ &#8226;   <a href="#traceback">traceback</a>
 
   </div>
   <div class="import">
 imported by:
     <a href="#EVIS.py">EVIS.py</a>
  &#8226;   <a href="#EVONode">EVONode</a>
+ &#8226;   <a href="#My_threads">My_threads</a>
  &#8226;   <a href="#Parametr">Parametr</a>
+ &#8226;   <a href="#work_with_file">work_with_file</a>
 
   </div>
 
@@ -10050,7 +10087,7 @@ imports:
  &#8226;   <a href="#importlib">importlib</a>
  &#8226;   <a href="#importlib._bootstrap">importlib._bootstrap</a>
  &#8226;   <a href="#importlib._bootstrap_external">importlib._bootstrap_external</a>
- &#8226;   <a href="#importlib.machinery">importlib.machinery</a>
+ &#8226;   <a href="#importlib.abc">importlib.abc</a>
  &#8226;   <a href="#sys">sys</a>
  &#8226;   <a href="#types">types</a>
  &#8226;   <a href="#warnings">warnings</a>
@@ -10147,6 +10184,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#_distutils_hack">_distutils_hack</a>
+ &#8226;   <a href="#importlib">importlib</a>
  &#8226;   <a href="#importlib.metadata">importlib.metadata</a>
  &#8226;   <a href="#importlib.util">importlib.util</a>
  &#8226;   <a href="#win32ctypes.core">win32ctypes.core</a>
@@ -10173,7 +10211,6 @@ imported by:
  &#8226;   <a href="#PyInstaller.lib.modulegraph.modulegraph">PyInstaller.lib.modulegraph.modulegraph</a>
  &#8226;   <a href="#ctypes.util">ctypes.util</a>
  &#8226;   <a href="#imp">imp</a>
- &#8226;   <a href="#importlib">importlib</a>
  &#8226;   <a href="#importlib.abc">importlib.abc</a>
  &#8226;   <a href="#inspect">inspect</a>
  &#8226;   <a href="#numpy.compat.py3k">numpy.compat.py3k</a>
@@ -10660,6 +10697,8 @@ imports:
     <a href="#AdapterCAN">AdapterCAN</a>
  &#8226;   <a href="#canlib">canlib</a>
  &#8226;   <a href="#canlib.canlib">canlib.canlib</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#pathlib">pathlib</a>
  &#8226;   <a href="#time">time</a>
 
   </div>
@@ -11761,7 +11800,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#EVIS.py">EVIS.py</a>
+    <a href="#helper">helper</a>
 
   </div>
 
@@ -20655,7 +20694,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#PyInstaller">PyInstaller</a>
+    <a href="#My_threads">My_threads</a>
+ &#8226;   <a href="#PyInstaller">PyInstaller</a>
  &#8226;   <a href="#PyInstaller.__main__">PyInstaller.__main__</a>
  &#8226;   <a href="#PyInstaller.archive.pyz_crypto">PyInstaller.archive.pyz_crypto</a>
  &#8226;   <a href="#PyInstaller.archive.writers">PyInstaller.archive.writers</a>
@@ -20754,6 +20794,7 @@ imported by:
  &#8226;   <a href="#imp">imp</a>
  &#8226;   <a href="#importlib.metadata">importlib.metadata</a>
  &#8226;   <a href="#inspect">inspect</a>
+ &#8226;   <a href="#kvaser_power">kvaser_power</a>
  &#8226;   <a href="#lib2to3.pgen2.driver">lib2to3.pgen2.driver</a>
  &#8226;   <a href="#lib2to3.pygram">lib2to3.pygram</a>
  &#8226;   <a href="#lib2to3.refactor">lib2to3.refactor</a>
@@ -31233,6 +31274,7 @@ imported by:
  &#8226;   <a href="#PyInstaller.utils.hooks">PyInstaller.utils.hooks</a>
  &#8226;   <a href="#PyInstaller.utils.hooks.conda">PyInstaller.utils.hooks.conda</a>
  &#8226;   <a href="#importlib.metadata">importlib.metadata</a>
+ &#8226;   <a href="#kvaser_power">kvaser_power</a>
  &#8226;   <a href="#marathon_power">marathon_power</a>
  &#8226;   <a href="#numpy.compat.py3k">numpy.compat.py3k</a>
  &#8226;   <a href="#pandas._testing.contexts">pandas._testing.contexts</a>
@@ -32022,7 +32064,6 @@ imported by:
  &#8226;   <a href="#sysconfig">sysconfig</a>
  &#8226;   <a href="#unittest.case">unittest.case</a>
  &#8226;   <a href="#unittest.mock">unittest.mock</a>
- &#8226;   <a href="#work_with_file">work_with_file</a>
  &#8226;   <a href="#xlrd">xlrd</a>
 
   </div>
@@ -33347,7 +33388,6 @@ imported by:
  &#8226;   <a href="#setuptools.command.easy_install">setuptools.command.easy_install</a>
  &#8226;   <a href="#six">six</a>
  &#8226;   <a href="#tarfile">tarfile</a>
- &#8226;   <a href="#work_with_file">work_with_file</a>
  &#8226;   <a href="#xlrd.biffh">xlrd.biffh</a>
  &#8226;   <a href="#xlrd.book">xlrd.book</a>
  &#8226;   <a href="#xlrd.compdoc">xlrd.compdoc</a>
@@ -34159,6 +34199,7 @@ imported by:
  &#8226;   <a href="#code">code</a>
  &#8226;   <a href="#concurrent.futures.process">concurrent.futures.process</a>
  &#8226;   <a href="#doctest">doctest</a>
+ &#8226;   <a href="#helper">helper</a>
  &#8226;   <a href="#http.cookiejar">http.cookiejar</a>
  &#8226;   <a href="#logging">logging</a>
  &#8226;   <a href="#multiprocessing.managers">multiprocessing.managers</a>
@@ -35424,9 +35465,8 @@ imports:
  &#8226;   <a href="#Parametr">Parametr</a>
  &#8226;   <a href="#PyQt5.QtWidgets">PyQt5.QtWidgets</a>
  &#8226;   <a href="#datetime">datetime</a>
+ &#8226;   <a href="#helper">helper</a>
  &#8226;   <a href="#pandas">pandas</a>
- &#8226;   <a href="#pprint">pprint</a>
- &#8226;   <a href="#struct">struct</a>
 
   </div>
   <div class="import">
