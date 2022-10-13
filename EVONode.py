@@ -56,7 +56,15 @@ class EVONode:
         self.request_firmware_version = check_address('firm_version')
         self.firmware_version = '---'
         error_request = check_string('errors_req').split(',')  # не могу придумать проверку
-        self.error_request = (int(i, 16) for i in error_request if i)
+        print(self.name)
+        self.error_request = []
+        for i in error_request:
+            hex_i = int(i, 16) if i else 0
+        #     print(i, hex(hex_i))
+            self.error_request.append(hex_i)
+        # self.error_request = (int(i, 16) for i in error_request if i)
+        # for i in self.error_request:
+        #     print(hex(i))
         self.error_erase = {'address': check_address('errors_erase'),
                             'value': int(check_address('v_errors_erase'))}
         self.errors_list = err_list
@@ -113,14 +121,16 @@ class EVONode:
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
         r_list = []
-
+        print(self.name, 'Удаление ошибок')
         if self.protocol == 'CANOpen':
             r_list = [0x23, LSB, MSB, sub_index] + data     # вообще - это колхоз - нужно определять тип переменной
         if self.protocol == 'MODBUS':                       # , которой я хочу отправить
             r_list = data + [sub_index, LSB, 0x2B, 0x10]
-
+        for i in r_list:
+            print(hex(i), end=' ')
+        print()
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
-
+        print(value)
         if isinstance(value, str):
             return value  # если вернул строку, значит, проблема
         else:
@@ -165,7 +175,6 @@ class EVONode:
                        int_to_hex_str((fm & 0xFF0000) >> 16) + \
                        int_to_hex_str((fm & 0xFF00) >> 8) + \
                        int_to_hex_str(fm & 0xFF)
-                # text = text.upper()
             else:
                 text = str(fm)
             return text
@@ -177,8 +186,10 @@ class EVONode:
             return self.current_errors_list
         big_error = 0
         j = 0
+        print(self.name)
         for adr in self.error_request:
             error = self.get_val(adr, adapter)
+            # print(hex(adr), error)
             if isinstance(error, int):
                 if error <= 128:
                     big_error += error << j * 8
@@ -189,21 +200,23 @@ class EVONode:
             j += 1
         err_dict = {int(v['value_error'], 16) if '0x' in v['value_error'] else int(v['value_error']):
                         v['description_error'] for v in self.errors_list}
-        if big_error <= 128:
-            for e_num, e_name in err_dict.items():
-                if big_error & e_num:
-                    self.current_errors_list.add(e_name)
-        elif big_error and big_error in err_dict.keys():
-            self.current_errors_list.add(err_dict[big_error])
-        else:
-            self.current_errors_list.add('Неизвестная ошибка')
+        print(f'{big_error=}')
+
+        if big_error:
+            if self.name == 'КВУ_ТТС' and big_error in err_dict.keys():     # космический костыль
+                self.current_errors_list.add(err_dict[big_error])
+            else:
+                for e_num, e_name in err_dict.items():
+                    if big_error & e_num:
+                        self.current_errors_list.add(e_name)
         return self.current_errors_list
 
     def erase_errors(self, adapter: CANAdater):
         #  на выходе - список оставшихся ошибок или пустой список, если ОК
         at = self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
         if not at:
-            self.current_errors_list = self.check_errors(adapter)
+            self.current_errors_list.clear()
+            self.check_errors(adapter)
         else:
             self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
         return self.current_errors_list

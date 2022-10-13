@@ -80,8 +80,9 @@ sys.excepthook = log_uncaught_exceptions
 
 
 def modify_file():
+    window.log_lbl.setText('ВСЁ ПОЧИНИЛОСЬ!!!!')
 
-    save_params_dict_to_file(window.thread.current_node.group_params_dict, 'first_file.xlsx', window.thread.current_node.name)
+    # save_params_dict_to_file(window.thread.current_node.group_params_dict, 'first_file.xlsx', window.thread.current_node.name)
 
 
 def save_to_eeprom():
@@ -156,9 +157,14 @@ def want_to_value_change():
                 if par.name in new_param.name:
                     p = par
             if p:
-                user_node.group_params_dict[NewParamsList].remove(p)
+                if window.thread.current_node == user_node and window.thread.isRunning():
+                    window.connect_to_node()
+                    user_node.group_params_dict[NewParamsList].remove(p)
+                    window.connect_to_node()
+                else:
+                    user_node.group_params_dict[NewParamsList].remove(p)
+                show_empty_params_list(window.thread.current_params_list, 'vmu_param_table')
                 text = 'удалён из списка Избранное'
-                show_empty_params_list(window.thread.current_params_list)
             else:
                 user_node.group_params_dict[NewParamsList].append(new_param)
         else:
@@ -544,7 +550,7 @@ if __name__ == '__main__':
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
-    # window.pushButton.clicked.connect(modify_file)
+    window.pushButton.clicked.connect(modify_file)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
