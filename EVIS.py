@@ -82,7 +82,8 @@ sys.excepthook = log_uncaught_exceptions
 def modify_file():
     window.log_lbl.setText('ВСЁ ПОЧИНИЛОСЬ!!!!')
 
-    # save_params_dict_to_file(window.thread.current_node.group_params_dict, 'first_file.xlsx', window.thread.current_node.name)
+    # save_params_dict_to_file(window.thread.current_node.group_params_dict, 'first_file.xlsx',
+    # window.thread.current_node.name)
 
 
 def save_to_eeprom():
