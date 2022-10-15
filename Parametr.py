@@ -77,7 +77,7 @@ class Parametr:
         self.scale = float(check_value(1, 'scale'))  # на что домножаем число из КАНа
         self.scaleB = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
         self.period = int(check_value(1, 'period'))  # период опроса параметра 1=каждый цикл 1000=очень редко
-        self.period = 1000 if self.period > 1000 else self.period  # проверять горячие буквы, что входят в
+        self.period = 1000 if self.period > 1001 else self.period  # проверять горячие буквы, что входят в
         # статические параметры, чтоб период был = 1001
         self.degree = int(check_value(0, 'degree'))  # степень 10 на которую делится параметр из КАНа
 
