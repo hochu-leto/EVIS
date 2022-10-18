@@ -1,5 +1,6 @@
 import ctypes
 import pathlib
+import time
 from ctypes import *
 
 # /*
@@ -91,7 +92,7 @@ class CANMarathon(AdapterCAN):
         else:
             self.BCI_bt0 = self.BCI_125K_bt0  # и скорость 125
 
-        self.max_iteration = 8
+        self.max_iteration = 15
         self.is_canal_open = False
         self.log_file = pathlib.Path(pathlib.Path.cwd(),
                                      'Marathon_logs',
@@ -222,8 +223,11 @@ class CANMarathon(AdapterCAN):
         return ''
 
     def can_read(self, ID: int):
+        start_time = time.perf_counter()
+
         if not self.is_canal_open:
             err = self.canal_open()
+            # print('Время на открытие канала', time.perf_counter() - start_time)
             if err:
                 return err
 
@@ -246,6 +250,9 @@ class CANMarathon(AdapterCAN):
         # else:
         #     print('    в msg_zero так ' + str(result))
         # и несколько попыток на считывание ответа
+        # print('Время перед циклом', time.perf_counter() - start_time)
+        # start_time_с = time.perf_counter()
+
         for itr_global in range(self.max_iteration):
             # CiRcQueCancel Принудительно очищает (стирает) содержимое приемной очереди канала.
             # наверное, надо почистить очередь перед опросом. но это неточно. совсем неточно
@@ -271,6 +278,8 @@ class CANMarathon(AdapterCAN):
             # и когда количество кадров в приемной очереди стало больше
             # или равно значению порога - 1
             if result > 0 and cw[0].wflags & 0x01:
+                # print('Время когда поймали кадр ', time.perf_counter() - start_time_с)
+
                 # и тогда читаем этот кадр из очереди
                 try:
                     result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), 1)
@@ -282,12 +291,16 @@ class CANMarathon(AdapterCAN):
                 #     print('       в CiRead так ' + str(result))
                 # если удалось прочитать
                 if result >= 0:
+                    # print('Время когда прочитали кадр', time.perf_counter() - start_time_с)
+
                     # print(hex(buffer.id), end='    ')
                     # for e in buffer.data:
                     #     print(hex(e), end=' ')
                     # print()
                     # попался нужный ид
                     if ID == buffer.id:
+                        # print('Время когда пришёл нужный айди ', time.perf_counter() - start_time_с)
+
                         # print(hex(buffer.id), end='    ')
                         # for i in buffer.data:
                         #     print(hex(i), end=' ')

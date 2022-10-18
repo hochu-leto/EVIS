@@ -60,7 +60,7 @@ class EVONode:
         self.error_request = []
         for i in error_request:
             hex_i = int(i, 16) if i else 0
-        #     print(i, hex(hex_i))
+            #     print(i, hex(hex_i))
             self.error_request.append(hex_i)
         # self.error_request = (int(i, 16) for i in error_request if i)
         # for i in self.error_request:
@@ -98,8 +98,8 @@ class EVONode:
                     return value
             else:
                 value = (value[7] << 24) + \
-                    (value[6] << 16) + \
-                    (value[5] << 8) + value[4]
+                        (value[6] << 16) + \
+                        (value[5] << 8) + value[4]
         elif self.protocol == 'MODBUS':
             value = value[0]
         else:
@@ -123,8 +123,8 @@ class EVONode:
         r_list = []
         print(self.name, 'Удаление ошибок')
         if self.protocol == 'CANOpen':
-            r_list = [0x23, LSB, MSB, sub_index] + data     # вообще - это колхоз - нужно определять тип переменной
-        if self.protocol == 'MODBUS':                       # , которой я хочу отправить
+            r_list = [0x23, LSB, MSB, sub_index] + data  # вообще - это колхоз - нужно определять тип переменной
+        if self.protocol == 'MODBUS':  # , которой я хочу отправить
             r_list = data + [sub_index, LSB, 0x2B, 0x10]
         for i in r_list:
             print(hex(i), end=' ')
@@ -186,7 +186,6 @@ class EVONode:
             return self.current_errors_list
         big_error = 0
         j = 0
-        print(self.name)
         for adr in self.error_request:
             error = self.get_val(adr, adapter)
             # print(hex(adr), error)
@@ -198,12 +197,11 @@ class EVONode:
             else:
                 big_error = 0
             j += 1
-        err_dict = {int(v['value_error'], 16) if '0x' in v['value_error'] else int(v['value_error']):
+        err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error']) else int(v['value_error']):
                         v['description_error'] for v in self.errors_list}
-        print(f'{big_error=}')
 
         if big_error:
-            if self.name == 'КВУ_ТТС' and big_error in err_dict.keys():     # космический костыль
+            if self.name == 'КВУ_ТТС' and big_error in err_dict.keys():  # космический костыль
                 self.current_errors_list.add(err_dict[big_error])
             else:
                 for e_num, e_name in err_dict.items():

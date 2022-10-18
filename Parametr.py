@@ -62,7 +62,7 @@ class Parametr:
             st = param[name] if name in list(param.keys()) \
                                 and param[name] \
                                 and str(param[name]) != 'nan' else s
-            return st
+            return st.strip() if isinstance(st, str) else st
 
         self.address = check_string('address', '0x000000')
         self.type = check_string('type')

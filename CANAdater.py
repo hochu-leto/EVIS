@@ -76,7 +76,6 @@ class CANAdapter:
     def can_send(self, can_id_req: int, message: list, bitrate=None):
         if bitrate is None:
             bitrate = 125
-        # бегу по словарю(хотя это можно сделать списком) с имеющимся адаптерами
         if bitrate in self.can_adapters.keys():
             adapter = self.can_adapters[bitrate]
             ans = adapter.can_write(can_id_req, message)
@@ -86,7 +85,6 @@ class CANAdapter:
     def can_read(self, can_id_ans: int, bitrate=None):
         if bitrate is None:
             bitrate = 125
-        # бегу по словарю(хотя это можно сделать списком) с имеющимся адаптерами
         if bitrate in self.can_adapters.keys():
             adapter = self.can_adapters[bitrate]
             ans = adapter.can_read(can_id_ans)

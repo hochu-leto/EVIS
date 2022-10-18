@@ -99,7 +99,7 @@ def full_node_list(file_name):
     prev_node_name = ''
     e_list = []
     for er in err_list:
-        if 'node' in er['value_error']:
+        if isinstance(er['value_error'], str) and 'node' in er['value_error']:
             err_dict[prev_node_name] = e_list.copy()
             e_list = []
             prev_node_name = er['value_error'].replace('node ', '')
