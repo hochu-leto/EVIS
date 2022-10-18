@@ -1,6 +1,8 @@
 import ctypes
 import time
 
+from PyQt5.QtCore import QTimer
+
 from CANAdater import CANAdapter
 
 can_adapter = CANAdapter()
@@ -8,9 +10,9 @@ if not can_adapter.isDefined:
     can_adapter = CANAdapter()
 
 bku_kvu_id = {'id': int('0x18FF51A5', 16), 'bit': 250, 'scale': 1, 'f_byte': 1}
-kvu_bku_id = {'id': int('0x18FF34A1', 16), 'bit': 250, 'scale': 300, 'f_byte': 2}
-kvu_burr_id = {'id': int('0x314', 16), 'bit': 125, 'scale': 10, 'f_byte': 1}
-burr_kvu_id = {'id': int('0x18f', 16), 'bit': 125, 'scale': 10, 'f_byte': 1}
+kvu_bku_id = {'id': int('0x18FF34A1', 16), 'bit': 250, 'scale': 300, 'f_byte': 3}
+kvu_burr_id = {'id': int('0x314', 16), 'bit': 125, 'scale': 10, 'f_byte': 2}
+burr_kvu_id = {'id': int('0x18f', 16), 'bit': 125, 'scale': 10, 'f_byte': 2}
 
 
 def on_off_kvu(swich: bool):
@@ -85,21 +87,28 @@ def loop_kvu(ite=10):
 
 
 def time_mov_resp(id: dict, val: int):
+    can_adapter.can_send(bku_kvu_id['id'], [1, 0, 0, 0, 100 + val, 0, 100, 0], bku_kvu_id['bit'])
     start_time = time.perf_counter()
-    for t in range(100):
+    p_time = time.perf_counter()
+    send_delay = 0.1
+    for t in range(10):
         ans = can_adapter.can_read(id['id'], bitrate=id['bit'])
+        if time.perf_counter() > p_time + send_delay:
+            p_time += send_delay
+            can_adapter.can_send(bku_kvu_id['id'], [1, 0, 0, 0, 100 + val, 0, 100, 0], bku_kvu_id['bit'])
         if not isinstance(ans, str):
-            value = ans[id['f_byte'] - 1] << 8 + ans[id['f_byte']]
+            value = (ans[id['f_byte'] - 1] << 8) + ans[id['f_byte']]
             value = ctypes.c_int16(value).value
-            if value >= val * id['scale']:
-                print('Время когда получил нужный ответ', time.perf_counter() - start_time)
-                return time.perf_counter() - start_time
+            print(hex(id['id']), ans[id['f_byte'] - 1] << 8, ans[id['f_byte']], value, val * id['scale'])
+
+            # if value >= val * id['scale']:
+            #     print('Время когда получил нужный ответ', time.perf_counter() - start_time)
+            #     return time.perf_counter() - start_time
     return False
 
 
-def moving(pos: int):
+def moving(pos=1):
     print(pos)
-    can_adapter.can_send(bku_kvu_id['id'], [1, 0, 0, 0, 100 + pos, 0, 100, 0], bku_kvu_id['bit'])
 
     bku_burr_time = time_mov_resp(kvu_burr_id, pos)
 
@@ -112,5 +121,4 @@ def moving(pos: int):
 
 
 if __name__ == '__main__':
-    loop_kvu()
-    # read_ecu(burr_kvu_id)
+    moving(10)
