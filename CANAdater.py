@@ -23,9 +23,10 @@ class CANAdapter:
         elif platform == "darwin":  # OS X
             print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
         elif platform == "win32":  # Windows... - квасер в приоритете, если нет, то марафон
-            self.search_chanells(Kvaser)
-            if not self.can_adapters:
-                self.search_chanells(CANMarathon)
+            # -------------------------------- ИСПРАВИТЬ  -----------------------------------
+            # self.search_chanells(Kvaser)
+            # if not self.can_adapters:
+            self.search_chanells(CANMarathon)
 
     def search_chanells(self, adapter: AdapterCAN):
         print(f'Пробую найти {adapter.__name__}')
@@ -90,4 +91,3 @@ class CANAdapter:
             ans = adapter.can_read(can_id_ans)
             return ans
         return 'Неверный битрейт'
-

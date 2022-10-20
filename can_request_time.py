@@ -1,6 +1,6 @@
 import ctypes
 import time
-
+НЕ ПРОКАТИЛО
 from PyQt5.QtCore import QTimer
 
 from CANAdater import CANAdapter
@@ -8,11 +8,17 @@ from CANAdater import CANAdapter
 can_adapter = CANAdapter()
 if not can_adapter.isDefined:
     can_adapter = CANAdapter()
+#
+# bku_kvu_id = {'id': int('0x18FF51A5', 16), 'bit': 250, 'scale': 1, 'f_byte': 1}
+# kvu_bku_id = {'id': int('0x18FF34A1', 16), 'bit': 250, 'scale': 300, 'f_byte': 3}
+# kvu_burr_id = {'id': int('0x314', 16), 'bit': 125, 'scale': 10, 'f_byte': 2}
+# burr_kvu_id = {'id': int('0x18f', 16), 'bit': 125, 'scale': 10, 'f_byte': 2}
 
-bku_kvu_id = {'id': int('0x18FF51A5', 16), 'bit': 250, 'scale': 1, 'f_byte': 1}
-kvu_bku_id = {'id': int('0x18FF34A1', 16), 'bit': 250, 'scale': 300, 'f_byte': 3}
-kvu_burr_id = {'id': int('0x314', 16), 'bit': 125, 'scale': 10, 'f_byte': 2}
-burr_kvu_id = {'id': int('0x18f', 16), 'bit': 125, 'scale': 10, 'f_byte': 2}
+
+bku_kvu_id = {'id': int('0x04FF81A5', 16), 'bit': 250, 'scale': 100, 'LSB': 3, 'MSB': 4, 'offset': 10000}
+kvu_bku_id = {'id': int('0x18FF55A1', 16), 'bit': 250, 'scale': 300, 'LSB': 1, 'MSB': 2, 'offset': 30000}
+kvu_burr_id = {'id': int('0x314', 16), 'bit': 125, 'scale': 10, 'LSB': 1, 'MSB': 2, 'offset': 0}
+burr_kvu_id = {'id': int('0x18f', 16), 'bit': 125, 'scale': 10, 'LSB': 2, 'MSB': 1, 'offset': 0}
 
 
 def on_off_kvu(swich: bool):
@@ -87,7 +93,11 @@ def loop_kvu(ite=10):
 
 
 def time_mov_resp(id: dict, val: int):
-    can_adapter.can_send(bku_kvu_id['id'], [1, 0, 0, 0, 100 + val, 0, 100, 0], bku_kvu_id['bit'])
+
+    data = [1,  bku_kvu_id['offset'] & 0xFF, (bku_kvu_id['offset'] & 0xFF00) >> 8,
+            (bku_kvu_id['offset'] + val * bku_kvu_id['scale']) & 0xFF,
+            ((bku_kvu_id['offset'] + val * bku_kvu_id['scale']) & 0xFF00) >> 8, 0, 0, 0]
+    can_adapter.can_send(bku_kvu_id['id'], data, bku_kvu_id['bit'])
     start_time = time.perf_counter()
     p_time = time.perf_counter()
     send_delay = 0.1
@@ -95,13 +105,15 @@ def time_mov_resp(id: dict, val: int):
         ans = can_adapter.can_read(id['id'], bitrate=id['bit'])
         if time.perf_counter() > p_time + send_delay:
             p_time += send_delay
-            can_adapter.can_send(bku_kvu_id['id'], [1, 0, 0, 0, 100 + val, 0, 100, 0], bku_kvu_id['bit'])
+            can_adapter.can_send(bku_kvu_id['id'], data, bku_kvu_id['bit'])
         if not isinstance(ans, str):
-            value = (ans[id['f_byte'] - 1] << 8) + ans[id['f_byte']]
+            value = (ans[id['MSB']] << 8) + ans[id['LSB']]
             value = ctypes.c_int16(value).value
-            print(hex(id['id']), ans[id['f_byte'] - 1] << 8, ans[id['f_byte']], value, val * id['scale'])
-
-            # if value >= val * id['scale']:
+            print(hex(id['id']), hex(ans[id['MSB']]), hex(ans[id['LSB']]), value, (value - id['offset']) / id['scale'], val)
+            for i in ans:
+                print(hex(i), end=' ')
+            print()
+            # if value >= val * id['scale'] + id['offset']:
             #     print('Время когда получил нужный ответ', time.perf_counter() - start_time)
             #     return time.perf_counter() - start_time
     return False
@@ -109,7 +121,7 @@ def time_mov_resp(id: dict, val: int):
 
 def moving(pos=1):
     print(pos)
-
+    time_mov_resp(kvu_burr_id, 0)
     bku_burr_time = time_mov_resp(kvu_burr_id, pos)
 
     burr_kvu_time = time_mov_resp(burr_kvu_id, pos)

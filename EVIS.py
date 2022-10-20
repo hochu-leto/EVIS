@@ -555,8 +555,8 @@ if __name__ == '__main__':
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
-    alt_node_list = full_node_list(vmu_param_file)
-    window.current_nodes_list = alt_node_list
+    alt_node_list = full_node_list(vmu_param_file).copy()
+    window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
 
     window.show_nodes_tree(alt_node_list)
@@ -564,11 +564,13 @@ if __name__ == '__main__':
     if alt_node_list and params_list_changed():
         window.vmu_param_table.adjustSize()
         window.nodes_tree.adjustSize()
+        if can_adapter.isDefined:
+            window.connect_to_node()
         window.show()  # Показываем окно
         splash.finish(window)
         app.exec_()  # и запускаем приложение
 
-# команды управления инвертором мэи в отдельной список с периодом 1001
+# команды управления инвертором мэи в отдельной список с периодом 1001 - НЕ прокатило
 # отдельное окошко с варнингами
 # почему периодически после опроса всех блоков выдаёт - проверь связь с ватс и только перезагрузка
 # сравнение с ранее сохранёнными параметрами
