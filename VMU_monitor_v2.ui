@@ -30,7 +30,7 @@
     <item>
      <widget class="QGroupBox" name="groupBox_3">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+       <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -127,42 +127,6 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-        </widget>
-       </item>
-       <item row="1" column="2" colspan="2">
-        <widget class="QTableWidget" name="vmu_param_table">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QAbstractScrollArea::AdjustToContents</enum>
-         </property>
-         <column>
-          <property name="text">
-           <string>Параметр</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Описание</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Значение</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Размерность</string>
-          </property>
-         </column>
         </widget>
        </item>
        <item row="2" column="0">
@@ -320,6 +284,42 @@
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
+        </widget>
+       </item>
+       <item row="1" column="2" colspan="2">
+        <widget class="QTableWidget" name="vmu_param_table">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>5</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QAbstractScrollArea::AdjustToContents</enum>
+         </property>
+         <column>
+          <property name="text">
+           <string>Параметр</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Описание</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Значение</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Размерность</string>
+          </property>
+         </column>
         </widget>
        </item>
       </layout>

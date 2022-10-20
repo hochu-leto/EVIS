@@ -59,7 +59,7 @@ import sys
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen
+    QSplashScreen, QHeaderView
 import pathlib
 
 import VMU_monitor_ui
@@ -68,7 +68,7 @@ from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file
 from Parametr import Parametr
 from work_with_file import full_node_list
-from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, InfoMessage
+from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, InfoMessage, set_table_width
 
 can_adapter = CANAdapter()
 
@@ -245,7 +245,12 @@ def show_empty_params_list(list_of_params: list, table='vmu_param_table'):
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
         row += 1
-    show_table.resizeColumnsToContents()
+    show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+    show_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+    show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+    show_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+    show_table.horizontalHeader().setSectionResizeMode(show_table.columnCount() - 1, QHeaderView.ResizeToContents)
+    # show_table.resizeColumnsToContents()
 
 
 def check_node_online(all_node_list: list):
@@ -415,7 +420,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             value_item.setBackground(QColor(0, 255, 255, color_opacity))
             self.vmu_param_table.setItem(row, 2, value_item)
             row += 1
-        self.vmu_param_table.resizeColumnsToContents()
+        # self.vmu_param_table.resizeColumnsToContents()
 
     def show_nodes_tree(self, nds: list):
         cur_item = ''
@@ -558,11 +563,15 @@ if __name__ == '__main__':
     alt_node_list = full_node_list(vmu_param_file).copy()
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
+    window.vmu_param_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+    # window.vmu_param_table.horizontalHeader().setSectionResizeMode()  #QHeaderView.Interactive)
 
+    print(window.vmu_param_table.parent().width())
     window.show_nodes_tree(alt_node_list)
+    # set_table_width(window.vmu_param_table, [3, 4, 1, 1])
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
-        window.vmu_param_table.adjustSize()
+        # window.vmu_param_table.adjustSize()
         window.nodes_tree.adjustSize()
         if can_adapter.isDefined:
             window.connect_to_node()

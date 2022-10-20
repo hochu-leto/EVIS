@@ -6,7 +6,7 @@ import traceback
 
 from PyQt5.QtCore import QTimer, Qt, QRegExp
 from PyQt5.QtGui import QFont, QRegExpValidator
-from PyQt5.QtWidgets import QMessageBox, QDialog
+from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget
 
 import Dialog_params
 import my_dialog
@@ -45,7 +45,6 @@ example_par = {'name': 'fghjk',
                'degree': 3}
 
 
-
 class InfoMessage(QDialog, Dialog_params.Ui_Dialog_params):
 
     def __init__(self, info: str):
@@ -69,6 +68,17 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
 
+def set_table_width(table: QTableWidget, col_w_stretch=None):
+    col = table.columnCount()
+    table_w = table.width()
+    if col_w_stretch is None:
+        col_w_stretch = [1 for _ in range(col)]
+    if len(col_w_stretch) < col:
+        col_w_stretch += [1 for _ in range(col - len(col_w_stretch))]
+    byt = table_w / sum(col_w_stretch)
+    for i in range(col):
+        wid = byt * col_w_stretch[i]
+        table.setColumnWidth(i, wid)
 
 # Если при ошибке в слотах приложение просто падает без стека,
 # есть хороший способ ловить такие ошибки:
