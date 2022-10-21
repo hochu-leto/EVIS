@@ -116,6 +116,7 @@ class MainThread(QThread):
     threadSignalAThread = pyqtSignal(list)
     # сигнал с ошибками
     err_thread_signal = pyqtSignal(str)
+    warn_thread_signal = pyqtSignal(str)
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
@@ -125,6 +126,7 @@ class MainThread(QThread):
         super().__init__()
         self.adapter = CANAdater
         self.errors_str = ''
+        self.warnings_str = ''
         self.current_nodes_list = []
 
     def run(self):
@@ -180,11 +182,16 @@ class MainThread(QThread):
             # опрос ошибок, на это время опрос параметров отключается
             timer.stop()
             for nd in self.current_nodes_list:
-                errors = nd.check_errors(self.adapter)
-                for error in errors:
+                nd.current_errors_list = nd.check_errors(self.adapter).copy()
+                for error in nd.current_errors_list:
                     if error and error not in self.errors_str:
                         self.errors_str += f'{nd.name} : {error} \n'
+                nd.current_warnings_list = nd.check_errors(self.adapter, 'warnings')
+                for warning in nd.current_warnings_list:
+                    if warning and warning not in self.warnings_str:
+                        self.warnings_str += f'{nd.name} : {warning} \n'
             self.err_thread_signal.emit(self.errors_str)
+            self.warn_thread_signal.emit(self.warnings_str)
             timer.start(send_delay)
 
         send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает

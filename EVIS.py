@@ -74,7 +74,7 @@ can_adapter = CANAdapter()
 
 dir_path = str(pathlib.Path.cwd())
 # файл где все блоки, параметры, ошибки
-vmu_param_file = 'table_for_params_new_VMU2.xlsx'
+vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 sys.excepthook = log_uncaught_exceptions
 
@@ -247,23 +247,31 @@ def show_empty_params_list(list_of_params: list, table='vmu_param_table'):
         row += 1
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
     show_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+    # максимальная ширина у описания, если не хватает длины, то переносится
     show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
     show_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
     show_table.horizontalHeader().setSectionResizeMode(show_table.columnCount() - 1, QHeaderView.ResizeToContents)
-    # show_table.resizeColumnsToContents()
 
 
 def check_node_online(all_node_list: list):
     exit_list = []
+    has_invertor = False
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
     for nd in all_node_list:
         node_serial = nd.get_serial_number(can_adapter)
         if not isinstance(node_serial, str):
             nd.firmware_version = nd.get_firmware_version(can_adapter)
+            if 'Инвертор_Цикл+' in nd.name:
+                has_invertor = True
             exit_list.append(nd)
-
+    if has_invertor:
+        for nd in exit_list:
+            if 'Инвертор_МЭИ' in nd.name:
+                exit_list.remove(nd)
+                break
+    # на случай если только избранное найдено - значит ни один блок не ответил
     if exit_list[0].cut_firmware() == 'EVOCARGO':
-        return all_node_list, False
+        return all_node_list.copy(), False
 
     window.nodes_tree.currentItemChanged.disconnect()
     window.show_nodes_tree(exit_list)
@@ -279,12 +287,14 @@ def erase_errors():
         window.connect_to_node()
     # и трём все ошибки
     window.thread.errors_str = ''
+    window.thread.warnings_str = ''
     for nod in window.current_nodes_list:
         # метод удаления ошибок должен вернуть список ошибок, если они остались
         for err in nod.erase_errors(can_adapter):
             if err:
                 window.thread.errors_str += f'{nod.name}: {err} \n'
     window.errors_browser.setText(window.thread.errors_str)
+    window.warnings_browser.setText(window.thread.warnings_str)
     # запускаем поток снова, если был остановлен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
@@ -319,6 +329,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.thread.current_nodes_list = self.current_nodes_list
         self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
         self.thread.err_thread_signal.connect(self.add_new_errors)
+        self.thread.warn_thread_signal.connect(self.add_new_warnings)
         self.thread.adapter = can_adapter
         #  И для сохранения
         self.tr = SaveToFileThread()
@@ -339,7 +350,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if can_adapter.isDefined:
                 can_adapter.close_canal_can()
             if err == 'Адаптер не подключен':
-                self.current_nodes_list = []
+                # self.current_nodes_list = []
                 # можно было бы избавиться от этой переменной, проверять, что список не пустой, но пусть будет
                 self.node_list_defined = False
                 can_adapter.isDefined = False
@@ -349,6 +360,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     @pyqtSlot(str)  # добавляем ошибки в окошко
     def add_new_errors(self, list_of_errors: str):
         self.errors_browser.setText(list_of_errors)
+
+    @pyqtSlot(str)  # добавляем предупреждения в окошко
+    def add_new_warnings(self, list_of_warnings: str):
+        self.warnings_browser.setText(list_of_warnings)
 
     @pyqtSlot(int, str, bool)
     def progress_bar_fulling(self, percent: int, err: str, is_finished: bool):
@@ -502,7 +517,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def closeEvent(self, event):
         # может, есть смысл сделать из этого функцию, дабы не повторять дважды
-        user_node_dict = self.current_nodes_list[len(window.current_nodes_list) - 1].group_params_dict
+        ln = len(window.current_nodes_list) - 1
+        user_node_dict = self.current_nodes_list[ln].group_params_dict
 
         if NewParamsList in user_node_dict.keys():
             if user_node_dict[NewParamsList]:
@@ -541,7 +557,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
 
 if __name__ == '__main__':
-
     app = QApplication([])
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
@@ -564,14 +579,10 @@ if __name__ == '__main__':
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
     window.vmu_param_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-    # window.vmu_param_table.horizontalHeader().setSectionResizeMode()  #QHeaderView.Interactive)
 
-    print(window.vmu_param_table.parent().width())
     window.show_nodes_tree(alt_node_list)
-    # set_table_width(window.vmu_param_table, [3, 4, 1, 1])
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
-        # window.vmu_param_table.adjustSize()
         window.nodes_tree.adjustSize()
         if can_adapter.isDefined:
             window.connect_to_node()

@@ -109,11 +109,35 @@ def full_node_list(file_name):
     del err_dict['']
     # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с ошибками
 
+    wr_sheet = file.parse(sheet_name='warnings')
+    wr_list = wr_sheet.to_dict(orient='records')  # парсим лист "errors"
+    wr_dict = {}
+    prev_node_name = ''
+    w_list = []
+    for wr in wr_list:
+        if isinstance(wr['value_error'], str) and 'node' in wr['value_error']:
+            wr_dict[prev_node_name] = w_list.copy()
+            w_list = []
+            prev_node_name = wr['value_error'].replace('node ', '')
+        else:
+            w_list.append(wr)
+    wr_dict[prev_node_name] = w_list.copy()
+    del wr_dict['']
+    # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с предупреждениями
+
     node_sheet = file.parse(sheet_name='node')
     node_list = node_sheet.to_dict(orient='records')  # парсим лист "node"
     node_dict = {}
     for node in node_list:
-        ev_node = EVONode(node, err_dict[node['name']]) if node['name'] in err_dict.keys() else EVONode(node)
+        er_d = []
+        wr_d = []
+        if node['name'] in err_dict.keys():
+            er_d = err_dict[node['name']].copy()
+
+        if node['name'] in wr_dict.keys():
+            wr_d = wr_dict[node['name']].copy()
+
+        ev_node = EVONode(node, er_d, wr_d)
         node_dict[node['name']] = ev_node
     # не совсем вдуплил, но здесь у меня есть словарь, где ключи - названия блоков, а значения - объекты блоков
 
@@ -245,4 +269,3 @@ def adding_to_csv_file(name_or_value: str, vmu_params_list: list, recording_file
     #           header=False,
     #           index=False,
     #           encoding='windows-1251')
-

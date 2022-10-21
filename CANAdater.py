@@ -18,6 +18,9 @@ class CANAdapter:
         self.id_nones_dict = {}  # словарь блоков, где ключ - айди обращения к блоку, а значение - объект адаптера
         self.can_adapters = {}  # словарь адаптеров,где ключ - цифра битрейта, а значение - объект адаптера
         print('Ищу адаптеры')
+        self.find_adapters()
+
+    def find_adapters(self):
         if platform == "linux" or platform == "linux2":  # linux - только квасер
             self.search_chanells(Kvaser)
         elif platform == "darwin":  # OS X
@@ -68,6 +71,7 @@ class CANAdapter:
             if not isinstance(answer, str):
                 self.id_nones_dict[can_id_req] = adapter
                 return answer
+        # self.find_adapters()
         return answer
 
     def close_canal_can(self):
