@@ -16,19 +16,34 @@ value_type_dict = {'UNSIGNED16': 0x2B,
                    'FLOAT': 0x23}
 
 
-def fill_bookmarks_list(file_name):
-    need_fields = {'name', 'address', 'type'}
+def fill_sheet_dict(file_name):
+    need_fields = {'name', 'address', 'value'}
     file = pandas.ExcelFile(file_name)
-    bookmark_dict = {}
+    sheets_dict = {}
 
     for sheet_name in file.sheet_names:
         sheet = file.parse(sheet_name=sheet_name)
         headers = list(sheet.columns.values)
+        node_params_dict = {}
         if set(need_fields).issubset(headers):
-            sheet_params_list = sheet.to_dict(orient='records')
-            bookmark_dict[sheet_name] = sheet_params_list
+            sheet_params_dict = sheet.to_dict(orient='records')
+            prev_group_name = ''
+            p_dict = {}
 
-    return bookmark_dict
+            for param in sheet_params_dict:
+                if str(param['name']) != 'nan':
+                    if 'group ' in param['name']:
+                        node_params_dict[prev_group_name] = p_dict.copy()
+                        p_dict = {}
+                        prev_group_name = param['name'].replace('group ', '')
+                    else:
+                        p_dict[param['name']] = param['value']
+                node_params_dict[prev_group_name] = p_dict.copy()
+
+            del node_params_dict['']
+            if node_params_dict:
+                sheets_dict[sheet_name] = node_params_dict
+    return sheets_dict
 
 
 def fill_node_list(file_name):
@@ -80,6 +95,23 @@ def full_node_list(file_name):
     need_fields = {'name', 'address', 'type'}
     file = pandas.ExcelFile(file_name)
 
+    def fill_er_list(sheet:str):
+        err_sheet = file.parse(sheet_name=sheet)
+        err_list = err_sheet.to_dict(orient='records')  # парсим лист "errors"
+        err_dict = {}
+        prev_node_name = ''
+        e_list = []
+        for er in err_list:
+            if isinstance(er['value_error'], str) and 'node' in er['value_error']:
+                err_dict[prev_node_name] = e_list.copy()
+                e_list = []
+                prev_node_name = er['value_error'].replace('node ', '')
+            else:
+                e_list.append(er)
+        err_dict[prev_node_name] = e_list.copy()
+        del err_dict['']
+        return err_dict
+
     bookmark_dict = {}
     if not {'node', 'errors'}.issubset(file.sheet_names):
         QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
@@ -93,36 +125,10 @@ def full_node_list(file_name):
             bookmark_dict[sheet_name] = sheet_params_list  # строками в словарь,где ключ - название страницы
     # здесь я имею словарь ключ - имя блока , значение - словарь с параметрами ( не по группам)
 
-    err_sheet = file.parse(sheet_name='errors')
-    err_list = err_sheet.to_dict(orient='records')  # парсим лист "errors"
-    err_dict = {}
-    prev_node_name = ''
-    e_list = []
-    for er in err_list:
-        if isinstance(er['value_error'], str) and 'node' in er['value_error']:
-            err_dict[prev_node_name] = e_list.copy()
-            e_list = []
-            prev_node_name = er['value_error'].replace('node ', '')
-        else:
-            e_list.append(er)
-    err_dict[prev_node_name] = e_list.copy()
-    del err_dict['']
+    err_dict = fill_er_list('errors')
     # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с ошибками
 
-    wr_sheet = file.parse(sheet_name='warnings')
-    wr_list = wr_sheet.to_dict(orient='records')  # парсим лист "errors"
-    wr_dict = {}
-    prev_node_name = ''
-    w_list = []
-    for wr in wr_list:
-        if isinstance(wr['value_error'], str) and 'node' in wr['value_error']:
-            wr_dict[prev_node_name] = w_list.copy()
-            w_list = []
-            prev_node_name = wr['value_error'].replace('node ', '')
-        else:
-            w_list.append(wr)
-    wr_dict[prev_node_name] = w_list.copy()
-    del wr_dict['']
+    wr_dict = fill_er_list('warnings')
     # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с предупреждениями
 
     node_sheet = file.parse(sheet_name='node')
@@ -145,7 +151,7 @@ def full_node_list(file_name):
     # а значения - списки объектов параметров
     nodes_list = []
     for node_name, ev_node in node_dict.items():
-        node_params_list = {}
+        node_params_dict = {}
         for params_list in bookmark_dict.keys():  # бегу по словарю со списками параметров
             prev_group_name = ''
             p_list = []
@@ -155,7 +161,7 @@ def full_node_list(file_name):
                     #     param['type'] = param['type'].strip()
                     if str(param['name']) != 'nan':
                         if 'group ' in param['name']:
-                            node_params_list[prev_group_name] = p_list.copy()
+                            node_params_dict[prev_group_name] = p_list.copy()
                             p_list = []
                             prev_group_name = param['name'].replace('group ', '')
                         else:
@@ -169,10 +175,10 @@ def full_node_list(file_name):
                             else:
                                 p = Parametr(param, ev_node)
                             p_list.append(p)
-                node_params_list[prev_group_name] = p_list.copy()
-                del node_params_list['']
+                node_params_dict[prev_group_name] = p_list.copy()
+                del node_params_dict['']
 
-        ev_node.group_params_dict = node_params_list.copy() if node_params_list else {NewParamsList: []}
+        ev_node.group_params_dict = node_params_dict.copy() if node_params_dict else {NewParamsList: []}
         nodes_list.append(ev_node)
 
     return nodes_list

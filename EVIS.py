@@ -59,15 +59,15 @@ import sys
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QHeaderView
+    QSplashScreen, QHeaderView, QFileDialog
 import pathlib
 
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file
+from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values
 from Parametr import Parametr
-from work_with_file import full_node_list
+from work_with_file import full_node_list, fill_sheet_dict
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, InfoMessage, set_table_width
 
 can_adapter = CANAdapter()
@@ -77,6 +77,30 @@ dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 sys.excepthook = log_uncaught_exceptions
+
+
+def make_compare_params_list():
+    file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами КВУ', dir_path,
+                                            "Excel tables (*.xlsx)")[0]
+    if file_name and ('.xls' in file_name):
+        compare_nodes_dict = fill_sheet_dict(file_name)
+        if compare_nodes_dict:
+            for cur_node in window.thread.current_nodes_list:
+                # как минимум, два варианта что этот блок присутвует
+                #  - если имя страницы, он же ключ у словаря из файла совпадает с имеющимся сейчас блоком
+                #  - если список параметров, хотя бы частично, совпадает со списком параметров имеющегося блока
+                if cur_node.name in compare_nodes_dict.keys():
+                    fill_compare_values(cur_node, compare_nodes_dict[cur_node.name])
+                else:
+                    for comp_params_dict in compare_nodes_dict.values():
+                        if set(cur_node.group_params_dict.keys()) & set(comp_params_dict.keys()):
+                            fill_compare_values(cur_node, comp_params_dict)
+        show_empty_params_list(window.thread.current_params_list,
+                               has_compare=window.thread.current_node.has_compare_params)
+    else:
+        window.log_lbl.setText('Файл не выбран')
+        print('File no choose')
+        return False
 
 
 def modify_file():
@@ -164,7 +188,7 @@ def want_to_value_change():
                     window.connect_to_node()
                 else:
                     user_node.group_params_dict[NewParamsList].remove(p)
-                show_empty_params_list(window.thread.current_params_list, 'vmu_param_table')
+                show_empty_params_list(window.thread.current_params_list)
                 text = 'удалён из списка Избранное'
             else:
                 user_node.group_params_dict[NewParamsList].append(new_param)
@@ -204,23 +228,31 @@ def params_list_changed():  # если мы в левом окошке выби�
         window.connect_to_node()
     # отображаем имя блока, серийник и всё такое и обновляю список параметров в окошке справа
     window.show_node_name(window.thread.current_node)
-    show_empty_params_list(window.thread.current_params_list, 'vmu_param_table')
+    show_empty_params_list(window.thread.current_params_list, has_compare=window.thread.current_node.has_compare_params)
     # и запускаю поток, если он был запущен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
     return True
 
 
-def show_empty_params_list(list_of_params: list, table='vmu_param_table'):
+def show_empty_params_list(list_of_params: list, table='vmu_param_table', has_compare=False):
     show_table = getattr(window, table)
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
     row = 0
+    if has_compare:
+        show_table.setColumnCount(5)
+        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность'])
+    else:
+        show_table.setColumnCount(4)
+        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Размерность'])
+
     # пока отображаю только три атрибута + само значение отображается позже
     for par in list_of_params:
         name = par.name
         unit = par.unit
         description = par.description
+        compare = par.compare_value if isinstance(par.compare_value, str) else zero_del(par.compare_value)
 
         if par.editable:
             color_opacity = 30
@@ -240,17 +272,19 @@ def show_empty_params_list(list_of_params: list, table='vmu_param_table'):
         value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
         show_table.setItem(row, 2, value_item)
 
+        compare_item = QTableWidgetItem(compare)
+        compare_item.setFlags(compare_item.flags() & ~Qt.ItemIsEditable)
+        show_table.setItem(row, 3, compare_item)
+
         unit_item = QTableWidgetItem(unit)
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
         row += 1
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-    show_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+    show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
     # максимальная ширина у описания, если не хватает длины, то переносится
     show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-    show_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
-    show_table.horizontalHeader().setSectionResizeMode(show_table.columnCount() - 1, QHeaderView.ResizeToContents)
 
 
 def check_node_online(all_node_list: list):
@@ -261,6 +295,8 @@ def check_node_online(all_node_list: list):
         node_serial = nd.get_serial_number(can_adapter)
         if not isinstance(node_serial, str):
             nd.firmware_version = nd.get_firmware_version(can_adapter)
+            # тут выясняется, что на старых машинах, где Инвертор_Цикл+ кто-то отвечает по ID Инвертор_МЭИ,
+            # может и китайские рейки, нет особого желания разбираться. Вообщем это костыль, чтоб он не вылазил
             if 'Инвертор_Цикл+' in nd.name:
                 has_invertor = True
             exit_list.append(nd)
@@ -434,8 +470,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             color_opacity = int((150 / window.thread.max_iteration) * par.period) + 3
             value_item.setBackground(QColor(0, 255, 255, color_opacity))
             self.vmu_param_table.setItem(row, 2, value_item)
+            if self.thread.current_node.has_compare_params:
+                compare_name = self.vmu_param_table.item(row, 3).text()
+                if v_name.strip() != compare_name.strip():
+                    self.vmu_param_table.item(row, 3).setBackground(QColor(255, 0, 0, 50))
             row += 1
-        # self.vmu_param_table.resizeColumnsToContents()
 
     def show_nodes_tree(self, nds: list):
         cur_item = ''
@@ -491,7 +530,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # такое бывает при первом подключении или если вырвали адаптер - надо заново его определить
         if not can_adapter.isDefined:
             self.log_lbl.setText('Определяется подключенный адаптер...')
-            can_adapter = CANAdapter()
+            can_adapter.find_adapters()
         # наверное, это можно объединить, если вырвали адаптер, список тоже нужно обновлять,\
         # хотя когда теряем кан-шину также есть смысл обновить список подключенных блоков
         # надо это добавить!
@@ -517,8 +556,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def closeEvent(self, event):
         # может, есть смысл сделать из этого функцию, дабы не повторять дважды
-        ln = len(window.current_nodes_list) - 1
-        user_node_dict = self.current_nodes_list[ln].group_params_dict
+        ln = len(window.current_nodes_list)
+        user_node_dict = self.current_nodes_list[ln - 1].group_params_dict
 
         if NewParamsList in user_node_dict.keys():
             if user_node_dict[NewParamsList]:
@@ -571,7 +610,7 @@ if __name__ == '__main__':
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
-    window.pushButton.clicked.connect(modify_file)
+    window.compare_btn.clicked.connect(make_compare_params_list)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
@@ -591,9 +630,9 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # команды управления инвертором мэи в отдельной список с периодом 1001 - НЕ прокатило
-# отдельное окошко с варнингами
 # почему периодически после опроса всех блоков выдаёт - проверь связь с ватс и только перезагрузка
+# - происходит отсоединение после поиска всех блоков и обнуление списка адаптеров
+# - сделал функцию поиска адаптеров - надо проверить как работает
 # сравнение с ранее сохранёнными параметрами
-# не раскрывать таблицу во всю ширину
 # сбрасывать список блоков на все блоки, когда пропал адаптер - наверное, нужно использовать копи
 #

@@ -51,6 +51,7 @@ class CANAdapter:
     #   их битрейты совпадают и они просто будут перезаписаны в словаре
 
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
+
         # если нужно опросить блок, айди которого уже есть в словаре,
         # просто используем этот адаптер, который привязан к этому айди -
         # так можно опрашивать сразу два кана(а может и три, если такой адаптер найдётся)
@@ -62,6 +63,8 @@ class CANAdapter:
             return ans
         answer = 'Проверь соединение с ВАТС'
         # если в словаре нет айди блока, бегу по словарю(хотя это можно сделать списком) с имеющимся адаптерами
+        if not self.isDefined:
+            self.find_adapters()
         for adapter in self.can_adapters.values():
             self.is_busy = True
             answer = adapter.can_request(can_id_req, can_id_ans, message)
@@ -71,7 +74,6 @@ class CANAdapter:
             if not isinstance(answer, str):
                 self.id_nones_dict[can_id_req] = adapter
                 return answer
-        # self.find_adapters()
         return answer
 
     def close_canal_can(self):
