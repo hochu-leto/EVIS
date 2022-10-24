@@ -1,7 +1,4 @@
 pyuic5 VMU_monitor_v2.ui -o VMU_monitor_ui.py
-pyuic5 VMU_monitor_fake.ui -o VMU_monitor_ui.py
-pyuic5 hack_mei.ui -o can_monitor_ui.py
 pyuic5 changer_dialog.ui -o my_dialog.py
-pyinstaller --noconsole --noconfirm -i "icons_speed.ico" Dinostend.py
 pyinstaller --noconsole --noconfirm -i "pictures/EVO_logo.ico" EVIS.py
 pyuic5 Dialog_params.ui -o Dialog_params.py
