@@ -23,14 +23,17 @@ class EVONode:
                  'protocol', 'request_serial_number',
                  'serial_number', 'request_firmware_version',
                  'firmware_version', 'error_request', 'error_erase',
-                 'errors_list', 'current_errors_list', 'group_params_dict',
-                 'string_from_can', 'load_from_eeprom', 'save_to_eeprom')
+                 'errors_list', 'current_errors_list', 'warning_request',
+                 'warnings_list', 'current_warnings_list', 'group_params_dict',
+                 'string_from_can', 'load_from_eeprom', 'save_to_eeprom', 'has_compare_params')
 
-    def __init__(self, nod=None, err_list=None, group_par_dict=None):
+    def __init__(self, nod=None, err_list=None, war_list=None, group_par_dict=None):
         if group_par_dict is None:
             group_par_dict = {}
         if err_list is None:
             err_list = []
+        if war_list is None:
+            war_list = []
         if nod is None or not isinstance(nod, dict):
             nod = empty_node
 
@@ -55,24 +58,23 @@ class EVONode:
         self.serial_number = '---'
         self.request_firmware_version = check_address('firm_version')
         self.firmware_version = '---'
-        error_request = check_string('errors_req').split(',')  # не могу придумать проверку
-        print(self.name)
-        self.error_request = []
-        for i in error_request:
-            hex_i = int(i, 16) if i else 0
-        #     print(i, hex(hex_i))
-            self.error_request.append(hex_i)
-        # self.error_request = (int(i, 16) for i in error_request if i)
-        # for i in self.error_request:
-        #     print(hex(i))
-        self.error_erase = {'address': check_address('errors_erase'),
-                            'value': int(check_address('v_errors_erase'))}
+
+        self.error_request = [int(i, 16) if i else 0 for i in check_string('errors_req').split(',')]
         self.errors_list = err_list
         self.current_errors_list = set()
+
+        self.warning_request = [int(i, 16) if i else 0 for i in check_string('warnings_req').split(',')]
+        self.warnings_list = war_list
+        self.current_warnings_list = set()
+
+        self.error_erase = {'address': check_address('errors_erase'),
+                            'value': int(check_address('v_errors_erase'))}
+
         self.group_params_dict = group_par_dict
         self.string_from_can = ''
         self.save_to_eeprom = check_address('to_eeprom')
         self.load_from_eeprom = check_address('from_eeprom')
+        self.has_compare_params = False
 
     def get_val(self, address: int, adapter: CANAdater):
         MSB = ((address & 0xFF0000) >> 16)
@@ -98,8 +100,8 @@ class EVONode:
                     return value
             else:
                 value = (value[7] << 24) + \
-                    (value[6] << 16) + \
-                    (value[5] << 8) + value[4]
+                        (value[6] << 16) + \
+                        (value[5] << 8) + value[4]
         elif self.protocol == 'MODBUS':
             value = value[0]
         else:
@@ -121,16 +123,14 @@ class EVONode:
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
         r_list = []
-        print(self.name, 'Удаление ошибок')
         if self.protocol == 'CANOpen':
-            r_list = [0x23, LSB, MSB, sub_index] + data     # вообще - это колхоз - нужно определять тип переменной
-        if self.protocol == 'MODBUS':                       # , которой я хочу отправить
+            r_list = [0x23, LSB, MSB, sub_index] + data  # вообще - это колхоз - нужно определять тип переменной
+        if self.protocol == 'MODBUS':  # , которой я хочу отправить
             r_list = data + [sub_index, LSB, 0x2B, 0x10]
-        for i in r_list:
-            print(hex(i), end=' ')
-        print()
+        # for i in r_list:
+        #     print(hex(i), end=' ')
+        # print()
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
-        print(value)
         if isinstance(value, str):
             return value  # если вернул строку, значит, проблема
         else:
@@ -180,14 +180,25 @@ class EVONode:
             return text
         return self.firmware_version
 
-    def check_errors(self, adapter: CANAdater):
+    def check_errors(self, adapter: CANAdater, er_or_war=None):
+        if er_or_war is None:
+            er_or_war = 'errors'
         #  на выходе - список текущих ошибок
-        if not self.error_request or not self.errors_list:
-            return self.current_errors_list
+        if 'er' in er_or_war:
+            r_request = self.error_request.copy()
+            s_list = self.errors_list.copy()
+            current_list = self.current_errors_list.copy()
+        else:
+            r_request = self.warning_request.copy()
+            s_list = self.warnings_list.copy()
+            current_list = self.current_warnings_list.copy()
+        if not r_request or not s_list:
+            return current_list
+        err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error']) else int(v['value_error']):
+                        v['description_error'] for v in s_list}
         big_error = 0
         j = 0
-        print(self.name)
-        for adr in self.error_request:
+        for adr in r_request:
             error = self.get_val(adr, adapter)
             # print(hex(adr), error)
             if isinstance(error, int):
@@ -198,27 +209,29 @@ class EVONode:
             else:
                 big_error = 0
             j += 1
-        err_dict = {int(v['value_error'], 16) if '0x' in v['value_error'] else int(v['value_error']):
-                        v['description_error'] for v in self.errors_list}
-        print(f'{big_error=}')
 
         if big_error:
-            if self.name == 'КВУ_ТТС' and big_error in err_dict.keys():     # космический костыль
-                self.current_errors_list.add(err_dict[big_error])
+            if self.name == 'КВУ_ТТС':
+                if big_error in err_dict.keys():  # космический костыль
+                    current_list.add(err_dict[big_error])
+                else:
+                    current_list.add('Неизвестная ошибка')
             else:
                 for e_num, e_name in err_dict.items():
                     if big_error & e_num:
-                        self.current_errors_list.add(e_name)
-        return self.current_errors_list
+                        current_list.add(e_name)
+        return current_list
 
     def erase_errors(self, adapter: CANAdater):
         #  на выходе - список оставшихся ошибок или пустой список, если ОК
-        at = self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
-        if not at:
-            self.current_errors_list.clear()
-            self.check_errors(adapter)
-        else:
-            self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
+        if self.error_erase['address']:
+            at = self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
+            if not at:
+                self.current_errors_list.clear()
+                self.check_errors(adapter)
+            else:
+                self.current_errors_list.clear()
+                self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
         return self.current_errors_list
 
     def read_string_from_can(self, adapter: CANAdater):

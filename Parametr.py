@@ -40,8 +40,8 @@ class Parametr:
                  'editable', 'unit', 'description',
                  'group', 'size', 'value', 'name',
                  'scale', 'scaleB', 'period', 'degree',
-                 'min_value', 'max_value', 'widget',
-                 'node', 'req_list', 'set_list')
+                 'min_value', 'max_value', 'widget', 'node',
+                 'req_list', 'set_list', 'compare_value')
 
     def __init__(self, param=None, node=None):
         if param is None:
@@ -62,7 +62,7 @@ class Parametr:
             st = param[name] if name in list(param.keys()) \
                                 and param[name] \
                                 and str(param[name]) != 'nan' else s
-            return st
+            return st.strip() if isinstance(st, str) else st
 
         self.address = check_string('address', '0x000000')
         self.type = check_string('type')
@@ -73,11 +73,12 @@ class Parametr:
         self.group = check_string('group')  # неиспользуемое поле в подарок от Векторов
         self.size = check_string('size')  # это какой-то атавизм от блоков БУРР
         self.value = 0
+        self.compare_value = 0
         self.name = check_string('name', 'NoName')
         self.scale = float(check_value(1, 'scale'))  # на что домножаем число из КАНа
         self.scaleB = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
         self.period = int(check_value(1, 'period'))  # период опроса параметра 1=каждый цикл 1000=очень редко
-        self.period = 1000 if self.period > 1000 else self.period  # проверять горячие буквы, что входят в
+        self.period = 1000 if self.period > 1001 else self.period  # проверять горячие буквы, что входят в
         # статические параметры, чтоб период был = 1001
         self.degree = int(check_value(0, 'degree'))  # степень 10 на которую делится параметр из КАНа
 
@@ -130,7 +131,7 @@ class Parametr:
         if not self.req_list:
             self.get_list()
         while adapter.is_busy:
-            sleep(0.0001)    # очень костыльный момент, ждёт миллисекунду, чтоб освободился адаптер
+            sleep(0.0001)  # очень костыльный момент, ждёт миллисекунду, чтоб освободился адаптер
             # на случай когда идёт чтение с двух каналов
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.req_list)
         if isinstance(value_data, str):

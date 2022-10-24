@@ -9,7 +9,6 @@ import CANAdater
 from EVONode import EVONode
 from Parametr import Parametr
 
-
 # поток для сохранения в файл настроек блока
 # возвращает сигналу о процентах выполнения, сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
 from helper import empty_par
@@ -105,7 +104,7 @@ class SaveToFileThread(QThread):
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.xlsx'
         df = pd.DataFrame(save_list, columns=p.to_dict().keys())
-        df.to_excel(file_name, index=False)
+        df.to_excel(file_name, index=False, sheet_name=self.node_to_save.name)
         # вместо строки ошибки отправляем название файла,куда сохранил настройки
         self.SignalOfReady.emit(100, file_name, True)
 
@@ -116,6 +115,7 @@ class MainThread(QThread):
     threadSignalAThread = pyqtSignal(list)
     # сигнал с ошибками
     err_thread_signal = pyqtSignal(str)
+    warn_thread_signal = pyqtSignal(str)
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
@@ -125,6 +125,7 @@ class MainThread(QThread):
         super().__init__()
         self.adapter = CANAdater
         self.errors_str = ''
+        self.warnings_str = ''
         self.current_nodes_list = []
 
     def run(self):
@@ -180,11 +181,16 @@ class MainThread(QThread):
             # опрос ошибок, на это время опрос параметров отключается
             timer.stop()
             for nd in self.current_nodes_list:
-                errors = nd.check_errors(self.adapter)
-                for error in errors:
+                nd.current_errors_list = nd.check_errors(self.adapter).copy()
+                for error in nd.current_errors_list:
                     if error and error not in self.errors_str:
                         self.errors_str += f'{nd.name} : {error} \n'
+                nd.current_warnings_list = nd.check_errors(self.adapter, 'warnings')
+                for warning in nd.current_warnings_list:
+                    if warning and warning not in self.warnings_str:
+                        self.warnings_str += f'{nd.name} : {warning} \n'
             self.err_thread_signal.emit(self.errors_str)
+            self.warn_thread_signal.emit(self.warnings_str)
             timer.start(send_delay)
 
         send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
@@ -225,3 +231,11 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
     with ExcelWriter(file_name, mode="a" if os.path.exists(file_name) else "w", if_sheet_exists='overlay') as writer:
         df.to_excel(writer, index=False, sheet_name=sheet_name)
 
+
+def fill_compare_values(node: EVONode, dict_for_compare: dict):
+    for group_name, group_params in node.group_params_dict.items():
+        if group_name in dict_for_compare.keys():
+            for param in group_params:
+                if param.name in dict_for_compare[group_name].keys():
+                    param.compare_value = dict_for_compare[group_name][param.name]
+    node.has_compare_params = True
