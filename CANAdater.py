@@ -64,6 +64,7 @@ class CANAdapter:
         answer = 'Проверь соединение с ВАТС'
         # если в словаре нет айди блока, бегу по словарю(хотя это можно сделать списком) с имеющимся адаптерами
         if not self.isDefined:
+            self.close_canal_can()
             self.find_adapters()
         for adapter in self.can_adapters.values():
             self.is_busy = True

@@ -58,12 +58,6 @@ class EVONode:
         self.serial_number = '---'
         self.request_firmware_version = check_address('firm_version')
         self.firmware_version = '---'
-        #
-        # error_request = check_string('errors_req').split(',')  # не могу придумать проверку
-        # self.error_request = []
-        # for i in error_request:
-        #     hex_i = int(i, 16) if i else 0
-        #     self.error_request.append(hex_i)
 
         self.error_request = [int(i, 16) if i else 0 for i in check_string('errors_req').split(',')]
         self.errors_list = err_list
@@ -129,16 +123,14 @@ class EVONode:
         LSB = ((address & 0xFF00) >> 8)
         sub_index = address & 0xFF
         r_list = []
-        print(self.name, 'Удаление ошибок')
         if self.protocol == 'CANOpen':
             r_list = [0x23, LSB, MSB, sub_index] + data  # вообще - это колхоз - нужно определять тип переменной
         if self.protocol == 'MODBUS':  # , которой я хочу отправить
             r_list = data + [sub_index, LSB, 0x2B, 0x10]
-        for i in r_list:
-            print(hex(i), end=' ')
-        print()
+        # for i in r_list:
+        #     print(hex(i), end=' ')
+        # print()
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
-        print(value)
         if isinstance(value, str):
             return value  # если вернул строку, значит, проблема
         else:
@@ -232,13 +224,14 @@ class EVONode:
 
     def erase_errors(self, adapter: CANAdater):
         #  на выходе - список оставшихся ошибок или пустой список, если ОК
-        at = self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
-        if not at:
-            self.current_errors_list.clear()
-            self.check_errors(adapter)
-        else:
-            self.current_errors_list.clear()
-            self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
+        if self.error_erase['address']:
+            at = self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
+            if not at:
+                self.current_errors_list.clear()
+                self.check_errors(adapter)
+            else:
+                self.current_errors_list.clear()
+                self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
         return self.current_errors_list
 
     def read_string_from_can(self, adapter: CANAdater):

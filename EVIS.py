@@ -84,22 +84,29 @@ def make_compare_params_list():
                                             "Excel tables (*.xlsx)")[0]
     if file_name and ('.xls' in file_name):
         compare_nodes_dict = fill_sheet_dict(file_name)
+        comp_node_name = ''
         if compare_nodes_dict:
             for cur_node in window.thread.current_nodes_list:
-                # как минимум, два варианта что этот блок присутвует
+                # как минимум, два варианта что этот блок присутствует
                 #  - если имя страницы, он же ключ у словаря из файла совпадает с имеющимся сейчас блоком
                 #  - если список параметров, хотя бы частично, совпадает со списком параметров имеющегося блока
                 if cur_node.name in compare_nodes_dict.keys():
                     fill_compare_values(cur_node, compare_nodes_dict[cur_node.name])
+                    comp_node_name += cur_node.name + ', '
                 else:
                     for comp_params_dict in compare_nodes_dict.values():
                         if set(cur_node.group_params_dict.keys()) & set(comp_params_dict.keys()):
                             fill_compare_values(cur_node, comp_params_dict)
+                            comp_node_name += cur_node.name + ', '
+                            break
         show_empty_params_list(window.thread.current_params_list,
                                has_compare=window.thread.current_node.has_compare_params)
+        if comp_node_name:
+            window.log_lbl.setText(f'Загружены параметры сравнения для блока {comp_node_name}')
+        else:
+            window.log_lbl.setText(f'Не найден блок для загруженных параметров')
     else:
         window.log_lbl.setText('Файл не выбран')
-        print('File no choose')
         return False
 
 
@@ -473,7 +480,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if self.thread.current_node.has_compare_params:
                 compare_name = self.vmu_param_table.item(row, 3).text()
                 if v_name.strip() != compare_name.strip():
-                    self.vmu_param_table.item(row, 3).setBackground(QColor(255, 0, 0, 50))
+                    color = QColor(255, 0, 0, 50)
+                else:
+                    color = QColor(255, 255, 255, 0)
+                self.vmu_param_table.item(row, 3).setBackground(color)
             row += 1
 
     def show_nodes_tree(self, nds: list):
