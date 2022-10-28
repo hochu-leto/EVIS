@@ -5,15 +5,23 @@ import pandas as pd
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
 from pandas import ExcelWriter
 
-import CANAdater
+from CANAdater import CANAdapter
 from EVONode import EVONode
 from Parametr import Parametr
+from helper import empty_par
+
+invertor_command_dict = {
+    'POWER_ON-OFF': 0x200100,
+    'RESET_DEVICE': 0x200200,
+    'RESET_PARAMETERS': 0x200201,
+    'APPLY_PARAMETERS': 0x200202,
+    'BEGIN_POSITION_SENSOR_CALIBRATION': 0x200203,
+    'INVERT_ROTATION': 0x200204,
+    'RESET_FAULTS': 0x200205}
+
 
 # поток для сохранения в файл настроек блока
 # возвращает сигналу о процентах выполнения, сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
-from helper import empty_par
-
-
 class SaveToFileThread(QThread):
     SignalOfReady = pyqtSignal(int, str, bool)
     err_thread_signal = pyqtSignal(str)
@@ -25,7 +33,7 @@ class SaveToFileThread(QThread):
     def __init__(self):
         super().__init__()
         self.max_errors = 30
-        self.adapter = CANAdater
+        self.adapter = CANAdapter()
         self.node_to_save = EVONode
         self.finished.connect(self.finished_tread)
 
@@ -123,12 +131,13 @@ class MainThread(QThread):
 
     def __init__(self):
         super().__init__()
-        self.adapter = CANAdater
+        self.adapter = CANAdapter()
         self.errors_str = ''
         self.warnings_str = ''
         self.current_nodes_list = []
 
     def run(self):
+
         def emitting():  # передача заполненного списка параметров
             self.threadSignalAThread.emit(self.ans_list)
             self.params_counter = 0
@@ -213,6 +222,21 @@ class MainThread(QThread):
 
         loop = QEventLoop()
         loop.exec_()
+
+    def invertor_command(self, command: str):
+        if command not in invertor_command_dict.keys():
+            return 'Неверная Команда'
+        for node in self.current_nodes_list:
+            if node.name == 'Инвертор_МЭИ':
+                # передавать надо исключительно в первый кан
+                if node.request_id in self.adapter.id_nodes_dict.keys():
+
+                    adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
+                    answer = node.send_val(invertor_command_dict[command], adapter_can1)
+                    return answer
+                else:
+                    answer = 'Нет связи с CAN1-адаптером'
+                return answer + ' Для калибровки и инверсии инвертора\n нужно ВЫКЛЮЧИТЬ высокое напряжение'
 
 
 def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):

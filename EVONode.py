@@ -130,10 +130,16 @@ class EVONode:
         # for i in r_list:
         #     print(hex(i), end=' ')
         # print()
+        # while adapter.is_busy:
+        #     pass
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
+
         if isinstance(value, str):
             return value  # если вернул строку, значит, проблема
         else:
+            # for i in value:
+            #     print(hex(i), end=' ')
+            # print()
             return ''  # если пусто, значит, норм ушла
 
     def get_serial_number(self, adapter: CANAdater):
@@ -171,7 +177,7 @@ class EVONode:
             if not fm:
                 text = 'EVOCARGO'
             elif fm > 0xFFFF:
-                text = int_to_hex_str((fm & 0xFF000000) >> 24) + \
+                text = '0x' + int_to_hex_str((fm & 0xFF000000) >> 24) + \
                        int_to_hex_str((fm & 0xFF0000) >> 16) + \
                        int_to_hex_str((fm & 0xFF00) >> 8) + \
                        int_to_hex_str(fm & 0xFF)
@@ -226,11 +232,11 @@ class EVONode:
         #  на выходе - список оставшихся ошибок или пустой список, если ОК
         if self.error_erase['address']:
             at = self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
+            self.current_errors_list.clear()
+            self.current_warnings_list.clear()
             if not at:
-                self.current_errors_list.clear()
                 self.check_errors(adapter)
             else:
-                self.current_errors_list.clear()
                 self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
         return self.current_errors_list
 

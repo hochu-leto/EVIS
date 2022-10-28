@@ -95,8 +95,8 @@ def full_node_list(file_name):
     need_fields = {'name', 'address', 'type'}
     file = pandas.ExcelFile(file_name)
 
-    def fill_er_list(sheet:str):
-        err_sheet = file.parse(sheet_name=sheet)
+    def fill_er_list(sheet_name: str):
+        err_sheet = file.parse(sheet_name=sheet_name)
         err_list = err_sheet.to_dict(orient='records')  # парсим лист "errors"
         err_dict = {}
         prev_node_name = ''
@@ -147,7 +147,7 @@ def full_node_list(file_name):
         node_dict[node['name']] = ev_node
     # не совсем вдуплил, но здесь у меня есть словарь, где ключи - названия блоков, а значения - объекты блоков
 
-    # ну и финалочка - раскидываю по блокам словари, где ключи - названия групп парметров,
+    # ну и финалочка - раскидываю по блокам словари, где ключи - названия групп параметров,
     # а значения - списки объектов параметров
     nodes_list = []
     for node_name, ev_node in node_dict.items():
@@ -157,8 +157,6 @@ def full_node_list(file_name):
             p_list = []
             if node_name in params_list:
                 for param in bookmark_dict[params_list]:
-                    # if str(param['type']) != 'nan':
-                    #     param['type'] = param['type'].strip()
                     if str(param['name']) != 'nan':
                         if 'group ' in param['name']:
                             node_params_dict[prev_group_name] = p_list.copy()

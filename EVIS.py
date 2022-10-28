@@ -306,6 +306,8 @@ def check_node_online(all_node_list: list):
             # может и китайские рейки, нет особого желания разбираться. Вообщем это костыль, чтоб он не вылазил
             if 'Инвертор_Цикл+' in nd.name:
                 has_invertor = True
+            elif 'Инвертор_МЭИ' in nd.name:
+                window.invertor_dock.show()
             exit_list.append(nd)
     if has_invertor:
         for nd in exit_list:
@@ -605,6 +607,37 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             event.ignore()
 
 
+def mpei_invert():
+    mpei_answer(window.thread.invertor_command('INVERT_ROTATION'))
+
+
+def mpei_fault_reset():
+    mpei_answer(window.thread.invertor_command('RESET_FAULTS'))
+
+
+def mpei_calibrate():
+    mpei_answer(window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION'))
+
+
+def mpei_power_on():
+    mpei_answer(window.thread.invertor_command('POWER_ON-OFF'))
+
+
+def mpei_reset_device():
+    mpei_answer(window.thread.invertor_command('RESET_DEVICE'))
+
+
+def mpei_reset_params():
+    mpei_answer(window.thread.invertor_command('RESET_PARAMETERS'))
+
+
+def mpei_answer(s=''):
+    if s:
+        QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s, QMessageBox.Ok)
+    else:
+        QMessageBox.information(window, "Успешный успех!", 'Команда отправлена \n о выполнении инвертор не сообщает', QMessageBox.Ok)
+
+
 if __name__ == '__main__':
     app = QApplication([])
     splash = QSplashScreen()
@@ -617,6 +650,13 @@ if __name__ == '__main__':
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
     # и сигналы нажатия на кнопки
+    window.invert_btn.clicked.connect(mpei_invert)
+    window.fault_reset_btn.clicked.connect(mpei_fault_reset)
+    window.calibrate_btn.clicked.connect(mpei_calibrate)
+    window.power_on_btn.clicked.connect(mpei_power_on)
+    window.reset_device_btn.clicked.connect(mpei_reset_device)
+    window.reset_param_btn.clicked.connect(mpei_reset_params)
+
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
@@ -628,7 +668,8 @@ if __name__ == '__main__':
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
     window.vmu_param_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-
+    window.invertor_dock.hide()
+    window.invertor_dock.setEnabled(True)
     window.show_nodes_tree(alt_node_list)
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
@@ -639,10 +680,8 @@ if __name__ == '__main__':
         splash.finish(window)
         app.exec_()  # и запускаем приложение
 
-# команды управления инвертором мэи в отдельной список с периодом 1001 - НЕ прокатило
-# почему периодически после опроса всех блоков выдаёт - проверь связь с ватс и только перезагрузка
+# команды управления инвертором мэи в отдельной вкладке -
+# нужные кнопки ВКЛ-ВЫКЛ высокое, Инвертировать Вращение, Сброс Ошибок, Калибровать
+# обновить параметры кву
+# почему периодически после опроса всех блоков выдаёт - проверь связь с ватс и только перезагрузка - не проявилось
 # - происходит отсоединение после поиска всех блоков и обнуление списка адаптеров
-# - сделал функцию поиска адаптеров - надо проверить как работает
-# сравнение с ранее сохранёнными параметрами
-# сбрасывать список блоков на все блоки, когда пропал адаптер - наверное, нужно использовать копи
-#

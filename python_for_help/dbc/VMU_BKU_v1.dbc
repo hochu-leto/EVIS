@@ -1,0 +1,240 @@
+VERSION ""
+
+
+BS_:
+
+BU_: BKU VMU
+
+
+BO_ 2566869413 PropB_51: 8 BKU
+ SG_ bkuKvuRunCmd : 0|2@1+ (1,0) [0|3] "" VMU
+ SG_ bkuEmergencyStop : 2|2@1+ (1,0) [0|3] "" VMU
+ SG_ bkuParkingBrakeCtrl : 4|2@1+ (1,0) [0|3] "" VMU
+ SG_ bkuTurnIndicatorCtrl : 8|4@1+ (1,0) [0|15] "" VMU
+ SG_ bkuStopLightsCmd : 12|2@1+ (1,0) [0|3] "" VMU
+ SG_ bkuRefTorqueCmd : 16|8@1+ (1,-100) [-100|155] "%" VMU
+ SG_ servoStRack1Pos_ref : 32|8@1+ (1,-100) [-100|155] "%" VMU
+ SG_ servoStRack1Pos_setNull : 40|2@1+ (1,0) [0|3] "" VMU
+ SG_ servoStRack2Pos_ref : 48|8@1+ (1,-100) [-100|155] "%" VMU
+ SG_ servoStRack2Pos_setNull : 56|2@1+ (1,0) [0|3] "" VMU
+ SG_ bkuDiscreteBrake : 6|2@1+ (1,0) [0|3] "" VMU
+ SG_ bkuRearLightsCmd : 58|2@1+ (1,0) [0|3] "" VMU
+ SG_ bkuAntifogLightsCmd : 60|2@1+ (1,0) [0|3] "" VMU
+
+BO_ 2566865825 PropB_43: 8 VMU
+ SG_ bmsUmaxBatteryCell : 16|16@1+ (0.0015,0) [0|98.3025] "V"  BKU
+ SG_ bmsUminBatteryCell : 0|16@1+ (0.0015,0) [0|98.3025] "V"  BKU
+
+BO_ 2566865569 PropB_42: 8 VMU
+ SG_ bmsTminBatteryCell : 56|8@1+ (1,-55) [-55|200] "�C"  BKU
+ SG_ bmsTmaxBatteryCell : 48|8@1+ (1,-55) [-55|200] "�C"  BKU
+ SG_ bmsNumberCells : 40|8@1+ (1,0) [0|255] ""  BKU
+ SG_ bmsNumberModules : 32|8@1+ (1,0) [0|255] ""  BKU
+ SG_ bmsUdcBattery : 16|16@1+ (1,0) [0|65535] "V"  BKU
+ SG_ bmsBatteryCapacity : 0|16@1+ (1,-512) [-512|65023] "AH"  BKU
+
+BO_ 2566865313 PropB_41: 8 VMU
+ SG_ bmsDischarge : 48|16@1+ (1,-512) [-512|65023] "AH"  BKU
+ SG_ bmsBatteryCharge : 40|8@1+ (1,0) [0|255] "%"  BKU
+ SG_ bmsRelEffectBatteryCapacity : 32|8@1+ (1,0) [0|255] "%"  BKU
+ SG_ bmsRelayChargeStatus : 24|2@1+ (1,0) [0|3] ""  BKU
+ SG_ bmsIdcBattery : 8|16@1+ (1,-2000) [-2000|63535] "A"  BKU
+ SG_ bmsStatus : 0|8@1+ (1,0) [0|255] ""  BKU
+
+BO_ 2566862753 PropB_37: 8 VMU
+ SG_ servoBrk2StatusBrkWheel2 : 16|4@1+ (1,0) [0|15] ""  BKU
+ SG_ servoBrk2StatusBrkWheel1 : 8|4@1+ (1,0) [0|15] ""  BKU
+ SG_ servoBrk2Status : 0|8@1+ (1,0) [0|255] ""  BKU
+
+BO_ 2566862497 PropB_36: 8 VMU
+ SG_ servoBrk1StatusBrkWheel2 : 16|4@1+ (1,0) [0|15] ""  BKU
+ SG_ servoBrk1StatusBrkWheel1 : 8|4@1+ (1,0) [0|15] ""  BKU
+ SG_ servoBrk1Status : 0|8@1+ (1,0) [0|255] ""  BKU
+
+BO_ 2566862241 PropB_35: 8 VMU
+ SG_ servoStRack2Tempr_cur : 48|8@1+ (1,-40) [-40|215] "�C"  BKU
+ SG_ servoStRack2Ist_cur : 32|16@1+ (1,-30000) [-30000|35535] "mA"  BKU
+ SG_ servoStRack2Pos_cur : 16|16@1+ (1,-30000) [-30000|35535] ""  BKU
+ SG_ servoStRack2Status : 0|8@1+ (1,0) [0|255] ""  BKU
+
+BO_ 2566861985 PropB_34: 8 VMU
+ SG_ servoStRack1Tempr_cur : 48|8@1+ (1,-40) [-40|215] "�C"  BKU
+ SG_ servoStRack1Ist_cur : 32|16@1+ (1,-30000) [-30000|35535] "mA"  BKU
+ SG_ servoStRack1Pos_cur : 16|16@1+ (1,-30000) [-30000|35535] ""  BKU
+ SG_ servoStRack1Status : 0|8@1+ (1,0) [0|255] ""  BKU
+
+BO_ 2566861729 PropB_33: 8 VMU
+ SG_ td1UdcIsoMinus : 24|8@1+ (2,0) [0|510] "V"  BKU
+ SG_ td1UdcIsoPlus : 16|8@1+ (2,0) [0|510] "V"  BKU
+ SG_ td1TemprInv : 8|8@1+ (1,-40) [-40|215] "�C"  BKU
+ SG_ td1TemprDrv : 0|8@1+ (1,-40) [-40|215] "�C"  BKU
+
+BO_ 2566861473 PropB_32: 8 VMU
+ SG_ td1Udc : 48|8@1+ (2,0) [0|510] "V"  BKU
+ SG_ td1Power_cur : 40|8@1+ (1,-125) [-125|130] "kW"  BKU
+ SG_ td1I_cur : 32|8@1+ (3,-375) [-375|390] "A"  BKU
+ SG_ td1Speed_cur : 16|16@1+ (0.25,-7500) [-7500|8883.75] "rpm"  BKU
+ SG_ td1Torque_cur : 8|8@1+ (1,-100) [-100|155] "%"  BKU
+ SG_ td1Status : 0|8@1+ (1,0) [0|255] ""  BKU
+
+BO_ 2566861217 PropB_31: 8 VMU
+ SG_ kvuMode : 24|2@1+ (1,0) [0|3] ""  BKU
+ SG_ kvuStatus : 16|8@1+ (1,0) [0|255] ""  BKU
+ SG_ kvuOnLineDeviceFlags : 8|8@1+ (1,0) [0|255] ""  BKU
+ SG_ readyToMove : 0|2@1+ (1,0) [0|3] ""  BKU
+
+CM_ SG_ 2566869413 bkuAntifogLightsCmd "������� ���������� ����-���������";
+CM_ SG_ 2566869413 bkuRearLightsCmd "������� ���������� ����-���������";
+CM_ SG_ 2566869413 bkuDiscreteBrake "������� �� ��������� ����������� �������";
+CM_ SG_ 2566869413 servoStRack2Pos_setNull "������� �������� ������� ��������� �� ����� ������������ ���� ������ ���";
+CM_ SG_ 2566869413 servoStRack2Pos_ref "������� ��������� ������������ ���� ������ ���";
+CM_ SG_ 2566869413 servoStRack1Pos_setNull "������� �������� ������� ��������� �� ����� ������������ ���� �������� ���";
+CM_ SG_ 2566869413 servoStRack1Pos_ref "������� ��������� ������������ ���� �������� ���";
+CM_ SG_ 2566869413 bkuRefTorqueCmd "������� ������� �� ������� ���������";
+CM_ SG_ 2566869413 bkuStopLightsCmd "������� ���������� ����-���������";
+CM_ SG_ 2566869413 bkuTurnIndicatorCtrl "���������� ����������� ��������";
+CM_ SG_ 2566869413 bkuParkingBrakeCtrl "���������/���������� ����������� �������";
+CM_ SG_ 2566869413 bkuEmergencyStop "��������� �������";
+CM_ SG_ 2566869413 bkuKvuRunCmd "���������/���������� ���";
+CM_ SG_ 2566865825 bmsUmaxBatteryCell "�������� ���������� �� ������";
+CM_ SG_ 2566865825 bmsUminBatteryCell "������� ���������� �� ������";
+CM_ SG_ 2566865569 bmsTminBatteryCell "����������� �����������";
+CM_ SG_ 2566865569 bmsTmaxBatteryCell "������������ �����������";
+CM_ SG_ 2566865569 bmsNumberCells "���������� �����";
+CM_ SG_ 2566865569 bmsNumberModules "���������� �������";
+CM_ SG_ 2566865569 bmsUdcBattery "��������� ����������. ����� ���������� �������, ������������ ��� ����� ���������� ��������� �����.";
+CM_ SG_ 2566865569 bmsBatteryCapacity "������� �������, ���������� BMS";
+CM_ SG_ 2566865313 bmsDischarge "������� �������. ���������� �������, ���������� �� ������� (������������� ��������), ��� ���������� � ������� (������������� ��������)";
+CM_ SG_ 2566865313 bmsBatteryCharge "������� ����� ������� �������";
+CM_ SG_ 2566865313 bmsRelEffectBatteryCapacity "����������� �������������� �������";
+CM_ SG_ 2566865313 bmsRelayChargeStatus "��������� ���� ���������� ������ � ���� �������";
+CM_ SG_ 2566865313 bmsIdcBattery "���������� �������";
+CM_ SG_ 2566865313 bmsStatus "������� ������ ����������� ���������� ������� �������������� �������";
+CM_ SG_ 2566862753 servoBrk2StatusBrkWheel2 "��������� �������������� ����������� ������� (�������/�������) ������ 2 ������ ���";
+CM_ SG_ 2566862753 servoBrk2StatusBrkWheel1 "��������� �������������� ����������� ������� (�������/�������) ������ 1 ������ ���";
+CM_ SG_ 2566862753 servoBrk2Status "������� ������ ����� ���������� �������������� ����������� ������� ������ ���";
+CM_ SG_ 2566862497 servoBrk1StatusBrkWheel2 "��������� �������������� ����������� ������� (�������/�������) ������ 2 �������� ���";
+CM_ SG_ 2566862497 servoBrk1StatusBrkWheel1 "��������� �������������� ����������� ������� (�������/�������) ������ 1 �������� ���";
+CM_ SG_ 2566862497 servoBrk1Status "������� ������ ����� ���������� �������������� ����������� ������� �������� ���";
+CM_ SG_ 2566862241 servoStRack2Tempr_cur "����������� ����� ���������� �������������� ������� ����� ������ ���";
+CM_ SG_ 2566862241 servoStRack2Ist_cur "������� ��� ������� �������������� ������� ����������� ���";
+CM_ SG_ 2566862241 servoStRack2Pos_cur "������� ��������� �������������� ������� ����������� ���";
+CM_ SG_ 2566862241 servoStRack2Status "������� ������ ����� ���������� �������������� ������� ����� ������ ���";
+CM_ SG_ 2566861985 servoStRack1Tempr_cur "����������� ��������������� �������������� ������� ������������� ���";
+CM_ SG_ 2566861985 servoStRack1Ist_cur "������� ��� ������� �������������� ������� ������������� ���";
+CM_ SG_ 2566861985 servoStRack1Pos_cur "������� ��������� �������������� ������� ������������� ���";
+CM_ SG_ 2566861985 servoStRack1Status "������� ������ ����� ���������� �������������� ������� ����� �������� ���";
+CM_ SG_ 2566861729 td1UdcIsoMinus "���������� ��������� ���� ��� ������������ �������";
+CM_ SG_ 2566861729 td1UdcIsoPlus "���������� �������� ���� ��� ������������ �������";
+CM_ SG_ 2566861729 td1TemprInv "����������� �������� ��������������� �������� ���������";
+CM_ SG_ 2566861729 td1TemprDrv "����������� �������� ���������";
+CM_ SG_ 2566861473 td1Udc "���������� ����� ����������� ���� �����";
+CM_ SG_ 2566861473 td1Power_cur "�������� �������� ���������";
+CM_ SG_ 2566861473 td1I_cur "���������������";
+CM_ SG_ 2566861473 td1Speed_cur "������� �������� �������� ���������";
+CM_ SG_ 2566861473 td1Torque_cur "������� ������� ������������ �������";
+CM_ SG_ 2566861473 td1Status "������� ������ ��������������� �������� �������� ���������������� (�� ���)";
+CM_ SG_ 2566861217 kvuMode "����� ������ ���";
+CM_ SG_ 2566861217 kvuStatus "������� ������ ���";
+CM_ SG_ 2566861217 kvuOnLineDeviceFlags "����� ������� ��������� � ����";
+CM_ SG_ 2566861217 readyToMove "������ ���������� ���� � ��������";
+BA_DEF_ BO_  "TpJ1939VarDlc" ENUM  "No","Yes";
+BA_DEF_ SG_  "SigType" ENUM  "Default","Range","RangeSigned","ASCII","Discrete","Control","ReferencePGN","DTC","StringDelimiter","StringLength","StringLengthControl","MessageCounter","MessageChecksum";
+BA_DEF_ SG_  "GenSigEVName" STRING ;
+BA_DEF_ SG_  "GenSigILSupport" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType";
+BA_DEF_ BO_  "GenMsgFastOnStart" INT 0 100000;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 3600000;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 1000000;
+BA_DEF_ SG_  "GenSigStartValue" INT 0 2147483647;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 100000;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "NmJ1939SystemInstance" INT 0 15;
+BA_DEF_ BU_  "NmJ1939System" INT 0 127;
+BA_DEF_ BU_  "NmJ1939ManufacturerCode" INT 0 2047;
+BA_DEF_ BU_  "NmJ1939IndustryGroup" INT 0 7;
+BA_DEF_ BU_  "NmJ1939IdentityNumber" INT 0 2097151;
+BA_DEF_ BU_  "NmJ1939FunctionInstance" INT 0 7;
+BA_DEF_ BU_  "NmJ1939Function" INT 0 255;
+BA_DEF_ BU_  "NmJ1939ECUInstance" INT 0 3;
+BA_DEF_ BU_  "NmJ1939AAC" INT 0 1;
+BA_DEF_ BU_  "NmStationAddress" INT 0 255;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclic","NotUsed","IfActive","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","noMsgSendType";
+BA_DEF_ BO_  "GenMsgRequestable" INT 0 1;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 3600000;
+BA_DEF_ SG_  "SPN" INT 0 524287;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_  "ProtocolType" STRING ;
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","J1939PG";
+BA_DEF_DEF_  "TpJ1939VarDlc" "No";
+BA_DEF_DEF_  "SigType" "Default";
+BA_DEF_DEF_  "GenSigEVName" "Env@Nodename_@Signame";
+BA_DEF_DEF_  "GenSigILSupport" "Yes";
+BA_DEF_DEF_  "GenSigSendType" "NoSigSendType";
+BA_DEF_DEF_  "GenMsgFastOnStart" 0;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "NmJ1939SystemInstance" 0;
+BA_DEF_DEF_  "NmJ1939System" 0;
+BA_DEF_DEF_  "NmJ1939ManufacturerCode" 0;
+BA_DEF_DEF_  "NmJ1939IndustryGroup" 0;
+BA_DEF_DEF_  "NmJ1939IdentityNumber" 0;
+BA_DEF_DEF_  "NmJ1939FunctionInstance" 0;
+BA_DEF_DEF_  "NmJ1939Function" 0;
+BA_DEF_DEF_  "NmJ1939ECUInstance" 0;
+BA_DEF_DEF_  "NmJ1939AAC" 0;
+BA_DEF_DEF_  "NmStationAddress" 254;
+BA_DEF_DEF_  "GenMsgSendType" "noMsgSendType";
+BA_DEF_DEF_  "GenMsgRequestable" 1;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "SPN" 0;
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "ProtocolType" "J1939";
+BA_DEF_DEF_  "VFrameFormat" "J1939PG";
+BA_ "DBName" "N1_CAN2";
+BA_ "NmStationAddress" BU_ BKU 165;
+BA_ "NmStationAddress" BU_ VMU 161;
+BA_ "VFrameFormat" BO_ 2566869413 3;
+BA_ "VFrameFormat" BO_ 2566865825 3;
+BA_ "VFrameFormat" BO_ 2566865569 3;
+BA_ "VFrameFormat" BO_ 2566865313 3;
+BA_ "VFrameFormat" BO_ 2566862753 3;
+BA_ "VFrameFormat" BO_ 2566862497 3;
+BA_ "VFrameFormat" BO_ 2566862241 3;
+BA_ "VFrameFormat" BO_ 2566861985 3;
+BA_ "VFrameFormat" BO_ 2566861729 3;
+BA_ "VFrameFormat" BO_ 2566861473 3;
+BA_ "VFrameFormat" BO_ 2566861217 3;
+BA_ "GenSigStartValue" SG_ 2566869413 servoStRack2Pos_ref 100;
+BA_ "GenSigStartValue" SG_ 2566869413 servoStRack1Pos_ref 100;
+BA_ "GenSigStartValue" SG_ 2566869413 bkuRefTorqueCmd 100;
+BA_ "GenSigStartValue" SG_ 2566865569 bmsTminBatteryCell 55;
+BA_ "GenSigStartValue" SG_ 2566865569 bmsTmaxBatteryCell 55;
+BA_ "GenSigStartValue" SG_ 2566865569 bmsBatteryCapacity 512;
+BA_ "GenSigStartValue" SG_ 2566865313 bmsDischarge 512;
+BA_ "GenSigStartValue" SG_ 2566865313 bmsIdcBattery 2000;
+BA_ "GenSigStartValue" SG_ 2566862241 servoStRack2Tempr_cur 40;
+BA_ "GenSigStartValue" SG_ 2566862241 servoStRack2Ist_cur 30000;
+BA_ "GenSigStartValue" SG_ 2566862241 servoStRack2Pos_cur 30000;
+BA_ "GenSigStartValue" SG_ 2566861985 servoStRack1Tempr_cur 40;
+BA_ "GenSigStartValue" SG_ 2566861985 servoStRack1Ist_cur 30000;
+BA_ "GenSigStartValue" SG_ 2566861985 servoStRack1Pos_cur 30000;
+BA_ "GenSigStartValue" SG_ 2566861729 td1TemprInv 40;
+BA_ "GenSigStartValue" SG_ 2566861729 td1TemprDrv 40;
+BA_ "GenSigStartValue" SG_ 2566861473 td1Power_cur 125;
+BA_ "GenSigStartValue" SG_ 2566861473 td1I_cur 125;
+BA_ "GenSigStartValue" SG_ 2566861473 td1Speed_cur 30000;
+BA_ "GenSigStartValue" SG_ 2566861473 td1Torque_cur 100;
