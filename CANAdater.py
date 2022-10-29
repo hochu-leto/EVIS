@@ -12,10 +12,10 @@ from marathon_power import CANMarathon
 
 class CANAdapter:
     isDefined = False
+    id_nodes_dict = {}  # словарь блоков, где ключ - айди обращения к блоку, а значение - объект адаптера
 
     def __init__(self):
         self.is_busy = False
-        self.id_nones_dict = {}  # словарь блоков, где ключ - айди обращения к блоку, а значение - объект адаптера
         self.can_adapters = {}  # словарь адаптеров,где ключ - цифра битрейта, а значение - объект адаптера
         print('Ищу адаптеры')
         self.find_adapters()
@@ -55,8 +55,8 @@ class CANAdapter:
         # если нужно опросить блок, айди которого уже есть в словаре,
         # просто используем этот адаптер, который привязан к этому айди -
         # так можно опрашивать сразу два кана(а может и три, если такой адаптер найдётся)
-        if can_id_req in list(self.id_nones_dict.keys()):
-            adapter = self.id_nones_dict[can_id_req]
+        if can_id_req in list(self.id_nodes_dict.keys()):
+            adapter = self.id_nodes_dict[can_id_req]
             self.is_busy = True  # даю понять всем, что адаптер занят, чтоб два потока не обращались в одно время
             ans = adapter.can_request(can_id_req, can_id_ans, message)
             self.is_busy = False
@@ -73,7 +73,7 @@ class CANAdapter:
             # если в ответе нет строки(ошибки), значит адаптер имеется,
             # добавляем его в словарь с этим айди блока и возвращаем ответ
             if not isinstance(answer, str):
-                self.id_nones_dict[can_id_req] = adapter
+                self.id_nodes_dict[can_id_req] = adapter
                 return answer
         return answer
 

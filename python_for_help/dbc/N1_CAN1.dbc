@@ -1,0 +1,149 @@
+VERSION "HINBNNNYYNNNYYNNNNNNNNNNNNYNNNYYYNNYNNNNNN/4//%%/4/'%**4NNN///"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: SteeringServo_Rear SteeringServo_Front PSTED VMU
+VAL_TABLE_ Wire_Isolation_Status 6 "Isolation failure flag (filtered & unfiltered)" 5 "Isolation failure flag (unfiltered) & reserved" 4 "Isolation failure flag (unfiltered)" 3 "Isolation failure flag & reserved" 2 "Isolation failure flag" 1 "reserved" 0 "ok" ;
+VAL_TABLE_ DeviceStatus 15 "Overheat & Warning & Failure & Operating" 14 "Overheat & Warning & Failure" 13 "Overheat & Warning & Operating" 12 "Overheat & Warning" 11 "Overheat & Failure & Operating" 10 "Overheat & Failure" 9 "Overheat & Operating" 8 "Overheat" 7 "Warning & Failure & Operating" 6 "Warning & Failure" 5 "Warning & Operating" 4 "Warning" 3 "Failure & Operating" 2 "Failure" 1 "Operating" 0 "Idle" ;
+VAL_TABLE_ Enable 1 "Enable" 0 "Disable" ;
+VAL_TABLE_ Heartbeat_State 127 "PreOperational" 5 "Operational" 4 "Stopped" 0 "Bootup" ;
+
+
+BO_ 660 PSTED_RefTorque: 8 VMU
+ SG_ PSTED_RefTorque_cmd : 0|8@1- (0.78740157,0) [-100.78740096|99.99999939] "%"  PSTED
+
+BO_ 400 SteerServoRear_Status: 8 SteeringServo_Rear
+ SG_ ServoRear_Status : 0|4@1+ (1,0) [0|15] ""  VMU
+ SG_ ServoRear_servoTemp : 48|8@1+ (1,-40) [-40|215] "°C"  VMU
+ SG_ ServoRear_motorTemp : 40|8@1+ (1,-40) [-40|215] "°C"  VMU
+ SG_ ServoRear_current : 24|16@1- (1,0) [-32768|32767] "mA"  VMU
+ SG_ ServoRear_curPos : 8|16@1- (1,0) [-32768|32767] ""  VMU
+
+BO_ 399 SteerServoFront_Status: 8 SteeringServo_Front
+ SG_ ServoFront_Status : 0|4@1+ (1,0) [0|15] ""  VMU
+ SG_ ServoFront_servoTemp : 48|8@1+ (1,-40) [-40|215] "°C"  VMU
+ SG_ ServoFront_motorTemp : 40|8@1+ (1,-40) [-40|215] "°C"  VMU
+ SG_ ServoFront_current : 24|16@1- (1,0) [-32768|32767] "mA"  VMU
+ SG_ ServoFront_curPos : 8|16@1- (1,0) [-32768|32767] ""  VMU
+
+BO_ 1153 PSTED_Errors: 8 PSTED
+ SG_ PSTED_Warnings : 48|16@1+ (1,0) [0|65535] ""  VMU
+ SG_ PSTED_ErrorFlags : 0|48@1+ (1,0) [0|281474976710655] ""  VMU
+
+BO_ 897 PSTED_HighVoltage: 8 PSTED
+ SG_ PSTED_WireIsolationStatus : 16|4@1+ (1,0) [0|15] ""  VMU
+ SG_ PSTED_LowToCase_Voltage : 8|8@1+ (6.35294117,0) [0|1619.99999835] "V"  VMU
+ SG_ PSTED_highVoltageCurrent : 24|8@1- (1.5748031496,0) [-201.5748031488|199.9999999992] "A"  VMU
+ SG_ PSTED_HighToCase_Voltage : 0|8@1+ (6.35294117,0) [0|1619.99999835] "V"  VMU
+
+BO_ 641 PSTED_Temp: 8 PSTED
+ SG_ PSTED_OverheatTorqueLimited : 31|1@1+ (1,0) [0|1] ""  VMU
+ SG_ PSTED_motorTemp : 0|8@1+ (1,-40) [-40|215] "°C"  VMU
+ SG_ PSTED_modelHeat : 24|7@1+ (0.7874015748,0) [0|99.9999999996] "%"  VMU
+ SG_ PSTED_InvertorVoltage : 16|8@1+ (0.392156862745,0) [0|99.999999999975] "%"  VMU
+ SG_ PSTED_invertorTemp : 8|8@1+ (1,-40) [-40|215] "°C"  VMU
+ SG_ PSTED_internalTemp : 48|8@1+ (1,-40) [-40|215] "°C"  VMU
+ SG_ PSTED_coolerTemp : 40|8@1+ (1,-40) [-40|215] "°C"  VMU
+
+BO_ 385 PSTED_Status1: 8 PSTED
+ SG_ PSTED_Status : 0|8@1+ (1,0) [0|16] ""  VMU
+ SG_ PSTED_CurTorque : 8|8@1- (0.78740157,0) [-100.78740096|99.99999939] "%"  VMU
+ SG_ PSTED_curRpm : 16|16@1- (0.24414807,0) [-8000.24395776|7999.99980969] "rpm"  VMU
+ SG_ PSTED_curPower : 40|8@1- (1.1811023622,0) [-151.1811023616|149.9999999994] "kW"  VMU
+ SG_ PSTED_curHighVoltage : 48|8@1+ (6.35294117,0) [0|1619.99999835] "V"  VMU
+ SG_ PSTED_curFluxCurrent : 56|8@1+ (0.1372549019,0) [0|34.9999999845] "A"  VMU
+ SG_ PSTED_curCurrent : 32|8@1- (5.118110236,0) [-655.118110208|649.999999972] "A"  VMU
+
+BO_ 788 SteerServo_cmd: 8 VMU
+ SG_ ServoRear_RefPos_cmd : 24|16@1- (1,0) [-1000|1000] ""  SteeringServo_Rear
+ SG_ ServoRear_Enable_cmd : 1|1@1+ (1,0) [0|1] ""  SteeringServo_Rear
+ SG_ ServoFront_RefPos_cmd : 8|16@1- (1,0) [-1000|1000] ""  SteeringServo_Front
+ SG_ ServoFront_Enable_cmd : 0|1@1+ (1,0) [0|1] ""  SteeringServo_Front
+
+BO_ 404 PSTED_cmd_flags: 8 VMU
+ SG_ PSTED_Enable_cmd : 0|1@1+ (1,0) [0|1] ""  PSTED
+ SG_ PSTED_emStop_cmd : 32|1@1+ (1,0) [0|1] ""  PSTED
+ SG_ PSTED_brake_cmd : 34|1@1+ (1,0) [0|1] ""  PSTED
+
+BO_ 1812 VMU_Heartbeat: 1 VMU
+ SG_ Toggle : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ State : 0|7@1+ (1,0) [0|0] ""  PSTED
+
+BO_ 1793 PSTED_Heartbeat: 1 PSTED
+ SG_ Toggle : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ State : 0|7@1+ (1,0) [0|0] ""  VMU
+
+
+
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","SendType1","SendType2","SendType3","SendType4","SendType5","SendType6","SendType7","SendType8","SendType9";
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 0;
+BA_DEF_ SG_  "GenSigStartValue" INT 0 0;
+BA_DEF_ BO_  "CO_MsgCategory" INT 0 0;
+BA_DEF_  "CO_MsgColourSupported" INT 0 1;
+BA_DEF_  "CANopenApplProfile" INT 0 0;
+BA_DEF_  "ProtocolType" STRING ;
+BA_DEF_DEF_  "GenMsgSendType" "";
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "CO_MsgCategory" 0;
+BA_DEF_DEF_  "CO_MsgColourSupported" 1;
+BA_DEF_DEF_  "CANopenApplProfile" 301;
+BA_DEF_DEF_  "ProtocolType" "CANopen";
+BA_ "ProtocolType" "CANopen";
+BA_ "CANopenApplProfile" 301;
+BA_ "CO_MsgCategory" BO_ 1812 505;
+BA_ "CO_MsgCategory" BO_ 1793 505;
+BA_ "GenSigStartValue" SG_ 400 ServoRear_servoTemp 40;
+BA_ "GenSigStartValue" SG_ 400 ServoRear_motorTemp 40;
+BA_ "GenSigStartValue" SG_ 399 ServoFront_servoTemp 40;
+BA_ "GenSigStartValue" SG_ 399 ServoFront_motorTemp 40;
+BA_ "GenSigStartValue" SG_ 641 PSTED_motorTemp 40;
+BA_ "GenSigStartValue" SG_ 641 PSTED_invertorTemp 40;
+BA_ "GenSigStartValue" SG_ 641 PSTED_internalTemp 40;
+BA_ "GenSigStartValue" SG_ 641 PSTED_coolerTemp 40;
+VAL_ 400 ServoRear_Status 15 "Overheat & Warning & Failure & Operating" 14 "Overheat & Warning & Failure" 13 "Overheat & Warning & Operating" 12 "Overheat & Warning" 11 "Overheat & Failure & Operating" 10 "Overheat & Failure" 9 "Overheat & Operating" 8 "Overheat" 7 "Warning & Failure & Operating" 6 "Warning & Failure" 5 "Warning & Operating" 4 "Warning" 3 "Failure & Operating" 2 "Failure" 1 "Operating" 0 "Idle" ;
+VAL_ 399 ServoFront_Status 15 "Overheat & Warning & Failure & Operating" 14 "Overheat & Warning & Failure" 13 "Overheat & Warning & Operating" 12 "Overheat & Warning" 11 "Overheat & Failure & Operating" 10 "Overheat & Failure" 9 "Overheat & Operating" 8 "Overheat" 7 "Warning & Failure & Operating" 6 "Warning & Failure" 5 "Warning & Operating" 4 "Warning" 3 "Failure & Operating" 2 "Failure" 1 "Operating" 0 "Idle" ;
+VAL_ 897 PSTED_WireIsolationStatus 6 "Isolation failure flag (filtered & unfiltered)" 5 "Isolation failure flag (unfiltered) & reserved" 4 "Isolation failure flag (unfiltered)" 3 "Isolation failure flag & reserved" 2 "Isolation failure flag" 1 "reserved" 0 "ok" ;
+VAL_ 641 PSTED_OverheatTorqueLimited 1 "Enable" 0 "Disable" ;
+VAL_ 385 PSTED_Status 15 "Overheat & Warning & Failure & Operating" 14 "Overheat & Warning & Failure" 13 "Overheat & Warning & Operating" 12 "Overheat & Warning" 11 "Overheat & Failure & Operating" 10 "Overheat & Failure" 9 "Overheat & Operating" 8 "Overheat" 7 "Warning & Failure & Operating" 6 "Warning & Failure" 5 "Warning & Operating" 4 "Warning" 3 "Failure & Operating" 2 "Failure" 1 "Operating" 0 "Idle" ;
+VAL_ 788 ServoRear_Enable_cmd 1 "Enable" 0 "Disable" ;
+VAL_ 788 ServoFront_Enable_cmd 1 "Enable" 0 "Disable" ;
+VAL_ 404 PSTED_Enable_cmd 1 "Enable" 0 "Disable" ;
+VAL_ 404 PSTED_emStop_cmd 1 "Enable" 0 "Disable" ;
+VAL_ 404 PSTED_brake_cmd 1 "Enable" 0 "Disable" ;
+VAL_ 1812 State 127 "PreOperational" 5 "Operational" 4 "Stopped" 0 "Bootup" ;
+VAL_ 1793 State 127 "PreOperational" 5 "Operational" 4 "Stopped" 0 "Bootup" ;
+

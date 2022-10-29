@@ -1,0 +1,235 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: CCS BMS KVU
+
+
+BO_ 2550588916 BMS_CCS_06E5: 8 BMS
+ SG_ bms_m_batState : 32|1@0+ (1,0) [0|1] ""  CCS
+ SG_ bms_m_maxAllowableChVoltage : 7|16@0+ (0.1,0) [0|6553.5] "V"  CCS
+ SG_ bms_m_maxAllowableChCurrent : 23|16@0+ (0.1,0) [0|6553.5] "A"  CCS
+
+BO_ 2550589172 BMS_CCS_multiMsg: 8 BMS
+ SG_ bms_m_singleBatMaxProtectVolt m2 : 39|16@0+ (1,0) [0|65535] "mV"  CCS
+ SG_ bms_m_presentSOC m4 : 32|8@1+ (1,0) [0|255] ""  KVU,CCS
+ SG_ bms_m_maxAllowableDchCurrent m1 : 40|8@1+ (10,0) [0|2550] "A"  CCS
+ SG_ bms_m_maxAllowableChVoltage m1 : 7|16@0+ (0.1,0) [0|6553.5] "V"  CCS
+ SG_ bms_m_maxAllowableChCurrent m1 : 23|16@0+ (0.1,0) [0|6553.5] "A"  CCS
+ SG_ bms_m_chargerClosed m1 : 32|1@1+ (1,0) [0|1] ""  CCS
+ SG_ bms_m_cellMinVoltage m3 : 23|16@0+ (1,0) [0|65535] "mV"  CCS
+ SG_ bms_m_cellMinProtectVoltage m3 : 39|16@0+ (1,0) [0|65535] "mV"  CCS
+ SG_ bms_m_cellMaxVoltage m3 : 7|16@0+ (1,0) [0|65535] "mV"  CCS
+ SG_ bms_m_batTotalVoltage m4 : 7|16@0+ (0.1,0) [0|6553.5] "V"  KVU,CCS
+ SG_ bms_m_batState m3 : 48|2@1+ (1,0) [0|3] ""  CCS
+ SG_ bms_m_batNumbers m5 : 7|16@0+ (1,0) [0|65535] ""  CCS
+ SG_ bms_m_batNumber m2 : 48|8@1+ (1,0) [0|255] ""  CCS
+ SG_ bms_m_batNominalAH m2 : 7|16@0+ (0.1,0) [0|6553.5] "AH"  CCS
+ SG_ bms_m_batMinTempr m4 : 48|8@1+ (1,-100) [-100|155] "�C"  CCS
+ SG_ bms_m_batMaxTempr m4 : 40|8@1+ (1,-100) [-100|155] "�C"  CCS
+ SG_ bms_m_batActualAH m2 : 23|16@0+ (0.1,0) [0|6553.5] "AH"  CCS
+ SG_ bms_m_actualChCurrent m4 : 23|16@0- (0.1,0) [-3276.8|3276.7] "A"  KVU,CCS
+ SG_ bms_multiMsg_page M : 56|8@1+ (1,0) [0|255] ""  KVU,CCS
+
+BO_ 2566869221 CCS_Status: 8 CCS
+ SG_ ccs_status_statingState : 35|1@1+ (1,0) [0|1] ""  BMS,KVU
+ SG_ ccs_status_overheat : 33|1@1+ (1,0) [0|1] ""  BMS,KVU
+ SG_ ccs_status_inputVoltaheError : 34|1@1+ (1,0) [0|1] ""  BMS,KVU
+ SG_ ccs_status_hardwareFailure : 32|1@1+ (1,0) [0|1] ""  BMS,KVU
+ SG_ ccs_status_communicationError : 36|1@1+ (1,0) [0|1] ""  BMS,KVU
+ SG_ ccs_outputVoltage : 7|16@0+ (0.1,0) [0|6553.5] "V"  BMS,KVU
+ SG_ ccs_outputCurrent : 23|16@0- (25.6,0) [0|1677696] "A"  BMS,KVU
+
+BO_ 928 BMS_380: 8 BMS
+ SG_ bms_err_DCHContactorFeedbackErr : 7|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_CHContactorFeedbackErr : 6|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_stuckContactor : 5|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_unallowableCharging : 4|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_sdRWError : 3|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_sdMountError : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highChTempr : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_lowChTempr : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 672 BMS_280: 8 BMS
+ SG_ bms_err_spiritOffline : 61|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_temprSensorShorted : 60|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_noTemprSensors : 59|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_WDTReset : 58|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_settingsError : 57|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_shuntError : 56|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_shuntOffline : 55|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_DchContactorCyclesError : 54|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_ChContactorCyclesError : 53|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_currentSensorError : 52|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_ADCError : 51|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_logicCountError : 50|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highContactorTempr : 49|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_shortCircuit : 48|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_combiliftOffline : 47|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_needAck : 46|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_HYGOffline : 45|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_cellCountError : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_crownDown : 43|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_criticalError : 42|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_logicOffline : 41|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highLogicTempr : 40|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_water : 39|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highHumidity : 38|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_batteryCover : 37|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highDchTempr : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_lowDchTempr : 35|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_overvoltage : 34|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_undervoltage : 33|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_overcurrent : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_serviceReset : 21|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_mainContactor : 20|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_crownEWS : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_AckPowerdown : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_auxDischargingContactor : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_balancing2 : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_balancing1 : 15|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_cellAnalysis : 14|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_combiliftShutdown : 13|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_prechargeContactor : 12|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_init : 11|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_HYGShutdown : 10|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_cooler : 9|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_highDCHTempr : 8|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_increasedVoltage : 7|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_dischargingCurPresent : 6|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_dischargingContactor : 5|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_chargicgCurPresent : 4|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_allowCharging : 3|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_chargingContactor : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_highChargingCurrent : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_lowSOC : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 416 BMS_180: 8 BMS
+ SG_ bms_batteryVoltage : 48|16@1+ (0.1,0) [0|6553.5] "V" Vector__XXX
+ SG_ bms_SOC : 40|8@1+ (1,0) [0|255] "%" Vector__XXX
+ SG_ bms_cellTemprMax : 32|8@1- (1,0) [-128|127] "�C" Vector__XXX
+ SG_ bms_cellTemprMin : 24|8@1- (1,0) [-128|127] "�C" Vector__XXX
+ SG_ bms_batteryCurrent : 8|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ bms_dischargingContactorFeedback : 6|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_chargingContactorFeedback : 5|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_inhibitDischarging : 4|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_inhibitCharging : 3|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_powerDownRequest : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_chargerConnected : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_batteryCover : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+
+
+CM_ SG_ 2550589172 bms_m_actualChCurrent "Positiva values - Charge, Negative - discharge";
+CM_ SG_ 2566869221 ccs_outputCurrent "Positive values - charging, negative - discharging";
+BA_DEF_ BO_  "TpJ1939VarDlc" ENUM  "No","Yes";
+BA_DEF_ SG_  "SigType" ENUM  "Default","Range","RangeSigned","ASCII","Discrete","Control","ReferencePGN","DTC","StringDelimiter","StringLength","StringLengthControl","MessageCounter","MessageChecksum";
+BA_DEF_ SG_  "GenSigEVName" STRING ;
+BA_DEF_ SG_  "GenSigILSupport" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType";
+BA_DEF_ BO_  "GenMsgFastOnStart" INT 0 100000;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 3600000;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 1000000;
+BA_DEF_ SG_  "GenSigStartValue" INT 0 2147483647;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 100000;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "NmJ1939SystemInstance" INT 0 15;
+BA_DEF_ BU_  "NmJ1939System" INT 0 127;
+BA_DEF_ BU_  "NmJ1939ManufacturerCode" INT 0 2047;
+BA_DEF_ BU_  "NmJ1939IndustryGroup" INT 0 7;
+BA_DEF_ BU_  "NmJ1939IdentityNumber" INT 0 2097151;
+BA_DEF_ BU_  "NmJ1939FunctionInstance" INT 0 7;
+BA_DEF_ BU_  "NmJ1939Function" INT 0 255;
+BA_DEF_ BU_  "NmJ1939ECUInstance" INT 0 3;
+BA_DEF_ BU_  "NmJ1939AAC" INT 0 1;
+BA_DEF_ BU_  "NmStationAddress" INT 0 255;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclic","NotUsed","IfActive","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","noMsgSendType";
+BA_DEF_ BO_  "GenMsgRequestable" INT 0 1;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 3600000;
+BA_DEF_ SG_  "SPN" INT 0 524287;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_  "ProtocolType" STRING ;
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","J1939PG";
+BA_DEF_DEF_  "TpJ1939VarDlc" "No";
+BA_DEF_DEF_  "SigType" "Default";
+BA_DEF_DEF_  "GenSigEVName" "Env@Nodename_@Signame";
+BA_DEF_DEF_  "GenSigILSupport" "Yes";
+BA_DEF_DEF_  "GenSigSendType" "NoSigSendType";
+BA_DEF_DEF_  "GenMsgFastOnStart" 0;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "NmJ1939SystemInstance" 0;
+BA_DEF_DEF_  "NmJ1939System" 0;
+BA_DEF_DEF_  "NmJ1939ManufacturerCode" 0;
+BA_DEF_DEF_  "NmJ1939IndustryGroup" 0;
+BA_DEF_DEF_  "NmJ1939IdentityNumber" 0;
+BA_DEF_DEF_  "NmJ1939FunctionInstance" 0;
+BA_DEF_DEF_  "NmJ1939Function" 0;
+BA_DEF_DEF_  "NmJ1939ECUInstance" 0;
+BA_DEF_DEF_  "NmJ1939AAC" 0;
+BA_DEF_DEF_  "NmStationAddress" 254;
+BA_DEF_DEF_  "GenMsgSendType" "noMsgSendType";
+BA_DEF_DEF_  "GenMsgRequestable" 1;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "SPN" 0;
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "ProtocolType" "CAN";
+BA_DEF_DEF_  "VFrameFormat" "J1939PG";
+BA_ "BusType" "CAN";
+BA_ "DBName" "N1_CAN2";
+BA_ "NmStationAddress" BU_ CCS 229;
+BA_ "NmStationAddress" BU_ BMS 244;
+BA_ "NmStationAddress" BU_ KVU 161;
+BA_ "VFrameFormat" BO_ 2550588916 3;
+BA_ "VFrameFormat" BO_ 2550589172 3;
+BA_ "VFrameFormat" BO_ 2566869221 3;
+BA_ "VFrameFormat" BO_ 928 0;
+BA_ "VFrameFormat" BO_ 672 0;
+BA_ "VFrameFormat" BO_ 416 0;
+BA_ "GenSigStartValue" SG_ 2550589172 bms_m_batMinTempr 100;
+BA_ "GenSigStartValue" SG_ 2550589172 bms_m_batMaxTempr 100;
+
