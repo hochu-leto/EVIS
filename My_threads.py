@@ -122,8 +122,7 @@ class MainThread(QThread):
     # сигнал со списком параметров из текущей группы
     threadSignalAThread = pyqtSignal(list)
     # сигнал с ошибками
-    err_thread_signal = pyqtSignal(str)
-    warn_thread_signal = pyqtSignal(str)
+    err_thread_signal = pyqtSignal(str, )
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
@@ -189,17 +188,23 @@ class MainThread(QThread):
         def request_errors():
             # опрос ошибок, на это время опрос параметров отключается
             timer.stop()
+            err_dict = {}
+            old_err_str = self.errors_str
             for nd in self.current_nodes_list:
+
                 nd.current_errors_list = nd.check_errors(self.adapter).copy()
                 for error in nd.current_errors_list:
                     if error and error not in self.errors_str:
                         self.errors_str += f'{nd.name} : {error} \n'
+
                 nd.current_warnings_list = nd.check_errors(self.adapter, 'warnings')
                 for warning in nd.current_warnings_list:
                     if warning and warning not in self.warnings_str:
-                        self.warnings_str += f'{nd.name} : {warning} \n'
-            self.err_thread_signal.emit(self.errors_str)
-            self.warn_thread_signal.emit(self.warnings_str)
+                        self.errors_str += f'{nd.name} : {warning} \n'
+
+                err_dict[nd] = nd.current_errors_list + nd.current_warnings_list
+            if self.errors_str != old_err_str:
+                self.err_thread_signal.emit(self.errors_str, err_dict)
             timer.start(send_delay)
 
         send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает

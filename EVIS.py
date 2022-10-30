@@ -307,7 +307,7 @@ def check_node_online(all_node_list: list):
             if 'Инвертор_Цикл+' in nd.name:
                 has_invertor = True
             elif 'Инвертор_МЭИ' in nd.name:
-                window.invertor_dock.show()
+                window.invertor_mpei_box.setEnabled(True)
             exit_list.append(nd)
     if has_invertor:
         for nd in exit_list:
@@ -374,7 +374,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.thread.current_nodes_list = self.current_nodes_list
         self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
         self.thread.err_thread_signal.connect(self.add_new_errors)
-        self.thread.warn_thread_signal.connect(self.add_new_warnings)
         self.thread.adapter = can_adapter
         #  И для сохранения
         self.tr = SaveToFileThread()
@@ -403,12 +402,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.show_new_vmu_params()
 
     @pyqtSlot(str)  # добавляем ошибки в окошко
-    def add_new_errors(self, list_of_errors: str):
+    def add_new_errors(self, list_of_errors: str, err_dict: dict):
         self.errors_browser.setText(list_of_errors)
+        self.show_error_tree(err_dict)
 
-    @pyqtSlot(str)  # добавляем предупреждения в окошко
-    def add_new_warnings(self, list_of_warnings: str):
-        self.warnings_browser.setText(list_of_warnings)
 
     @pyqtSlot(int, str, bool)
     def progress_bar_fulling(self, percent: int, err: str, is_finished: bool):
@@ -527,6 +524,48 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if self.thread.current_node not in nds:
             self.thread.current_node = nds[0]
         self.show_node_name(self.thread.current_node)
+
+    def show_error_tree(self, nds: dict):
+        cur_item = ''
+        # запоминаю где сейчас курсор - тупо по тексту
+        try:
+            old_item_name = window.errors_tree.currentItem().text(0)
+        except AttributeError:
+            old_item_name = ''
+
+        self.errors_tree.clear()
+        self.errors_tree.setColumnCount(1)
+        self.errors_tree.header().close()
+        items = []
+
+        for nod, nod_err in nds:
+            # создаю основные вкладки - названия блоков
+            item = QTreeWidgetItem()
+            item_name = f'{nod.name}({len(nod_err)})'
+            item.setText(0, item_name)
+            if old_item_name == item_name:
+                # если если ранее выбранный блок среди имеющихся, запоминаю его
+                cur_item = item
+            for err in nod_err:
+                # подвкладки - ошибки
+                child_item = QTreeWidgetItem()
+                child_item.setText(0, str(err))
+                item.addChild(child_item)
+                # если ранее курсор стоял на группе, запоминаю ее
+                if old_item_name == str(err):  # не работает для рулевых - нужно запоминать и имя блока тоже
+                    cur_item = child_item
+            items.append(item)
+
+        if not items:
+            item = QTreeWidgetItem()
+            item.setText(0, 'Ошибок нет')
+            items.append(item)
+        self.errors_tree.insertTopLevelItems(0, items)
+        # если курсор стоял на блоке, который отсутствует в нынешнем списке, то курсор на самый первый блок...
+        if not cur_item:
+            cur_item = self.errors_tree.topLevelItem(0)
+        if cur_item.childCount():
+            self.errors_tree.setCurrentItem(cur_item)
 
     def show_node_name(self, nd: EVONode):
         # чтоб юзер понимал в каком блоке он находится
@@ -668,9 +707,9 @@ if __name__ == '__main__':
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
     window.vmu_param_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-    window.invertor_dock.hide()
-    window.invertor_dock.setEnabled(True)
+    window.invertor_mpei_box.setEnabled(False)
     window.show_nodes_tree(alt_node_list)
+    window.show_error_tree({})
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
         window.nodes_tree.adjustSize()
