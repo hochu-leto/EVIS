@@ -29,11 +29,11 @@ class SaveToFileThread(QThread):
     iter_count = 1
     current_params_list = []
     ready_persent = 0
+    adapter = None #CANAdapter()
 
     def __init__(self):
         super().__init__()
         self.max_errors = 30
-        self.adapter = CANAdapter()
         self.node_to_save = EVONode
         self.finished.connect(self.finished_tread)
 
@@ -127,10 +127,10 @@ class MainThread(QThread):
     iter_count = 1
     current_params_list = []
     current_node = EVONode()
+    adapter = None #CANAdapter()
 
     def __init__(self):
         super().__init__()
-        self.adapter = CANAdapter()
         self.errors_str = ''
         self.warnings_str = ''
         self.current_nodes_list = []

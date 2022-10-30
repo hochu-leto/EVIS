@@ -576,11 +576,14 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         return
 
     def connect_to_node(self):
-        global can_adapter
         # такое бывает при первом подключении или если вырвали адаптер - надо заново его определить
         if not can_adapter.isDefined:
             self.log_lbl.setText('Определяется подключенный адаптер...')
             can_adapter.find_adapters()
+            if not can_adapter.isDefined:
+                QMessageBox.critical(window, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.Ok)
+                return
+        # если у нас вообще нет адаптеров, надо выходить
         # наверное, это можно объединить, если вырвали адаптер, список тоже нужно обновлять,\
         # хотя когда теряем кан-шину также есть смысл обновить список подключенных блоков
         # надо это добавить!
@@ -678,7 +681,13 @@ def mpei_answer(s=''):
 
 
 def joystick_bind():
-    pass
+    if can_adapter.isDefined:
+        if 250 in can_adapter.adapters_dict:
+            adapter = can_adapter.adapters_dict[250]
+            adapter.can_write(0x18FF86A5, [0] * 8)
+        else:
+            print('Нет адаптера на шине 250')
+
 
 
 def suspension_to_zero():
