@@ -5,23 +5,24 @@
 '''
 from sys import platform
 
+from PyQt5.QtWidgets import QMessageBox
+
 import AdapterCAN
 from kvaser_power import Kvaser
 from marathon_power import CANMarathon
 
 
 class CANAdapter:
-    isDefined = False
-    id_nodes_dict = {}  # словарь блоков, где ключ - айди обращения к блоку, а значение - объект адаптера
 
     def __init__(self):
-
+        self.isDefined = False
+        self.id_nodes_dict = {}  # словарь блоков, где ключ - айди обращения к блоку, а значение - объект адаптера
         self.is_busy = False
         self.adapters_dict = {}  # словарь адаптеров,где ключ - цифра битрейта, а значение - объект адаптера
-        print('Ищу адаптеры')
-        self.find_adapters()
+        # self.find_adapters()
 
     def find_adapters(self):
+        print('Ищу адаптеры')
         if platform == "linux" or platform == "linux2":  # linux - только квасер
             self.search_chanells(Kvaser)
         elif platform == "darwin":  # OS X
@@ -31,7 +32,10 @@ class CANAdapter:
             # self.search_chanells(Kvaser)
             # if not self.can_adapters:
             self.search_chanells(CANMarathon)
-        return self.adapters_dict
+        if not self.adapters_dict:
+            QMessageBox.critical(None, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.Ok)
+            return False
+        return True
 
     def search_chanells(self, adapter: AdapterCAN):
         print(f'Пробую найти {adapter.__name__}')

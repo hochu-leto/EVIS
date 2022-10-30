@@ -65,7 +65,7 @@ import pathlib
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values
+from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values, WaitCanAnswerThread
 from Parametr import Parametr
 from work_with_file import full_node_list, fill_sheet_dict
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, InfoMessage, set_table_width
@@ -579,9 +579,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # такое бывает при первом подключении или если вырвали адаптер - надо заново его определить
         if not can_adapter.isDefined:
             self.log_lbl.setText('Определяется подключенный адаптер...')
-            can_adapter.find_adapters()
-            if not can_adapter.isDefined:
-                QMessageBox.critical(window, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.Ok)
+            if not can_adapter.find_adapters():
+                self.log_lbl.setText('Адаптер не подключен')
                 return
         # если у нас вообще нет адаптеров, надо выходить
         # наверное, это можно объединить, если вырвали адаптер, список тоже нужно обновлять,\
@@ -681,13 +680,23 @@ def mpei_answer(s=''):
 
 
 def joystick_bind():
+    if not can_adapter.isDefined:
+        if not can_adapter.find_adapters():
+            return
     if can_adapter.isDefined:
         if 250 in can_adapter.adapters_dict:
             adapter = can_adapter.adapters_dict[250]
             adapter.can_write(0x18FF86A5, [0] * 8)
+            wait_thread = WaitCanAnswerThread()
+            wait_thread.SignalOfProcess.connect(set_log_lbl)
+            wait_thread.start()
         else:
-            print('Нет адаптера на шине 250')
+            QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
+
+@pyqtSlot(str)
+def set_log_lbl(s: str):
+    window.log_lbl.setText(s)
 
 
 def suspension_to_zero():
@@ -733,10 +742,13 @@ if __name__ == '__main__':
     window.show_nodes_tree(alt_node_list)
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
-        if can_adapter.isDefined:
-            window.connect_to_node()
         window.show()  # Показываем окно
         splash.finish(window)
+        if can_adapter.find_adapters():
+            window.connect_to_node()
+        else:
+            window.log_lbl.setText('Адаптер не подключен')
+
         app.exec_()  # и запускаем приложение
 
 # команды управления инвертором мэи в отдельной вкладке -

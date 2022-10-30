@@ -1,5 +1,6 @@
 import datetime
 import os
+import time
 
 import pandas as pd
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
@@ -29,7 +30,7 @@ class SaveToFileThread(QThread):
     iter_count = 1
     current_params_list = []
     ready_persent = 0
-    adapter = None #CANAdapter()
+    adapter = None  # CANAdapter()
 
     def __init__(self):
         super().__init__()
@@ -127,7 +128,7 @@ class MainThread(QThread):
     iter_count = 1
     current_params_list = []
     current_node = EVONode()
-    adapter = None #CANAdapter()
+    adapter = None  # CANAdapter()
 
     def __init__(self):
         super().__init__()
@@ -244,6 +245,47 @@ class MainThread(QThread):
                 else:
                     answer = 'Нет связи с CAN1-адаптером'
                 return answer + ' Для калибровки и инверсии инвертора\n нужно ВЫКЛЮЧИТЬ высокое напряжение'
+
+
+class WaitCanAnswerThread(QThread):
+    SignalOfProcess = pyqtSignal(str)
+    adapter = None  # CANAdapter()
+    id_for_read = 0x18FF87A7
+    answer_byte = 0
+    answer_dict = {
+        0: 'принята команда привязки',
+        1: 'приемник переведен в режим привязки, ожидание включения пульта ДУ',
+        2: 'привязка завершена',
+        254: 'ошибка',
+        255: 'команда недоступна'
+    }
+    wait_time = 10000   # максимальное время, через которое поток отключится
+
+    def __init__(self):
+        super().__init__()
+        self.start_time = time.perf_counter()
+
+    def run(self):
+        def request_ans():
+            if time.perf_counter() > self.start_time + self.wait_time:
+                self.quit()
+                self.wait()
+                return
+            ans = self.adapter.can_read(self.id_for_read)
+            if not isinstance(ans, str):
+                byte_a = ans[self.answer_byte]
+                if byte_a in self.answer_dict:
+                    ans = self.answer_dict[byte_a]
+                else:
+                    ans = 'Ошибочный байт, нет в словаре'
+            self.SignalOfProcess.emit(ans)
+
+        timer = QTimer()
+        timer.timeout.connect(request_ans)
+        timer.start(2)
+
+        loop = QEventLoop()
+        loop.exec_()
 
 
 def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
