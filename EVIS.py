@@ -406,7 +406,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.errors_browser.setText(list_of_errors)
         self.show_error_tree(err_dict)
 
-
     @pyqtSlot(int, str, bool)
     def progress_bar_fulling(self, percent: int, err: str, is_finished: bool):
         # рисуем змейку прогресса
@@ -674,7 +673,16 @@ def mpei_answer(s=''):
     if s:
         QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s, QMessageBox.Ok)
     else:
-        QMessageBox.information(window, "Успешный успех!", 'Команда отправлена \n о выполнении инвертор не сообщает', QMessageBox.Ok)
+        QMessageBox.information(window, "Успешный успех!", 'Команда отправлена \n о выполнении инвертор не сообщает',
+                                QMessageBox.Ok)
+
+
+def joystick_bind():
+    pass
+
+
+def suspension_to_zero():
+    pass
 
 
 if __name__ == '__main__':
@@ -689,13 +697,18 @@ if __name__ == '__main__':
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
     # и сигналы нажатия на кнопки
+    # -----------------Инвертор---------------------------
     window.invert_btn.clicked.connect(mpei_invert)
     window.fault_reset_btn.clicked.connect(mpei_fault_reset)
     window.calibrate_btn.clicked.connect(mpei_calibrate)
     window.power_on_btn.clicked.connect(mpei_power_on)
     window.reset_device_btn.clicked.connect(mpei_reset_device)
     window.reset_param_btn.clicked.connect(mpei_reset_params)
-
+    window.invertor_mpei_box.setEnabled(False)
+    # ------------------Кнопки вспомогательные----------------
+    window.joy_bind_btn.clicked.connect(joystick_bind)
+    window.susp_zero_btn.clicked.connect(suspension_to_zero)
+    # ------------------Главные кнопки-------------------------
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
@@ -706,13 +719,11 @@ if __name__ == '__main__':
     alt_node_list = full_node_list(vmu_param_file).copy()
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
-    window.vmu_param_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-    window.invertor_mpei_box.setEnabled(False)
-    window.show_nodes_tree(alt_node_list)
+    # показываю дерево с блоками и что ошибок нет
     window.show_error_tree({})
+    window.show_nodes_tree(alt_node_list)
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
-        window.nodes_tree.adjustSize()
         if can_adapter.isDefined:
             window.connect_to_node()
         window.show()  # Показываем окно

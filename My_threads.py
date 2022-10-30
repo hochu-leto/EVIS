@@ -231,6 +231,8 @@ class MainThread(QThread):
     def invertor_command(self, command: str):
         if command not in invertor_command_dict.keys():
             return 'Неверная Команда'
+        if self.isRunning():
+            self.wait(100)
         for node in self.current_nodes_list:
             if node.name == 'Инвертор_МЭИ':
                 # передавать надо исключительно в первый кан
