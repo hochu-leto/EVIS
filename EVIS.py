@@ -65,7 +65,7 @@ import pathlib
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values
+from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values, WaitCanAnswerThread
 from Parametr import Parametr
 from work_with_file import full_node_list, fill_sheet_dict
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, InfoMessage, set_table_width
@@ -307,7 +307,7 @@ def check_node_online(all_node_list: list):
             if 'Инвертор_Цикл+' in nd.name:
                 has_invertor = True
             elif 'Инвертор_МЭИ' in nd.name:
-                window.invertor_dock.show()
+                window.invertor_mpei_box.setEnabled(True)
             exit_list.append(nd)
     if has_invertor:
         for nd in exit_list:
@@ -374,7 +374,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.thread.current_nodes_list = self.current_nodes_list
         self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
         self.thread.err_thread_signal.connect(self.add_new_errors)
-        self.thread.warn_thread_signal.connect(self.add_new_warnings)
         self.thread.adapter = can_adapter
         #  И для сохранения
         self.tr = SaveToFileThread()
@@ -403,12 +402,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.show_new_vmu_params()
 
     @pyqtSlot(str)  # добавляем ошибки в окошко
-    def add_new_errors(self, list_of_errors: str):
+    def add_new_errors(self, list_of_errors: str, err_dict: dict):
         self.errors_browser.setText(list_of_errors)
-
-    @pyqtSlot(str)  # добавляем предупреждения в окошко
-    def add_new_warnings(self, list_of_warnings: str):
-        self.warnings_browser.setText(list_of_warnings)
+        self.show_error_tree(err_dict)
 
     @pyqtSlot(int, str, bool)
     def progress_bar_fulling(self, percent: int, err: str, is_finished: bool):
@@ -528,6 +524,48 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.thread.current_node = nds[0]
         self.show_node_name(self.thread.current_node)
 
+    def show_error_tree(self, nds: dict):
+        cur_item = ''
+        # запоминаю где сейчас курсор - тупо по тексту
+        try:
+            old_item_name = window.errors_tree.currentItem().text(0)
+        except AttributeError:
+            old_item_name = ''
+
+        self.errors_tree.clear()
+        self.errors_tree.setColumnCount(1)
+        self.errors_tree.header().close()
+        items = []
+
+        for nod, nod_err in nds:
+            # создаю основные вкладки - названия блоков
+            item = QTreeWidgetItem()
+            item_name = f'{nod.name}({len(nod_err)})'
+            item.setText(0, item_name)
+            if old_item_name == item_name:
+                # если если ранее выбранный блок среди имеющихся, запоминаю его
+                cur_item = item
+            for err in nod_err:
+                # подвкладки - ошибки
+                child_item = QTreeWidgetItem()
+                child_item.setText(0, str(err))
+                item.addChild(child_item)
+                # если ранее курсор стоял на группе, запоминаю ее
+                if old_item_name == str(err):  # не работает для рулевых - нужно запоминать и имя блока тоже
+                    cur_item = child_item
+            items.append(item)
+
+        if not items:
+            item = QTreeWidgetItem()
+            item.setText(0, 'Ошибок нет')
+            items.append(item)
+        self.errors_tree.insertTopLevelItems(0, items)
+        # если курсор стоял на блоке, который отсутствует в нынешнем списке, то курсор на самый первый блок...
+        if not cur_item:
+            cur_item = self.errors_tree.topLevelItem(0)
+        if cur_item.childCount():
+            self.errors_tree.setCurrentItem(cur_item)
+
     def show_node_name(self, nd: EVONode):
         # чтоб юзер понимал в каком блоке он находится
         self.node_name_lab.setText(nd.name)
@@ -538,11 +576,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         return
 
     def connect_to_node(self):
-        global can_adapter
         # такое бывает при первом подключении или если вырвали адаптер - надо заново его определить
         if not can_adapter.isDefined:
             self.log_lbl.setText('Определяется подключенный адаптер...')
-            can_adapter.find_adapters()
+            if not can_adapter.find_adapters():
+                self.log_lbl.setText('Адаптер не подключен')
+                return
+        # если у нас вообще нет адаптеров, надо выходить
         # наверное, это можно объединить, если вырвали адаптер, список тоже нужно обновлять,\
         # хотя когда теряем кан-шину также есть смысл обновить список подключенных блоков
         # надо это добавить!
@@ -635,7 +675,41 @@ def mpei_answer(s=''):
     if s:
         QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s, QMessageBox.Ok)
     else:
-        QMessageBox.information(window, "Успешный успех!", 'Команда отправлена \n о выполнении инвертор не сообщает', QMessageBox.Ok)
+        QMessageBox.information(window, "Успешный успех!", 'Команда отправлена \n о выполнении инвертор не сообщает',
+                                QMessageBox.Ok)
+
+
+def joystick_bind():
+    if not can_adapter.isDefined:
+        if not can_adapter.find_adapters():
+            return
+    if 250 in can_adapter.adapters_dict:
+        adapter = can_adapter.adapters_dict[250]
+        adapter.can_write(0x18FF86A5, [0] * 8)
+        wait_thread = WaitCanAnswerThread()
+        wait_thread.SignalOfProcess.connect(set_log_lbl)
+        wait_thread.start()
+    else:
+        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
+
+
+@pyqtSlot(str)
+def set_log_lbl(s: str):
+    window.log_lbl.setText(s)
+
+
+def suspension_to_zero():
+    if not can_adapter.isDefined:
+        if not can_adapter.find_adapters():
+            return
+    if 250 in can_adapter.adapters_dict:
+        adapter = can_adapter.adapters_dict[250]
+        adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
+        # wait_thread = WaitCanAnswerThread()
+        # wait_thread.SignalOfProcess.connect(set_log_lbl)
+        # wait_thread.start()
+    else:
+        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
 
 if __name__ == '__main__':
@@ -650,13 +724,18 @@ if __name__ == '__main__':
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
     # и сигналы нажатия на кнопки
+    # -----------------Инвертор---------------------------
     window.invert_btn.clicked.connect(mpei_invert)
     window.fault_reset_btn.clicked.connect(mpei_fault_reset)
     window.calibrate_btn.clicked.connect(mpei_calibrate)
     window.power_on_btn.clicked.connect(mpei_power_on)
     window.reset_device_btn.clicked.connect(mpei_reset_device)
     window.reset_param_btn.clicked.connect(mpei_reset_params)
-
+    window.invertor_mpei_box.setEnabled(False)
+    # ------------------Кнопки вспомогательные----------------
+    window.joy_bind_btn.clicked.connect(joystick_bind)
+    window.susp_zero_btn.clicked.connect(suspension_to_zero)
+    # ------------------Главные кнопки-------------------------
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
@@ -667,17 +746,18 @@ if __name__ == '__main__':
     alt_node_list = full_node_list(vmu_param_file).copy()
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
-    window.vmu_param_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-    window.invertor_dock.hide()
-    window.invertor_dock.setEnabled(True)
+    # показываю дерево с блоками и что ошибок нет
+    window.show_error_tree({})
     window.show_nodes_tree(alt_node_list)
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
-        window.nodes_tree.adjustSize()
-        if can_adapter.isDefined:
-            window.connect_to_node()
         window.show()  # Показываем окно
         splash.finish(window)
+        if can_adapter.find_adapters():
+            window.connect_to_node()
+        else:
+            window.log_lbl.setText('Адаптер не подключен')
+
         app.exec_()  # и запускаем приложение
 
 # команды управления инвертором мэи в отдельной вкладке -

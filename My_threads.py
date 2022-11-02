@@ -1,5 +1,6 @@
 import datetime
 import os
+import time
 
 import pandas as pd
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
@@ -29,11 +30,11 @@ class SaveToFileThread(QThread):
     iter_count = 1
     current_params_list = []
     ready_persent = 0
+    adapter = None  # CANAdapter()
 
     def __init__(self):
         super().__init__()
         self.max_errors = 30
-        self.adapter = CANAdapter()
         self.node_to_save = EVONode
         self.finished.connect(self.finished_tread)
 
@@ -122,16 +123,15 @@ class MainThread(QThread):
     # сигнал со списком параметров из текущей группы
     threadSignalAThread = pyqtSignal(list)
     # сигнал с ошибками
-    err_thread_signal = pyqtSignal(str)
-    warn_thread_signal = pyqtSignal(str)
+    err_thread_signal = pyqtSignal(str, )
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
     current_node = EVONode()
+    adapter = None  # CANAdapter()
 
     def __init__(self):
         super().__init__()
-        self.adapter = CANAdapter()
         self.errors_str = ''
         self.warnings_str = ''
         self.current_nodes_list = []
@@ -189,17 +189,23 @@ class MainThread(QThread):
         def request_errors():
             # опрос ошибок, на это время опрос параметров отключается
             timer.stop()
+            err_dict = {}
+            old_err_str = self.errors_str
             for nd in self.current_nodes_list:
+
                 nd.current_errors_list = nd.check_errors(self.adapter).copy()
                 for error in nd.current_errors_list:
                     if error and error not in self.errors_str:
                         self.errors_str += f'{nd.name} : {error} \n'
+
                 nd.current_warnings_list = nd.check_errors(self.adapter, 'warnings')
                 for warning in nd.current_warnings_list:
                     if warning and warning not in self.warnings_str:
-                        self.warnings_str += f'{nd.name} : {warning} \n'
-            self.err_thread_signal.emit(self.errors_str)
-            self.warn_thread_signal.emit(self.warnings_str)
+                        self.errors_str += f'{nd.name} : {warning} \n'
+
+                err_dict[nd] = nd.current_errors_list + nd.current_warnings_list
+            if self.errors_str != old_err_str:
+                self.err_thread_signal.emit(self.errors_str, err_dict)
             timer.start(send_delay)
 
         send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
@@ -226,6 +232,8 @@ class MainThread(QThread):
     def invertor_command(self, command: str):
         if command not in invertor_command_dict.keys():
             return 'Неверная Команда'
+        if self.isRunning():
+            self.wait(100)
         for node in self.current_nodes_list:
             if node.name == 'Инвертор_МЭИ':
                 # передавать надо исключительно в первый кан
@@ -237,6 +245,47 @@ class MainThread(QThread):
                 else:
                     answer = 'Нет связи с CAN1-адаптером'
                 return answer + ' Для калибровки и инверсии инвертора\n нужно ВЫКЛЮЧИТЬ высокое напряжение'
+
+
+class WaitCanAnswerThread(QThread):
+    SignalOfProcess = pyqtSignal(str)
+    adapter = None  # CANAdapter()
+    id_for_read = 0x18FF87A7
+    answer_byte = 0
+    answer_dict = {
+        0: 'принята команда привязки',
+        1: 'приемник переведен в режим привязки, ожидание включения пульта ДУ',
+        2: 'привязка завершена',
+        254: 'ошибка',
+        255: 'команда недоступна'
+    }
+    wait_time = 10000   # максимальное время, через которое поток отключится
+
+    def __init__(self):
+        super().__init__()
+        self.start_time = time.perf_counter()
+
+    def run(self):
+        def request_ans():
+            if time.perf_counter() > self.start_time + self.wait_time:
+                self.quit()
+                self.wait()
+                return
+            ans = self.adapter.can_read(self.id_for_read)
+            if not isinstance(ans, str):
+                byte_a = ans[self.answer_byte]
+                if byte_a in self.answer_dict:
+                    ans = self.answer_dict[byte_a]
+                else:
+                    ans = 'Ошибочный байт, нет в словаре'
+            self.SignalOfProcess.emit(ans)
+
+        timer = QTimer()
+        timer.timeout.connect(request_ans)
+        timer.start(2)
+
+        loop = QEventLoop()
+        loop.exec_()
 
 
 def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
