@@ -8,7 +8,7 @@ from sys import platform
 from PyQt5.QtWidgets import QMessageBox
 
 import AdapterCAN
-from kvaser_power import Kvaser
+# from kvaser_power import Kvaser
 from marathon_power import CANMarathon
 
 
@@ -24,7 +24,8 @@ class CANAdapter:
     def find_adapters(self):
         print('Ищу адаптеры')
         if platform == "linux" or platform == "linux2":  # linux - только квасер
-            self.search_chanells(Kvaser)
+            pass
+            # self.search_chanells(Kvaser)
         elif platform == "darwin":  # OS X
             print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
         elif platform == "win32":  # Windows... - квасер в приоритете, если нет, то марафон

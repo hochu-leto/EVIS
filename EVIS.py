@@ -683,15 +683,14 @@ def joystick_bind():
     if not can_adapter.isDefined:
         if not can_adapter.find_adapters():
             return
-    if can_adapter.isDefined:
-        if 250 in can_adapter.adapters_dict:
-            adapter = can_adapter.adapters_dict[250]
-            adapter.can_write(0x18FF86A5, [0] * 8)
-            wait_thread = WaitCanAnswerThread()
-            wait_thread.SignalOfProcess.connect(set_log_lbl)
-            wait_thread.start()
-        else:
-            QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
+    if 250 in can_adapter.adapters_dict:
+        adapter = can_adapter.adapters_dict[250]
+        adapter.can_write(0x18FF86A5, [0] * 8)
+        wait_thread = WaitCanAnswerThread()
+        wait_thread.SignalOfProcess.connect(set_log_lbl)
+        wait_thread.start()
+    else:
+        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
 
 @pyqtSlot(str)
@@ -700,7 +699,17 @@ def set_log_lbl(s: str):
 
 
 def suspension_to_zero():
-    pass
+    if not can_adapter.isDefined:
+        if not can_adapter.find_adapters():
+            return
+    if 250 in can_adapter.adapters_dict:
+        adapter = can_adapter.adapters_dict[250]
+        adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
+        # wait_thread = WaitCanAnswerThread()
+        # wait_thread.SignalOfProcess.connect(set_log_lbl)
+        # wait_thread.start()
+    else:
+        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
 
 if __name__ == '__main__':
