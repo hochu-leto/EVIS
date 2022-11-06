@@ -117,17 +117,21 @@ def modify_file():
     # window.thread.current_node.name)
 
 
-def save_to_eeprom():
-    err = ''
-    for node in window.current_nodes_list:
-        if node.save_to_eeprom:
-            err += node.send_val(node.save_to_eeprom, can_adapter, value=1)
-    if err:
-        QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
-        window.log_lbl.setText('Настройки в память НЕ сохранены, ошибка ' + err)
+def save_to_eeprom(node=None):
+    if node is None:
+        node = window.thread.current_node
+    if node.save_to_eeprom:
+        err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
+        if err:
+            QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
+            window.log_lbl.setText('Настройки в память НЕ сохранены, ошибка ' + err)
+        else:
+            QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохранены в EEPROM', QMessageBox.Ok)
+            window.log_lbl.setText('Настройки сохранены в EEPROM')
+            node.param_was_changed = False
+            window.save_eeprom_btn.setEnabled(False)
     else:
-        QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохранены в EEPROM', QMessageBox.Ok)
-        window.log_lbl.setText('Настройки сохранены в EEPROM')
+        QMessageBox.information(window, "Информация", f'В {node.name} параметры сохранять не нужно', QMessageBox.Ok)
         window.save_eeprom_btn.setEnabled(False)
 
 
@@ -168,6 +172,7 @@ def want_to_value_change():
                     next_cell.setBackground(QColor(0, 254, 0, 30))
                     if window.thread.current_node.save_to_eeprom:
                         window.save_eeprom_btn.setEnabled(True)
+                        window.thread.current_node.param_was_changed = True
                 else:
                     next_cell.setBackground(QColor(254, 0, 0, 30))
                     # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
@@ -611,6 +616,22 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         ln = len(window.current_nodes_list)
         user_node_dict = self.current_nodes_list[ln - 1].group_params_dict
 
+        for node in window.thread.current_nodes_list:
+            if node.param_was_changed:
+                msg = QMessageBox(self)
+                msg.setWindowTitle("Параметры не сохранены")
+                msg.setIcon(QMessageBox.Information)
+                msg.setText(f"В блоке {node.name} были изменены параметры,\n"
+                            f" но они не сохранены в EEPROM,\n"
+                            f" нужно ли их сохранить в память?")
+
+                buttonAceptar = msg.addButton("Сохранить", QMessageBox.YesRole)
+                msg.addButton("Не сохранять", QMessageBox.RejectRole)
+                msg.setDefaultButton(buttonAceptar)
+                msg.exec_()
+                if msg.clickedButton() == buttonAceptar:
+                    save_to_eeprom(node)
+
         if NewParamsList in user_node_dict.keys():
             if user_node_dict[NewParamsList]:
                 dialog = DialogChange(f'В {NewParamsList} добавлены параметры \n'
@@ -637,7 +658,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         msg.exec_()
 
         if msg.clickedButton() == buttonAceptar:
-            if self.thread:
+            if self.thread.isRunning():
                 self.thread.quit()
                 self.thread.wait()
                 del self.thread

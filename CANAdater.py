@@ -25,6 +25,7 @@ class CANAdapter:
         print('Ищу адаптеры')
         if platform == "linux" or platform == "linux2":  # linux - только квасер
             pass
+            # -------------------------------- ИСПРАВИТЬ  -----------------------------------
             # self.search_chanells(Kvaser)
         elif platform == "darwin":  # OS X
             print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
