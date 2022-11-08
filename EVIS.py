@@ -118,7 +118,7 @@ def modify_file():
 
 
 def save_to_eeprom(node=None):
-    if node is None:
+    if not node:
         node = window.thread.current_node
     if node.save_to_eeprom:
         err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
@@ -141,6 +141,8 @@ def want_to_value_change():
     c_row = current_cell.row()
     c_col = current_cell.column()
     c_text = current_cell.text()
+    # возможно, лучше сразу флаги дёрнуть, потом их изменять
+    c_flags = current_cell.flags()
     col_name = window.vmu_param_table.horizontalHeaderItem(current_cell.column()).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
 
@@ -177,7 +179,8 @@ def want_to_value_change():
                     next_cell.setBackground(QColor(254, 0, 0, 30))
                     # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
                     # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
-                window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
+                # window.vmu_param_table.item(c_row, c_col).setFlags(c_flags() & ~Qt.ItemIsEditable)
+                current_cell.setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
                 # и запускаю поток
                 window.connect_to_node()
     # добавляю параметр в Избранное/Новый список
@@ -344,7 +347,6 @@ def erase_errors():
             if err:
                 window.thread.errors_str += f'{nod.name}: {err} \n'
     window.errors_browser.setText(window.thread.errors_str)
-    window.warnings_browser.setText(window.thread.warnings_str)
     # запускаем поток снова, если был остановлен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
@@ -406,7 +408,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             self.show_new_vmu_params()
 
-    @pyqtSlot(str)  # добавляем ошибки в окошко
+    @pyqtSlot(str, dict)  # добавляем ошибки в окошко
     def add_new_errors(self, list_of_errors: str, err_dict: dict):
         self.errors_browser.setText(list_of_errors)
         self.show_error_tree(err_dict)
@@ -541,24 +543,25 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.errors_tree.setColumnCount(1)
         self.errors_tree.header().close()
         items = []
-
-        for nod, nod_err in nds:
-            # создаю основные вкладки - названия блоков
-            item = QTreeWidgetItem()
-            item_name = f'{nod.name}({len(nod_err)})'
-            item.setText(0, item_name)
-            if old_item_name == item_name:
-                # если если ранее выбранный блок среди имеющихся, запоминаю его
-                cur_item = item
-            for err in nod_err:
-                # подвкладки - ошибки
-                child_item = QTreeWidgetItem()
-                child_item.setText(0, str(err))
-                item.addChild(child_item)
-                # если ранее курсор стоял на группе, запоминаю ее
-                if old_item_name == str(err):  # не работает для рулевых - нужно запоминать и имя блока тоже
-                    cur_item = child_item
-            items.append(item)
+        #   ругается, что ндс - нифига не словарь
+        for nod, nod_err in nds.items():
+            if nod_err:
+                # создаю основные вкладки - названия блоков
+                item = QTreeWidgetItem()
+                item_name = f'{nod}({len(nod_err)})'
+                item.setText(0, item_name)
+                if old_item_name == item_name:
+                    # если если ранее выбранный блок среди имеющихся, запоминаю его
+                    cur_item = item
+                for err in nod_err:
+                    # подвкладки - ошибки
+                    child_item = QTreeWidgetItem()
+                    child_item.setText(0, str(err))
+                    item.addChild(child_item)
+                    # если ранее курсор стоял на группе, запоминаю ее
+                    if old_item_name == str(err):  # не работает для рулевых - нужно запоминать и имя блока тоже
+                        cur_item = child_item
+                items.append(item)
 
         if not items:
             item = QTreeWidgetItem()

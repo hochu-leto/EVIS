@@ -29,6 +29,9 @@ if not dbc_files_list:
 # dbc_can2 = 'dbc/VMU_BKU_v2.dbc'
 
 file_name = fd.askopenfilename()
+if not file_name:
+    print('Файл не выбран')
+    quit()
 f = str(file_name)
 new_file_name = f[:f.rfind('.')] + '.xlsx'
 with open(file_name, "r") as file:

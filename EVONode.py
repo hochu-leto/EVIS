@@ -236,7 +236,7 @@ class EVONode:
             at = self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
             self.current_errors_list.clear()
             self.current_warnings_list.clear()
-            if not at:
+            if not at or at.strip() == '-6':    # чтобы это ни значило
                 self.check_errors(adapter)
             else:
                 self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')

@@ -123,7 +123,7 @@ class MainThread(QThread):
     # сигнал со списком параметров из текущей группы
     threadSignalAThread = pyqtSignal(list)
     # сигнал с ошибками
-    err_thread_signal = pyqtSignal(str, )
+    err_thread_signal = pyqtSignal(str, dict)
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
@@ -200,10 +200,11 @@ class MainThread(QThread):
 
                 nd.current_warnings_list = nd.check_errors(self.adapter, 'warnings')
                 for warning in nd.current_warnings_list:
-                    if warning and warning not in self.warnings_str:
+                    if warning and warning not in self.errors_str:
                         self.errors_str += f'{nd.name} : {warning} \n'
+            # Почему-только один ключ -Избранное с пустым списком,несмотря, что в пстэд есть ошибка
 
-                err_dict[nd] = nd.current_errors_list + nd.current_warnings_list
+                err_dict[nd.name] = sorted(list(nd.current_errors_list.union(nd.current_warnings_list)))
             if self.errors_str != old_err_str:
                 self.err_thread_signal.emit(self.errors_str, err_dict)
             timer.start(send_delay)
@@ -238,7 +239,6 @@ class MainThread(QThread):
             if node.name == 'Инвертор_МЭИ':
                 # передавать надо исключительно в первый кан
                 if node.request_id in self.adapter.id_nodes_dict.keys():
-
                     adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
                     answer = node.send_val(invertor_command_dict[command], adapter_can1)
                     return answer
