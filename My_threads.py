@@ -12,13 +12,14 @@ from Parametr import Parametr
 from helper import empty_par
 
 invertor_command_dict = {
-    'POWER_ON-OFF': 0x200100,
-    'RESET_DEVICE': 0x200200,
-    'RESET_PARAMETERS': 0x200201,
-    'APPLY_PARAMETERS': 0x200202,
-    'BEGIN_POSITION_SENSOR_CALIBRATION': 0x200203,
-    'INVERT_ROTATION': 0x200204,
-    'RESET_FAULTS': 0x200205}
+    'POWER_ON': (0x200100, "ОСТОРОЖНО!!! Высокое напряжение ВКЛЮЧЕНО!"),
+    'POWER_OFF': (0x200101, "Высокое напряжение выключено!"),
+    'RESET_DEVICE': (0x200200, "Инвертор перезагружен"),
+    'RESET_PARAMETERS': (0x200201, "Параметры инвертора сброшены на заводские настройки"),
+    'APPLY_PARAMETERS': (0x200202, "Текущие параметры сохранены в ЕЕПРОМ Инвертора"),
+    'BEGIN_POSITION_SENSOR_CALIBRATION': (0x200203,  "Идёт калибровка Инвертора"),
+    'INVERT_ROTATION': (0x200204, "Направление вращения двигателя инвертировано"),
+    'RESET_FAULTS': (0x200205, "Ошибки Инвертора сброшены")}
 
 
 # поток для сохранения в файл настроек блока
@@ -123,7 +124,7 @@ class MainThread(QThread):
     # сигнал со списком параметров из текущей группы
     threadSignalAThread = pyqtSignal(list)
     # сигнал с ошибками
-    err_thread_signal = pyqtSignal(str, dict)
+    err_thread_signal = pyqtSignal(dict)
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
@@ -132,8 +133,6 @@ class MainThread(QThread):
 
     def __init__(self):
         super().__init__()
-        self.errors_str = ''
-        self.warnings_str = ''
         self.current_nodes_list = []
 
     def run(self):
@@ -190,23 +189,19 @@ class MainThread(QThread):
             # опрос ошибок, на это время опрос параметров отключается
             timer.stop()
             err_dict = {}
-            old_err_str = self.errors_str
+            has_new_err = False
             for nd in self.current_nodes_list:
+                old_e_len = len(nd.current_errors_list)
+                old_w_len = len(nd.current_warnings_list)
 
                 nd.current_errors_list = nd.check_errors(self.adapter).copy()
-                for error in nd.current_errors_list:
-                    if error and error not in self.errors_str:
-                        self.errors_str += f'{nd.name} : {error} \n'
-
-                nd.current_warnings_list = nd.check_errors(self.adapter, 'warnings')
-                for warning in nd.current_warnings_list:
-                    if warning and warning not in self.errors_str:
-                        self.errors_str += f'{nd.name} : {warning} \n'
-            # Почему-только один ключ -Избранное с пустым списком,несмотря, что в пстэд есть ошибка
-
+                nd.current_warnings_list = nd.check_errors(self.adapter, 'warnings').copy()
+                if len(nd.current_errors_list) != old_e_len or len(nd.current_warnings_list) != old_w_len:
+                    has_new_err = True
                 err_dict[nd.name] = sorted(list(nd.current_errors_list.union(nd.current_warnings_list)))
-            if self.errors_str != old_err_str:
-                self.err_thread_signal.emit(self.errors_str, err_dict)
+
+            if has_new_err:
+                self.err_thread_signal.emit(err_dict)
             timer.start(send_delay)
 
         send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
@@ -231,8 +226,9 @@ class MainThread(QThread):
         loop.exec_()
 
     def invertor_command(self, command: str):
+        problem_str = 'Команда не прошла'
         if command not in invertor_command_dict.keys():
-            return 'Неверная Команда'
+            return 'Неверная Команда', problem_str
         if self.isRunning():
             self.wait(100)
         for node in self.current_nodes_list:
@@ -240,11 +236,15 @@ class MainThread(QThread):
                 # передавать надо исключительно в первый кан
                 if node.request_id in self.adapter.id_nodes_dict.keys():
                     adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
-                    answer = node.send_val(invertor_command_dict[command], adapter_can1)
-                    return answer
+                    answer = node.send_val(invertor_command_dict[command][0], adapter_can1)
+                    if not answer:
+                        suc = invertor_command_dict[command][1]
+                    else:
+                        suc = problem_str
+                    return answer, suc
                 else:
                     answer = 'Нет связи с CAN1-адаптером'
-                return answer + ' Для калибровки и инверсии инвертора\n нужно ВЫКЛЮЧИТЬ высокое напряжение'
+                return answer + ' Для калибровки и инверсии инвертора\n нужно ВЫКЛЮЧИТЬ высокое напряжение', problem_str
 
 
 class WaitCanAnswerThread(QThread):
@@ -266,23 +266,30 @@ class WaitCanAnswerThread(QThread):
         self.start_time = time.perf_counter()
 
     def run(self):
+        self.err_count = 0
         def request_ans():
-            if time.perf_counter() > self.start_time + self.wait_time:
+
+            if (time.perf_counter() > self.start_time + self.wait_time) or self.err_count > 10:
                 self.quit()
                 self.wait()
                 return
             ans = self.adapter.can_read(self.id_for_read)
             if not isinstance(ans, str):
                 byte_a = ans[self.answer_byte]
+                self.err_count = 0
                 if byte_a in self.answer_dict:
                     ans = self.answer_dict[byte_a]
+                    if byte_a == 2:
+                        self.err_count = 11
                 else:
                     ans = 'Ошибочный байт, нет в словаре'
+            else:
+                self.err_count += 1
             self.SignalOfProcess.emit(ans)
 
         timer = QTimer()
         timer.timeout.connect(request_ans)
-        timer.start(2)
+        timer.start(10)
 
         loop = QEventLoop()
         loop.exec_()

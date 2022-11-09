@@ -200,6 +200,7 @@ class EVONode:
             r_request = self.warning_request.copy()
             s_list = self.warnings_list.copy()
             current_list = self.current_warnings_list.copy()
+
         if not r_request or not s_list:
             return current_list
         err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error']) else int(v['value_error']):
@@ -232,15 +233,16 @@ class EVONode:
 
     def erase_errors(self, adapter: CANAdater):
         #  на выходе - список оставшихся ошибок или пустой список, если ОК
+        #  ошибки должны быть объектами
         if self.error_erase['address']:
-            at = self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
+            self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
             self.current_errors_list.clear()
             self.current_warnings_list.clear()
-            if not at or at.strip() == '-6':    # чтобы это ни значило
-                self.check_errors(adapter)
-            else:
-                self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
-        return self.current_errors_list
+        #     if not at or at.strip() == '-6':    # чтобы это ни значило
+        #         self.check_errors(adapter)
+        #     else:
+        #         self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
+        # return self.current_errors_list
 
     def read_string_from_can(self, adapter: CANAdater):
         value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
