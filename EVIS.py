@@ -117,17 +117,21 @@ def modify_file():
     # window.thread.current_node.name)
 
 
-def save_to_eeprom():
-    err = ''
-    for node in window.current_nodes_list:
-        if node.save_to_eeprom:
-            err += node.send_val(node.save_to_eeprom, can_adapter, value=1)
-    if err:
-        QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
-        window.log_lbl.setText('Настройки в память НЕ сохранены, ошибка ' + err)
+def save_to_eeprom(node=None):
+    if not node:
+        node = window.thread.current_node
+    if node.save_to_eeprom:
+        err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
+        if err:
+            QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
+            window.log_lbl.setText('Настройки в память НЕ сохранены, ошибка ' + err)
+        else:
+            QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохранены в EEPROM', QMessageBox.Ok)
+            window.log_lbl.setText('Настройки сохранены в EEPROM')
+            node.param_was_changed = False
+            window.save_eeprom_btn.setEnabled(False)
     else:
-        QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохранены в EEPROM', QMessageBox.Ok)
-        window.log_lbl.setText('Настройки сохранены в EEPROM')
+        QMessageBox.information(window, "Информация", f'В {node.name} параметры сохранять не нужно', QMessageBox.Ok)
         window.save_eeprom_btn.setEnabled(False)
 
 
@@ -137,6 +141,8 @@ def want_to_value_change():
     c_row = current_cell.row()
     c_col = current_cell.column()
     c_text = current_cell.text()
+    # возможно, лучше сразу флаги дёрнуть, потом их изменять
+    c_flags = current_cell.flags()
     col_name = window.vmu_param_table.horizontalHeaderItem(current_cell.column()).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
 
@@ -168,13 +174,15 @@ def want_to_value_change():
                     next_cell.setBackground(QColor(0, 254, 0, 30))
                     if window.thread.current_node.save_to_eeprom:
                         window.save_eeprom_btn.setEnabled(True)
+                        window.thread.current_node.param_was_changed = True
                 else:
                     next_cell.setBackground(QColor(254, 0, 0, 30))
-                    # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
-                    # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
-                window.vmu_param_table.item(c_row, c_col).setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
-                # и запускаю поток
-                window.connect_to_node()
+            # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
+            # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
+            window.vmu_param_table.item(c_row, c_col).setFlags(c_flags & ~Qt.ItemIsEditable)
+            # current_cell.setFlags(current_cell.flags() & ~Qt.ItemIsEditable)
+            # и запускаю поток
+            window.connect_to_node()
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
@@ -331,15 +339,13 @@ def erase_errors():
         is_run = True
         window.connect_to_node()
     # и трём все ошибки
-    window.thread.errors_str = ''
-    window.thread.warnings_str = ''
     for nod in window.current_nodes_list:
-        # метод удаления ошибок должен вернуть список ошибок, если они остались
-        for err in nod.erase_errors(can_adapter):
-            if err:
-                window.thread.errors_str += f'{nod.name}: {err} \n'
-    window.errors_browser.setText(window.thread.errors_str)
-    window.warnings_browser.setText(window.thread.warnings_str)
+        nod.erase_errors(can_adapter)
+    #     for err in nod.erase_errors(can_adapter):
+    #         if err:
+    #             window.thread.errors_str += f'{nod.name}: {err} \n'
+    # window.errors_browser.setText(window.thread.errors_str)
+    window.show_error_tree({})
     # запускаем поток снова, если был остановлен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
@@ -401,9 +407,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             self.show_new_vmu_params()
 
-    @pyqtSlot(str)  # добавляем ошибки в окошко
-    def add_new_errors(self, list_of_errors: str, err_dict: dict):
-        self.errors_browser.setText(list_of_errors)
+    @pyqtSlot(dict)  # добавляем ошибки в окошко
+    def add_new_errors(self, err_dict: dict):
         self.show_error_tree(err_dict)
 
     @pyqtSlot(int, str, bool)
@@ -536,24 +541,25 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.errors_tree.setColumnCount(1)
         self.errors_tree.header().close()
         items = []
-
-        for nod, nod_err in nds:
-            # создаю основные вкладки - названия блоков
-            item = QTreeWidgetItem()
-            item_name = f'{nod.name}({len(nod_err)})'
-            item.setText(0, item_name)
-            if old_item_name == item_name:
-                # если если ранее выбранный блок среди имеющихся, запоминаю его
-                cur_item = item
-            for err in nod_err:
-                # подвкладки - ошибки
-                child_item = QTreeWidgetItem()
-                child_item.setText(0, str(err))
-                item.addChild(child_item)
-                # если ранее курсор стоял на группе, запоминаю ее
-                if old_item_name == str(err):  # не работает для рулевых - нужно запоминать и имя блока тоже
-                    cur_item = child_item
-            items.append(item)
+        #   ругается, что ндс - нифига не словарь
+        for nod, nod_err in nds.items():
+            if nod_err:
+                # создаю основные вкладки - названия блоков
+                item = QTreeWidgetItem()
+                item_name = f'{nod}({len(nod_err)})'
+                item.setText(0, item_name)
+                if old_item_name == item_name:
+                    # если если ранее выбранный блок среди имеющихся, запоминаю его
+                    cur_item = item
+                for err in nod_err:
+                    # подвкладки - ошибки
+                    child_item = QTreeWidgetItem()
+                    child_item.setText(0, str(err))
+                    item.addChild(child_item)
+                    # если ранее курсор стоял на группе, запоминаю ее
+                    if old_item_name == str(err):  # не работает для рулевых - нужно запоминать и имя блока тоже
+                        cur_item = child_item
+                items.append(item)
 
         if not items:
             item = QTreeWidgetItem()
@@ -611,6 +617,22 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         ln = len(window.current_nodes_list)
         user_node_dict = self.current_nodes_list[ln - 1].group_params_dict
 
+        for node in window.thread.current_nodes_list:
+            if node.param_was_changed:
+                msg = QMessageBox(self)
+                msg.setWindowTitle("Параметры не сохранены")
+                msg.setIcon(QMessageBox.Information)
+                msg.setText(f"В блоке {node.name} были изменены параметры,\n"
+                            f" но они не сохранены в EEPROM,\n"
+                            f" нужно ли их сохранить в память?")
+
+                buttonAceptar = msg.addButton("Сохранить", QMessageBox.YesRole)
+                msg.addButton("Не сохранять", QMessageBox.RejectRole)
+                msg.setDefaultButton(buttonAceptar)
+                msg.exec_()
+                if msg.clickedButton() == buttonAceptar:
+                    save_to_eeprom(node)
+
         if NewParamsList in user_node_dict.keys():
             if user_node_dict[NewParamsList]:
                 dialog = DialogChange(f'В {NewParamsList} добавлены параметры \n'
@@ -637,7 +659,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         msg.exec_()
 
         if msg.clickedButton() == buttonAceptar:
-            if self.thread:
+            if self.thread.isRunning():
                 self.thread.quit()
                 self.thread.wait()
                 del self.thread
@@ -648,19 +670,28 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
 
 def mpei_invert():
+    QMessageBox.information(window, "Информация", 'Перед инверсией проверь что:\n'
+                                                  ' - высокое напряжение ВЫКЛЮЧЕНО',
+                            QMessageBox.Ok)
     mpei_answer(window.thread.invertor_command('INVERT_ROTATION'))
 
 
-def mpei_fault_reset():
-    mpei_answer(window.thread.invertor_command('RESET_FAULTS'))
-
-
 def mpei_calibrate():
+    QMessageBox.information(window, "Информация", 'Перед калибровкой проверь что:\n'
+                                                  ' - стояночный тормоз отпущен\n'
+                                                  ' - приводная ось вывешена',
+                            QMessageBox.Ok)
     mpei_answer(window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION'))
 
 
 def mpei_power_on():
-    mpei_answer(window.thread.invertor_command('POWER_ON-OFF'))
+    QMessageBox.information(window, "Информация", 'ОСТОРОЖНО!!! Сейчас будет ВКЛЮЧЕНО высокое напряжение',
+                            QMessageBox.Ok)
+    mpei_answer(window.thread.invertor_command('POWER_ON'))
+
+
+def mpei_power_off():
+    mpei_answer(window.thread.invertor_command('POWER_OFF'))
 
 
 def mpei_reset_device():
@@ -671,12 +702,13 @@ def mpei_reset_params():
     mpei_answer(window.thread.invertor_command('RESET_PARAMETERS'))
 
 
-def mpei_answer(s=''):
-    if s:
-        QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s, QMessageBox.Ok)
+def mpei_answer(s=()):
+    if s[0]:
+        QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s[0], QMessageBox.Ok)
     else:
         QMessageBox.information(window, "Успешный успех!", 'Команда отправлена \n о выполнении инвертор не сообщает',
                                 QMessageBox.Ok)
+        window.log_lbl.setText(s[1])
 
 
 def joystick_bind():
@@ -684,11 +716,19 @@ def joystick_bind():
         if not can_adapter.find_adapters():
             return
     if 250 in can_adapter.adapters_dict:
+        QMessageBox.information(window, "Информация", 'Перед привязкой проверь,\n что джойстик ВЫКЛЮЧЕН',
+                                QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
         adapter.can_write(0x18FF86A5, [0] * 8)
-        wait_thread = WaitCanAnswerThread()
-        wait_thread.SignalOfProcess.connect(set_log_lbl)
-        wait_thread.start()
+        QMessageBox.information(window, "Информация", 'Команда отправлена,\n можно ВКЛЮЧАТЬ джойстик',
+                                QMessageBox.Ok)
+        window.log_lbl.setText('Джойстик должен был весело пропиликать')
+        # wait_thread = WaitCanAnswerThread()
+        # wait_thread.adapter = adapter
+        # wait_thread.SignalOfProcess.connect(set_log_lbl)
+        # if window.thread.isRunning():
+        #     window.connect_to_node()
+        # wait_thread.start()
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
@@ -703,11 +743,16 @@ def suspension_to_zero():
         if not can_adapter.find_adapters():
             return
     if 250 in can_adapter.adapters_dict:
+        QMessageBox.information(window, "Информация", 'Перед выравниванием проверь что:\n'
+                                                      ' - тумблер АВТО включен ВВЕРХ\n'
+                                                      ' - остальные тумблеры в нейтральном положении',
+                                QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
         adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
         # wait_thread = WaitCanAnswerThread()
         # wait_thread.SignalOfProcess.connect(set_log_lbl)
         # wait_thread.start()
+        window.log_lbl.setText('Машина должна выйти в среднее положение')
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
@@ -726,9 +771,9 @@ if __name__ == '__main__':
     # и сигналы нажатия на кнопки
     # -----------------Инвертор---------------------------
     window.invert_btn.clicked.connect(mpei_invert)
-    window.fault_reset_btn.clicked.connect(mpei_fault_reset)
     window.calibrate_btn.clicked.connect(mpei_calibrate)
     window.power_on_btn.clicked.connect(mpei_power_on)
+    window.power_off_btn.clicked.connect(mpei_power_off)
     window.reset_device_btn.clicked.connect(mpei_reset_device)
     window.reset_param_btn.clicked.connect(mpei_reset_params)
     window.invertor_mpei_box.setEnabled(False)
@@ -760,8 +805,7 @@ if __name__ == '__main__':
 
         app.exec_()  # и запускаем приложение
 
-# команды управления инвертором мэи в отдельной вкладке -
-# нужные кнопки ВКЛ-ВЫКЛ высокое, Инвертировать Вращение, Сброс Ошибок, Калибровать
-# обновить параметры кву
+# нет процесса привязки джойстика
+# сделать ошибки обектами с описанием, ссылками и выводом нужных параметров
 # почему периодически после опроса всех блоков выдаёт - проверь связь с ватс и только перезагрузка - не проявилось
 # - происходит отсоединение после поиска всех блоков и обнуление списка адаптеров
