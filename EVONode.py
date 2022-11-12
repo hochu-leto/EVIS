@@ -145,6 +145,8 @@ class EVONode:
             return ''  # если пусто, значит, норм ушла
 
     def get_serial_number(self, adapter: CANAdater):
+        # if self.name == 'КВУ_ТТС':
+        #     return self.get_serial_for_ttc(adapter)
         if not isinstance(self.serial_number, str):
             return self.serial_number
 
@@ -158,6 +160,31 @@ class EVONode:
 
         self.serial_number = serial
         # print(f'{self.name} - {serial=}')
+        return self.serial_number
+
+    # Патамушто кому-то приспичило передавать серийник в чарах
+    def get_serial_for_ttc(self, adapter: CANAdater):
+        serial_ascii_address_lst = [0x218001,
+                                    0x218002,
+                                    0x218003,
+                                    0x218004]
+        ser = ''
+        for adr in serial_ascii_address_lst:
+            ge = self.get_val(adr, adapter)
+            print(ge)
+            i = 0
+            while isinstance(ge, str):
+                ge = self.get_val(adr, adapter)
+                i += 1
+                if i > 10:
+                    print(ge)
+                    return '---'
+            ser += chr(ge & 0xFF) + \
+                   chr((ge & 0xFF00) >> 8) + \
+                   chr((ge & 0xFF0000) >> 16) + \
+                   chr((ge & 0xFF000000) >> 24)
+
+        self.serial_number = ser
         return self.serial_number
 
     def get_firmware_version(self, adapter: CANAdater):
@@ -209,7 +236,7 @@ class EVONode:
         j = 0
         for adr in r_request:
             error = self.get_val(adr, adapter)
-            # print(hex(adr), error)
+            print(hex(adr), error)
             if isinstance(error, int):
                 if error <= 128:
                     big_error += error << j * 8
@@ -224,7 +251,7 @@ class EVONode:
                 if big_error in err_dict.keys():  # космический костыль
                     current_list.add(err_dict[big_error])
                 else:
-                    current_list.add('Неизвестная ошибка')
+                    current_list.add(f'Неизвестная ошибка ({big_error})')
             else:
                 for e_num, e_name in err_dict.items():
                     if big_error & e_num:
@@ -249,9 +276,7 @@ class EVONode:
         if isinstance(value, str):
             self.string_from_can = ''
             return value
-
         for byte in value:
             self.string_from_can += chr(byte)
-
-        return int(self.string_from_can.strip()) if self.string_from_can.strip().isdigit() \
-            else self.string_from_can.strip()
+        s = self.string_from_can.strip()
+        return int(s) if s.isdigit() else s

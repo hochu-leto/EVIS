@@ -130,13 +130,13 @@ class MainThread(QThread):
     current_params_list = []
     current_node = EVONode()
     adapter = None  # CANAdapter()
+    magic_word = 100794368
 
     def __init__(self):
         super().__init__()
         self.current_nodes_list = []
 
     def run(self):
-
         def emitting():  # передача заполненного списка параметров
             self.threadSignalAThread.emit(self.ans_list)
             self.params_counter = 0
@@ -173,6 +173,9 @@ class MainThread(QThread):
                         return
                 else:
                     self.errors_counter = 0
+                    if param == self.magic_word:
+                        current_param.period = 1001
+                        current_param.value = 'Параметр \nотсутствует'
             else:
                 param = 'Блок не подключен'
                 current_param.value = param

@@ -388,7 +388,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
-        global can_adapter
+        # global can_adapter
         # выясняем что вернул опрос параметров. Если параметр один и он текст - это ошибка подключения
         if len(list_of_params) < 2 and isinstance(list_of_params[0], str):
             err = str(list_of_params[0])
@@ -806,6 +806,7 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # нет процесса привязки джойстика
+#  нет процесса калибровки, установки подвески
 # сделать ошибки обектами с описанием, ссылками и выводом нужных параметров
 # почему периодически после опроса всех блоков выдаёт - проверь связь с ватс и только перезагрузка - не проявилось
 # - происходит отсоединение после поиска всех блоков и обнуление списка адаптеров
