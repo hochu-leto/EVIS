@@ -4,7 +4,7 @@
 import struct
 import traceback
 
-from PyQt5.QtCore import QTimer, Qt, QRegExp
+from PyQt5.QtCore import QTimer, Qt, QRegExp, pyqtSlot
 from PyQt5.QtGui import QFont, QRegExpValidator
 from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget
 
@@ -67,6 +67,10 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         # self.setWindowIcon(QMessageBox.Information)
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
+    @pyqtSlot(str)
+    def change_mess(self, st: str):
+        self.lineEdit.setText(st)
+
 
 def set_table_width(table: QTableWidget, col_w_stretch=None):
     col = table.columnCount()
@@ -79,6 +83,7 @@ def set_table_width(table: QTableWidget, col_w_stretch=None):
     for i in range(col):
         wid = byt * col_w_stretch[i]
         table.setColumnWidth(i, wid)
+
 
 # Если при ошибке в слотах приложение просто падает без стека,
 # есть хороший способ ловить такие ошибки:

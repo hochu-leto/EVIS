@@ -77,6 +77,7 @@ dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 sys.excepthook = log_uncaught_exceptions
+wait_thread = WaitCanAnswerThread()
 
 
 def make_compare_params_list():
@@ -668,6 +669,23 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             event.ignore()
 
+    def change_tab(self):
+        if self.main_tab.currentWidget() == self.management_tab:
+            if self.thread.isRunning():
+                self.connect_to_node()
+                print('Поток остановлен')
+            print('Вкладка управление')
+        elif self.main_tab.currentWidget() == self.params_tab:
+            self.connect_to_node()
+            print('Вкладка параметры, поток запущен')
+        elif self.main_tab.currentWidget() == self.grafics_tab:
+            # if self.thread.isRunning():
+            #     self.connect_to_node()
+            #     print('man')
+            print('Графики не готовы')
+        else:
+            print('Неизвестное состояние')
+
 
 def mpei_invert():
     QMessageBox.information(window, "Информация", 'Перед инверсией проверь что:\n'
@@ -681,7 +699,28 @@ def mpei_calibrate():
                                                   ' - стояночный тормоз отпущен\n'
                                                   ' - приводная ось вывешена',
                             QMessageBox.Ok)
-    mpei_answer(window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION'))
+    s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION')
+    if s[0]:
+        QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s[0], QMessageBox.Ok)
+    else:
+        wait_thread.adapter = can_adapter.adapters_dict[125]
+        wait_thread.id_for_read = 0x181
+        wait_thread.answer_byte = 7
+        wait_thread.answer_dict = {x: hex(x) for x in range(255)}
+        dialog = DialogChange('Процесс калибровки', 'Команда отправлена')
+        dialog.lineEdit.setEnabled(False)
+        wait_thread.SignalOfProcess.connect(dialog.change_mess)
+        wait_thread.start()
+
+        if dialog.exec_():
+            wait_thread.quit()
+            wait_thread.wait()
+            print('Поток остановлен')
+        # ok @ evocargo.com
+        # wait_thread.SignalOfProcess.connect(set_log_lbl)
+        # QMessageBox.information(window, "Успешный успех!", 'Команда отправлена \n о выполнении инвертор не сообщает',
+        #                         QMessageBox.Ok)
+        window.log_lbl.setText(s[1])
 
 
 def mpei_power_on():
@@ -764,6 +803,8 @@ if __name__ == '__main__':
     splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
+    #
+    window.main_tab.currentChanged.connect(window.change_tab)
     # подключаю сигналы нажатия на окошки
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.nodes_tree.doubleClicked.connect(window.double_click)
@@ -776,7 +817,7 @@ if __name__ == '__main__':
     window.power_off_btn.clicked.connect(mpei_power_off)
     window.reset_device_btn.clicked.connect(mpei_reset_device)
     window.reset_param_btn.clicked.connect(mpei_reset_params)
-    window.invertor_mpei_box.setEnabled(False)
+    # window.invertor_mpei_box.setEnabled(False)
     # ------------------Кнопки вспомогательные----------------
     window.joy_bind_btn.clicked.connect(joystick_bind)
     window.susp_zero_btn.clicked.connect(suspension_to_zero)

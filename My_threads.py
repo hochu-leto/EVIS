@@ -17,7 +17,7 @@ invertor_command_dict = {
     'RESET_DEVICE': (0x200200, "Инвертор перезагружен"),
     'RESET_PARAMETERS': (0x200201, "Параметры инвертора сброшены на заводские настройки"),
     'APPLY_PARAMETERS': (0x200202, "Текущие параметры сохранены в ЕЕПРОМ Инвертора"),
-    'BEGIN_POSITION_SENSOR_CALIBRATION': (0x200203,  "Идёт калибровка Инвертора"),
+    'BEGIN_POSITION_SENSOR_CALIBRATION': (0x200203, "Идёт калибровка Инвертора"),
     'INVERT_ROTATION': (0x200204, "Направление вращения двигателя инвертировано"),
     'RESET_FAULTS': (0x200205, "Ошибки Инвертора сброшены")}
 
@@ -262,17 +262,20 @@ class WaitCanAnswerThread(QThread):
         254: 'ошибка',
         255: 'команда недоступна'
     }
-    wait_time = 10000   # максимальное время, через которое поток отключится
+    wait_time = 10000  # максимальное время, через которое поток отключится
+    max_err = 20
+    req_delay = 10
 
     def __init__(self):
         super().__init__()
-        self.start_time = time.perf_counter()
+        self.end_time = time.perf_counter() + self.wait_time
 
     def run(self):
         self.err_count = 0
-        def request_ans():
 
-            if (time.perf_counter() > self.start_time + self.wait_time) or self.err_count > 10:
+        def request_ans():
+            if (time.perf_counter() > self.end_time) or \
+                    self.err_count > self.max_err:
                 self.quit()
                 self.wait()
                 return
@@ -282,17 +285,15 @@ class WaitCanAnswerThread(QThread):
                 self.err_count = 0
                 if byte_a in self.answer_dict:
                     ans = self.answer_dict[byte_a]
-                    if byte_a == 2:
-                        self.err_count = 11
                 else:
                     ans = 'Ошибочный байт, нет в словаре'
             else:
                 self.err_count += 1
-            self.SignalOfProcess.emit(ans)
+            self.SignalOfProcess.emit(ans) #, imp_par_list)
 
         timer = QTimer()
         timer.timeout.connect(request_ans)
-        timer.start(10)
+        timer.start(self.req_delay)
 
         loop = QEventLoop()
         loop.exec_()
