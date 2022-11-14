@@ -145,8 +145,8 @@ class EVONode:
             return ''  # если пусто, значит, норм ушла
 
     def get_serial_number(self, adapter: CANAdater):
-        # if self.name == 'КВУ_ТТС':
-        #     return self.get_serial_for_ttc(adapter)
+        if self.name == 'КВУ_ТТС':
+            return self.get_serial_for_ttc(adapter)
         if not isinstance(self.serial_number, str):
             return self.serial_number
 
@@ -168,24 +168,32 @@ class EVONode:
                                     0x218002,
                                     0x218003,
                                     0x218004]
+
+        def check_printable(lst: list):
+            print(lst)
+            a_st = ''
+            for s in lst:
+                print(s)
+                a_st += chr(s) if chr(s).isprintable() else ''
+            return a_st
+
         ser = ''
         for adr in serial_ascii_address_lst:
             ge = self.get_val(adr, adapter)
-            print(ge)
             i = 0
             while isinstance(ge, str):
                 ge = self.get_val(adr, adapter)
                 i += 1
                 if i > 10:
-                    print(ge)
                     return '---'
-            ser += chr(ge & 0xFF) + \
-                   chr((ge & 0xFF00) >> 8) + \
-                   chr((ge & 0xFF0000) >> 16) + \
-                   chr((ge & 0xFF000000) >> 24)
+
+            ser += check_printable([(ge & 0xFF000000) >> 24,
+                                    (ge & 0xFF0000) >> 16,
+                                    (ge & 0xFF00) >> 8,
+                                    ge & 0xFF])
 
         self.serial_number = ser
-        return self.serial_number
+        return int(self.serial_number)
 
     def get_firmware_version(self, adapter: CANAdater):
         if not isinstance(self.firmware_version, str):
@@ -236,7 +244,7 @@ class EVONode:
         j = 0
         for adr in r_request:
             error = self.get_val(adr, adapter)
-            print(hex(adr), error)
+            # print(hex(adr), error)
             if isinstance(error, int):
                 if error <= 128:
                     big_error += error << j * 8

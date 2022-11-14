@@ -68,7 +68,7 @@ from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values, WaitCanAnswerThread
 from Parametr import Parametr
 from work_with_file import full_node_list, fill_sheet_dict
-from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, InfoMessage, set_table_width
+from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list
 
 can_adapter = CANAdapter()
 
@@ -100,7 +100,7 @@ def make_compare_params_list():
                             fill_compare_values(cur_node, comp_params_dict)
                             comp_node_name += cur_node.name + ', '
                             break
-        show_empty_params_list(window.thread.current_params_list,
+        show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
                                has_compare=window.thread.current_node.has_compare_params)
         if comp_node_name:
             window.log_lbl.setText(f'Загружены параметры сравнения для блока {comp_node_name}')
@@ -204,7 +204,7 @@ def want_to_value_change():
                     window.connect_to_node()
                 else:
                     user_node.group_params_dict[NewParamsList].remove(p)
-                show_empty_params_list(window.thread.current_params_list)
+                show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
                 text = 'удалён из списка Избранное'
             else:
                 user_node.group_params_dict[NewParamsList].append(new_param)
@@ -244,63 +244,12 @@ def params_list_changed():  # если мы в левом окошке выби�
         window.connect_to_node()
     # отображаем имя блока, серийник и всё такое и обновляю список параметров в окошке справа
     window.show_node_name(window.thread.current_node)
-    show_empty_params_list(window.thread.current_params_list, has_compare=window.thread.current_node.has_compare_params)
+    show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
+                           has_compare=window.thread.current_node.has_compare_params)
     # и запускаю поток, если он был запущен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
     return True
-
-
-def show_empty_params_list(list_of_params: list, table='vmu_param_table', has_compare=False):
-    show_table = getattr(window, table)
-    show_table.setRowCount(0)
-    show_table.setRowCount(len(list_of_params))
-    row = 0
-    if has_compare:
-        show_table.setColumnCount(5)
-        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность'])
-    else:
-        show_table.setColumnCount(4)
-        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Размерность'])
-
-    # пока отображаю только три атрибута + само значение отображается позже
-    for par in list_of_params:
-        name = par.name
-        unit = par.unit
-        description = par.description
-        compare = par.compare_value if isinstance(par.compare_value, str) else zero_del(par.compare_value)
-
-        if par.editable:
-            color_opacity = 30
-        else:
-            color_opacity = 0
-        name_item = QTableWidgetItem(name)
-        name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
-        name_item.setBackground(QColor(0, 192, 0, color_opacity))
-        show_table.setItem(row, 0, name_item)
-
-        desc_item = QTableWidgetItem(description)
-        desc_item.setFlags(desc_item.flags() & ~Qt.ItemIsEditable)
-        # desc_item.setBackground(QColor(0, 192, 0, color_opacity))
-        show_table.setItem(row, 1, desc_item)
-
-        value_item = QTableWidgetItem('')
-        value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, 2, value_item)
-
-        compare_item = QTableWidgetItem(compare)
-        compare_item.setFlags(compare_item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, 3, compare_item)
-
-        unit_item = QTableWidgetItem(unit)
-        unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, show_table.columnCount() - 1, unit_item)
-
-        row += 1
-    show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-    show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-    # максимальная ширина у описания, если не хватает длины, то переносится
-    show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
 
 def check_node_online(all_node_list: list):

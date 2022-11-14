@@ -4,9 +4,10 @@
 import struct
 import traceback
 
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QTimer, Qt, QRegExp, pyqtSlot
-from PyQt5.QtGui import QFont, QRegExpValidator
-from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget
+from PyQt5.QtGui import QFont, QRegExpValidator, QColor
+from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView
 
 import Dialog_params
 import my_dialog
@@ -45,6 +46,58 @@ example_par = {'name': 'fghjk',
                'degree': 3}
 
 
+def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False):
+    # show_table = getattr(w, table)
+    show_table.setRowCount(0)
+    show_table.setRowCount(len(list_of_params))
+    row = 0
+    if has_compare:
+        show_table.setColumnCount(5)
+        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность'])
+    else:
+        show_table.setColumnCount(4)
+        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Размерность'])
+
+    # пока отображаю только три атрибута + само значение отображается позже
+    for par in list_of_params:
+        name = par.name
+        unit = par.unit
+        description = par.description
+        compare = par.compare_value if isinstance(par.compare_value, str) else zero_del(par.compare_value)
+
+        if par.editable:
+            color_opacity = 30
+        else:
+            color_opacity = 0
+        name_item = QTableWidgetItem(name)
+        name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
+        name_item.setBackground(QColor(0, 192, 0, color_opacity))
+        show_table.setItem(row, 0, name_item)
+
+        desc_item = QTableWidgetItem(description)
+        desc_item.setFlags(desc_item.flags() & ~Qt.ItemIsEditable)
+        # desc_item.setBackground(QColor(0, 192, 0, color_opacity))
+        show_table.setItem(row, 1, desc_item)
+
+        value_item = QTableWidgetItem('')
+        value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
+        show_table.setItem(row, 2, value_item)
+
+        compare_item = QTableWidgetItem(compare)
+        compare_item.setFlags(compare_item.flags() & ~Qt.ItemIsEditable)
+        show_table.setItem(row, 3, compare_item)
+
+        unit_item = QTableWidgetItem(unit)
+        unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
+        show_table.setItem(row, show_table.columnCount() - 1, unit_item)
+
+        row += 1
+    show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+    show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+    # максимальная ширина у описания, если не хватает длины, то переносится
+    show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+
+
 class InfoMessage(QDialog, Dialog_params.Ui_Dialog_params):
 
     def __init__(self, info: str):
@@ -63,13 +116,51 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         self.setupUi(self)
         self.value_name_lbl.setText(value_name)
         self.lineEdit.setText(value)
-        # self.setIcon(QMessageBox.Information)
-        # self.setWindowIcon(QMessageBox.Information)
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+        self.show_par_list = []
+
+    def show_params_table(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.params_table = QtWidgets.QTableWidget(self)
+        self.params_table.setEnabled(True)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(5)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.params_table.sizePolicy().hasHeightForWidth())
+        self.params_table.setSizePolicy(sizePolicy)
+        self.params_table.setFrameShape(QtWidgets.QFrame.Panel)
+        self.params_table.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.params_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.params_table.setObjectName("params_table")
+        self.params_table.setColumnCount(4)
+        self.params_table.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.params_table.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.params_table.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.params_table.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.params_table.setHorizontalHeaderItem(3, item)
+        self.gridLayout_3.addWidget(self.params_table, 1, 3, 4, 1)
+        item = self.params_table.horizontalHeaderItem(0)
+        item.setText(_translate("MainWindow", "Параметр"))
+        item = self.params_table.horizontalHeaderItem(1)
+        item.setText(_translate("MainWindow", "Описание"))
+        item = self.params_table.horizontalHeaderItem(2)
+        item.setText(_translate("MainWindow", "Значение"))
+        item = self.params_table.horizontalHeaderItem(3)
+        item.setText(_translate("MainWindow", "Размерность"))
 
     @pyqtSlot(str)
-    def change_mess(self, st: str):
+    def change_mess(self, st: str):  #, list_of_params: None):
         self.lineEdit.setText(st)
+        # if isinstance(list_of_params, list):  # возможно, следует проверять список ли пришёл
+        #     if not self.params_table:
+        #         self.show_params_table()
+        #         show_empty_params_list(list_of_params, show_table=self.params_table)
+        #     for param in list_of_params:
+        #         pass
 
 
 def set_table_width(table: QTableWidget, col_w_stretch=None):
