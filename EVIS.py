@@ -68,7 +68,8 @@ from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values, WaitCanAnswerThread
 from Parametr import Parametr
 from work_with_file import full_node_list, fill_sheet_dict
-from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list
+from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
+    show_new_vmu_params
 
 can_adapter = CANAdapter()
 
@@ -355,7 +356,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 self.node_list_defined = False
                 can_adapter.isDefined = False
         else:
-            self.show_new_vmu_params()
+            show_new_vmu_params(params_list=self.thread.current_params_list,
+                                table=self.vmu_param_table,
+                                has_compare_params=self.thread.current_node.has_compare_params)
 
     @pyqtSlot(dict)  # добавляем ошибки в окошко
     def add_new_errors(self, err_dict: dict):
@@ -415,29 +418,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # для всех остальных - просто подключаемся
         if not self.thread.isRunning():
             self.connect_to_node()
-
-    def show_new_vmu_params(self):
-        row = 0
-        for par in self.thread.current_params_list:
-            v_name = par.value if isinstance(par.value, str) else zero_del(par.value)
-            value_item = QTableWidgetItem(v_name)
-            if par.editable:
-                flags = (value_item.flags() | Qt.ItemIsEditable)
-            else:
-                flags = value_item.flags() & ~Qt.ItemIsEditable
-            value_item.setFlags(flags)
-            # подкрашиваем в голубой в зависимости от периода опроса
-            color_opacity = int((150 / window.thread.max_iteration) * par.period) + 3
-            value_item.setBackground(QColor(0, 255, 255, color_opacity))
-            self.vmu_param_table.setItem(row, 2, value_item)
-            if self.thread.current_node.has_compare_params:
-                compare_name = self.vmu_param_table.item(row, 3).text()
-                if v_name.strip() != compare_name.strip():
-                    color = QColor(255, 0, 0, 50)
-                else:
-                    color = QColor(255, 255, 255, 0)
-                self.vmu_param_table.item(row, 3).setBackground(color)
-            row += 1
 
     def show_nodes_tree(self, nds: list):
         cur_item = ''
@@ -653,10 +633,15 @@ def mpei_calibrate():
         QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s[0], QMessageBox.Ok)
     else:
         wait_thread.adapter = can_adapter.adapters_dict[125]
-        wait_thread.id_for_read = 0x181
-        wait_thread.answer_byte = 7
-        wait_thread.answer_dict = {x: hex(x) for x in range(255)}
+        wait_thread.id_for_read = 0x381
+        wait_thread.answer_byte = 0
+        wait_thread.answer_dict = {0x1A: 'Принята команда на калибровку',
+                                   0x1B: 'Идёт калибровка...',
+                                   0x0A: 'Калибровка прошла успешно!',
+                                   0x02: 'Настройки сохранены в ЕЕПРОМ',
+                                   }
         dialog = DialogChange('Процесс калибровки', 'Команда отправлена')
+        dialog.setWindowTitle('Калибровка Инвертора МЭИ')
         dialog.lineEdit.setEnabled(False)
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.start()

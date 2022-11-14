@@ -251,7 +251,7 @@ class MainThread(QThread):
 
 
 class WaitCanAnswerThread(QThread):
-    SignalOfProcess = pyqtSignal(str)
+    SignalOfProcess = pyqtSignal(str, list)
     adapter = None  # CANAdapter()
     id_for_read = 0x18FF87A7
     answer_byte = 0
@@ -265,6 +265,7 @@ class WaitCanAnswerThread(QThread):
     wait_time = 10000  # максимальное время, через которое поток отключится
     max_err = 20
     req_delay = 10
+    imp_par_list = []
 
     def __init__(self):
         super().__init__()
@@ -289,7 +290,10 @@ class WaitCanAnswerThread(QThread):
                     ans = 'Ошибочный байт, нет в словаре'
             else:
                 self.err_count += 1
-            self.SignalOfProcess.emit(ans) #, imp_par_list)
+            if self.imp_par_list:
+                for param in self.imp_par_list:
+                    param.get_value(self.adapter)
+            self.SignalOfProcess.emit(ans, self.imp_par_list)
 
         timer = QTimer()
         timer.timeout.connect(request_ans)

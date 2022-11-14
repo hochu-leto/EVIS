@@ -98,6 +98,30 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
     show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
 
+def show_new_vmu_params(params_list, table, has_compare_params=False):
+    row = 0
+    for par in params_list:
+        v_name = par.value if isinstance(par.value, str) else zero_del(par.value)
+        value_item = QTableWidgetItem(v_name)
+        if par.editable:
+            flags = (value_item.flags() | Qt.ItemIsEditable)
+        else:
+            flags = value_item.flags() & ~Qt.ItemIsEditable
+        value_item.setFlags(flags)
+        # подкрашиваем в голубой в зависимости от периода опроса
+        color_opacity = int((150 / 1000) * par.period) + 3
+        value_item.setBackground(QColor(0, 255, 255, color_opacity))
+        table.setItem(row, 2, value_item)
+        if has_compare_params:
+            compare_name = table.item(row, 3).text()
+            if v_name.strip() != compare_name.strip():
+                color = QColor(255, 0, 0, 50)
+            else:
+                color = QColor(255, 255, 255, 0)
+            table.item(row, 3).setBackground(color)
+        row += 1
+
+
 class InfoMessage(QDialog, Dialog_params.Ui_Dialog_params):
 
     def __init__(self, info: str):
@@ -152,15 +176,14 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         item = self.params_table.horizontalHeaderItem(3)
         item.setText(_translate("MainWindow", "Размерность"))
 
-    @pyqtSlot(str)
-    def change_mess(self, st: str):  #, list_of_params: None):
+    @pyqtSlot(str, list)
+    def change_mess(self, st: str, list_of_params: None):
         self.lineEdit.setText(st)
-        # if isinstance(list_of_params, list):  # возможно, следует проверять список ли пришёл
-        #     if not self.params_table:
-        #         self.show_params_table()
-        #         show_empty_params_list(list_of_params, show_table=self.params_table)
-        #     for param in list_of_params:
-        #         pass
+        if list_of_params is not None and isinstance(list_of_params, list):
+            if not self.params_table:
+                self.show_params_table()
+                show_empty_params_list(list_of_params, show_table=self.params_table)
+            show_new_vmu_params(list_of_params, self.params_table)
 
 
 def set_table_width(table: QTableWidget, col_w_stretch=None):
