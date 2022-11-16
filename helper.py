@@ -135,77 +135,57 @@ class InfoMessage(QDialog, Dialog_params.Ui_Dialog_params):
 
 class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
-    def __init__(self, value_name: str, value):
+    def __init__(self, label=None, value=None, table=None, radio_btn=None, text=None, process=None):
         super().__init__()
         self.setupUi(self)
-        self.value_name_lbl.setText(value_name)
-        self.lineEdit.setText(value)
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
-        self.show_par_list = []
-        self.param_table.hide()
-        self.r_btn1.hide()
-        self.r_btn2.hide()
-        self.text_browser.hide()
-        self.process_bar.hide()
-        # self.value_name_lbl.hide()
-        # self.lineEdit.hide()
+        # никаких защит и проверок
+
+        if label is not None:
+            self.value_name_lbl.setText(label)
+        else:
+            self.value_name_lbl.hide()
+
+        if value is not None:
+            self.lineEdit.setText(value)
+        else:
+            self.lineEdit.hide()
+
+        if table is not None:
+            show_empty_params_list(table, show_table=self.param_table)
+        else:
+            self.param_table.hide()
+
+        if radio_btn is not None:
+            self.r_btn1.setText(radio_btn[0])
+            self.r_btn2.setText(radio_btn[1])
+        else:
+            self.r_btn1.hide()
+            self.r_btn2.hide()
+
+        if text is not None:
+            self.text_browser.setText(text)
+        else:
+            self.text_browser.hide()
+
+        if text is not None:
+            self.text_browser.setText(value)
+        else:
+            self.text_browser.hide()
+
+        if process is not None:
+            self.process_bar.setValue(process)
+        else:
+            self.process_bar.hide()
+
         self.adjustSize()
-    # def show_params_table(self):
-    #     _translate = QtCore.QCoreApplication.translate
-    #     self.params_table = QtWidgets.QTableWidget(self)
-    #     self.params_table.setEnabled(True)
-    #     sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-    #     sizePolicy.setHorizontalStretch(5)
-    #     sizePolicy.setVerticalStretch(0)
-    #     sizePolicy.setHeightForWidth(self.params_table.sizePolicy().hasHeightForWidth())
-    #     self.params_table.setSizePolicy(sizePolicy)
-    #     self.params_table.setFrameShape(QtWidgets.QFrame.Panel)
-    #     self.params_table.setFrameShadow(QtWidgets.QFrame.Sunken)
-    #     self.params_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-    #     self.params_table.setObjectName("params_table")
-    #     self.params_table.setColumnCount(4)
-    #     self.params_table.setRowCount(0)
-    #     item = QtWidgets.QTableWidgetItem()
-    #     self.params_table.setHorizontalHeaderItem(0, item)
-    #     item = QtWidgets.QTableWidgetItem()
-    #     self.params_table.setHorizontalHeaderItem(1, item)
-    #     item = QtWidgets.QTableWidgetItem()
-    #     self.params_table.setHorizontalHeaderItem(2, item)
-    #     item = QtWidgets.QTableWidgetItem()
-    #     self.params_table.setHorizontalHeaderItem(3, item)
-    #     self.gridLayout_3.addWidget(self.params_table, 1, 3, 4, 1)
-    #     item = self.params_table.horizontalHeaderItem(0)
-    #     item.setText(_translate("MainWindow", "Параметр"))
-    #     item = self.params_table.horizontalHeaderItem(1)
-    #     item.setText(_translate("MainWindow", "Описание"))
-    #     item = self.params_table.horizontalHeaderItem(2)
-    #     item.setText(_translate("MainWindow", "Значение"))
-    #     item = self.params_table.horizontalHeaderItem(3)
-    #     item.setText(_translate("MainWindow", "Размерность"))
 
     @pyqtSlot(str, list)
-    def change_mess(self, st: str, list_of_params: None):
+    def change_mess(self, st: str, list_of_params=None):
         if st:
-            self.lineEdit.setText(st)
+            self.text_browser.append(st)
         if list_of_params is not None and isinstance(list_of_params, list):
-            pass
-            # if not self.params_table:
-            #     self.show_params_table()
-            #     show_empty_params_list(list_of_params, show_table=self.params_table)
-            # show_new_vmu_params(list_of_params, self.params_table)
-            #
-
-def set_table_width(table: QTableWidget, col_w_stretch=None):
-    col = table.columnCount()
-    table_w = table.width()
-    if col_w_stretch is None:
-        col_w_stretch = [1 for _ in range(col)]
-    if len(col_w_stretch) < col:
-        col_w_stretch += [1 for _ in range(col - len(col_w_stretch))]
-    byt = table_w / sum(col_w_stretch)
-    for i in range(col):
-        wid = byt * col_w_stretch[i]
-        table.setColumnWidth(i, wid)
+            show_new_vmu_params(list_of_params, self.params_table)
 
 
 # Если при ошибке в слотах приложение просто падает без стека,

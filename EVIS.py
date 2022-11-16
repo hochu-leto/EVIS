@@ -156,7 +156,7 @@ def want_to_value_change():
 
         is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
         if is_editable:
-            dialog = DialogChange(current_param.name, c_text.strip())
+            dialog = DialogChange(label=current_param.name, value=c_text.strip())
             reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
             dialog.lineEdit.setValidator(QRegExpValidator(reg_ex))
             if dialog.exec_() == QDialog.Accepted:
@@ -390,7 +390,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # для Нового списка даю возможность изменить его название
         if self.nodes_tree.currentItem().text(0) == NewParamsList:
             if self.thread.current_params_list:
-                dialog = DialogChange('Можно изменить название списка', NewParamsList)
+                dialog = DialogChange(label='Можно изменить название списка', value=NewParamsList)
                 if dialog.exec_() == QDialog.Accepted:
                     val = dialog.lineEdit.text()
                     if val and val != NewParamsList:
@@ -565,8 +565,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         if NewParamsList in user_node_dict.keys():
             if user_node_dict[NewParamsList]:
-                dialog = DialogChange(f'В {NewParamsList} добавлены параметры \n'
-                                      f' нужно сохранить этот список?', NewParamsList)
+                dialog = DialogChange(label=f'В {NewParamsList} добавлены параметры \n'
+                                      f' нужно сохранить этот список?', value=NewParamsList)
                 if dialog.exec_() == QDialog.Accepted:
                     val = dialog.lineEdit.text()
                     self.log_lbl.setText(f'Добавление списка {val} в файл')
@@ -641,7 +641,7 @@ def mpei_calibrate():
                                    0x02: 'Настройки сохранены в ЕЕПРОМ',
                                    }
         wait_thread.imp_par_list = []
-        dialog = DialogChange('Процесс калибровки', 'Команда отправлена')
+        dialog = DialogChange(label='Процесс калибровки', text='Команда отправлена')
         dialog.setWindowTitle('Калибровка Инвертора МЭИ')
         dialog.lineEdit.setEnabled(False)
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
