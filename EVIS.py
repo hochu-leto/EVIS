@@ -638,9 +638,12 @@ def mpei_calibrate():
         wait_thread.answer_dict = {0x1A: 'Принята команда на калибровку',
                                    0x1B: 'Идёт калибровка...',
                                    0x0A: 'Калибровка прошла успешно!',
+                                   0x0B: 'Калибровка не удалась',
                                    0x02: 'Настройки сохранены в ЕЕПРОМ',
                                    }
+        # здесь должен быть список с нужными параметрами
         wait_thread.imp_par_list = []
+
         dialog = DialogChange(label='Процесс калибровки', text='Команда отправлена')
         dialog.setWindowTitle('Калибровка Инвертора МЭИ')
         dialog.text_browser.setEnabled(False)
