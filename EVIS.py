@@ -643,7 +643,7 @@ def mpei_calibrate():
         wait_thread.imp_par_list = []
         dialog = DialogChange(label='Процесс калибровки', text='Команда отправлена')
         dialog.setWindowTitle('Калибровка Инвертора МЭИ')
-        dialog.lineEdit.setEnabled(False)
+        dialog.text_browser.setEnabled(False)
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.start()
 
@@ -651,10 +651,7 @@ def mpei_calibrate():
             wait_thread.quit()
             wait_thread.wait()
             print('Поток остановлен')
-        # ok @ evocargo.com
-        # wait_thread.SignalOfProcess.connect(set_log_lbl)
-        # QMessageBox.information(window, "Успешный успех!", 'Команда отправлена \n о выполнении инвертор не сообщает',
-        #                         QMessageBox.Ok)
+
         window.log_lbl.setText(s[1])
 
 
