@@ -264,7 +264,7 @@ class WaitCanAnswerThread(QThread):
     }
     wait_time = 10000  # максимальное время, через которое поток отключится
     max_err = 20
-    req_delay = 10
+    req_delay = 100
     imp_par_list = []
 
     def __init__(self):
@@ -275,6 +275,7 @@ class WaitCanAnswerThread(QThread):
         self.err_count = 0
 
         def request_ans():
+            answer = ''
             if (time.perf_counter() > self.end_time) or \
                     self.err_count > self.max_err:
                 self.quit()
@@ -285,15 +286,13 @@ class WaitCanAnswerThread(QThread):
                 byte_a = ans[self.answer_byte]
                 self.err_count = 0
                 if byte_a in self.answer_dict:
-                    ans = self.answer_dict[byte_a]
-                else:
-                    ans = 'Ошибочный байт, нет в словаре'
+                    answer = self.answer_dict[byte_a]
             else:
                 self.err_count += 1
             if self.imp_par_list:
                 for param in self.imp_par_list:
                     param.get_value(self.adapter)
-            self.SignalOfProcess.emit(ans, self.imp_par_list)
+            self.SignalOfProcess.emit(answer, self.imp_par_list)
 
         timer = QTimer()
         timer.timeout.connect(request_ans)

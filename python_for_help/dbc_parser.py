@@ -105,6 +105,11 @@ for v in df_phys_t:
 
 df = pd.DataFrame(final_list, columns=cols)
 # df.to_excel(new_file_name, index=False)
-with ExcelWriter(new_file_name, mode="a" if os.path.exists(new_file_name) else "w", if_sheet_exists='new') as writer:
+if os.path.exists(new_file_name):
+    ex_wr = ExcelWriter(new_file_name, mode="a", if_sheet_exists='new')
+else:
+    ex_wr = ExcelWriter(new_file_name, mode="w")
+
+with ex_wr as writer:
     df.to_excel(writer, index=False)
 

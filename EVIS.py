@@ -640,6 +640,7 @@ def mpei_calibrate():
                                    0x0A: 'Калибровка прошла успешно!',
                                    0x02: 'Настройки сохранены в ЕЕПРОМ',
                                    }
+        wait_thread.imp_par_list = []
         dialog = DialogChange('Процесс калибровки', 'Команда отправлена')
         dialog.setWindowTitle('Калибровка Инвертора МЭИ')
         dialog.lineEdit.setEnabled(False)

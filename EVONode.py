@@ -146,7 +146,9 @@ class EVONode:
 
     def get_serial_number(self, adapter: CANAdater):
         if self.name == 'КВУ_ТТС':
-            return self.get_serial_for_ttc(adapter)
+            r = self.get_serial_for_ttc(adapter)
+            if r:
+                return r
         if not isinstance(self.serial_number, str):
             return self.serial_number
 
@@ -193,7 +195,7 @@ class EVONode:
                                     ge & 0xFF])
 
         self.serial_number = ser
-        return int(self.serial_number)
+        return int(self.serial_number) if ser else ser
 
     def get_firmware_version(self, adapter: CANAdater):
         if not isinstance(self.firmware_version, str):
