@@ -14,25 +14,31 @@
     параметр как отдельный самостоятельный объект, может сам
     запросить параметр
     изменить параметр
-    сохранение нужного значения параметра в блок - только для записываемых параметров - а как для старого кву
+    сохранение нужного значения параметра в ЕЕПРОМ - только для записываемых параметров
 
     сохраняет все параметры текущего блока в эксель файл - можно парраллельно с основным потоком, но лучше отключаться
+    возможность выбрать параметры из разных блоков и сохранить их в отдельный список и
+        хранить пользовательский список параметров в файле - Избранное - Новый список
+    сравнение всех параметров из файла с текущими из блоков
+
 
 следующие шаги
--  линуксе по квайзеру в виндовз сама определяет подключенный адаптер
-- возможность выбрать параметры из разных блоков и сохранить их в отдельный список и
-        хранить пользовательский список параметров в файле
-        (вопрос как определять что этот список к этому блоку или к этой машине -
-        при подключении к машине определить есть параметры из пользовательского списка на данной машине - как?)
-- сравнение всех параметров из файла с текущими из блоков
+- может ли приёмник джойстика отвечать по SDO например, положения кнопок?
+- может ли БКУ отвечать по SDO хотя бы серийник?
 - опрос и удаление ошибок ТАБа
-- возможность записи текущих параметров из открытого списка и сохранять запись в эксель файл
-- виджеты по управлению параметром
 - поиск по имени и описанию параметра
- -- здесь нужно научиться парсить файлы с параметрами из старых программ
-        - рткон и бурр-сеттингс, чтоб можно было сравнивать с текущими
+- возможность записи текущих параметров из открытого списка и сохранять запись в эксель файл - лог
 - графики выбранных текущих параметров
+- виджеты по управлению параметром
+- хранение профилей блока в отдельном файле эксель с названием_блока_версия_ПО в папках с Название_блока
+        в файле список параметров и ошибки. Это позволит оставить пользовательский список Избранное
+- добавить в параметр поле со словарём значений -
+        если считано подходящее - подставлять значение из словаря (как сохранять??)
+- всплывающее меню при правом щелчке по параметру - Добавить в Избранное и Изменить период
 - автоматическое определение нужного периода опроса параметра и сохранение этого периода в свойства параметра в файл
+- линуксе по квайзеру в виндовз сама определяет подключенный адаптер
+- в новом параметре КВУ формировать ВИН номер машины+номера_блоков -
+        сделать автоматический опрос номеров и сравнение с тем, что в памяти
 
 НА ПОДУМАТЬ
 - продумать реляционную БД для параметров
@@ -68,7 +74,8 @@ from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values, WaitCanAnswerThread
 from Parametr import Parametr
 from work_with_file import full_node_list, fill_sheet_dict
-from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, InfoMessage, set_table_width
+from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
+    show_new_vmu_params
 
 can_adapter = CANAdapter()
 
@@ -77,6 +84,7 @@ dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 sys.excepthook = log_uncaught_exceptions
+wait_thread = WaitCanAnswerThread()
 
 
 def make_compare_params_list():
@@ -99,7 +107,7 @@ def make_compare_params_list():
                             fill_compare_values(cur_node, comp_params_dict)
                             comp_node_name += cur_node.name + ', '
                             break
-        show_empty_params_list(window.thread.current_params_list,
+        show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
                                has_compare=window.thread.current_node.has_compare_params)
         if comp_node_name:
             window.log_lbl.setText(f'Загружены параметры сравнения для блока {comp_node_name}')
@@ -154,7 +162,7 @@ def want_to_value_change():
 
         is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
         if is_editable:
-            dialog = DialogChange(current_param.name, c_text.strip())
+            dialog = DialogChange(label=current_param.name, value=c_text.strip())
             reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
             dialog.lineEdit.setValidator(QRegExpValidator(reg_ex))
             if dialog.exec_() == QDialog.Accepted:
@@ -203,7 +211,7 @@ def want_to_value_change():
                     window.connect_to_node()
                 else:
                     user_node.group_params_dict[NewParamsList].remove(p)
-                show_empty_params_list(window.thread.current_params_list)
+                show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
                 text = 'удалён из списка Избранное'
             else:
                 user_node.group_params_dict[NewParamsList].append(new_param)
@@ -243,63 +251,12 @@ def params_list_changed():  # если мы в левом окошке выби�
         window.connect_to_node()
     # отображаем имя блока, серийник и всё такое и обновляю список параметров в окошке справа
     window.show_node_name(window.thread.current_node)
-    show_empty_params_list(window.thread.current_params_list, has_compare=window.thread.current_node.has_compare_params)
+    show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
+                           has_compare=window.thread.current_node.has_compare_params)
     # и запускаю поток, если он был запущен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
     return True
-
-
-def show_empty_params_list(list_of_params: list, table='vmu_param_table', has_compare=False):
-    show_table = getattr(window, table)
-    show_table.setRowCount(0)
-    show_table.setRowCount(len(list_of_params))
-    row = 0
-    if has_compare:
-        show_table.setColumnCount(5)
-        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность'])
-    else:
-        show_table.setColumnCount(4)
-        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Размерность'])
-
-    # пока отображаю только три атрибута + само значение отображается позже
-    for par in list_of_params:
-        name = par.name
-        unit = par.unit
-        description = par.description
-        compare = par.compare_value if isinstance(par.compare_value, str) else zero_del(par.compare_value)
-
-        if par.editable:
-            color_opacity = 30
-        else:
-            color_opacity = 0
-        name_item = QTableWidgetItem(name)
-        name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
-        name_item.setBackground(QColor(0, 192, 0, color_opacity))
-        show_table.setItem(row, 0, name_item)
-
-        desc_item = QTableWidgetItem(description)
-        desc_item.setFlags(desc_item.flags() & ~Qt.ItemIsEditable)
-        # desc_item.setBackground(QColor(0, 192, 0, color_opacity))
-        show_table.setItem(row, 1, desc_item)
-
-        value_item = QTableWidgetItem('')
-        value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, 2, value_item)
-
-        compare_item = QTableWidgetItem(compare)
-        compare_item.setFlags(compare_item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, 3, compare_item)
-
-        unit_item = QTableWidgetItem(unit)
-        unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
-        show_table.setItem(row, show_table.columnCount() - 1, unit_item)
-
-        row += 1
-    show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-    show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-    # максимальная ширина у описания, если не хватает длины, то переносится
-    show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
 
 def check_node_online(all_node_list: list):
@@ -388,7 +345,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
-        global can_adapter
+        # global can_adapter
         # выясняем что вернул опрос параметров. Если параметр один и он текст - это ошибка подключения
         if len(list_of_params) < 2 and isinstance(list_of_params[0], str):
             err = str(list_of_params[0])
@@ -405,7 +362,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 self.node_list_defined = False
                 can_adapter.isDefined = False
         else:
-            self.show_new_vmu_params()
+            show_new_vmu_params(params_list=self.thread.current_params_list,
+                                table=self.vmu_param_table,
+                                has_compare_params=self.thread.current_node.has_compare_params)
 
     @pyqtSlot(dict)  # добавляем ошибки в окошко
     def add_new_errors(self, err_dict: dict):
@@ -437,7 +396,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # для Нового списка даю возможность изменить его название
         if self.nodes_tree.currentItem().text(0) == NewParamsList:
             if self.thread.current_params_list:
-                dialog = DialogChange('Можно изменить название списка', NewParamsList)
+                dialog = DialogChange(label='Можно изменить название списка', value=NewParamsList)
                 if dialog.exec_() == QDialog.Accepted:
                     val = dialog.lineEdit.text()
                     if val and val != NewParamsList:
@@ -465,29 +424,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # для всех остальных - просто подключаемся
         if not self.thread.isRunning():
             self.connect_to_node()
-
-    def show_new_vmu_params(self):
-        row = 0
-        for par in self.thread.current_params_list:
-            v_name = par.value if isinstance(par.value, str) else zero_del(par.value)
-            value_item = QTableWidgetItem(v_name)
-            if par.editable:
-                flags = (value_item.flags() | Qt.ItemIsEditable)
-            else:
-                flags = value_item.flags() & ~Qt.ItemIsEditable
-            value_item.setFlags(flags)
-            # подкрашиваем в голубой в зависимости от периода опроса
-            color_opacity = int((150 / window.thread.max_iteration) * par.period) + 3
-            value_item.setBackground(QColor(0, 255, 255, color_opacity))
-            self.vmu_param_table.setItem(row, 2, value_item)
-            if self.thread.current_node.has_compare_params:
-                compare_name = self.vmu_param_table.item(row, 3).text()
-                if v_name.strip() != compare_name.strip():
-                    color = QColor(255, 0, 0, 50)
-                else:
-                    color = QColor(255, 255, 255, 0)
-                self.vmu_param_table.item(row, 3).setBackground(color)
-            row += 1
 
     def show_nodes_tree(self, nds: list):
         cur_item = ''
@@ -635,8 +571,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         if NewParamsList in user_node_dict.keys():
             if user_node_dict[NewParamsList]:
-                dialog = DialogChange(f'В {NewParamsList} добавлены параметры \n'
-                                      f' нужно сохранить этот список?', NewParamsList)
+                dialog = DialogChange(label=f'В {NewParamsList} добавлены параметры \n'
+                                      f' нужно сохранить этот список?', value=NewParamsList)
                 if dialog.exec_() == QDialog.Accepted:
                     val = dialog.lineEdit.text()
                     self.log_lbl.setText(f'Добавление списка {val} в файл')
@@ -668,6 +604,23 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             event.ignore()
 
+    def change_tab(self):
+        if self.main_tab.currentWidget() == self.management_tab:
+            if self.thread.isRunning():
+                self.connect_to_node()
+                print('Поток остановлен')
+            print('Вкладка управление')
+        elif self.main_tab.currentWidget() == self.params_tab:
+            self.connect_to_node()
+            print('Вкладка параметры, поток запущен')
+        elif self.main_tab.currentWidget() == self.grafics_tab:
+            # if self.thread.isRunning():
+            #     self.connect_to_node()
+            #     print('man')
+            print('Графики не готовы')
+        else:
+            print('Неизвестное состояние')
+
 
 def mpei_invert():
     QMessageBox.information(window, "Информация", 'Перед инверсией проверь что:\n'
@@ -681,7 +634,32 @@ def mpei_calibrate():
                                                   ' - стояночный тормоз отпущен\n'
                                                   ' - приводная ось вывешена',
                             QMessageBox.Ok)
-    mpei_answer(window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION'))
+    s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION')
+    if s[0]:
+        QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s[0], QMessageBox.Ok)
+    else:
+        wait_thread.adapter = can_adapter.adapters_dict[125]
+        wait_thread.id_for_read = 0x381
+        wait_thread.answer_byte = 4
+        wait_thread.answer_dict = {0x0A: 'Калибровка прошла успешно!',
+                                   0x0B: 'Калибровка не удалась',
+                                   0x0C: 'Настройки сохранены в ЕЕПРОМ',
+                                   }
+        # здесь должен быть список с нужными параметрами
+        wait_thread.imp_par_list = []
+
+        dialog = DialogChange(label='Процесс калибровки', text='Команда на калибровку отправлена')
+        dialog.setWindowTitle('Калибровка Инвертора МЭИ')
+        dialog.text_browser.setEnabled(False)
+        wait_thread.SignalOfProcess.connect(dialog.change_mess)
+        wait_thread.start()
+
+        if dialog.exec_():
+            wait_thread.quit()
+            wait_thread.wait()
+            print('Поток остановлен')
+
+        window.log_lbl.setText(s[1])
 
 
 def mpei_power_on():
@@ -764,6 +742,8 @@ if __name__ == '__main__':
     splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
+    #
+    window.main_tab.currentChanged.connect(window.change_tab)
     # подключаю сигналы нажатия на окошки
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.nodes_tree.doubleClicked.connect(window.double_click)
@@ -806,6 +786,7 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # нет процесса привязки джойстика
+#  нет процесса калибровки, установки подвески
 # сделать ошибки обектами с описанием, ссылками и выводом нужных параметров
 # почему периодически после опроса всех блоков выдаёт - проверь связь с ватс и только перезагрузка - не проявилось
 # - происходит отсоединение после поиска всех блоков и обнуление списка адаптеров

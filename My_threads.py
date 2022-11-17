@@ -17,7 +17,7 @@ invertor_command_dict = {
     'RESET_DEVICE': (0x200200, "Инвертор перезагружен"),
     'RESET_PARAMETERS': (0x200201, "Параметры инвертора сброшены на заводские настройки"),
     'APPLY_PARAMETERS': (0x200202, "Текущие параметры сохранены в ЕЕПРОМ Инвертора"),
-    'BEGIN_POSITION_SENSOR_CALIBRATION': (0x200203,  "Идёт калибровка Инвертора"),
+    'BEGIN_POSITION_SENSOR_CALIBRATION': (0x200203, "Идёт калибровка Инвертора"),
     'INVERT_ROTATION': (0x200204, "Направление вращения двигателя инвертировано"),
     'RESET_FAULTS': (0x200205, "Ошибки Инвертора сброшены")}
 
@@ -130,13 +130,13 @@ class MainThread(QThread):
     current_params_list = []
     current_node = EVONode()
     adapter = None  # CANAdapter()
+    magic_word = 100794368
 
     def __init__(self):
         super().__init__()
         self.current_nodes_list = []
 
     def run(self):
-
         def emitting():  # передача заполненного списка параметров
             self.threadSignalAThread.emit(self.ans_list)
             self.params_counter = 0
@@ -173,6 +173,9 @@ class MainThread(QThread):
                         return
                 else:
                     self.errors_counter = 0
+                    if param == self.magic_word:
+                        current_param.period = 1001
+                        current_param.value = 'Параметр \nотсутствует'
             else:
                 param = 'Блок не подключен'
                 current_param.value = param
@@ -248,7 +251,7 @@ class MainThread(QThread):
 
 
 class WaitCanAnswerThread(QThread):
-    SignalOfProcess = pyqtSignal(str)
+    SignalOfProcess = pyqtSignal(str, list)
     adapter = None  # CANAdapter()
     id_for_read = 0x18FF87A7
     answer_byte = 0
@@ -259,17 +262,22 @@ class WaitCanAnswerThread(QThread):
         254: 'ошибка',
         255: 'команда недоступна'
     }
-    wait_time = 10000   # максимальное время, через которое поток отключится
+    wait_time = 20000  # максимальное время, через которое поток отключится
+    max_err = 20
+    req_delay = 100
+    imp_par_list = []
 
     def __init__(self):
         super().__init__()
-        self.start_time = time.perf_counter()
+        self.end_time = time.perf_counter() + self.wait_time
 
     def run(self):
         self.err_count = 0
-        def request_ans():
 
-            if (time.perf_counter() > self.start_time + self.wait_time) or self.err_count > 10:
+        def request_ans():
+            answer = ''
+            if (time.perf_counter() > self.end_time) or \
+                    self.err_count > self.max_err:
                 self.quit()
                 self.wait()
                 return
@@ -278,18 +286,17 @@ class WaitCanAnswerThread(QThread):
                 byte_a = ans[self.answer_byte]
                 self.err_count = 0
                 if byte_a in self.answer_dict:
-                    ans = self.answer_dict[byte_a]
-                    if byte_a == 2:
-                        self.err_count = 11
-                else:
-                    ans = 'Ошибочный байт, нет в словаре'
+                    answer = self.answer_dict[byte_a]
             else:
                 self.err_count += 1
-            self.SignalOfProcess.emit(ans)
+            if self.imp_par_list:
+                for param in self.imp_par_list:
+                    param.get_value(self.adapter)
+            self.SignalOfProcess.emit(answer, self.imp_par_list)
 
         timer = QTimer()
         timer.timeout.connect(request_ans)
-        timer.start(10)
+        timer.start(self.req_delay)
 
         loop = QEventLoop()
         loop.exec_()

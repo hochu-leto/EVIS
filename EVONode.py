@@ -145,6 +145,10 @@ class EVONode:
             return ''  # если пусто, значит, норм ушла
 
     def get_serial_number(self, adapter: CANAdater):
+        if self.name == 'КВУ_ТТС':
+            r = self.get_serial_for_ttc(adapter)
+            if r:
+                return r
         if not isinstance(self.serial_number, str):
             return self.serial_number
 
@@ -159,6 +163,40 @@ class EVONode:
         self.serial_number = serial
         # print(f'{self.name} - {serial=}')
         return self.serial_number
+
+    # Патамушто кому-то приспичило передавать серийник в чарах
+    # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,
+    # но вообще неплохо бы сделать эту функцию наподобие опроса ошибок по нескольким адресам,
+    # другое дело как чары парсить, наверное, это должно быть либо в ответе от блока либо в типе параметра
+    def get_serial_for_ttc(self, adapter: CANAdater):
+        serial_ascii_address_lst = [0x218001,
+                                    0x218002,
+                                    0x218003,
+                                    0x218004]
+
+        def check_printable(lst: list):
+            a_st = ''
+            for s in lst:
+                a_st += chr(s) if chr(s).isprintable() else ''
+            return a_st
+
+        ser = ''
+        for adr in serial_ascii_address_lst:
+            ge = self.get_val(adr, adapter)
+            i = 0
+            while isinstance(ge, str):
+                ge = self.get_val(adr, adapter)
+                i += 1
+                if i > 10:
+                    return '---'
+
+            ser += check_printable([(ge & 0xFF000000) >> 24,
+                                    (ge & 0xFF0000) >> 16,
+                                    (ge & 0xFF00) >> 8,
+                                    ge & 0xFF])
+
+        self.serial_number = ser
+        return int(self.serial_number) if ser else ser
 
     def get_firmware_version(self, adapter: CANAdater):
         if not isinstance(self.firmware_version, str):
@@ -204,7 +242,7 @@ class EVONode:
         if not r_request or not s_list:
             return current_list
         err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error']) else int(v['value_error']):
-                        v['description_error'] for v in s_list}
+                        v['name_error'] for v in s_list}
         big_error = 0
         j = 0
         for adr in r_request:
@@ -224,7 +262,7 @@ class EVONode:
                 if big_error in err_dict.keys():  # космический костыль
                     current_list.add(err_dict[big_error])
                 else:
-                    current_list.add('Неизвестная ошибка')
+                    current_list.add(f'Неизвестная ошибка ({big_error})')
             else:
                 for e_num, e_name in err_dict.items():
                     if big_error & e_num:
@@ -249,9 +287,7 @@ class EVONode:
         if isinstance(value, str):
             self.string_from_can = ''
             return value
-
         for byte in value:
             self.string_from_can += chr(byte)
-
-        return int(self.string_from_can.strip()) if self.string_from_can.strip().isdigit() \
-            else self.string_from_can.strip()
+        s = self.string_from_can.strip()
+        return int(s) if s.isdigit() else s
