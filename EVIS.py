@@ -640,17 +640,15 @@ def mpei_calibrate():
     else:
         wait_thread.adapter = can_adapter.adapters_dict[125]
         wait_thread.id_for_read = 0x381
-        wait_thread.answer_byte = 0
-        wait_thread.answer_dict = {0x1A: 'Принята команда на калибровку',
-                                   0x1B: 'Идёт калибровка...',
-                                   0x0A: 'Калибровка прошла успешно!',
+        wait_thread.answer_byte = 4
+        wait_thread.answer_dict = {0x0A: 'Калибровка прошла успешно!',
                                    0x0B: 'Калибровка не удалась',
-                                   0x02: 'Настройки сохранены в ЕЕПРОМ',
+                                   0x0C: 'Настройки сохранены в ЕЕПРОМ',
                                    }
         # здесь должен быть список с нужными параметрами
         wait_thread.imp_par_list = []
 
-        dialog = DialogChange(label='Процесс калибровки', text='Команда отправлена')
+        dialog = DialogChange(label='Процесс калибровки', text='Команда на калибровку отправлена')
         dialog.setWindowTitle('Калибровка Инвертора МЭИ')
         dialog.text_browser.setEnabled(False)
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
@@ -758,7 +756,7 @@ if __name__ == '__main__':
     window.power_off_btn.clicked.connect(mpei_power_off)
     window.reset_device_btn.clicked.connect(mpei_reset_device)
     window.reset_param_btn.clicked.connect(mpei_reset_params)
-    # window.invertor_mpei_box.setEnabled(False)
+    window.invertor_mpei_box.setEnabled(False)
     # ------------------Кнопки вспомогательные----------------
     window.joy_bind_btn.clicked.connect(joystick_bind)
     window.susp_zero_btn.clicked.connect(suspension_to_zero)

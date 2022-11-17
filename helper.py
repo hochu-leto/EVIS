@@ -168,11 +168,6 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         else:
             self.text_browser.hide()
 
-        if text is not None:
-            self.text_browser.setText(value)
-        else:
-            self.text_browser.hide()
-
         if process is not None:
             self.process_bar.setValue(process)
         else:
@@ -184,8 +179,8 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
     def change_mess(self, st: str, list_of_params=None):
         if st:
             self.text_browser.append(st)
-        if list_of_params is not None and isinstance(list_of_params, list):
-            show_new_vmu_params(list_of_params, self.params_table)
+        if list_of_params and isinstance(list_of_params, list):
+            show_new_vmu_params(list_of_params, self.param_table)
 
 
 # Если при ошибке в слотах приложение просто падает без стека,

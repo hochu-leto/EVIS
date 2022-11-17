@@ -165,6 +165,9 @@ class EVONode:
         return self.serial_number
 
     # Патамушто кому-то приспичило передавать серийник в чарах
+    # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,
+    # но вообще неплохо бы сделать эту функцию наподобие опроса ошибок по нескольким адресам,
+    # другое дело как чары парсить, наверное, это должно быть либо в ответе от блока либо в типе параметра
     def get_serial_for_ttc(self, adapter: CANAdater):
         serial_ascii_address_lst = [0x218001,
                                     0x218002,
@@ -172,10 +175,8 @@ class EVONode:
                                     0x218004]
 
         def check_printable(lst: list):
-            print(lst)
             a_st = ''
             for s in lst:
-                print(s)
                 a_st += chr(s) if chr(s).isprintable() else ''
             return a_st
 
@@ -241,7 +242,7 @@ class EVONode:
         if not r_request or not s_list:
             return current_list
         err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error']) else int(v['value_error']):
-                        v['description_error'] for v in s_list}
+                        v['name_error'] for v in s_list}
         big_error = 0
         j = 0
         for adr in r_request:

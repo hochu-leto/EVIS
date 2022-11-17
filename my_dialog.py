@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_value_changer_dialog(object):
     def setupUi(self, value_changer_dialog):
         value_changer_dialog.setObjectName("value_changer_dialog")
-        value_changer_dialog.resize(533, 362)
+        value_changer_dialog.resize(533, 326)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
