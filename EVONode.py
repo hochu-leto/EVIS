@@ -242,7 +242,7 @@ class EVONode:
         if not r_request or not s_list:
             return current_list
         err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error']) else int(v['value_error']):
-                        v['name_error'] for v in s_list}
+                        v['description_error'] for v in s_list}
         big_error = 0
         j = 0
         for adr in r_request:
