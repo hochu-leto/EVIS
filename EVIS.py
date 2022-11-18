@@ -329,6 +329,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
+        self.all_params_dict = {}
         self.setupUi(self)
         self.current_nodes_list = []
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
@@ -548,6 +549,15 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
 
+    def make_all_param_dict(self):
+        for nd in self.current_nodes_list:
+            for param in nd.group_params_dict:
+                self.all_params_dict[param.name + \
+                                     '#' + param.description + \
+                                     '#' + nd.name] = param
+
+    def find_param(self, s):
+        pass
     def closeEvent(self, event):
         # может, есть смысл сделать из этого функцию, дабы не повторять дважды
         ln = len(window.current_nodes_list)
@@ -572,7 +582,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if NewParamsList in user_node_dict.keys():
             if user_node_dict[NewParamsList]:
                 dialog = DialogChange(label=f'В {NewParamsList} добавлены параметры \n'
-                                      f' нужно сохранить этот список?', value=NewParamsList)
+                                            f' нужно сохранить этот список?', value=NewParamsList)
                 if dialog.exec_() == QDialog.Accepted:
                     val = dialog.lineEdit.text()
                     self.log_lbl.setText(f'Добавление списка {val} в файл')
@@ -776,17 +786,14 @@ if __name__ == '__main__':
     window.show_nodes_tree(alt_node_list)
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
-        window.show()  # Показываем окно
-        splash.finish(window)
+
         if can_adapter.find_adapters():
             window.connect_to_node()
         else:
             window.log_lbl.setText('Адаптер не подключен')
-
+        window.show()  # Показываем окно
+        splash.finish(window)  # Убираем заставку
         app.exec_()  # и запускаем приложение
 
-# нет процесса привязки джойстика
-#  нет процесса калибровки, установки подвески
-# сделать ошибки обектами с описанием, ссылками и выводом нужных параметров
-# почему периодически после опроса всех блоков выдаёт - проверь связь с ватс и только перезагрузка - не проявилось
-# - происходит отсоединение после поиска всех блоков и обнуление списка адаптеров
+# нет процесса привязки джойстика и установки подвески
+# сделать ошибки объектами с описанием, ссылками и выводом нужных параметров
