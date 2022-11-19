@@ -64,8 +64,8 @@
 import sys
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QHeaderView, QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
+    QSplashScreen, QFileDialog
 import pathlib
 
 import VMU_monitor_ui
@@ -265,7 +265,7 @@ def check_node_online(all_node_list: list):
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
     for nd in all_node_list:
         node_serial = nd.get_serial_number(can_adapter)
-        if not isinstance(node_serial, str):
+        if node_serial:
             nd.firmware_version = nd.get_firmware_version(can_adapter)
             # тут выясняется, что на старых машинах, где Инвертор_Цикл+ кто-то отвечает по ID Инвертор_МЭИ,
             # может и китайские рейки, нет особого желания разбираться. Вообщем это костыль, чтоб он не вылазил
@@ -558,6 +558,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def find_param(self, s):
         pass
+
     def closeEvent(self, event):
         # может, есть смысл сделать из этого функцию, дабы не повторять дважды
         ln = len(window.current_nodes_list)
@@ -786,14 +787,13 @@ if __name__ == '__main__':
     window.show_nodes_tree(alt_node_list)
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if alt_node_list and params_list_changed():
-
         if can_adapter.find_adapters():
             window.connect_to_node()
         else:
             window.log_lbl.setText('Адаптер не подключен')
         window.show()  # Показываем окно
-        splash.finish(window)  # Убираем заставку
+        splash.finish(window)   # Убираем заставку
         app.exec_()  # и запускаем приложение
 
-# нет процесса привязки джойстика и установки подвески
+#  нет процесса привязки джойстика и установки подвески
 # сделать ошибки объектами с описанием, ссылками и выводом нужных параметров

@@ -1,7 +1,7 @@
 import ctypes
 
 import CANAdater
-from helper import int_to_hex_str, empty_par
+from helper import int_to_hex_str
 
 empty_node = {
     'name': 'NoName',
@@ -39,8 +39,7 @@ class EVONode:
             nod = empty_node
 
         def check_address(name: str, value=0):
-            v = value if name not in list(nod.keys()) \
-                         or str(nod[name]) == 'nan' \
+            v = value if name not in list(nod.keys()) or str(nod[name]) == 'nan' \
                 else (nod[name] if not isinstance(nod[name], str)
                       else (int(nod[name], 16) if '0x' in nod[name]
                             else value))  # надо включать регулярку
@@ -56,7 +55,7 @@ class EVONode:
         self.answer_id = check_address('ans_id', 0x481)
         self.protocol = check_string('protocol', 'CANOpen')
         self.request_serial_number = check_address('serial_number')
-        self.serial_number = '---'
+        self.serial_number = ''
         self.request_firmware_version = check_address('firm_version')
         self.firmware_version = '---'
 
@@ -91,14 +90,14 @@ class EVONode:
         while adapter.is_busy:
             pass
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
-
+        # надо переделать на пустоту. величина может быть текстом
         if isinstance(value, str):
             return value
 
         if self.protocol == 'CANOpen':
-            if value[0] == 0x41:
+            if value[0] == 0x41:  # это запрос на длинный параметр строчный
                 value = self.read_string_from_can(adapter)
-                if isinstance(value, str):
+                if isinstance(value, str):  # тоже надо переделать
                     return value
             else:
                 value = (value[7] << 24) + \
@@ -149,16 +148,20 @@ class EVONode:
             r = self.get_serial_for_ttc(adapter)
             if r:
                 return r
-        if not isinstance(self.serial_number, str):
+
+        if self.serial_number:
             return self.serial_number
 
         serial = self.get_val(self.request_serial_number, adapter) if self.request_serial_number else 777
-
-        if isinstance(serial, str):
-            if self.string_from_can:
-                self.string_from_can = ''
-            else:
-                serial = '---'
+        if self.name == 'Инвертор_МЭИ':  # Мега костыль
+            serial = check_printable(serial)
+        else:
+            if isinstance(serial, str):
+                if self.string_from_can:
+                    serial = self.string_from_can
+                    self.string_from_can = ''
+                else:
+                    serial = ''
 
         self.serial_number = serial
         # print(f'{self.name} - {serial=}')
@@ -174,12 +177,6 @@ class EVONode:
                                     0x218003,
                                     0x218004]
 
-        def check_printable(lst: list):
-            a_st = ''
-            for s in lst:
-                a_st += chr(s) if chr(s).isprintable() else ''
-            return a_st
-
         ser = ''
         for adr in serial_ascii_address_lst:
             ge = self.get_val(adr, adapter)
@@ -190,10 +187,7 @@ class EVONode:
                 if i > 10:
                     return '---'
 
-            ser += check_printable([(ge & 0xFF000000) >> 24,
-                                    (ge & 0xFF0000) >> 16,
-                                    (ge & 0xFF00) >> 8,
-                                    ge & 0xFF])
+            ser += check_printable(ge)
 
         self.serial_number = ser
         return int(self.serial_number) if ser else ser
@@ -241,8 +235,8 @@ class EVONode:
 
         if not r_request or not s_list:
             return current_list
-        err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error']) else int(v['value_error']):
-                        v['name_error'] for v in s_list}
+        err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error'])
+                    else int(v['value_error']): v['name_error'] for v in s_list}
         big_error = 0
         j = 0
         for adr in r_request:
@@ -276,11 +270,6 @@ class EVONode:
             self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
             self.current_errors_list.clear()
             self.current_warnings_list.clear()
-        #     if not at or at.strip() == '-6':    # чтобы это ни значило
-        #         self.check_errors(adapter)
-        #     else:
-        #         self.current_errors_list.add(f'{self.name}: Удалить ошибки не удалось потому что {at} \n')
-        # return self.current_errors_list
 
     def read_string_from_can(self, adapter: CANAdater):
         value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
@@ -291,3 +280,14 @@ class EVONode:
             self.string_from_can += chr(byte)
         s = self.string_from_can.strip()
         return int(s) if s.isdigit() else s
+
+
+def check_printable(lst):
+    a_st = ''
+    lst = [(lst & 0xFF000000) >> 24,
+           (lst & 0xFF0000) >> 16,
+           (lst & 0xFF00) >> 8,
+           lst & 0xFF]
+    for s in lst:
+        a_st += chr(s) if chr(s).isprintable() else ''
+    return a_st
