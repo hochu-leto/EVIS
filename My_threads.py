@@ -253,15 +253,9 @@ class MainThread(QThread):
 class WaitCanAnswerThread(QThread):
     SignalOfProcess = pyqtSignal(str, list)
     adapter = None  # CANAdapter()
-    id_for_read = 0x18FF87A7
+    id_for_read = 0
     answer_byte = 0
-    answer_dict = {
-        0: 'принята команда привязки',
-        1: 'приемник переведен в режим привязки, ожидание включения пульта ДУ',
-        2: 'привязка завершена',
-        254: 'ошибка',
-        255: 'команда недоступна'
-    }
+    answer_dict = {}
     wait_time = 15  # максимальное время в секундах, через которое поток отключится
     max_err = 20
     req_delay = 50
@@ -269,6 +263,13 @@ class WaitCanAnswerThread(QThread):
 
     def __init__(self):
         super().__init__()
+        self.finished.connect(self.finished_tread)
+
+    def finished_tread(self):
+        self.adapter = None
+        self.id_for_read = 0
+        self.answer_byte = 0
+        self.answer_dict = {}
 
     def run(self):
         self.err_count = 0
@@ -276,21 +277,24 @@ class WaitCanAnswerThread(QThread):
 
         def request_ans():
             answer = ''
-            print(f'\rтекущее время {time.perf_counter()} конечное время {self.end_time}', end='', flush=True)
+            # print(f'\rтекущее время {time.perf_counter()} конечное время {self.end_time}', end='', flush=True)
             if (time.perf_counter() > self.end_time) or \
                     self.err_count > self.max_err:
                 self.SignalOfProcess.emit('Время закончилось', self.imp_par_list)
                 self.quit()
                 self.wait()
                 return
-            ans = self.adapter.can_read(self.id_for_read)
-            if not isinstance(ans, str):
-                byte_a = ans[self.answer_byte]
-                self.err_count = 0
-                if byte_a in self.answer_dict:
-                    answer = self.answer_dict[byte_a]
-            else:
-                self.err_count += 1
+
+            if self.id_for_read:
+                ans = self.adapter.can_read(self.id_for_read)
+                if not isinstance(ans, str):
+                    byte_a = ans[self.answer_byte]
+                    self.err_count = 0
+                    if byte_a in self.answer_dict:
+                        answer = self.answer_dict[byte_a]
+                else:
+                    self.err_count += 1
+
             if self.imp_par_list:
                 for param in self.imp_par_list:
                     param.get_value(self.adapter)

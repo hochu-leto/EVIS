@@ -75,7 +75,7 @@ from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, f
 from Parametr import Parametr
 from work_with_file import full_node_list, fill_sheet_dict
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params
+    show_new_vmu_params, find_param
 
 can_adapter = CANAdapter()
 
@@ -129,6 +129,12 @@ def save_to_eeprom(node=None):
     if not node:
         node = window.thread.current_node
     if node.save_to_eeprom:
+        if node.name == 'Инвертор_МЭИ':
+            voltage = find_param(window.current_nodes_list, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0].value
+            if voltage >= 30:
+                QMessageBox.critical(window, "Ошибка ", '', QMessageBox.Ok)
+            if window.thread.isRunning():
+                window.thread.sleep(10)
         err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
 
         if err:
@@ -275,6 +281,9 @@ def check_node_online(all_node_list: list):
                 has_invertor = True
             elif 'Инвертор_МЭИ' in nd.name:
                 window.invertor_mpei_box.setEnabled(True)
+            elif 'КВУ_ТТС' in nd.name:
+                window.joy_bind_btn.setEnabled(True)
+                window.susp_zero_btn.setEnabled(True)
             exit_list.append(nd)
     if has_invertor:
         for nd in exit_list:
@@ -551,28 +560,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
 
-    def make_all_param_dict(self):
-        for nd in self.current_nodes_list:
-            for param in nd.group_params_dict:
-                self.all_params_dict[param.name + \
-                                     '#' + param.description + \
-                                     '#' + nd.name] = param
-
-    def find_param(self, s, node_name=None):
-        if node_name is None:
-            list_of_params = [param for nd in self.current_nodes_list
-                              for param_list in nd.group_params_dict.values()
-                              for param in param_list
-                              if s in param.name or s in param.description]
-        else:
-            list_of_params = []
-            for nd in self.current_nodes_list:
-                if node_name in nd.name:
-                    list_of_params = [param for param_list in nd.group_params_dict.values()
-                                      for param in param_list
-                                      if s in param.name or s in param.description]
-        return list_of_params
-
     def closeEvent(self, event):
         # может, есть смысл сделать из этого функцию, дабы не повторять дважды
         ln = len(window.current_nodes_list)
@@ -669,7 +656,7 @@ def mpei_calibrate():
                                0x0B: 'Калибровка не удалась',
                                0x0C: 'Настройки сохранены в ЕЕПРОМ'}
     for p_name in param_list_for_calibrate:
-        wait_thread.imp_par_list.append(window.find_param(p_name, node_name='Инвертор_МЭИ')[0])
+        wait_thread.imp_par_list.append(find_param(window.current_nodes_list, p_name, node_name='Инвертор_МЭИ')[0])
 
     dialog = DialogChange(label='Процесс калибровки',
                           text='Команда на калибровку отправлена',
@@ -677,8 +664,6 @@ def mpei_calibrate():
     dialog.setWindowTitle('Калибровка Инвертора МЭИ')
     dialog.text_browser.setEnabled(False)
     dialog.text_browser.setStyleSheet("font: bold 14px;")
-    # color: green;
-    # background-color: black;
 
     wait_thread.SignalOfProcess.connect(dialog.change_mess)
     s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION')
@@ -730,16 +715,23 @@ def joystick_bind():
         QMessageBox.information(window, "Информация", 'Перед привязкой проверь,\n что джойстик ВЫКЛЮЧЕН',
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
+        wait_thread.adapter = adapter
+        wait_thread.id_for_read = 0x18FF87A7
+        wait_thread.answer_dict = {
+            0: 'принята команда привязки',
+            1: 'приемник переведен в режим привязки, ожидание включения пульта ДУ',
+            2: 'привязка завершена',
+            254: 'ошибка',
+            255: 'команда недоступна'
+        }
+        dialog = DialogChange(text='Команда на привязку отправлена')
+        dialog.setWindowTitle('Привязка джойстика')
+        dialog.text_browser.setEnabled(False)
+        dialog.text_browser.setStyleSheet("font: bold 14px;")
+        wait_thread.SignalOfProcess.connect(dialog.change_mess)
+        wait_thread.start()
         adapter.can_write(0x18FF86A5, [0] * 8)
-        QMessageBox.information(window, "Информация", 'Команда отправлена,\n можно ВКЛЮЧАТЬ джойстик',
-                                QMessageBox.Ok)
-        window.log_lbl.setText('Джойстик должен был весело пропиликать')
-        # wait_thread = WaitCanAnswerThread()
-        # wait_thread.adapter = adapter
-        # wait_thread.SignalOfProcess.connect(set_log_lbl)
-        # if window.thread.isRunning():
-        #     window.connect_to_node()
-        # wait_thread.start()
+
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
@@ -760,9 +752,11 @@ def suspension_to_zero():
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
         adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
-        # wait_thread = WaitCanAnswerThread()
-        # wait_thread.SignalOfProcess.connect(set_log_lbl)
-        # wait_thread.start()
+        QMessageBox.information(window, "Информация", 'Машина должна выйти в среднее положение\n'
+                                                      'И теперь будет работать в режиме АВТО\n'
+                                                      'Чтобы его отключить  - тумблер АВТО в среднее положение\n'
+                                                      'Или перезагрузить КВУ',
+                                QMessageBox.Ok)
         window.log_lbl.setText('Машина должна выйти в среднее положение')
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
@@ -790,6 +784,8 @@ if __name__ == '__main__':
     window.reset_device_btn.clicked.connect(mpei_reset_device)
     window.reset_param_btn.clicked.connect(mpei_reset_params)
     window.invertor_mpei_box.setEnabled(False)
+    window.susp_zero_btn.setEnabled(False)
+    window.joy_bind_btn.setEnabled(False)
     # ------------------Кнопки вспомогательные----------------
     window.joy_bind_btn.clicked.connect(joystick_bind)
     window.susp_zero_btn.clicked.connect(suspension_to_zero)

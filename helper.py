@@ -46,6 +46,21 @@ example_par = {'name': 'fghjk',
                'degree': 3}
 
 
+def find_param(nodes_list, s, node_name=None):
+    if node_name is None:
+        list_of_params = [param for nd in nodes_list
+                          for param_list in nd.group_params_dict.values()
+                          for param in param_list
+                          if s in param.name or s in param.description]
+    else:
+        list_of_params = []
+        for nd in nodes_list:
+            if node_name in nd.name:
+                list_of_params = [param for param_list in nd.group_params_dict.values()
+                                  for param in param_list
+                                  if s in param.name or s in param.description]
+    return list_of_params
+
 def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False):
     # show_table = getattr(w, table)
     show_table.setRowCount(0)
@@ -178,7 +193,6 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
     @pyqtSlot(str, list)
     def change_mess(self, st: str, list_of_params=None):
         if st:
-            print(st)
             self.text_browser.append(st)
         if list_of_params and isinstance(list_of_params, list):
             show_new_vmu_params(list_of_params, self.param_table)
