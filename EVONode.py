@@ -131,8 +131,8 @@ class EVONode:
         # for i in r_list:
         #     print(hex(i), end=' ')
         # print()
-        # while adapter.is_busy:
-        #     pass
+        while adapter.is_busy:
+            pass
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
 
         if isinstance(value, str):
@@ -153,12 +153,15 @@ class EVONode:
             return self.serial_number
 
         serial = self.get_val(self.request_serial_number, adapter) if self.request_serial_number else 777
-        if self.name == 'Инвертор_МЭИ':  # Мега костыль
+        if self.name == 'Инвертор_МЭИ':  # Бега костыль
             serial = check_printable(serial)
         else:
             if isinstance(serial, str):
                 if self.string_from_can:
-                    serial = self.string_from_can
+                    serial = ''
+                    for s in self.string_from_can:
+                        if s.isprintable():
+                            serial += s
                     self.string_from_can = ''
                 else:
                     serial = ''
@@ -167,10 +170,10 @@ class EVONode:
         # print(f'{self.name} - {serial=}')
         return self.serial_number
 
-    # Патамушто кому-то приспичило передавать серийник в чарах
+    # Потому-то кому-то приспичило передавать серийник в чарах
     # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,
     # но вообще неплохо бы сделать эту функцию наподобие опроса ошибок по нескольким адресам,
-    # другое дело как чары парсить, наверное, это должно быть либо в ответе от блока либо в типе параметра
+    # другое дело как чары парусить, наверное, это должно быть либо в ответе от блока либо в типе параметра
     def get_serial_for_ttc(self, adapter: CANAdater):
         serial_ascii_address_lst = [0x218001,
                                     0x218002,
@@ -185,7 +188,7 @@ class EVONode:
                 ge = self.get_val(adr, adapter)
                 i += 1
                 if i > 10:
-                    return '---'
+                    return ''
 
             ser += check_printable(ge)
 
@@ -264,7 +267,6 @@ class EVONode:
         return current_list
 
     def erase_errors(self, adapter: CANAdater):
-        #  на выходе - список оставшихся ошибок или пустой список, если ОК
         #  ошибки должны быть объектами
         if self.error_erase['address']:
             self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])

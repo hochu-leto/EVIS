@@ -91,6 +91,7 @@ class CANMarathon(AdapterCAN):
             self.BCI_bt0 = self.can_bitrate[bit]
         else:
             self.BCI_bt0 = self.BCI_125K_bt0  # и скорость 125
+        self.is_busy = False
 
         self.max_iteration = 15
         self.is_canal_open = False
