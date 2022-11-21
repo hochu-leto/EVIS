@@ -114,7 +114,7 @@ class SaveToFileThread(QThread):
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.xlsx'
         df = pd.DataFrame(save_list, columns=p.to_dict().keys())
-        df.to_excel(file_name, index=False, sheet_name=self.node_to_save.name)
+        df.to_excel(file_name, index=False)     #, sheet_name=self.node_to_save.name, encoding='windows-1251')
         # вместо строки ошибки отправляем название файла,куда сохранил настройки
         self.SignalOfReady.emit(100, file_name, True)
 
@@ -262,22 +262,24 @@ class WaitCanAnswerThread(QThread):
         254: 'ошибка',
         255: 'команда недоступна'
     }
-    wait_time = 20000  # максимальное время, через которое поток отключится
+    wait_time = 15  # максимальное время в секундах, через которое поток отключится
     max_err = 20
-    req_delay = 100
+    req_delay = 50
     imp_par_list = []
 
     def __init__(self):
         super().__init__()
-        self.end_time = time.perf_counter() + self.wait_time
 
     def run(self):
         self.err_count = 0
+        self.end_time = time.perf_counter() + self.wait_time
 
         def request_ans():
             answer = ''
+            print(f'\rтекущее время {time.perf_counter()} конечное время {self.end_time}', end='', flush=True)
             if (time.perf_counter() > self.end_time) or \
                     self.err_count > self.max_err:
+                self.SignalOfProcess.emit('Время закончилось', self.imp_par_list)
                 self.quit()
                 self.wait()
                 return
@@ -315,7 +317,12 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
             all_params_list.append(param.to_dict().copy())
 
     df = pd.DataFrame(all_params_list, columns=empty_par.keys())
-    with ExcelWriter(file_name, mode="a" if os.path.exists(file_name) else "w", if_sheet_exists='overlay') as writer:
+    if os.path.exists(file_name):
+        ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='overlay')
+    else:
+        ex_wr = ExcelWriter(file_name, mode="w")
+
+    with ex_wr as writer:
         df.to_excel(writer, index=False, sheet_name=sheet_name)
 
 

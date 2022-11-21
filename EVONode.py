@@ -1,7 +1,7 @@
 import ctypes
 
 import CANAdater
-from helper import int_to_hex_str, empty_par
+from helper import int_to_hex_str
 
 empty_node = {
     'name': 'NoName',
@@ -39,8 +39,7 @@ class EVONode:
             nod = empty_node
 
         def check_address(name: str, value=0):
-            v = value if name not in list(nod.keys()) \
-                         or str(nod[name]) == 'nan' \
+            v = value if name not in list(nod.keys()) or str(nod[name]) == 'nan' \
                 else (nod[name] if not isinstance(nod[name], str)
                       else (int(nod[name], 16) if '0x' in nod[name]
                             else value))  # надо включать регулярку
@@ -132,8 +131,8 @@ class EVONode:
         # for i in r_list:
         #     print(hex(i), end=' ')
         # print()
-        # while adapter.is_busy:
-        #     pass
+        while adapter.is_busy:
+            pass
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
 
         if isinstance(value, str):
@@ -154,24 +153,27 @@ class EVONode:
             return self.serial_number
 
         serial = self.get_val(self.request_serial_number, adapter) if self.request_serial_number else 777
-        if self.name == 'Инвертор_МЭИ':  # Мега костыль
+        if self.name == 'Инвертор_МЭИ':  # Бега костыль
             serial = check_printable(serial)
         else:
             if isinstance(serial, str):
                 if self.string_from_can:
-                    serial = self.string_from_can
+                    serial = ''
+                    for s in self.string_from_can:
+                        if s.isprintable():
+                            serial += s
                     self.string_from_can = ''
                 else:
                     serial = ''
 
         self.serial_number = serial
-        print(f'{self.name} - {serial=}')
+        # print(f'{self.name} - {serial=}')
         return self.serial_number
 
-    # Патамушто кому-то приспичило передавать серийник в чарах
+    # Потому-то кому-то приспичило передавать серийник в чарах
     # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,
     # но вообще неплохо бы сделать эту функцию наподобие опроса ошибок по нескольким адресам,
-    # другое дело как чары парсить, наверное, это должно быть либо в ответе от блока либо в типе параметра
+    # другое дело как чары парусить, наверное, это должно быть либо в ответе от блока либо в типе параметра
     def get_serial_for_ttc(self, adapter: CANAdater):
         serial_ascii_address_lst = [0x218001,
                                     0x218002,
@@ -186,7 +188,7 @@ class EVONode:
                 ge = self.get_val(adr, adapter)
                 i += 1
                 if i > 10:
-                    return '---'
+                    return ''
 
             ser += check_printable(ge)
 
@@ -236,8 +238,8 @@ class EVONode:
 
         if not r_request or not s_list:
             return current_list
-        err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error']) else int(v['value_error']):
-                        v['name_error'] for v in s_list}
+        err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error'])
+                    else int(v['value_error']): v['name_error'] for v in s_list}
         big_error = 0
         j = 0
         for adr in r_request:
@@ -265,7 +267,6 @@ class EVONode:
         return current_list
 
     def erase_errors(self, adapter: CANAdater):
-        #  на выходе - список оставшихся ошибок или пустой список, если ОК
         #  ошибки должны быть объектами
         if self.error_erase['address']:
             self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
@@ -280,7 +281,6 @@ class EVONode:
         for byte in value:
             self.string_from_can += chr(byte)
         s = self.string_from_can.strip()
-        print(s)
         return int(s) if s.isdigit() else s
 
 

@@ -178,6 +178,7 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
     @pyqtSlot(str, list)
     def change_mess(self, st: str, list_of_params=None):
         if st:
+            print(st)
             self.text_browser.append(st)
         if list_of_params and isinstance(list_of_params, list):
             show_new_vmu_params(list_of_params, self.param_table)

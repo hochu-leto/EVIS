@@ -64,8 +64,8 @@
 import sys
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QHeaderView, QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
+    QSplashScreen, QFileDialog
 import pathlib
 
 import VMU_monitor_ui
@@ -130,6 +130,7 @@ def save_to_eeprom(node=None):
         node = window.thread.current_node
     if node.save_to_eeprom:
         err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
+
         if err:
             QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
             window.log_lbl.setText('Настройки в память НЕ сохранены, ошибка ' + err)
@@ -265,6 +266,7 @@ def check_node_online(all_node_list: list):
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
     for nd in all_node_list:
         node_serial = nd.get_serial_number(can_adapter)
+        print(nd.name, node_serial)
         if node_serial:
             nd.firmware_version = nd.get_firmware_version(can_adapter)
             # тут выясняется, что на старых машинах, где Инвертор_Цикл+ кто-то отвечает по ID Инвертор_МЭИ,
@@ -329,6 +331,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
+        self.all_params_dict = {}
         self.setupUi(self)
         self.current_nodes_list = []
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
@@ -359,7 +362,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if err == 'Адаптер не подключен':
                 # self.current_nodes_list = []
                 # можно было бы избавиться от этой переменной, проверять, что список не пустой, но пусть будет
-                self.node_list_defined = False
+                # self.node_list_defined = False
                 can_adapter.isDefined = False
         else:
             show_new_vmu_params(params_list=self.thread.current_params_list,
@@ -548,6 +551,28 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
 
+    def make_all_param_dict(self):
+        for nd in self.current_nodes_list:
+            for param in nd.group_params_dict:
+                self.all_params_dict[param.name + \
+                                     '#' + param.description + \
+                                     '#' + nd.name] = param
+
+    def find_param(self, s, node_name=None):
+        if node_name is None:
+            list_of_params = [param for nd in self.current_nodes_list
+                              for param_list in nd.group_params_dict.values()
+                              for param in param_list
+                              if s in param.name or s in param.description]
+        else:
+            list_of_params = []
+            for nd in self.current_nodes_list:
+                if node_name in nd.name:
+                    list_of_params = [param for param_list in nd.group_params_dict.values()
+                                      for param in param_list
+                                      if s in param.name or s in param.description]
+        return list_of_params
+
     def closeEvent(self, event):
         # может, есть смысл сделать из этого функцию, дабы не повторять дважды
         ln = len(window.current_nodes_list)
@@ -572,7 +597,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if NewParamsList in user_node_dict.keys():
             if user_node_dict[NewParamsList]:
                 dialog = DialogChange(label=f'В {NewParamsList} добавлены параметры \n'
-                                      f' нужно сохранить этот список?', value=NewParamsList)
+                                            f' нужно сохранить этот список?', value=NewParamsList)
                 if dialog.exec_() == QDialog.Accepted:
                     val = dialog.lineEdit.text()
                     self.log_lbl.setText(f'Добавление списка {val} в файл')
@@ -630,28 +655,36 @@ def mpei_invert():
 
 
 def mpei_calibrate():
+    param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'FIELD_CURRENT', 'STATOR_CURRENT',
+                                'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT', 'SPEED_RPM', 'TORQUE']
     QMessageBox.information(window, "Информация", 'Перед калибровкой проверь что:\n'
                                                   ' - стояночный тормоз отпущен\n'
                                                   ' - приводная ось вывешена',
                             QMessageBox.Ok)
+
+    wait_thread.adapter = can_adapter.adapters_dict[125]
+    wait_thread.id_for_read = 0x381
+    wait_thread.answer_byte = 4
+    wait_thread.answer_dict = {0x0A: 'Калибровка прошла успешно!',
+                               0x0B: 'Калибровка не удалась',
+                               0x0C: 'Настройки сохранены в ЕЕПРОМ'}
+    for p_name in param_list_for_calibrate:
+        wait_thread.imp_par_list.append(window.find_param(p_name, node_name='Инвертор_МЭИ')[0])
+
+    dialog = DialogChange(label='Процесс калибровки',
+                          text='Команда на калибровку отправлена',
+                          table=wait_thread.imp_par_list)
+    dialog.setWindowTitle('Калибровка Инвертора МЭИ')
+    dialog.text_browser.setEnabled(False)
+    dialog.text_browser.setStyleSheet("font: bold 14px;")
+    # color: green;
+    # background-color: black;
+
+    wait_thread.SignalOfProcess.connect(dialog.change_mess)
     s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION')
     if s[0]:
         QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s[0], QMessageBox.Ok)
     else:
-        wait_thread.adapter = can_adapter.adapters_dict[125]
-        wait_thread.id_for_read = 0x381
-        wait_thread.answer_byte = 4
-        wait_thread.answer_dict = {0x0A: 'Калибровка прошла успешно!',
-                                   0x0B: 'Калибровка не удалась',
-                                   0x0C: 'Настройки сохранены в ЕЕПРОМ',
-                                   }
-        # здесь должен быть список с нужными параметрами
-        wait_thread.imp_par_list = []
-
-        dialog = DialogChange(label='Процесс калибровки', text='Команда на калибровку отправлена')
-        dialog.setWindowTitle('Калибровка Инвертора МЭИ')
-        dialog.text_browser.setEnabled(False)
-        wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.start()
 
         if dialog.exec_():
@@ -781,7 +814,7 @@ if __name__ == '__main__':
         else:
             window.log_lbl.setText('Адаптер не подключен')
         window.show()  # Показываем окно
-        splash.finish(window)   # Убираем заставку
+        splash.finish(window)  # Убираем заставку
         app.exec_()  # и запускаем приложение
 
 #  нет процесса привязки джойстика и установки подвески
