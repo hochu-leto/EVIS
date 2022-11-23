@@ -62,6 +62,8 @@
 
 """
 import sys
+from time import sleep
+
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
@@ -71,9 +73,9 @@ import pathlib
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values, WaitCanAnswerThread
+from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
-from work_with_file import full_node_list, fill_sheet_dict
+from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param
 
@@ -85,7 +87,7 @@ vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
-
+sleep_thread = SleepThread(4)
 
 def make_compare_params_list():
     file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами КВУ', dir_path,
@@ -118,24 +120,35 @@ def make_compare_params_list():
         return False
 
 
-def modify_file():
-    window.log_lbl.setText('ВСЁ ПОЧИНИЛОСЬ!!!!')
-
-    # save_params_dict_to_file(window.thread.current_node.group_params_dict, 'first_file.xlsx',
-    # window.thread.current_node.name)
-
-
 def save_to_eeprom(node=None):
     if not node:
         node = window.thread.current_node
+
     if node.save_to_eeprom:
+        if window.thread.isRunning():
+            window.connect_to_node()
+            isRun = True
+        else:
+            isRun = False
+
         if node.name == 'Инвертор_МЭИ':
-            voltage = find_param(window.current_nodes_list, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0].value
-            if voltage >= 30:
-                QMessageBox.critical(window, "Ошибка ", '', QMessageBox.Ok)
-            if window.thread.isRunning():
-                window.thread.sleep(10)
-        err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
+            voltage = find_param(window.current_nodes_list, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0]
+            err = voltage.get_value(can_adapter.adapters_dict[125])
+            if not isinstance(err, str):
+                if err < 30:
+                    err = node.send_val(node.save_to_eeprom, can_adapter.adapters_dict[125])
+                    sleep_thread.SignalOfProcess.emit(window.progress_bar_fulling)
+                    sleep_thread.start()
+                    # while sleep_thread.isRunning():
+                    #     pass     # херня какая-то
+                else:
+                    err = 'Высокое не выключено'
+                    QMessageBox.critical(window, "Ошибка ",
+                                         'Чтоб сохранить параметры Инвертора МЭИ в ЕЕПРОМ\n'
+                                         'Выключи высокое напряжение и повтори сохранение',
+                                         QMessageBox.Ok)
+        else:
+            err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
 
         if err:
             QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
@@ -145,6 +158,9 @@ def save_to_eeprom(node=None):
             window.log_lbl.setText('Настройки сохранены в EEPROM')
             node.param_was_changed = False
             window.save_eeprom_btn.setEnabled(False)
+
+        if window.thread.isFinished() and isRun:
+            window.connect_to_node()
     else:
         QMessageBox.information(window, "Информация", f'В {node.name} параметры сохранять не нужно', QMessageBox.Ok)
         window.save_eeprom_btn.setEnabled(False)

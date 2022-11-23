@@ -1,12 +1,9 @@
 import datetime
-import os
 import time
 
 import pandas as pd
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
-from pandas import ExcelWriter
 
-from CANAdater import CANAdapter
 from EVONode import EVONode
 from Parametr import Parametr
 from helper import empty_par
@@ -308,32 +305,18 @@ class WaitCanAnswerThread(QThread):
         loop.exec_()
 
 
-def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
-    if sheet_name is None:
-        sheet_name = 'Избранное'
-    all_params_list = []
-    param_dict = param_d.copy()
-    for group_name, param_list in param_dict.items():
-        par = empty_par.copy()
-        par['name'] = f'group {group_name}'
-        all_params_list.append(par)
-        for param in param_list:
-            all_params_list.append(param.to_dict().copy())
+class SleepThread(QThread):
+    SignalOfProcess = pyqtSignal(int, str, bool)
+    ready_persent = 0
 
-    df = pd.DataFrame(all_params_list, columns=empty_par.keys())
-    if os.path.exists(file_name):
-        ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='overlay')
-    else:
-        ex_wr = ExcelWriter(file_name, mode="w")
+    def __init__(self, tme: int):
+        super().__init__()
+        self.time = tme
 
-    with ex_wr as writer:
-        df.to_excel(writer, index=False, sheet_name=sheet_name)
-
-
-def fill_compare_values(node: EVONode, dict_for_compare: dict):
-    for group_name, group_params in node.group_params_dict.items():
-        if group_name in dict_for_compare.keys():
-            for param in group_params:
-                if param.name in dict_for_compare[group_name].keys():
-                    param.compare_value = dict_for_compare[group_name][param.name]
-    node.has_compare_params = True
+    def run(self):
+        end_time = time.perf_counter() + self.time
+        while time.perf_counter() < end_time:
+            self.ready_persent = (end_time - time.perf_counter()) * 100 / self.time
+            self.SignalOfProcess.emit(self.ready_persent, '', False)
+        self.quit()
+        self.wait()

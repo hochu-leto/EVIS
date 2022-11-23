@@ -1,9 +1,12 @@
 import datetime
+import os
 
 import pandas
+import pandas as pd
 from PyQt5.QtWidgets import QMessageBox
+from openpyxl.writer.excel import ExcelWriter
 
-from helper import NewParamsList
+from helper import NewParamsList, empty_par
 from EVONode import EVONode
 from Parametr import Parametr
 
@@ -273,3 +276,34 @@ def adding_to_csv_file(name_or_value: str, vmu_params_list: list, recording_file
     #           header=False,
     #           index=False,
     #           encoding='windows-1251')
+
+
+def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
+    if sheet_name is None:
+        sheet_name = 'Избранное'
+    all_params_list = []
+    param_dict = param_d.copy()
+    for group_name, param_list in param_dict.items():
+        par = empty_par.copy()
+        par['name'] = f'group {group_name}'
+        all_params_list.append(par)
+        for param in param_list:
+            all_params_list.append(param.to_dict().copy())
+
+    df = pd.DataFrame(all_params_list, columns=empty_par.keys())
+    if os.path.exists(file_name):
+        ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='overlay')
+    else:
+        ex_wr = ExcelWriter(file_name, mode="w")
+
+    with ex_wr as writer:
+        df.to_excel(writer, index=False, sheet_name=sheet_name)
+
+
+def fill_compare_values(node: EVONode, dict_for_compare: dict):
+    for group_name, group_params in node.group_params_dict.items():
+        if group_name in dict_for_compare.keys():
+            for param in group_params:
+                if param.name in dict_for_compare[group_name].keys():
+                    param.compare_value = dict_for_compare[group_name][param.name]
+    node.has_compare_params = True
