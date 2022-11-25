@@ -746,8 +746,11 @@ def joystick_bind():
         dialog.text_browser.setStyleSheet("font: bold 14px;")
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.start()
-        adapter.can_write(0x18FF86A5, [0] * 8)
-
+        adapter.can_write(0x18FF86AA, [0] * 8)
+        if dialog.exec_():
+            wait_thread.quit()
+            wait_thread.wait()
+            print('Поток остановлен')
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 

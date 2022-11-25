@@ -249,17 +249,10 @@ class MainThread(QThread):
 
 class WaitCanAnswerThread(QThread):
     SignalOfProcess = pyqtSignal(str, list)
-    adapter = None  # CANAdapter()
-    id_for_read = 0
-    answer_byte = 0
-    answer_dict = {}
-    wait_time = 15  # максимальное время в секундах, через которое поток отключится
-    max_err = 20
-    req_delay = 50
-    imp_par_list = []
 
     def __init__(self):
         super().__init__()
+        self.finished_tread()
         self.finished.connect(self.finished_tread)
 
     def finished_tread(self):
@@ -267,6 +260,10 @@ class WaitCanAnswerThread(QThread):
         self.id_for_read = 0
         self.answer_byte = 0
         self.answer_dict = {}
+        self.wait_time = 15  # максимальное время в секундах, через которое поток отключится
+        self.max_err = 20
+        self.req_delay = 50
+        self.imp_par_list = []
 
     def run(self):
         self.err_count = 0
@@ -284,12 +281,17 @@ class WaitCanAnswerThread(QThread):
 
             if self.id_for_read:
                 ans = self.adapter.can_read(self.id_for_read)
+
                 if not isinstance(ans, str):
+                    for i in ans:
+                        print(hex(i), end=' ')
+                    print()
                     byte_a = ans[self.answer_byte]
                     self.err_count = 0
                     if byte_a in self.answer_dict:
                         answer = self.answer_dict[byte_a]
                 else:
+                    print(ans)
                     self.err_count += 1
 
             if self.imp_par_list:
