@@ -153,18 +153,17 @@ class EVONode:
             return self.serial_number
 
         serial = self.get_val(self.request_serial_number, adapter) if self.request_serial_number else 777
-        if self.name == 'Инвертор_МЭИ':  # Бега костыль
+        if isinstance(serial, str):
+            if self.string_from_can:
+                serial = ''
+                for s in self.string_from_can:
+                    if s.isprintable():
+                        serial += s
+                self.string_from_can = ''
+            else:
+                serial = ''
+        elif self.name == 'Инвертор_МЭИ':  # Бега костыль
             serial = check_printable(serial)
-        else:
-            if isinstance(serial, str):
-                if self.string_from_can:
-                    serial = ''
-                    for s in self.string_from_can:
-                        if s.isprintable():
-                            serial += s
-                    self.string_from_can = ''
-                else:
-                    serial = ''
 
         self.serial_number = serial
         # print(f'{self.name} - {serial=}')
