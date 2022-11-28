@@ -318,7 +318,7 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
 
     df = pd.DataFrame(all_params_list, columns=empty_par.keys())
     if os.path.exists(file_name):
-        ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='overlay')
+        ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='new')
     else:
         ex_wr = ExcelWriter(file_name, mode="w")
 
