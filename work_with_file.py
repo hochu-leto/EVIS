@@ -4,7 +4,7 @@ import os
 import pandas
 import pandas as pd
 from PyQt5.QtWidgets import QMessageBox
-from openpyxl.writer.excel import ExcelWriter
+from pandas import ExcelWriter
 
 from helper import NewParamsList, empty_par
 from EVONode import EVONode
@@ -292,7 +292,7 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
 
     df = pd.DataFrame(all_params_list, columns=empty_par.keys())
     if os.path.exists(file_name):
-        ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='overlay')
+        ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='new')
     else:
         ex_wr = ExcelWriter(file_name, mode="w")
 

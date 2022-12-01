@@ -40,25 +40,6 @@
 - в новом параметре КВУ формировать ВИН номер машины+номера_блоков -
         сделать автоматический опрос номеров и сравнение с тем, что в памяти
 
-#  папки с профилями - в профиле параметры и ошибки только для этой версии по
-#  сохранение и парсинг параметров в ямл
-#  из при изменении параметра в инверторе мэи напоминать, что он не действует без сохранения в еепром
-#  словарь значений параметров
-#  изменения параметров пачкой и при подключении их заброс
-#  если нет опроса, но изменён параметр, не запускать опрос после изменения
-#  прерывать опрос только при отправке нового параметра, после сразу запускать
-#  добавить в кву кнопку считать с ЕЕПРОМ
-#  покрасить критические ошибки в красный с приставкой - критическая!
-#  добавить вкладку ПНР, на ней несколько подвкладок со страницами процесса пнр с нужными параметрами
-#  добавить ОТМЕНА при нажатии любой кнопки управления
-#  добавить напоминание выключить высокое при калибровке инвертора
-#  выдавать какую ошибку схватил инвертор, если время кончилось, а положительного ответа от инвертора не поступило
-#  подсказки что конкретно не подключено в адаптере
-#  сделать процесс подключения видимым
-#  сделать параметры, которые в новый список улетают подкрашивать, чтоб было заметно
-#  нет процесса привязки джойстика и установки подвески
-#  сделать ошибки объектами с описанием, ссылками и выводом нужных параметров
-
 НА ПОДУМАТЬ
 - продумать реляционную БД для параметров
 - могут быть ещё и БМС БЗУ ИСН и иже с ними, хрен знает какие ещё блоки могут быть
@@ -81,8 +62,6 @@
 
 """
 import sys
-from time import sleep
-
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
@@ -92,11 +71,11 @@ import pathlib
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVONode import EVONode
-from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
+from My_threads import SaveToFileThread, MainThread, save_params_dict_to_file, fill_compare_values, WaitCanAnswerThread
 from Parametr import Parametr
-from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file
+from work_with_file import full_node_list, fill_sheet_dict
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param
+    show_new_vmu_params
 
 can_adapter = CANAdapter()
 
@@ -106,7 +85,7 @@ vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
-sleep_thread = SleepThread(4)
+
 
 def make_compare_params_list():
     file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами КВУ', dir_path,
@@ -139,35 +118,18 @@ def make_compare_params_list():
         return False
 
 
+def modify_file():
+    window.log_lbl.setText('ВСЁ ПОЧИНИЛОСЬ!!!!')
+
+    # save_params_dict_to_file(window.thread.current_node.group_params_dict, 'first_file.xlsx',
+    # window.thread.current_node.name)
+
+
 def save_to_eeprom(node=None):
     if not node:
         node = window.thread.current_node
-
     if node.save_to_eeprom:
-        if window.thread.isRunning():
-            window.connect_to_node()
-            isRun = True
-        else:
-            isRun = False
-
-        if node.name == 'Инвертор_МЭИ':
-            voltage = find_param(window.current_nodes_list, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0]
-            err = voltage.get_value(can_adapter.adapters_dict[125])
-            if not isinstance(err, str):
-                if err < 30:
-                    err = node.send_val(node.save_to_eeprom, can_adapter.adapters_dict[125])
-                    sleep_thread.SignalOfProcess.emit(window.progress_bar_fulling)
-                    sleep_thread.start()
-                    # while sleep_thread.isRunning():
-                    #     pass     # херня какая-то
-                else:
-                    err = 'Высокое не выключено'
-                    QMessageBox.critical(window, "Ошибка ",
-                                         'Чтоб сохранить параметры Инвертора МЭИ в ЕЕПРОМ\n'
-                                         'Выключи высокое напряжение и повтори сохранение',
-                                         QMessageBox.Ok)
-        else:
-            err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
+        err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
 
         if err:
             QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
@@ -177,9 +139,6 @@ def save_to_eeprom(node=None):
             window.log_lbl.setText('Настройки сохранены в EEPROM')
             node.param_was_changed = False
             window.save_eeprom_btn.setEnabled(False)
-
-        if window.thread.isFinished() and isRun:
-            window.connect_to_node()
     else:
         QMessageBox.information(window, "Информация", f'В {node.name} параметры сохранять не нужно', QMessageBox.Ok)
         window.save_eeprom_btn.setEnabled(False)
@@ -316,9 +275,6 @@ def check_node_online(all_node_list: list):
                 has_invertor = True
             elif 'Инвертор_МЭИ' in nd.name:
                 window.invertor_mpei_box.setEnabled(True)
-            elif 'КВУ_ТТС' in nd.name:
-                window.joy_bind_btn.setEnabled(True)
-                window.susp_zero_btn.setEnabled(True)
             exit_list.append(nd)
     if has_invertor:
         for nd in exit_list:
@@ -595,6 +551,28 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_btn.setText("Подключиться")
             can_adapter.close_canal_can()
 
+    def make_all_param_dict(self):
+        for nd in self.current_nodes_list:
+            for param in nd.group_params_dict:
+                self.all_params_dict[param.name + \
+                                     '#' + param.description + \
+                                     '#' + nd.name] = param
+
+    def find_param(self, s, node_name=None):
+        if node_name is None:
+            list_of_params = [param for nd in self.current_nodes_list
+                              for param_list in nd.group_params_dict.values()
+                              for param in param_list
+                              if s in param.name or s in param.description]
+        else:
+            list_of_params = []
+            for nd in self.current_nodes_list:
+                if node_name in nd.name:
+                    list_of_params = [param for param_list in nd.group_params_dict.values()
+                                      for param in param_list
+                                      if s in param.name or s in param.description]
+        return list_of_params
+
     def closeEvent(self, event):
         # может, есть смысл сделать из этого функцию, дабы не повторять дважды
         ln = len(window.current_nodes_list)
@@ -691,7 +669,7 @@ def mpei_calibrate():
                                0x0B: 'Калибровка не удалась',
                                0x0C: 'Настройки сохранены в ЕЕПРОМ'}
     for p_name in param_list_for_calibrate:
-        wait_thread.imp_par_list.append(find_param(window.current_nodes_list, p_name, node_name='Инвертор_МЭИ')[0])
+        wait_thread.imp_par_list.append(window.find_param(p_name, node_name='Инвертор_МЭИ')[0])
 
     dialog = DialogChange(label='Процесс калибровки',
                           text='Команда на калибровку отправлена',
@@ -699,6 +677,8 @@ def mpei_calibrate():
     dialog.setWindowTitle('Калибровка Инвертора МЭИ')
     dialog.text_browser.setEnabled(False)
     dialog.text_browser.setStyleSheet("font: bold 14px;")
+    # color: green;
+    # background-color: black;
 
     wait_thread.SignalOfProcess.connect(dialog.change_mess)
     s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION')
@@ -750,26 +730,16 @@ def joystick_bind():
         QMessageBox.information(window, "Информация", 'Перед привязкой проверь,\n что джойстик ВЫКЛЮЧЕН',
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
-        wait_thread.adapter = adapter
-        wait_thread.id_for_read = 0x18FF87A7
-        wait_thread.answer_dict = {
-            0: 'принята команда привязки',
-            1: 'приемник переведен в режим привязки, ожидание включения пульта ДУ',
-            2: 'привязка завершена',
-            254: 'ошибка',
-            255: 'команда недоступна'
-        }
-        dialog = DialogChange(text='Команда на привязку отправлена')
-        dialog.setWindowTitle('Привязка джойстика')
-        dialog.text_browser.setEnabled(False)
-        dialog.text_browser.setStyleSheet("font: bold 14px;")
-        wait_thread.SignalOfProcess.connect(dialog.change_mess)
-        wait_thread.start()
-        adapter.can_write(0x18FF86AA, [0] * 8)
-        if dialog.exec_():
-            wait_thread.quit()
-            wait_thread.wait()
-            print('Поток остановлен')
+        adapter.can_write(0x18FF86A5, [0] * 8)
+        QMessageBox.information(window, "Информация", 'Команда отправлена,\n можно ВКЛЮЧАТЬ джойстик',
+                                QMessageBox.Ok)
+        window.log_lbl.setText('Джойстик должен был весело пропиликать')
+        # wait_thread = WaitCanAnswerThread()
+        # wait_thread.adapter = adapter
+        # wait_thread.SignalOfProcess.connect(set_log_lbl)
+        # if window.thread.isRunning():
+        #     window.connect_to_node()
+        # wait_thread.start()
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
@@ -790,11 +760,9 @@ def suspension_to_zero():
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
         adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
-        QMessageBox.information(window, "Информация", 'Машина должна выйти в среднее положение\n'
-                                                      'И теперь будет работать в режиме АВТО\n'
-                                                      'Чтобы его отключить  - тумблер АВТО в среднее положение\n'
-                                                      'Или перезагрузить КВУ',
-                                QMessageBox.Ok)
+        # wait_thread = WaitCanAnswerThread()
+        # wait_thread.SignalOfProcess.connect(set_log_lbl)
+        # wait_thread.start()
         window.log_lbl.setText('Машина должна выйти в среднее положение')
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
@@ -822,8 +790,6 @@ if __name__ == '__main__':
     window.reset_device_btn.clicked.connect(mpei_reset_device)
     window.reset_param_btn.clicked.connect(mpei_reset_params)
     window.invertor_mpei_box.setEnabled(False)
-    window.susp_zero_btn.setEnabled(False)
-    window.joy_bind_btn.setEnabled(False)
     # ------------------Кнопки вспомогательные----------------
     window.joy_bind_btn.clicked.connect(joystick_bind)
     window.susp_zero_btn.clicked.connect(suspension_to_zero)
@@ -850,3 +816,6 @@ if __name__ == '__main__':
         window.show()  # Показываем окно
         splash.finish(window)  # Убираем заставку
         app.exec_()  # и запускаем приложение
+
+#  нет процесса привязки джойстика и установки подвески
+# сделать ошибки объектами с описанием, ссылками и выводом нужных параметров
