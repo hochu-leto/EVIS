@@ -3,21 +3,11 @@ import time
 
 import pandas as pd
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
+from PyQt5.QtWidgets import QMessageBox
 
-from EVONode import EVONode
+from EVONode import EVONode, invertor_command_dict
 from Parametr import Parametr
 from helper import empty_par
-
-invertor_command_dict = {
-    'POWER_ON': (0x200100, "ОСТОРОЖНО!!! Высокое напряжение ВКЛЮЧЕНО!"),
-    'POWER_OFF': (0x200101, "Высокое напряжение выключено!"),
-    'RESET_DEVICE': (0x200200, "Инвертор перезагружен"),
-    'RESET_PARAMETERS': (0x200201, "Параметры инвертора сброшены на заводские настройки"),
-    'APPLY_PARAMETERS': (0x200202, "Текущие параметры сохранены в ЕЕПРОМ Инвертора"),
-    'BEGIN_POSITION_SENSOR_CALIBRATION': (0x200203, "Идёт калибровка Инвертора"),
-    'INVERT_ROTATION': (0x200204, "Направление вращения двигателя инвертировано"),
-    'RESET_FAULTS': (0x200205, "Ошибки Инвертора сброшены")}
-
 
 # поток для сохранения в файл настроек блока
 # возвращает сигналу о процентах выполнения, сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
@@ -111,7 +101,7 @@ class SaveToFileThread(QThread):
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.xlsx'
         df = pd.DataFrame(save_list, columns=p.to_dict().keys())
-        df.to_excel(file_name, index=False)     #, sheet_name=self.node_to_save.name, encoding='windows-1251')
+        df.to_excel(file_name, index=False)  # , sheet_name=self.node_to_save.name, encoding='windows-1251')
         # вместо строки ошибки отправляем название файла,куда сохранил настройки
         self.SignalOfReady.emit(100, file_name, True)
 
@@ -225,26 +215,40 @@ class MainThread(QThread):
         loop = QEventLoop()
         loop.exec_()
 
-    def invertor_command(self, command: str):
-        problem_str = 'Команда не прошла'
-        if command not in invertor_command_dict.keys():
-            return 'Неверная Команда', problem_str
-        if self.isRunning():
-            self.wait(100)
+    def send_to_mpei(self, command):
+        answer = 'Команда не прошла'
         for node in self.current_nodes_list:
             if node.name == 'Инвертор_МЭИ':
                 # передавать надо исключительно в первый кан
                 if node.request_id in self.adapter.id_nodes_dict.keys():
                     adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
+                    if self.isRunning():
+                        self.wait(100)
                     answer = node.send_val(invertor_command_dict[command][0], adapter_can1)
-                    if not answer:
-                        suc = invertor_command_dict[command][1]
-                    else:
-                        suc = problem_str
-                    return answer, suc
                 else:
                     answer = 'Нет связи с CAN1-адаптером'
-                return answer + ' Для калибровки и инверсии инвертора\n нужно ВЫКЛЮЧИТЬ высокое напряжение', problem_str
+        return answer
+
+    def invertor_command(self, command: str, tr=None):
+        w = None
+        if command not in invertor_command_dict.keys():
+            return 'Неверная Команда'
+
+        warn_str = invertor_command_dict[command][2]
+        if not warn_str or \
+                QMessageBox.information(w, "Информация", warn_str,
+                                        QMessageBox.Ok, QMessageBox.Cancel) == QMessageBox.Ok:
+            answer = self.send_to_mpei(command)
+            if answer:
+                answer = 'Команду выполнить не удалось\n' + answer
+                QMessageBox.critical(w, "Ошибка", answer, QMessageBox.Ok)
+            else:
+                if tr is not None:
+                    return ''
+                answer = invertor_command_dict[command][1]
+                QMessageBox.information(w, "Успешный успех!", answer, QMessageBox.Ok)
+            return answer
+        return 'Команда отменена пользователем'
 
 
 class WaitCanAnswerThread(QThread):

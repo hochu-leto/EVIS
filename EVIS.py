@@ -203,6 +203,10 @@ def want_to_value_change():
                         if window.thread.current_node.save_to_eeprom:
                             window.save_eeprom_btn.setEnabled(True)
                             window.thread.current_node.param_was_changed = True
+                            if window.thread.current_node.name == 'Инвертор_МЭИ':
+                                QMessageBox.information(window, "Информация", f'Параметр будет работать, \n'
+                                                                              f'только после сохранения в ЕЕПРОМ',
+                                                        QMessageBox.Ok)
                     else:
                         next_cell.setBackground(QColor(254, 0, 0, 30))
                     # если поток был запущен до изменения, то запускаем его снова
@@ -212,8 +216,8 @@ def want_to_value_change():
 
                 else:  # здесь может быть логика сохранения параметров, если их меняют пачкой
                     QMessageBox.information(window, "Информация", f'Подключение прервано, \n'
-                                                                  f' Для изменения параметра\n'
-                                                                  f' требуется подключение к ВАТС',
+                                                                  f'Для изменения параметра\n'
+                                                                  f'требуется подключение к ВАТС',
                                             QMessageBox.Ok)
         else:  # здесь может быть логика сохранения параметров, если их меняют пачкой
             QMessageBox.information(window, "Информация", f'Этот параметр нельзя изменить\n'
@@ -624,7 +628,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         msg.setText("Вы уверены, что хотите закрыть приложение?")
 
         buttonAceptar = msg.addButton("Да", QMessageBox.YesRole)
-        buttonCancelar = msg.addButton("Отменить", QMessageBox.RejectRole)
+        msg.addButton("Отменить", QMessageBox.RejectRole)  # buttonCancelar =
         msg.setDefaultButton(buttonAceptar)
         msg.exec_()
 
@@ -648,29 +652,19 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.connect_to_node()
             print('Вкладка параметры, поток запущен')
         elif self.main_tab.currentWidget() == self.grafics_tab:
-            # if self.thread.isRunning():
-            #     self.connect_to_node()
-            #     print('man')
             print('Графики не готовы')
         else:
             print('Неизвестное состояние')
 
 
 def mpei_invert():
-    QMessageBox.information(window, "Информация", 'Перед инверсией проверь что:\n'
-                                                  ' - высокое напряжение ВЫКЛЮЧЕНО',
-                            QMessageBox.Ok)
-    mpei_answer(window.thread.invertor_command('INVERT_ROTATION'))
+    m = window.thread.invertor_command('INVERT_ROTATION')
+    window.log_lbl.setText(m)
 
 
 def mpei_calibrate():
     param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'FIELD_CURRENT', 'STATOR_CURRENT',
                                 'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT', 'SPEED_RPM', 'TORQUE']
-    QMessageBox.information(window, "Информация", 'Перед калибровкой проверь что:\n'
-                                                  ' - стояночный тормоз отпущен\n'
-                                                  ' - приводная ось вывешена',
-                            QMessageBox.Ok)
-
     wait_thread.adapter = can_adapter.adapters_dict[125]
     wait_thread.id_for_read = 0x381
     wait_thread.answer_byte = 4
@@ -688,36 +682,34 @@ def mpei_calibrate():
     dialog.text_browser.setStyleSheet("font: bold 14px;")
 
     wait_thread.SignalOfProcess.connect(dialog.change_mess)
-    s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION')
-    if s[0]:
-        QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s[0], QMessageBox.Ok)
-    else:
+    wait_thread.req_delay = 10
+    s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION', wait_thread)
+    if not s:
         wait_thread.start()
-
         if dialog.exec_():
             wait_thread.quit()
             wait_thread.wait()
-            print('Поток остановлен')
-
-        window.log_lbl.setText(s[1])
+            print('Поток калибровки остановлен')
 
 
 def mpei_power_on():
-    QMessageBox.information(window, "Информация", 'ОСТОРОЖНО!!! Сейчас будет ВКЛЮЧЕНО высокое напряжение',
-                            QMessageBox.Ok)
-    mpei_answer(window.thread.invertor_command('POWER_ON'))
+    m = window.thread.invertor_command('POWER_ON')
+    window.log_lbl.setText(m)
 
 
 def mpei_power_off():
-    mpei_answer(window.thread.invertor_command('POWER_OFF'))
+    m = window.thread.invertor_command('POWER_OFF')
+    window.log_lbl.setText(m)
 
 
 def mpei_reset_device():
-    mpei_answer(window.thread.invertor_command('RESET_DEVICE'))
+    m = window.thread.invertor_command('RESET_DEVICE')
+    window.log_lbl.setText(m)
 
 
 def mpei_reset_params():
-    mpei_answer(window.thread.invertor_command('RESET_PARAMETERS'))
+    m = window.thread.invertor_command('RESET_PARAMETERS')
+    window.log_lbl.setText(m)
 
 
 def mpei_answer(s=()):
