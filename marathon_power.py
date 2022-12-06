@@ -223,115 +223,62 @@ class CANMarathon(AdapterCAN):
                 return str(err)
         return ''
 
+    # возвращает список массивов int - всю дату, что есть в буфере адаптера если удалось считать и str если ошибка
     def can_read(self, ID: int):
-        start_time = time.perf_counter()
-
         if not self.is_canal_open:
             err = self.canal_open()
-            # print('Время на открытие канала', time.perf_counter() - start_time)
             if err:
                 return err
 
         array_cw = self.Cw * 1
         cw = array_cw((self.can_canal_number, 0x01, 0))
-        self.lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
-        buffer = self.Buffer()
-        buffer.id = ctypes.c_uint32(ID)
-        buffer.len = 8
-        rcqcnt = 0
-        if ID > 0xFFF:
-            self.lib.msg_seteff(ctypes.pointer(buffer))
-
-        try:
-            self.lib.msg_zero(ctypes.pointer(buffer))
+        buffer_array = self.Buffer * 1000
+        buffer_a = buffer_array()
+        result = 0
+        try:    # 1 = в одном из каналов. timeout = 10 миллисекунд
+            result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 10)
         except Exception as e:
-            print('msg_zero do not work')
+            print('CiWaitEvent do not work')
             pprint(e)
             exit()
-        # else:
-        #     print('    в msg_zero так ' + str(result))
-        # и несколько попыток на считывание ответа
-        # print('Время перед циклом', time.perf_counter() - start_time)
-        # start_time_с = time.perf_counter()
+        result = ctypes.c_int16(result).value
 
-        for itr_global in range(self.max_iteration):
-            # CiRcQueCancel Принудительно очищает (стирает) содержимое приемной очереди канала.
-            # наверное, надо почистить очередь перед опросом. но это неточно. совсем неточно
-            result = 0
-            # try:
-            #     result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
-            # except Exception as e:
-            #     print('CiRcQueCancel do not work')
-            #     pprint(e)
-            #     exit()
-            # else:
-            #     print('     в CiRcQueCancel так ' + str(result))
-
-            # try:    # 1 = в одном из каналов. timeout = 150 миллисекунд
-            #     result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 1000)
-            # except Exception as e:
-            #     print('CiWaitEvent do not work')
-            #     pprint(e)
-            #     exit()
-            # # else:
-            # #     print('      в CiWaitEvent так ' + str(result))
-            #
-            # # и когда количество кадров в приемной очереди стало больше
-            # # или равно значению порога - 1
-            # if result > 0 and cw[0].wflags & 0x01:
-            #     # print('Время когда поймали кадр ', time.perf_counter() - start_time_с)
-
-            # и тогда читаем этот кадр из очереди
-            while rcqcnt < 1:
-                try:
-                    result = self.lib.CiRcQueGetCnt(self.can_canal_number, rcqcnt)
-                    print(result, rcqcnt)
-                except Exception as e:
-                    print('CiRcQueGetCnt do not work')
-                    pprint(e)
-                    exit()
-
+        if result > 0:
+            '''
+            _s16 CiRead(_u8 chan, canmsg_t *mbuf, _s16 cnt)
+            Описание:
+            Вынимает cnt кадров из очереди на прием и сохраняет их в буфере mbuf. Если в приемной
+            очереди кадров меньше чем cnt, сохраняет столько кадров сколько есть в очереди. Функция
+            возвращает управление сразу (не ожидает приема из сети запрошенного количества кадров
+            cnt). 
+                    '''
             try:
-                result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), rcqcnt)
+                result = self.lib.CiRead(0, ctypes.pointer(buffer_a), 1000)
             except Exception as e:
                 print('CiRead do not work')
                 pprint(e)
                 exit()
-            # else:
-            #     print('       в CiRead так ' + str(result))
-            # если удалось прочитать
+            result = ctypes.c_int16(result).value
             if result >= 0:
-                # print('Время когда прочитали кадр', time.perf_counter() - start_time_с)
-                print(hex(buffer.id), end='    ')
-                # for e in buffer.data:
-                #     print(hex(e), end=' ')
-                # print()
-                # попался нужный ид
-                if ID == buffer.id:
-                    # print('Время когда пришёл нужный айди ', time.perf_counter() - start_time_с)
-
-                    # print(hex(buffer.id), end='    ')
-                    # for i in buffer.data:
-                    #     print(hex(i), end=' ')
-                    # print()
-                    return buffer.data
-                # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
+                data_list = []
+                time_data_dict = {}
+                for i in range(result):
+                    buff = buffer_a[i]
+                    if ID == buff.id:
+                        time_data_dict[ctypes.c_uint32(buff.ts).value] = buff.data
+                        data_list.append(buff.data)
+                if time_data_dict:
+                    try:
+                        self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
+                    except Exception as e:
+                        print('CiRcQueCancel do not work')
+                        pprint(e)
+                        exit()
+                    return time_data_dict
                 else:
-                    err = 65535 - 15
-                # else:
-                #     err = 'Ошибка при чтении с буфера канала ' + str(result)
-            #  если время ожидания хоть какого-то сообщения в шине больше секунды,
-            #  значит , нас отключили, уходим
-            elif result == 0:
-                err = 65535 - 14
-            else:
-                err = 'Нет подключения к CAN шине '
-        #  выход из цикла попыток
-        self.close_canal_can()
-        if err in error_codes.keys():
-            return error_codes[err]
-        else:
-            return str(err)
+                    return 'Нет нужного ID в буфере'
+                # return data_list if data_list else 'Нет нужного ID в буфере'
+        return 'Время вышло, кадры не получены'
 
     # возвращает массив int если удалось считать и str если ошибка
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
@@ -382,6 +329,8 @@ class CANMarathon(AdapterCAN):
         # здесь два варианта - или всё нормально передалось и transmit_ok == 0 или все попытки  неудачны и
         if transmit_ok < 0:
             self.close_canal_can()
+            print(f'закрытие канала {transmit_ok=}')
+
             if transmit_ok in error_codes.keys():
                 return error_codes[transmit_ok]
             else:
@@ -391,12 +340,12 @@ class CANMarathon(AdapterCAN):
         # идентификатор - 11 бит), длина поля данных - ноль, данные и все остальные поля
         # равны нулю;
         # не совсем понимаю зачем это нужно, но на всякий случай пока оставлю
-        try:
-            result = self.lib.msg_zero(ctypes.pointer(buffer))
-        except Exception as e:
-            print('msg_zero do not work')
-            pprint(e)
-            exit()
+        # try:
+        #     self.lib.msg_zero(ctypes.pointer(buffer))
+        # except Exception as e:
+        #     print('msg_zero do not work')
+        #     pprint(e)
+        #     exit()
         # else:
         #     print('    в msg_zero так ' + str(result))
         # и несколько попыток на считывание ответа
@@ -404,17 +353,17 @@ class CANMarathon(AdapterCAN):
             # CiRcQueCancel Принудительно очищает (стирает) содержимое приемной очереди канала.
             # наверное, надо почистить очередь перед опросом. но это неточно. совсем неточно
             result = 0
-            try:
-                result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
-            except Exception as e:
-                print('CiRcQueCancel do not work')
-                pprint(e)
-                exit()
+            # try:
+            #     result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
+            # except Exception as e:
+            #     print('CiRcQueCancel do not work')
+            #     pprint(e)
+            #     exit()
             # else:
             #     print('     в CiRcQueCancel так ' + str(result))
 
             try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 150 миллисекунд
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 100 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
                 pprint(e)
@@ -445,7 +394,7 @@ class CANMarathon(AdapterCAN):
                         # print(hex(buffer.id), end='    ')
                         # for i in buffer.data:
                         #     print(hex(i), end=' ')
-                        # print()
+                        # print(buffer.ts)
                         return buffer.data
                     # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
                     else:
@@ -459,6 +408,7 @@ class CANMarathon(AdapterCAN):
             else:
                 err = 'Нет подключения к CAN шине '
         #  выход из цикла попыток
+        print('закрытие канала')
         self.close_canal_can()
         if err in error_codes.keys():
             return error_codes[err]

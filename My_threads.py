@@ -7,10 +7,12 @@ from PyQt5.QtWidgets import QMessageBox
 
 from EVONode import EVONode, invertor_command_dict
 from Parametr import Parametr
-from helper import empty_par
+from helper import empty_par, buf_to_string
+
 
 # поток для сохранения в файл настроек блока
 # возвращает сигналу о процентах выполнения, сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
+
 class SaveToFileThread(QThread):
     SignalOfReady = pyqtSignal(int, str, bool)
     err_thread_signal = pyqtSignal(str)
@@ -252,7 +254,7 @@ class MainThread(QThread):
 
 
 class WaitCanAnswerThread(QThread):
-    SignalOfProcess = pyqtSignal(str, list)
+    SignalOfProcess = pyqtSignal(list, list)
 
     def __init__(self):
         super().__init__()
@@ -266,36 +268,36 @@ class WaitCanAnswerThread(QThread):
         self.answer_dict = {}
         self.wait_time = 15  # максимальное время в секундах, через которое поток отключится
         self.max_err = 20
-        self.req_delay = 50
+        self.req_delay = 100
         self.imp_par_list = []
 
     def run(self):
         self.err_count = 0
         self.end_time = time.perf_counter() + self.wait_time
+        self.old_ti = 0
 
         def request_ans():
-            answer = ''
-            # print(f'\rтекущее время {time.perf_counter()} конечное время {self.end_time}', end='', flush=True)
+            answer = []
             if (time.perf_counter() > self.end_time) or \
                     self.err_count > self.max_err:
-                self.SignalOfProcess.emit('Время закончилось', self.imp_par_list)
                 self.quit()
                 self.wait()
+                self.SignalOfProcess.emit(['Время закончилось'], self.imp_par_list)
                 return
 
             if self.id_for_read:
-                ans = self.adapter.can_read(self.id_for_read)
+                ans = self.adapter.can_read(self.id_for_read)   # приходит список кадров, если всё хорошо
 
-                if not isinstance(ans, str):
-                    for i in ans:
-                        print(hex(i), end=' ')
-                    print()
-                    byte_a = ans[self.answer_byte]
-                    self.err_count = 0
-                    if byte_a in self.answer_dict:
-                        answer = self.answer_dict[byte_a]
+                if isinstance(ans, dict):
+                    for ti, a in ans.items():
+                        # print(ti - self.old_ti, buf_to_string(a))
+                        self.old_ti = ti
+                        byte_a = a[self.answer_byte]
+                        self.err_count = 0
+                        if byte_a in self.answer_dict:
+                            answer.append(self.answer_dict[byte_a])
                 else:
-                    print(ans)
+                    # print(ans)
                     self.err_count += 1
 
             if self.imp_par_list:

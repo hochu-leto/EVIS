@@ -657,14 +657,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             print('Неизвестное состояние')
 
 
-def mpei_invert():
-    m = window.thread.invertor_command('INVERT_ROTATION')
-    window.log_lbl.setText(m)
-
-
 def mpei_calibrate():
-    param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'FIELD_CURRENT', 'STATOR_CURRENT',
-                                'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT', 'SPEED_RPM', 'TORQUE']
+    param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'SPEED_RPM', 'FIELD_CURRENT', ]
+    # 'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']  # 'STATOR_CURRENT', 'TORQUE',
     wait_thread.adapter = can_adapter.adapters_dict[125]
     wait_thread.id_for_read = 0x381
     wait_thread.answer_byte = 4
@@ -681,8 +676,27 @@ def mpei_calibrate():
     dialog.text_browser.setEnabled(False)
     dialog.text_browser.setStyleSheet("font: bold 14px;")
 
-    wait_thread.SignalOfProcess.connect(dialog.change_mess)
-    wait_thread.req_delay = 10
+    @pyqtSlot(list, list)
+    def check_dialog_mess(st, list_of_params):
+        if wait_thread.isRunning():
+            dialog.change_mess(st, list_of_params)
+        else:
+            print('Поток калибровки остановлен')
+            for node in window.thread.current_nodes_list:
+                if node.name == 'Инвертор_МЭИ':
+                    # передавать надо исключительно в первый кан
+                    if node.request_id in window.thread.adapter.id_nodes_dict.keys():
+                        adapter_can1 = window.thread.adapter.id_nodes_dict[node.request_id]
+                        faults = node.check_errors(adapter=adapter_can1)
+                        if not faults:
+                            st.append('Ошибок во время калибровки не появилось')
+                        else:
+                            faults.insert(0, 'Во время калибровки возникли ошибки: ')
+                            st += faults
+                        dialog.change_mess(st)
+
+    wait_thread.SignalOfProcess.connect(check_dialog_mess)
+
     s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION', wait_thread)
     if not s:
         wait_thread.start()
@@ -690,6 +704,11 @@ def mpei_calibrate():
             wait_thread.quit()
             wait_thread.wait()
             print('Поток калибровки остановлен')
+
+
+def mpei_invert():
+    m = window.thread.invertor_command('INVERT_ROTATION')
+    window.log_lbl.setText(m)
 
 
 def mpei_power_on():
@@ -710,15 +729,6 @@ def mpei_reset_device():
 def mpei_reset_params():
     m = window.thread.invertor_command('RESET_PARAMETERS')
     window.log_lbl.setText(m)
-
-
-def mpei_answer(s=()):
-    if s[0]:
-        QMessageBox.critical(window, "Ошибка ", 'Команду выполнить не удалось\n' + s[0], QMessageBox.Ok)
-    else:
-        QMessageBox.information(window, "Успешный успех!", 'Команда отправлена \n о выполнении инвертор не сообщает',
-                                QMessageBox.Ok)
-        window.log_lbl.setText(s[1])
 
 
 def joystick_bind():

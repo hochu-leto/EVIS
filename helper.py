@@ -46,6 +46,15 @@ example_par = {'name': 'fghjk',
                'degree': 3}
 
 
+def buf_to_string(buf):
+    if isinstance(buf, str):
+        return buf
+    s = ''
+    for i in buf:
+        s += hex(i) + ' '
+    return s
+
+
 def find_param(nodes_list, s, node_name=None):
     if node_name is None:
         list_of_params = [param for nd in nodes_list
@@ -190,10 +199,10 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
         self.adjustSize()
 
-    @pyqtSlot(str, list)
-    def change_mess(self, st: str, list_of_params=None):
+    @pyqtSlot(list, list)
+    def change_mess(self, st: list, list_of_params=None):
         if st:
-            self.text_browser.append(st)
+            self.text_browser.append('\n'.join(st))
         if list_of_params and isinstance(list_of_params, list):
             show_new_vmu_params(list_of_params, self.param_table)
 

@@ -3,6 +3,7 @@
 (пока только МАРАФОН и Квасер) и определяет скорости кан-шин, к которым они подключены.
 Нормально работает пока только с марафоном
 '''
+from pprint import pprint
 from sys import platform
 
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow
@@ -10,6 +11,7 @@ from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow
 import AdapterCAN
 # from kvaser_power import Kvaser
 from marathon_power import CANMarathon
+from helper import buf_to_string
 
 
 class CANAdapter:
@@ -109,5 +111,10 @@ class CANAdapter:
         if bitrate in self.adapters_dict.keys():
             adapter = self.adapters_dict[bitrate]
             ans = adapter.can_read(can_id_ans)
+            if isinstance(ans, dict):
+                for ti, a in ans.items():
+                    print(ti, buf_to_string(a))
+                    print()
+                ans = list(ans.values())
             return ans
         return 'Неверный битрейт'
