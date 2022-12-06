@@ -5,7 +5,7 @@
 '''
 from sys import platform
 
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow
 
 import AdapterCAN
 # from kvaser_power import Kvaser
@@ -35,6 +35,8 @@ class CANAdapter:
             # if not self.can_adapters:
             self.search_chanells(CANMarathon)
         if not self.adapters_dict:
+            if QApplication.instance() is None:
+                app = QApplication([])
             QMessageBox.critical(None, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.Ok)
             return False
         return True
@@ -93,6 +95,8 @@ class CANAdapter:
     def can_send(self, can_id_req: int, message: list, bitrate=None):
         if bitrate is None:
             bitrate = 125
+        if not self.adapters_dict:
+            return ''
         if bitrate in self.adapters_dict.keys():
             adapter = self.adapters_dict[bitrate]
             ans = adapter.can_write(can_id_req, message)

@@ -238,7 +238,7 @@ class CANMarathon(AdapterCAN):
         buffer = self.Buffer()
         buffer.id = ctypes.c_uint32(ID)
         buffer.len = 8
-
+        rcqcnt = 0
         if ID > 0xFFF:
             self.lib.msg_seteff(ctypes.pointer(buffer))
 
@@ -258,60 +258,68 @@ class CANMarathon(AdapterCAN):
             # CiRcQueCancel Принудительно очищает (стирает) содержимое приемной очереди канала.
             # наверное, надо почистить очередь перед опросом. но это неточно. совсем неточно
             result = 0
-            try:
-                result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
-            except Exception as e:
-                print('CiRcQueCancel do not work')
-                pprint(e)
-                exit()
+            # try:
+            #     result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
+            # except Exception as e:
+            #     print('CiRcQueCancel do not work')
+            #     pprint(e)
+            #     exit()
             # else:
             #     print('     в CiRcQueCancel так ' + str(result))
 
+            # try:    # 1 = в одном из каналов. timeout = 150 миллисекунд
+            #     result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 1000)
+            # except Exception as e:
+            #     print('CiWaitEvent do not work')
+            #     pprint(e)
+            #     exit()
+            # # else:
+            # #     print('      в CiWaitEvent так ' + str(result))
+            #
+            # # и когда количество кадров в приемной очереди стало больше
+            # # или равно значению порога - 1
+            # if result > 0 and cw[0].wflags & 0x01:
+            #     # print('Время когда поймали кадр ', time.perf_counter() - start_time_с)
+
+            # и тогда читаем этот кадр из очереди
+            while rcqcnt < 1:
+                try:
+                    result = self.lib.CiRcQueGetCnt(self.can_canal_number, rcqcnt)
+                    print(result, rcqcnt)
+                except Exception as e:
+                    print('CiRcQueGetCnt do not work')
+                    pprint(e)
+                    exit()
+
             try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 1000)  # timeout = 150 миллисекунд
+                result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), rcqcnt)
             except Exception as e:
-                print('CiWaitEvent do not work')
+                print('CiRead do not work')
                 pprint(e)
                 exit()
             # else:
-            #     print('      в CiWaitEvent так ' + str(result))
-
-            # и когда количество кадров в приемной очереди стало больше
-            # или равно значению порога - 1
-            if result > 0 and cw[0].wflags & 0x01:
-                # print('Время когда поймали кадр ', time.perf_counter() - start_time_с)
-
-                # и тогда читаем этот кадр из очереди
-                try:
-                    result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), 1)
-                except Exception as e:
-                    print('CiRead do not work')
-                    pprint(e)
-                    exit()
-                # else:
-                #     print('       в CiRead так ' + str(result))
-                # если удалось прочитать
-                if result >= 0:
-                    # print('Время когда прочитали кадр', time.perf_counter() - start_time_с)
+            #     print('       в CiRead так ' + str(result))
+            # если удалось прочитать
+            if result >= 0:
+                # print('Время когда прочитали кадр', time.perf_counter() - start_time_с)
+                print(hex(buffer.id), end='    ')
+                # for e in buffer.data:
+                #     print(hex(e), end=' ')
+                # print()
+                # попался нужный ид
+                if ID == buffer.id:
+                    # print('Время когда пришёл нужный айди ', time.perf_counter() - start_time_с)
 
                     # print(hex(buffer.id), end='    ')
-                    # for e in buffer.data:
-                    #     print(hex(e), end=' ')
+                    # for i in buffer.data:
+                    #     print(hex(i), end=' ')
                     # print()
-                    # попался нужный ид
-                    if ID == buffer.id:
-                        # print('Время когда пришёл нужный айди ', time.perf_counter() - start_time_с)
-
-                        # print(hex(buffer.id), end='    ')
-                        # for i in buffer.data:
-                        #     print(hex(i), end=' ')
-                        # print()
-                        return buffer.data
-                    # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
-                    else:
-                        err = 65535 - 15
+                    return buffer.data
+                # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
                 else:
-                    err = 'Ошибка при чтении с буфера канала ' + str(result)
+                    err = 65535 - 15
+                # else:
+                #     err = 'Ошибка при чтении с буфера канала ' + str(result)
             #  если время ожидания хоть какого-то сообщения в шине больше секунды,
             #  значит , нас отключили, уходим
             elif result == 0:
