@@ -175,6 +175,7 @@ def want_to_value_change():
     c_flags = current_cell.flags()
     col_name = window.vmu_param_table.horizontalHeaderItem(current_cell.column()).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
+    next_cell = window.vmu_param_table.item(c_row, c_col + 1)
 
     # меняем значение параметра
     if col_name == 'ЗНАЧЕНИЕ':
@@ -196,7 +197,6 @@ def want_to_value_change():
                         new_val = ''
                     else:
                         new_val = zero_del(value_data).strip()
-                    next_cell = window.vmu_param_table.item(c_row, c_col + 1)
                     # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
                     if val == new_val:
                         next_cell.setBackground(QColor(0, 254, 0, 30))
@@ -229,27 +229,43 @@ def want_to_value_change():
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
+        # достаю список Избранное
         user_node = window.current_nodes_list[len(window.current_nodes_list) - 1]
+        # из текущего параметра делаю новый с новым именем через #
         new_param = Parametr(current_param.to_dict(), current_param.node)
         if window.thread.current_node != user_node:
             new_param.name = f'{new_param.name}#{new_param.node.name}'
         text = 'добавлен в список Избранное'
+        next_cell.setBackground(QColor(254, 0, 0, 30))
+        # если Новый список есть в Избранном
         if NewParamsList in user_node.group_params_dict.keys():
+            # Проверяю есть ли уже новый параметр в Новом списке
             p = None
             for par in user_node.group_params_dict[NewParamsList]:
                 if par.name in new_param.name:
                     p = par
+            # если есть, то удаляю его (как-то тупо определяю, надо переделать)
             if p:
-                if window.thread.current_node == user_node and window.thread.isRunning():
-                    window.connect_to_node()
-                    user_node.group_params_dict[NewParamsList].remove(p)
-                    window.connect_to_node()
-                else:
-                    user_node.group_params_dict[NewParamsList].remove(p)
-                show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
                 text = 'удалён из списка Избранное'
+                window.vmu_param_table.item(c_row, c_col + 1).setBackground(QColor(254, 254, 254, 30))
+                was_run = False
+                # останавливаю поток и удаляю параметр из Нового списка
+                if window.thread.isRunning():
+                    window.connect_to_node()
+                    was_run = True
+
+                user_node.group_params_dict[NewParamsList].remove(p)
+
+                # если юзер сейчас в Новом списке, обновляю вид таблицы
+                if window.thread.current_node == user_node:
+                    show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
+
+                if window.thread.isFinished() and was_run:
+                    window.connect_to_node()
+            # если нового параметра нет в Новом списке, добавляю его туда
             else:
                 user_node.group_params_dict[NewParamsList].append(new_param)
+        # если Нового списка нет в Избранном, надо его создать и добавить в него новый параметр
         else:
             user_node.group_params_dict[NewParamsList] = [new_param]
             item = QTreeWidgetItem()
@@ -832,17 +848,7 @@ def suspension_to_zero():
                 wait_thread.quit()
                 wait_thread.wait()
                 print('Поток остановлен')
-        # else:
-        #     QMessageBox.critical(window, "Ошибка ", 'Команда привязки не отправлена\n' + bind_command, QMessageBox.Ok)
-        #
-        #
-        #     QMessageBox.information(window, "Информация", 'Машина должна выйти в среднее положение\n'
-        #                                                   'И теперь будет работать в режиме АВТО\n'
-        #                                                   'Чтобы его отключить  - тумблер АВТО\n'
-        #                                                   'в среднее положение\n'
-        #                                                   'Или перезагрузить КВУ',
-        #                             QMessageBox.Ok)
-        #     window.log_lbl.setText('Машина должна выйти в среднее положение')
+
         else:
             QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{command_zero_suspension}', QMessageBox.Ok)
             window.log_lbl.setText(command_zero_suspension)
