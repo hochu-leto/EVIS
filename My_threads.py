@@ -290,14 +290,14 @@ class WaitCanAnswerThread(QThread):
 
                 if isinstance(ans, dict):
                     for ti, a in ans.items():
-                        # print(ti - self.old_ti, buf_to_string(a))
+                        print(ti - self.old_ti, buf_to_string(a))
                         self.old_ti = ti
                         byte_a = a[self.answer_byte]
                         self.err_count = 0
                         if byte_a in self.answer_dict:
                             answer.append(self.answer_dict[byte_a])
                 else:
-                    # print(ans)
+                    print(ans, hex(self.id_for_read))
                     self.err_count += 1
 
             if self.imp_par_list:

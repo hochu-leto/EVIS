@@ -45,6 +45,10 @@ error_codes = {
     65535 - 15: 'Нет ответа от блока управления',
     65535 - 16: 'Неправильные данные для передачи. Нужен список',
 }
+complete_dict = {0x0: 'CI_TR_COMPLETE_OK – последняя передача в сеть была успешной',
+                 0x1: 'CI_TR_COMPLETE_ABORT – последняя передача в сеть была сброшена',
+                 0x2: 'CI_TR_INCOMPLETE – контроллер передает кадр в сеть',
+                 0x3: 'CI_TR_DELAY'}
 
 from pprint import pprint
 
@@ -166,6 +170,27 @@ class CANMarathon(AdapterCAN):
         #     print('       в CiClose так ' + str(result))
         self.is_canal_open = False
 
+    '''
+    довольно странная ситуация с записью параметра в устройство. Почему-то параметр записывается не с первого раза
+     хотя CiTransmit возвращает 0 - успех. Функция CiTrStat - проверка текущего состояния процесса отправки кадров
+    возвращает постоянно 2 но непонятно хорошо это или плохо
+    define CI_TR_COMPLETE_OK    0x0
+    define CI_TR_COMPLETE_ABORT 0x1
+    define CI_TR_INCOMPLETE     0x2
+    define CI_TR_DELAY          0x3
+    Вроде как INCOMPLETE, но параметр записывается. Поэтому принято решение просто пихать CiTransmit
+    max_iteration раз - тогда гарантированно залетает. Возможно, это скажется когда нужно будет запихнуть
+    кучу параметров - тогда придётся как-то решать эту проблему. Причём при запросе параметра с той же CiTransmit
+    ответ приходит сразу же
+    и ещё проблема - при работе с другими блоками, кроме рулевой пихать в него несколько раз одинаковое сообщение
+    может быть не очень гуд. Надо как-то разбираться с этой проблемой.
+    здесь два варианта - или всё нормально передалось и transmit_ok == 0 или все попытки  неудачны и
+    _s16 CiTrStat(_u8 chan, _u16 * trqcnt)
+    Возвращает текущее состояние процесса отправки кадров канала ввода-вывода:
+    ● chan - номер канала
+    ● trqcnt - указатель на переменную, куда записывается количество кадров находящихся в очереди на отправку;
+    '''
+
     def can_write(self, can_id: int, message: list):
         if not isinstance(message, list):
             return error_codes[65535 - 16]
@@ -178,50 +203,48 @@ class CANMarathon(AdapterCAN):
         buffer = self.Buffer()
         buffer.id = ctypes.c_uint32(can_id)
         buffer.len = len(message)
+        print(f'Отправляю   {hex(buffer.id)}  {buffer.len}  ', end=' ')
         j = 0
         for i in message:
+            print(hex(i), end=' ')
             buffer.data[j] = ctypes.c_uint8(i)
             j += 1
-
+        print()
         if can_id > 0xFFF:
             self.lib.msg_seteff(ctypes.pointer(buffer))
 
         self.lib.CiTransmit.argtypes = [ctypes.c_int8, ctypes.POINTER(self.Buffer)]
         err = -1
-
-        # временно
-        # for i in range(self.max_iteration):
-
         try:
             err = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(buffer))
+            err = ctypes.c_int16(err).value
         except Exception as e:
             print('CiTransmit do not work')
             pprint(e)
             exit()
-            # else:
-            #     print('   в CiTransmit так ' + str(err))
-        # довольно странная ситуация с записью параметра в устройство. Почему-то параметр записывается не с первого раза
-        #  хотя CiTransmit возвращает 0 - успех. Функция CiTrStat - проверка текущего состояния процесса отправки кадров
-        # возвращает постоянно 2 но непонятно хорошо это или плохо
-        # define CI_TR_COMPLETE_OK    0x0
-        # define CI_TR_COMPLETE_ABORT 0x1
-        # define CI_TR_INCOMPLETE     0x2
-        # define CI_TR_DELAY          0x3
-        # Вроде как INCOMPLETE, но параметр записывается. Поэтому принято решение просто пихать CiTransmit
-        # max_iteration раз - тогда гарантированно залетает. Возможно, это скажется когда нужно будет запихнуть
-        # кучу параметров - тогда придётся как-то решать эту проблему. Причём при запросе параметра с той же CiTransmit
-        # ответ приходит сразу же
-        # и ещё проблема - при работе с другими блоками, кроме рулевой пихать в него несколько раз одинаковое сообщение
-        # может быть не очень гуд. Надо как-то разбираться с этой проблемой.
-        # здесь два варианта - или всё нормально передалось и transmit_ok == 0 или все попытки  неудачны и
+        else:
+            print('   в CiTransmit так ' + str(err))
 
-        # self.close_canal_can()
-        if err < 0:
-            if err in error_codes.keys():
-                return error_codes[err]
-            else:
-                return str(err)
-        return ''
+        if not err:
+            trqcnt = ctypes.c_int16(20)
+            for i in range(self.max_iteration):
+                try:
+                    err = self.lib.CiTrStat(self.can_canal_number, ctypes.pointer(trqcnt))
+                    err = ctypes.c_int16(err).value
+                except Exception as e:
+                    print('CiTransmit do not work')
+                    pprint(e)
+                    exit()
+                else:
+                    print(f'   в CiTrStat так {complete_dict[err]}, осталось кадров на передачу {trqcnt.value} ')
+                if not trqcnt.value and not err:
+                    return ''
+            err = 65535 - 2
+
+        if err in error_codes.keys():
+            return error_codes[err]
+        else:
+            return str(err)
 
     # возвращает список массивов int - всю дату, что есть в буфере адаптера если удалось считать и str если ошибка
     def can_read(self, ID: int):
@@ -235,7 +258,7 @@ class CANMarathon(AdapterCAN):
         buffer_array = self.Buffer * 1000
         buffer_a = buffer_array()
         result = 0
-        try:    # 1 = в одном из каналов. timeout = 10 миллисекунд
+        try:  # 1 = в одном из каналов. timeout = 10 миллисекунд
             result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 10)
         except Exception as e:
             print('CiWaitEvent do not work')
@@ -253,7 +276,7 @@ class CANMarathon(AdapterCAN):
             cnt). 
                     '''
             try:
-                result = self.lib.CiRead(0, ctypes.pointer(buffer_a), 1000)
+                result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer_a), 1000)
             except Exception as e:
                 print('CiRead do not work')
                 pprint(e)
@@ -278,7 +301,9 @@ class CANMarathon(AdapterCAN):
                 else:
                     return 'Нет нужного ID в буфере'
                 # return data_list if data_list else 'Нет нужного ID в буфере'
-        return 'Время вышло, кадры не получены'
+        elif result == 0:
+            return 'Время вышло, кадры не получены'
+        return f'В CiWaitEvent ошибка {result}'
 
     # возвращает массив int если удалось считать и str если ошибка
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):

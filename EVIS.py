@@ -658,8 +658,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
 
 def mpei_calibrate():
-    param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'SPEED_RPM', 'FIELD_CURRENT', ]
-    # 'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']  # 'STATOR_CURRENT', 'TORQUE',
+    param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'SPEED_RPM', 'FIELD_CURRENT',
+                                'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']  # 'STATOR_CURRENT', 'TORQUE',
     wait_thread.adapter = can_adapter.adapters_dict[125]
     wait_thread.id_for_read = 0x381
     wait_thread.answer_byte = 4
@@ -739,6 +739,16 @@ def joystick_bind():
         QMessageBox.information(window, "Информация", 'Перед привязкой проверь,\n что джойстик ВЫКЛЮЧЕН',
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
+
+        dialog = DialogChange(text='Команда на привязку отправлена')
+        dialog.setWindowTitle('Привязка джойстика')
+        dialog.text_browser.setEnabled(False)
+        dialog.text_browser.setStyleSheet("font: bold 14px;")
+
+        wait_thread.SignalOfProcess.connect(dialog.change_mess)
+        wait_thread.wait_time = 20  # время в секундах для включения и прописки джойстика
+        wait_thread.req_delay = 250  # время в миллисекундах на
+        wait_thread.max_err = 80  # потому что приёмник джойстика не отвечает постоянно, а только трижды
         wait_thread.adapter = adapter
         wait_thread.id_for_read = 0x18FF87A7
         wait_thread.answer_dict = {
@@ -746,19 +756,18 @@ def joystick_bind():
             1: 'приемник переведен в режим привязки, ожидание включения пульта ДУ',
             2: 'привязка завершена',
             254: 'ошибка',
-            255: 'команда недоступна'
-        }
-        dialog = DialogChange(text='Команда на привязку отправлена')
-        dialog.setWindowTitle('Привязка джойстика')
-        dialog.text_browser.setEnabled(False)
-        dialog.text_browser.setStyleSheet("font: bold 14px;")
-        wait_thread.SignalOfProcess.connect(dialog.change_mess)
-        wait_thread.start()
-        adapter.can_write(0x18FF86AA, [0] * 8)
-        if dialog.exec_():
-            wait_thread.quit()
-            wait_thread.wait()
-            print('Поток остановлен')
+            255: 'команда недоступна'}
+
+        bind_command = adapter.can_write(0x18FF86A5, [0] * 8)
+
+        if not bind_command:
+            wait_thread.start()
+            if dialog.exec_():
+                wait_thread.quit()
+                wait_thread.wait()
+                print('Поток остановлен')
+        else:
+            QMessageBox.critical(window, "Ошибка ", 'Команда привязки не отправлена\n' + bind_command, QMessageBox.Ok)
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
@@ -778,13 +787,17 @@ def suspension_to_zero():
                                                       ' - остальные тумблеры в нейтральном положении',
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
-        adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
-        QMessageBox.information(window, "Информация", 'Машина должна выйти в среднее положение\n'
-                                                      'И теперь будет работать в режиме АВТО\n'
-                                                      'Чтобы его отключить  - тумблер АВТО в среднее положение\n'
-                                                      'Или перезагрузить КВУ',
-                                QMessageBox.Ok)
-        window.log_lbl.setText('Машина должна выйти в среднее положение')
+        command_zero_suspension = adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
+        if not command_zero_suspension:
+            QMessageBox.information(window, "Информация", 'Машина должна выйти в среднее положение\n'
+                                                          'И теперь будет работать в режиме АВТО\n'
+                                                          'Чтобы его отключить  - тумблер АВТО в среднее положение\n'
+                                                          'Или перезагрузить КВУ',
+                                    QMessageBox.Ok)
+            window.log_lbl.setText('Машина должна выйти в среднее положение')
+        else:
+            QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{command_zero_suspension}', QMessageBox.Ok)
+            window.log_lbl.setText(command_zero_suspension)
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
@@ -839,3 +852,15 @@ if __name__ == '__main__':
         window.show()  # Показываем окно
         splash.finish(window)  # Убираем заставку
         app.exec_()  # и запускаем приложение
+
+'''
+сейчас есть несколько проблем
+- чем больше параметров в окне с калибровкой инв, тем больше вероятность просрать от него информацию об успешной калибровке
+    сейчас это решено уменьшением параметров до 4, но есть мысль, что нужно изменить индивидупльный  опрос параметров на
+     считывание всего всего буфера из памяти адаптера и его разбора - долго и сложно
+- периодически параметры в списке калибровке дублируются дважды один и тот же может быть
+- не отправляется команда на привязку джойстика
+- надо придумать какие нужны файлы и как они должны храниться для списка параметров и ошибок по блокам
+    в блоках по версиям ПО. То, что делает Антон не подходит для всех блоков, Тип json хорош, но его нужно переделывать
+- 
+'''
