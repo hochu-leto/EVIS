@@ -656,10 +656,39 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             print('Неизвестное состояние')
 
+# --------------------------------------------------- кнопки управления ----------------------------------------------
+def mpei_invert():
+    m = window.thread.invertor_command('INVERT_ROTATION')
+    window.log_lbl.setText(m)
 
+
+def mpei_power_on():
+    m = window.thread.invertor_command('POWER_ON')
+    window.log_lbl.setText(m)
+
+
+def mpei_power_off():
+    m = window.thread.invertor_command('POWER_OFF')
+    window.log_lbl.setText(m)
+
+
+def mpei_reset_device():
+    m = window.thread.invertor_command('RESET_DEVICE')
+    window.log_lbl.setText(m)
+
+
+def mpei_reset_params():
+    m = window.thread.invertor_command('RESET_PARAMETERS')
+    window.log_lbl.setText(m)
+
+
+# ---------------------------------------------- кнопки с диалогом ----------------------------------------------------
 def mpei_calibrate():
     param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'SPEED_RPM', 'FIELD_CURRENT',
                                 'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']  # 'STATOR_CURRENT', 'TORQUE',
+    for p_name in param_list_for_calibrate:
+        wait_thread.imp_par_list.append(find_param(window.current_nodes_list, p_name, node_name='Инвертор_МЭИ')[0])
+
     wait_thread.req_delay = 50
     wait_thread.adapter = can_adapter.adapters_dict[125]
     wait_thread.id_for_read = 0x381
@@ -668,15 +697,10 @@ def mpei_calibrate():
                                0x0B: 'Калибровка не удалась',
                                0x0C: 'Настройки сохранены в ЕЕПРОМ'}
 
-    for p_name in param_list_for_calibrate:
-        wait_thread.imp_par_list.append(find_param(window.current_nodes_list, p_name, node_name='Инвертор_МЭИ')[0])
-
     dialog = DialogChange(label='Процесс калибровки',
                           text='Команда на калибровку отправлена',
                           table=wait_thread.imp_par_list)
     dialog.setWindowTitle('Калибровка Инвертора МЭИ')
-    dialog.text_browser.setEnabled(False)
-    dialog.text_browser.setStyleSheet("font: bold 14px;")
 
     @pyqtSlot(list, list)
     def check_dialog_mess(st, list_of_params):
@@ -708,31 +732,6 @@ def mpei_calibrate():
             print('Поток калибровки остановлен')
 
 
-def mpei_invert():
-    m = window.thread.invertor_command('INVERT_ROTATION')
-    window.log_lbl.setText(m)
-
-
-def mpei_power_on():
-    m = window.thread.invertor_command('POWER_ON')
-    window.log_lbl.setText(m)
-
-
-def mpei_power_off():
-    m = window.thread.invertor_command('POWER_OFF')
-    window.log_lbl.setText(m)
-
-
-def mpei_reset_device():
-    m = window.thread.invertor_command('RESET_DEVICE')
-    window.log_lbl.setText(m)
-
-
-def mpei_reset_params():
-    m = window.thread.invertor_command('RESET_PARAMETERS')
-    window.log_lbl.setText(m)
-
-
 def joystick_bind():
     if not can_adapter.isDefined:
         if not can_adapter.find_adapters():
@@ -746,12 +745,10 @@ def joystick_bind():
 
         dialog = DialogChange(text='Команда на привязку отправлена')
         dialog.setWindowTitle('Привязка джойстика')
-        dialog.text_browser.setEnabled(False)
-        dialog.text_browser.setStyleSheet("font: bold 14px;")
 
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.wait_time = 20  # время в секундах для включения и прописки джойстика
-        wait_thread.req_delay = 250  # время в миллисекундах на
+        wait_thread.req_delay = 250  # время в миллисекундах на опрос параметров
         wait_thread.max_err = 80  # потому что приёмник джойстика не отвечает постоянно, а только трижды
         wait_thread.adapter = adapter
         wait_thread.id_for_read = 0x18FF87A7
@@ -776,12 +773,14 @@ def joystick_bind():
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
 
-@pyqtSlot(str)
-def set_log_lbl(s: str):
-    window.log_lbl.setText(s)
-
-
 def suspension_to_zero():
+    param_list_for_suspension = ['SUSPENSION_HEIGHT_CUR_1', 'SUSPENSION_PRESSURE_CUR_1',
+                                 'SUSPENSION_HEIGHT_CUR_2', 'SUSPENSION_PRESSURE_CUR_2',
+                                 'SUSPENSION_HEIGHT_CUR_3', 'SUSPENSION_PRESSURE_CUR_3',
+                                 'SUSPENSION_HEIGHT_CUR_4', 'SUSPENSION_PRESSURE_CUR_4', ]
+    for p_name in param_list_for_suspension:
+        wait_thread.imp_par_list.append(find_param(window.current_nodes_list, p_name)[0])
+
     if not can_adapter.isDefined:
         if not can_adapter.find_adapters():
             return
@@ -791,20 +790,43 @@ def suspension_to_zero():
                                                       ' - остальные тумблеры в нейтральном положении',
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
+        dialog = DialogChange(text='Команда на установку отправлена',
+                              table=wait_thread.imp_par_list)
+        dialog.setWindowTitle('Установка подвески v ноль')
+
+        wait_thread.SignalOfProcess.connect(dialog.change_mess)
+        wait_thread.wait_time = 10  # время в секундах для установки подвески
+        wait_thread.req_delay = 50  # время в миллисекундах на опрос параметров
+        wait_thread.adapter = adapter
+
         command_zero_suspension = adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
-        if not command_zero_suspension:     # если передача прошла успешно
-            QMessageBox.information(window, "Информация", 'Машина должна выйти в среднее положение\n'
-                                                          'И теперь будет работать в режиме АВТО\n'
-                                                          'Чтобы его отключить  - тумблер АВТО\n'
-                                                          'в среднее положение\n'
-                                                          'Или перезагрузить КВУ',
-                                    QMessageBox.Ok)
-            window.log_lbl.setText('Машина должна выйти в среднее положение')
+        if not command_zero_suspension:  # если передача прошла успешно
+            wait_thread.start()
+            if dialog.exec_():
+                wait_thread.quit()
+                wait_thread.wait()
+                print('Поток остановлен')
+        # else:
+        #     QMessageBox.critical(window, "Ошибка ", 'Команда привязки не отправлена\n' + bind_command, QMessageBox.Ok)
+        #
+        #
+        #     QMessageBox.information(window, "Информация", 'Машина должна выйти в среднее положение\n'
+        #                                                   'И теперь будет работать в режиме АВТО\n'
+        #                                                   'Чтобы его отключить  - тумблер АВТО\n'
+        #                                                   'в среднее положение\n'
+        #                                                   'Или перезагрузить КВУ',
+        #                             QMessageBox.Ok)
+        #     window.log_lbl.setText('Машина должна выйти в среднее положение')
         else:
             QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{command_zero_suspension}', QMessageBox.Ok)
             window.log_lbl.setText(command_zero_suspension)
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
+
+
+@pyqtSlot(str)
+def set_log_lbl(s: str):
+    window.log_lbl.setText(s)
 
 
 if __name__ == '__main__':
@@ -860,11 +882,7 @@ if __name__ == '__main__':
 
 '''
 сейчас есть несколько проблем
-- чем больше параметров в окне с калибровкой инв, тем больше вероятность просрать от него информацию об успешной калибровке
-    сейчас это решено уменьшением параметров до 4, но есть мысль, что нужно изменить индивидупльный  опрос параметров на
-     считывание всего всего буфера из памяти адаптера и его разбора - долго и сложно
-- периодически параметры в списке калибровке дублируются дважды один и тот же может быть
-- не отправляется команда на привязку джойстика
+
 - надо придумать какие нужны файлы и как они должны храниться для списка параметров и ошибок по блокам
     в блоках по версиям ПО. То, что делает Антон не подходит для всех блоков, Тип json хорош, но его нужно переделывать
 - 

@@ -163,6 +163,8 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         super().__init__()
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+        self.text_browser.setEnabled(False)
+        self.text_browser.setStyleSheet("font: bold 14px;")
         # никаких защит и проверок
 
         if label is not None:
