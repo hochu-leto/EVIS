@@ -310,11 +310,13 @@ def check_node_online(all_node_list: list):
             elif 'КВУ_ТТС' in nd.name:
                 window.joy_bind_btn.setEnabled(True)
                 window.susp_zero_btn.setEnabled(True)
+                window.load_from_eeprom_btn.setEnabled(True)
             exit_list.append(nd)
     if has_invertor:
         for nd in exit_list:
             if 'Инвертор_МЭИ' in nd.name:
                 exit_list.remove(nd)
+                window.invertor_mpei_box.setEnabled(False)
                 break
     # на случай если только избранное найдено - значит ни один блок не ответил
     if exit_list[0].cut_firmware() == 'EVOCARGO':
@@ -656,7 +658,31 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             print('Неизвестное состояние')
 
+
 # --------------------------------------------------- кнопки управления ----------------------------------------------
+def load_from_eeprom():
+    answer = 'Неизвестная ошибка'
+
+    for node in window.thread.current_nodes_list:
+        if node.name == 'КВУ_ТТС':
+            if node.request_id in window.thread.adapter.id_nodes_dict.keys():
+                adapter_can2 = window.thread.adapter.id_nodes_dict[node.request_id]
+                print('Отправляю команду на запрос из еепром')
+                answer = node.send_val(0x210201, adapter_can2, value=0x01)  # это адрес вытащить из еепром для кву ттс
+                if answer:
+                    answer = 'Команду выполнить не удалось\n' + answer
+                else:
+                    QMessageBox.information(window, "Успешный успех!", 'Параметры загружены из ЕЕПРОМ', QMessageBox.Ok)
+                    node.param_was_changed = False
+                    return
+            else:
+                answer = 'В списке адаптеров канал 250 не найден'
+        else:
+            answer = 'В списке блоков КВУ_ТТС не найден'
+
+    QMessageBox.critical(window, "Ошибка", answer, QMessageBox.Ok)
+
+
 def mpei_invert():
     m = window.thread.invertor_command('INVERT_ROTATION')
     window.log_lbl.setText(m)
@@ -795,7 +821,7 @@ def suspension_to_zero():
         dialog.setWindowTitle('Установка подвески v ноль')
 
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
-        wait_thread.wait_time = 10  # время в секундах для установки подвески
+        wait_thread.wait_time = 20  # время в секундах для установки подвески
         wait_thread.req_delay = 50  # время в миллисекундах на опрос параметров
         wait_thread.adapter = adapter
 
@@ -852,10 +878,13 @@ if __name__ == '__main__':
     window.reset_param_btn.clicked.connect(mpei_reset_params)
     window.invertor_mpei_box.setEnabled(False)
     window.susp_zero_btn.setEnabled(False)
+    window.load_from_eeprom_btn.setEnabled(False)
     window.joy_bind_btn.setEnabled(False)
     # ------------------Кнопки вспомогательные----------------
     window.joy_bind_btn.clicked.connect(joystick_bind)
     window.susp_zero_btn.clicked.connect(suspension_to_zero)
+    window.load_from_eeprom_btn.clicked.connect(load_from_eeprom)
+
     # ------------------Главные кнопки-------------------------
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)

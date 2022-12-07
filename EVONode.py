@@ -147,9 +147,9 @@ class EVONode:
             r_list = [0x23, LSB, MSB, sub_index] + data  # вообще - это колхоз - нужно определять тип переменной
         if self.protocol == 'MODBUS':  # , которой я хочу отправить
             r_list = data + [sub_index, LSB, 0x2B, 0x10]
-        # for i in r_list:
-        #     print(hex(i), end=' ')
-        # print()
+        for i in r_list:
+            print(hex(i), end=' ')
+        print()
         while adapter.is_busy:
             pass
         value = adapter.can_request(self.request_id, self.answer_id, r_list)
@@ -157,9 +157,10 @@ class EVONode:
         if isinstance(value, str):
             return value  # если вернул строку, значит, проблема
         else:
-            # for i in value:
-            #     print(hex(i), end=' ')
-            # print()
+            print('Answer ')
+            for i in value:
+                print(hex(i), end=' ')
+            print()
             return ''  # если пусто, значит, норм ушла
 
     def get_serial_number(self, adapter: CANAdater):

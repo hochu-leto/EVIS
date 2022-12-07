@@ -4,9 +4,8 @@
 import struct
 import traceback
 
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QTimer, Qt, QRegExp, pyqtSlot
-from PyQt5.QtGui import QFont, QRegExpValidator, QColor
+from PyQt5.QtCore import QTimer, Qt, pyqtSlot
+from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView
 
 import Dialog_params
