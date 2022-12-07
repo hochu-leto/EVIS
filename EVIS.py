@@ -660,12 +660,14 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 def mpei_calibrate():
     param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'SPEED_RPM', 'FIELD_CURRENT',
                                 'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']  # 'STATOR_CURRENT', 'TORQUE',
+    wait_thread.req_delay = 50
     wait_thread.adapter = can_adapter.adapters_dict[125]
     wait_thread.id_for_read = 0x381
     wait_thread.answer_byte = 4
     wait_thread.answer_dict = {0x0A: 'Калибровка прошла успешно!',
                                0x0B: 'Калибровка не удалась',
                                0x0C: 'Настройки сохранены в ЕЕПРОМ'}
+
     for p_name in param_list_for_calibrate:
         wait_thread.imp_par_list.append(find_param(window.current_nodes_list, p_name, node_name='Инвертор_МЭИ')[0])
 
@@ -736,7 +738,9 @@ def joystick_bind():
         if not can_adapter.find_adapters():
             return
     if 250 in can_adapter.adapters_dict:
-        QMessageBox.information(window, "Информация", 'Перед привязкой проверь,\n что джойстик ВЫКЛЮЧЕН',
+        QMessageBox.information(window, "Информация", 'Перед привязкой проверь:\n'
+                                                      ' - что джойстик ВЫКЛЮЧЕН\n'
+                                                      ' - высокое напряжение ВКЛЮЧЕНО',
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
 
@@ -788,10 +792,11 @@ def suspension_to_zero():
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
         command_zero_suspension = adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
-        if not command_zero_suspension:
+        if not command_zero_suspension:     # если передача прошла успешно
             QMessageBox.information(window, "Информация", 'Машина должна выйти в среднее положение\n'
                                                           'И теперь будет работать в режиме АВТО\n'
-                                                          'Чтобы его отключить  - тумблер АВТО в среднее положение\n'
+                                                          'Чтобы его отключить  - тумблер АВТО\n'
+                                                          'в среднее положение\n'
                                                           'Или перезагрузить КВУ',
                                     QMessageBox.Ok)
             window.log_lbl.setText('Машина должна выйти в среднее положение')

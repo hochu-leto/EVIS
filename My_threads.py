@@ -275,6 +275,7 @@ class WaitCanAnswerThread(QThread):
         self.err_count = 0
         self.end_time = time.perf_counter() + self.wait_time
         self.old_ti = 0
+        self.iter = 0
 
         def request_ans():
             answer = []
@@ -301,8 +302,14 @@ class WaitCanAnswerThread(QThread):
                     self.err_count += 1
 
             if self.imp_par_list:
-                for param in self.imp_par_list:
-                    param.get_value(self.adapter)
+                try:
+                    self.imp_par_list[self.iter].get_value(self.adapter)
+                    self.iter += 1
+                except IndexError:
+                    self.iter = 0
+
+                # for param in self.imp_par_list:
+                #     param.get_value(self.adapter)
             self.SignalOfProcess.emit(answer, self.imp_par_list)
 
         timer = QTimer()
