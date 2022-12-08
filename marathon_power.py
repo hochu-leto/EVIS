@@ -354,7 +354,7 @@ class CANMarathon(AdapterCAN):
         # здесь два варианта - или всё нормально передалось и transmit_ok == 0 или все попытки  неудачны и
         if transmit_ok < 0:
             self.close_canal_can()
-            print(f'закрытие канала {transmit_ok=}')
+            # print(f'закрытие канала {transmit_ok=}')
 
             if transmit_ok in error_codes.keys():
                 return error_codes[transmit_ok]
@@ -433,7 +433,7 @@ class CANMarathon(AdapterCAN):
             else:
                 err = 'Нет подключения к CAN шине '
         #  выход из цикла попыток
-        print('закрытие канала')
+        # print('закрытие канала')
         self.close_canal_can()
         if err in error_codes.keys():
             return error_codes[err]

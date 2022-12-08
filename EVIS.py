@@ -85,7 +85,7 @@ vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
-sleep_thread = SleepThread(4)
+sleep_thread = SleepThread(3)
 
 
 def make_compare_params_list():
@@ -134,28 +134,26 @@ def save_to_eeprom(node=None):
             voltage = find_param(window.current_nodes_list, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0]
             err = voltage.get_value(can_adapter.adapters_dict[125])
             if not isinstance(err, str):
+                # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
                 if err < 30:
                     err = node.send_val(node.save_to_eeprom, can_adapter.adapters_dict[125])
-                    sleep_thread.SignalOfProcess.emit(window.progress_bar_fulling)
+                    sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
                     sleep_thread.start()
-                    # while sleep_thread.isRunning():
-                    #     pass     # херня какая-то
                 else:
-                    err = 'Высокое не выключено'
-                    QMessageBox.critical(window, "Ошибка ",
-                                         'Чтоб сохранить параметры Инвертора МЭИ в ЕЕПРОМ\n'
-                                         'Выключи высокое напряжение и повтори сохранение',
-                                         QMessageBox.Ok)
+                    err = 'Высокое напряжение не выключено\nВыключи высокое напряжение и повтори сохранение'
+            else:
+                err = f'Некорректный ответ от инвертора\n{err}'
         else:
             err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
 
         if err:
-            QMessageBox.critical(window, "Ошибка ", 'Настройки сохранить не удалось' + '\n' + err, QMessageBox.Ok)
+            QMessageBox.critical(window, "Ошибка ", f'Настройки сохранить не удалось\n{err}', QMessageBox.Ok)
             window.log_lbl.setText('Настройки в память НЕ сохранены, ошибка ' + err)
         else:
-            QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохранены в EEPROM', QMessageBox.Ok)
+            QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохраняются в EEPROM', QMessageBox.Ok)
             window.log_lbl.setText('Настройки сохранены в EEPROM')
             node.param_was_changed = False
+            erase_errors()
             window.save_eeprom_btn.setEnabled(False)
 
         if window.thread.isFinished() and isRun:
@@ -200,26 +198,28 @@ def want_to_value_change():
                     # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
                     if val == new_val:
                         next_cell.setBackground(QColor(0, 254, 0, 30))
-                        if window.thread.current_node.save_to_eeprom:
-                            window.save_eeprom_btn.setEnabled(True)
-                            window.thread.current_node.param_was_changed = True
-                            if window.thread.current_node.name == 'Инвертор_МЭИ':
-                                QMessageBox.information(window, "Информация", f'Параметр будет работать, \n'
-                                                                              f'только после сохранения в ЕЕПРОМ',
-                                                        QMessageBox.Ok)
+                        # if window.thread.current_node.save_to_eeprom:
+                        if current_param.node.save_to_eeprom:
+                            current_param.node.param_was_changed = True
+                            # В Избранном кнопку не активируем, может быть несколько блоков. Возможно, я когда-то смогу
+                            if window.thread.current_node.name != 'Избранное':
+                                window.save_eeprom_btn.setEnabled(True)
+                                if window.thread.current_node.name == 'Инвертор_МЭИ':
+                                    QMessageBox.information(window, "Информация", f'Параметр будет работать, \n'
+                                                                                  f'только после сохранения в ЕЕПРОМ',
+                                                            QMessageBox.Ok)
                     else:
                         next_cell.setBackground(QColor(254, 0, 0, 30))
                     # если поток был запущен до изменения, то запускаем его снова
                     if window.thread.isFinished():
                         # и запускаю поток
                         window.connect_to_node()
-
-                else:  # здесь может быть логика сохранения параметров, если их меняют пачкой
+                else:
                     QMessageBox.information(window, "Информация", f'Подключение прервано, \n'
                                                                   f'Для изменения параметра\n'
                                                                   f'требуется подключение к ВАТС',
                                             QMessageBox.Ok)
-        else:  # здесь может быть логика сохранения параметров, если их меняют пачкой
+        else:
             QMessageBox.information(window, "Информация", f'Этот параметр нельзя изменить\n'
                                                           f' Изменяемые параметры подкрашены зелёным',
                                     QMessageBox.Ok)
@@ -353,10 +353,6 @@ def erase_errors():
     # и трём все ошибки
     for nod in window.current_nodes_list:
         nod.erase_errors(can_adapter)
-    #     for err in nod.erase_errors(can_adapter):
-    #         if err:
-    #             window.thread.errors_str += f'{nod.name}: {err} \n'
-    # window.errors_browser.setText(window.thread.errors_str)
     window.show_error_tree({})
     # запускаем поток снова, если был остановлен
     if is_run and window.thread.isFinished():
@@ -828,7 +824,7 @@ def suspension_to_zero():
             return
     if 250 in can_adapter.adapters_dict:
         QMessageBox.information(window, "Информация", 'Перед выравниванием проверь что:\n'
-                                                      ' - тумблер АВТО включен ВВЕРХ\n'
+                                                      ' - тумблер режима подвески в положении АВТО КВУ\n'
                                                       ' - остальные тумблеры в нейтральном положении',
                                 QMessageBox.Ok)
         adapter = can_adapter.adapters_dict[250]
