@@ -79,15 +79,32 @@ class EVONode:
         self.firmware_version = '---'
 
         self.error_request = [int(i, 16) if i else 0 for i in check_string('errors_req').split(',')]
+        if err_list:
+            for er in err_list:
+                if hasattr(er, 'node'):
+                    if er.node.name == 'Неизвестная ошибка':
+                        er.node = self
         self.errors_list = err_list
         self.current_errors_list = set()
 
         self.warning_request = [int(i, 16) if i else 0 for i in check_string('warnings_req').split(',')]
+        if war_list:
+            for war in war_list:
+                if hasattr(war, 'node'):
+                    if war.node.name == 'Неизвестная ошибка':
+                        war.node = self
         self.warnings_list = war_list
         self.current_warnings_list = set()
 
         self.error_erase = {'address': check_address('errors_erase'),
                             'value': int(check_address('v_errors_erase'))}
+
+        if group_par_dict:
+            for group, params_list in group_par_dict:
+                for param in params_list:
+                    if hasattr(param, 'node'):
+                        if param.node.name == 'NoName':
+                            param.node = self
 
         self.group_params_dict = group_par_dict
         self.string_from_can = ''

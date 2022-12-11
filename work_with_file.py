@@ -6,6 +6,7 @@ import pandas as pd
 from PyQt5.QtWidgets import QMessageBox
 from pandas import ExcelWriter
 
+from EVOErrors import EvoError
 from helper import NewParamsList, empty_par
 from EVONode import EVONode
 from Parametr import Parametr
@@ -17,6 +18,8 @@ value_type_dict = {'UNSIGNED16': 0x2B,
                    'UNSIGNED8': 0x2F,
                    'SIGNED8': 0x2F,
                    'FLOAT': 0x23}
+
+need_fields = {'name', 'address', 'type'}
 
 
 def fill_sheet_dict(file_name):
@@ -185,6 +188,90 @@ def full_node_list(file_name):
     return nodes_list
 
 
+def fill_error_dict(file, sheet_name: str, critical=True):
+    err_sheet = file.parse(sheet_name=sheet_name)
+    err_list = err_sheet.to_dict(orient='records')  # парсим лист "errors"
+    err_dict = {}
+    prev_node_name = ''
+    e_list = []
+    for er in err_list:
+        if isinstance(er['value_error'], str) and 'node' in er['value_error']:
+            err_dict[prev_node_name] = e_list.copy()
+            e_list = []
+            prev_node_name = er['value_error'].replace('node ', '')
+        else:
+            e = EvoError(er)
+            e.critical = critical
+            e_list.append(e)
+    err_dict[prev_node_name] = e_list.copy()
+    del err_dict['']
+    return err_dict
+
+
+def fill_par_dict(file):
+    bookmark_dict = {}
+    node_params_dict = {}
+    for sheet_name in file.sheet_names:  # пробегаюсь по всем листам документа
+        sheet = file.parse(sheet_name=sheet_name)
+        headers = list(sheet.columns.values)
+        if set(need_fields).issubset(headers):  # если в заголовках есть все нужные поля
+            sheet_params_list = sheet.to_dict(orient='records')  # то запихиваю весь этот лист со всеми
+            bookmark_dict[sheet_name.split()[0]] = sheet_params_list  # строками в словарь,где ключ - название страницы
+            prev_group_name = ''
+            p_list = []
+            for param in sheet_params_list:
+                if 'group ' in param['name']:
+                    node_params_dict[prev_group_name] = p_list.copy()
+                    p_list = []
+                    prev_group_name = param['name'].replace('group ', '')
+                else:
+                    p = Parametr(param)
+                    p_list.append(p)
+            node_params_dict[prev_group_name] = p_list.copy()
+            del node_params_dict['']
+    return node_params_dict
+
+
+def make_node_list(file_name):
+    file = pandas.ExcelFile(file_name)
+    # начинаю с проверки что есть лист с ошибками и лист с блоками
+    if not {'node', 'errors'}.issubset(file.sheet_names):
+        QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
+        return
+    # парсим лист "node"
+    node_sheet = file.parse(sheet_name='node')
+    node_list = node_sheet.to_dict(orient='records')
+    ev_node_list = []
+    node_dict = {}
+    for node in node_list:
+        ev_node_list.append(EVONode(node))
+        node_dict[node['name']] = EVONode(node)
+    # здесь я имею словарь ключ - имя блока , значение - словарь с параметрами ( не по группам)
+
+    err_dict = fill_error_dict(file, 'errors')
+    # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с ошибками
+
+    wr_dict = fill_error_dict(file, 'warnings', False)
+    # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с предупреждениями
+    par_dict = fill_par_dict(file)
+    # ну и финалочка - раскидываю по блокам словари, где ключи - названия групп параметров,
+    # а значения - списки объектов параметров
+    nodes_list = []
+    for node_name, ev_node in node_dict.items():
+        node_params_dict = {}
+        if node_name in err_dict.keys():
+            ev_node.errors_list = err_dict[node_name]
+
+        if node_name in wr_dict.keys():
+            ev_node.errors_list = wr_dict[node_name]
+
+
+        ev_node.group_params_dict = node_params_dict.copy() if node_params_dict else {NewParamsList: []}
+        nodes_list.append(ev_node)
+
+    return nodes_list
+
+
 def check_id(string: str):
     if str(string) == 'nan':
         return 'nan'
@@ -292,12 +379,20 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
 
     df = pd.DataFrame(all_params_list, columns=empty_par.keys())
     if os.path.exists(file_name):
-        ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='new')
+        try:
+            ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='overlay')
+        except PermissionError:
+            QMessageBox.critical(None, "Ошибка ",
+                                 f'Сохранить не удалось\n{file_name} открыт в другой программе',
+                                 QMessageBox.Ok)
+            # просто возвращать фэлс
+            return False
     else:
         ex_wr = ExcelWriter(file_name, mode="w")
 
     with ex_wr as writer:
         df.to_excel(writer, index=False, sheet_name=sheet_name)
+    return True
 
 
 def fill_compare_values(node: EVONode, dict_for_compare: dict):

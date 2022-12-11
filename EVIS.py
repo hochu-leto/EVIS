@@ -458,21 +458,28 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                         user_node.group_params_dict[val] = user_node.group_params_dict[NewParamsList].copy()
                         # а Новый список удаляем
                         del user_node.group_params_dict[NewParamsList]
-                        # создаём новый итем для дерева
-                        child_item = QTreeWidgetItem()
-                        child_item.setText(0, val)
-                        self.nodes_tree.currentItem().parent().addChild(child_item)
-                        # а старый итем стираем
-                        # может, это и неправильно и надо использовать модель-виев, но я пока не дорос
-                        self.nodes_tree.currentItem().parent().removeChild(self.nodes_tree.currentItem())
-                        self.log_lbl.setText(f'Добавление списка {val} в файл')
-                        save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file)
+                        # проверяю удалось ли сохранить список
+                        if save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file):
+                            # создаём новый итем для дерева
+                            child_item = QTreeWidgetItem()
+                            child_item.setText(0, val)
+                            self.nodes_tree.currentItem().parent().addChild(child_item)
+                            # а старый итем стираем
+                            # может, это и неправильно и надо использовать модель-виев, но я пока не дорос
+                            self.nodes_tree.currentItem().parent().removeChild(self.nodes_tree.currentItem())
+                            self.log_lbl.setText(f'Добавление списка {val} в файл')
+                        else:   # если сохранить не удалось возвращаю Новый список
+                            user_node.group_params_dict[NewParamsList] = user_node.group_params_dict[val].copy()
+                            # а  список изменённый удаляем
+                            del user_node.group_params_dict[val]
+                            self.log_lbl.setText('Не удалось сохранить список')
                     else:
                         print('Некорректное имя списка')
                         self.log_lbl.setText('Некорректное имя списка')
             else:
                 print('Список пуст')
                 self.log_lbl.setText('Список пуст')
+            # здесь следует выводить QMessageBox. - получилось или нет и почему и self.log_lbl.setText
         # для всех остальных - просто подключаемся
         if not self.thread.isRunning():
             self.connect_to_node()
@@ -751,7 +758,7 @@ def mpei_calibrate():
                     # передавать надо исключительно в первый кан
                     if node.request_id in window.thread.adapter.id_nodes_dict.keys():
                         adapter_can1 = window.thread.adapter.id_nodes_dict[node.request_id]
-                        faults = node.check_errors(adapter=adapter_can1)
+                        faults = list(node.check_errors(adapter=adapter_can1))
                         if not faults:
                             st.append('Ошибок во время калибровки не появилось')
                         else:
