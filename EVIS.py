@@ -63,7 +63,7 @@
 import sys
 
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
-from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
+from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog
 import pathlib
@@ -270,9 +270,15 @@ def want_to_value_change():
             user_node.group_params_dict[NewParamsList] = [new_param]
             item = QTreeWidgetItem()
             item.setText(0, NewParamsList)
+            item.setBackground(0, QColor(254, 0, 0, 30))
             rowcount = window.nodes_tree.topLevelItemCount() - 1
             window.nodes_tree.topLevelItem(rowcount).addChild(item)
+            window.nodes_tree.topLevelItem(rowcount).setExpanded(True)
             window.nodes_tree.show()
+            index = window.nodes_tree.indexFromItem(item, 0)
+            window.nodes_tree.scrollTo(index)
+
+
         window.log_lbl.setText(f'Параметр {current_param.name} {text}')
 
 

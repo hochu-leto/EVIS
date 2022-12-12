@@ -164,7 +164,7 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
         self.text_browser.setEnabled(False)
         self.text_browser.setStyleSheet("font: bold 14px;")
-        self.buttonBox.button(QDialogButtonBox.Ok).setText('Ок')
+        self.buttonBox.button(QDialogButtonBox.Ok).setText('ОК')
         self.buttonBox.button(QDialogButtonBox.Cancel).setText('Отмена')
         # никаких защит и проверок
 
