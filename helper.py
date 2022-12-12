@@ -6,7 +6,7 @@ import traceback
 
 from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QColor
-from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox
 
 import Dialog_params
 import my_dialog
@@ -164,6 +164,8 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
         self.text_browser.setEnabled(False)
         self.text_browser.setStyleSheet("font: bold 14px;")
+        self.buttonBox.button(QDialogButtonBox.Ok).setText('Ок')
+        self.buttonBox.button(QDialogButtonBox.Cancel).setText('Отмена')
         # никаких защит и проверок
 
         if label is not None:

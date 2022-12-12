@@ -382,10 +382,6 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
         try:
             ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='overlay')
         except PermissionError:
-            QMessageBox.critical(None, "Ошибка ",
-                                 f'Сохранить не удалось\n{file_name} открыт в другой программе',
-                                 QMessageBox.Ok)
-            # просто возвращать фэлс
             return False
     else:
         ex_wr = ExcelWriter(file_name, mode="w")

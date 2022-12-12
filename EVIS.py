@@ -447,42 +447,51 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def double_click(self):  # можно подключиться по двойному щелчку по группе параметров
         # для Нового списка даю возможность изменить его название
         if self.nodes_tree.currentItem().text(0) == NewParamsList:
-            if self.thread.current_params_list:
-                dialog = DialogChange(label='Можно изменить название списка', value=NewParamsList)
-                if dialog.exec_() == QDialog.Accepted:
-                    val = dialog.lineEdit.text()
-                    if val and val != NewParamsList:
-                        # берём последний в списке блоков блок - Это Избранное
-                        user_node = self.current_nodes_list[len(window.current_nodes_list) - 1]
-                        # создаём в его словаре параметров ещё одну пару - копию нового списка
-                        user_node.group_params_dict[val] = user_node.group_params_dict[NewParamsList].copy()
-                        # а Новый список удаляем
-                        del user_node.group_params_dict[NewParamsList]
-                        # проверяю удалось ли сохранить список
-                        if save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file):
-                            # создаём новый итем для дерева
-                            child_item = QTreeWidgetItem()
-                            child_item.setText(0, val)
-                            self.nodes_tree.currentItem().parent().addChild(child_item)
-                            # а старый итем стираем
-                            # может, это и неправильно и надо использовать модель-виев, но я пока не дорос
-                            self.nodes_tree.currentItem().parent().removeChild(self.nodes_tree.currentItem())
-                            self.log_lbl.setText(f'Добавление списка {val} в файл')
-                        else:   # если сохранить не удалось возвращаю Новый список
-                            user_node.group_params_dict[NewParamsList] = user_node.group_params_dict[val].copy()
-                            # а  список изменённый удаляем
-                            del user_node.group_params_dict[val]
-                            self.log_lbl.setText('Не удалось сохранить список')
-                    else:
-                        print('Некорректное имя списка')
-                        self.log_lbl.setText('Некорректное имя списка')
-            else:
-                print('Список пуст')
-                self.log_lbl.setText('Список пуст')
-            # здесь следует выводить QMessageBox. - получилось или нет и почему и self.log_lbl.setText
-        # для всех остальных - просто подключаемся
+            self.save_list_to_file(self.thread.current_params_list,
+                                   'Можно изменить название списка')
+            # для всех остальных - просто подключаемся
         if not self.thread.isRunning():
             self.connect_to_node()
+
+    def save_list_to_file(self, p_list, lab: str):
+        state = False
+        if p_list:
+            dialog = DialogChange(label=lab, value=NewParamsList)
+            if dialog.exec_() == QDialog.Accepted:
+                val = dialog.lineEdit.text()
+                if val and val != NewParamsList:
+                    # берём последний в списке блоков блок - Это Избранное
+                    user_node = self.current_nodes_list[len(window.current_nodes_list) - 1]
+                    # создаём в его словаре параметров ещё одну пару - копию нового списка
+                    user_node.group_params_dict[val] = user_node.group_params_dict[NewParamsList].copy()
+                    # а Новый список удаляем
+                    del user_node.group_params_dict[NewParamsList]
+                    # проверяю удалось ли сохранить список
+                    if save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file):
+                        err_mess = f'{val} успешно сохранён в Избранное'
+                        state = True
+                        # создаём новый итем для дерева
+                        child_item = QTreeWidgetItem()
+                        child_item.setText(0, val)
+                        self.nodes_tree.currentItem().parent().addChild(child_item)
+                        # а старый итем стираем
+                        # может, это и неправильно и надо использовать модель-виев, но я пока не дорос
+                        self.nodes_tree.currentItem().parent().removeChild(self.nodes_tree.currentItem())
+                    else:  # если сохранить не удалось возвращаю Новый список
+                        user_node.group_params_dict[NewParamsList] = user_node.group_params_dict[val].copy()
+                        # а  список изменённый удаляем
+                        del user_node.group_params_dict[val]
+                        err_mess = f'Сохранить не удалось\n {vmu_param_file.name} открыт в другой программе'
+                else:
+                    err_mess = 'Некорректное имя списка'
+            else:
+                err_mess = f'Отказ пользователя.\n{NewParamsList} не будет сохранён'
+                state = True
+        else:
+            err_mess = 'Список пуст'
+        QMessageBox.information(self, "Информация", err_mess, QMessageBox.Ok)
+        self.log_lbl.setText(err_mess)
+        return state
 
     def show_nodes_tree(self, nds: list):
         cur_item = ''
@@ -629,20 +638,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                     save_to_eeprom(node)
 
         if NewParamsList in user_node_dict.keys():
-            if user_node_dict[NewParamsList]:
-                dialog = DialogChange(label=f'В {NewParamsList} добавлены параметры \n'
-                                            f' нужно сохранить этот список?', value=NewParamsList)
-                if dialog.exec_() == QDialog.Accepted:
-                    val = dialog.lineEdit.text()
-                    self.log_lbl.setText(f'Добавление списка {val} в файл')
-                    if val and val != NewParamsList:
-                        user_node_dict[val] = user_node_dict[NewParamsList].copy()
-                        del user_node_dict[NewParamsList]
-                        save_params_dict_to_file(user_node_dict, vmu_param_file)
-                    else:
-                        self.log_lbl.setText('Некорректное имя списка')
-            else:
-                self.log_lbl.setText('Список не сохранён')
+            if not self.save_list_to_file(user_node_dict[NewParamsList],
+                                          f'В {NewParamsList} добавлены параметры \n'
+                                          f' нужно сохранить этот список?'):
+                event.ignore()
+
         msg = QMessageBox(self)
         msg.setWindowTitle("Выход")
         msg.setIcon(QMessageBox.Question)
