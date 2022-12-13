@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMessageBox
 from pandas import ExcelWriter
 
 from EVOErrors import EvoError
-from helper import NewParamsList, empty_par
+from helper import NewParamsList, empty_par, TheBestNode
 from EVONode import EVONode
 from Parametr import Parametr
 
@@ -209,27 +209,29 @@ def fill_error_dict(file, sheet_name: str, critical=True):
 
 
 def fill_par_dict(file):
-    bookmark_dict = {}
-    node_params_dict = {}
+    nodes_dict = {}
     for sheet_name in file.sheet_names:  # пробегаюсь по всем листам документа
         sheet = file.parse(sheet_name=sheet_name)
         headers = list(sheet.columns.values)
+        node_params_dict = {}
         if set(need_fields).issubset(headers):  # если в заголовках есть все нужные поля
             sheet_params_list = sheet.to_dict(orient='records')  # то запихиваю весь этот лист со всеми
-            bookmark_dict[sheet_name.split()[0]] = sheet_params_list  # строками в словарь,где ключ - название страницы
             prev_group_name = ''
             p_list = []
             for param in sheet_params_list:
-                if 'group ' in param['name']:
-                    node_params_dict[prev_group_name] = p_list.copy()
-                    p_list = []
-                    prev_group_name = param['name'].replace('group ', '')
-                else:
-                    p = Parametr(param)
-                    p_list.append(p)
+                if str(param['name']) != 'nan':
+                    if 'group ' in param['name']:
+                        node_params_dict[prev_group_name] = p_list.copy()
+                        p_list = []
+                        prev_group_name = param['name'].replace('group ', '')
+                    else:
+                        p = Parametr(param)
+                        p_list.append(p)
             node_params_dict[prev_group_name] = p_list.copy()
             del node_params_dict['']
-    return node_params_dict
+        if node_params_dict:
+            nodes_dict[sheet_name.split()[0]] = node_params_dict  # строками в словарь,где ключ - название страницы
+    return nodes_dict
 
 
 def make_node_list(file_name):
@@ -241,35 +243,34 @@ def make_node_list(file_name):
     # парсим лист "node"
     node_sheet = file.parse(sheet_name='node')
     node_list = node_sheet.to_dict(orient='records')
-    ev_node_list = []
     node_dict = {}
     for node in node_list:
-        ev_node_list.append(EVONode(node))
         node_dict[node['name']] = EVONode(node)
-    # здесь я имею словарь ключ - имя блока , значение - словарь с параметрами ( не по группам)
-
+    # здесь я имею словарь ключ - имя блока , значение - объект блока
     err_dict = fill_error_dict(file, 'errors')
     # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с ошибками
-
     wr_dict = fill_error_dict(file, 'warnings', False)
     # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с предупреждениями
     par_dict = fill_par_dict(file)
-    # ну и финалочка - раскидываю по блокам словари, где ключи - названия групп параметров,
-    # а значения - списки объектов параметров
-    nodes_list = []
+    # ну и финалочка - раскидываю по блокам словари
     for node_name, ev_node in node_dict.items():
-        node_params_dict = {}
+
         if node_name in err_dict.keys():
             ev_node.errors_list = err_dict[node_name]
 
         if node_name in wr_dict.keys():
             ev_node.errors_list = wr_dict[node_name]
 
+        if node_name in par_dict.keys():
+            for group in par_dict[node_name].values():
+                for param in group:
+                    if node_name == TheBestNode:    # Избранное надо раскидывать - параметры м/б из разных блоков
+                        param.check_node(node_dict)
+                    else:
+                        param.node = ev_node
+            ev_node.group_params_dict = par_dict[node_name]
 
-        ev_node.group_params_dict = node_params_dict.copy() if node_params_dict else {NewParamsList: []}
-        nodes_list.append(ev_node)
-
-    return nodes_list
+    return node_dict
 
 
 def check_id(string: str):
