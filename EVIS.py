@@ -77,8 +77,8 @@ from CANAdater import CANAdapter
 from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
-from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file, \
-    make_node_list
+from work_with_file import fill_compare_values, save_params_dict_to_file, \
+    make_node_list, fill_sheet_dict
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode
 
@@ -635,7 +635,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # надо это добавить!
         if not self.node_list_defined:
             self.log_lbl.setText('Определяются имеющиеся на шине CAN блоки...')
-            self.current_nodes_list, check = check_node_online(alt_node_list)
+            self.current_nodes_list, check = check_node_online(self.current_nodes_list)
             self.thread.current_nodes_list = self.current_nodes_list
             params_list_changed()
             self.reset_faults.setEnabled(check)
@@ -943,15 +943,14 @@ if __name__ == '__main__':
     window.save_to_file_btn.setEnabled(False)
     window.log_record_btn.clicked.connect(record_log)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
-    alt_node_list = full_node_list(vmu_param_file).copy()
     nodes_dict = make_node_list(vmu_param_file).copy()
-    window.current_nodes_list = alt_node_list.copy()
+    window.current_nodes_list = list(nodes_dict.values()).copy()
     window.thread.current_nodes_list = window.current_nodes_list
     # показываю дерево с блоками и что ошибок нет
     window.show_error_tree({})
-    window.show_nodes_tree(alt_node_list)
+    window.show_nodes_tree(window.current_nodes_list)
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
-    if alt_node_list and params_list_changed():
+    if window.current_nodes_list and params_list_changed():
         if can_adapter.find_adapters():
             window.connect_to_node()
         else:
