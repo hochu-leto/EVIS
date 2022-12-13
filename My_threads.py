@@ -188,20 +188,16 @@ class MainThread(QThread):
         def request_errors():
             # опрос ошибок, на это время опрос параметров отключается
             timer.stop()
-            err_dict = {}
-            has_new_err = False
+            all_errors_counter = len(self.err_dict)
             for nd in self.current_nodes_list:
-                old_e_len = len(nd.current_errors_list)
-                old_w_len = len(nd.current_warnings_list)
 
                 nd.current_errors_list = nd.check_errors(self.adapter).copy()
-                nd.current_warnings_list = nd.check_errors(self.adapter, 'warnings').copy()
-                if len(nd.current_errors_list) != old_e_len or len(nd.current_warnings_list) != old_w_len:
-                    has_new_err = True
-                err_dict[nd.name] = sorted(list(nd.current_errors_list.union(nd.current_warnings_list)))
+                nd.current_warnings_list = nd.check_errors(self.adapter, False).copy()
 
-            if has_new_err:
-                self.err_thread_signal.emit(err_dict)
+                self.err_dict[nd.name] = sorted(list(nd.current_errors_list.union(nd.current_warnings_list)))
+
+            if len(self.err_dict) > all_errors_counter:
+                self.err_thread_signal.emit(self.err_dict)
             timer.start(send_delay)
 
         send_delay = 1  # задержка отправки в кан сообщений методом подбора с таким не зависает
@@ -213,6 +209,7 @@ class MainThread(QThread):
         self.ans_list = []
         self.params_counter = 0
         self.errors_counter = 0
+        self.err_dict = {}
 
         timer = QTimer()
         timer.timeout.connect(request_node)

@@ -259,11 +259,9 @@ class EVONode:
             return text
         return self.firmware_version
 
-    def check_errors(self, adapter: CANAdater, er_or_war=None):
-        if er_or_war is None:
-            er_or_war = 'errors'
+    def check_errors(self, adapter: CANAdater, false_if_war=True):
         #  на выходе - список текущих ошибок
-        if 'er' in er_or_war:
+        if false_if_war:
             r_request = self.error_request.copy()
             s_list = self.errors_list.copy()
             current_list = self.current_errors_list.copy()
@@ -274,8 +272,7 @@ class EVONode:
 
         if not r_request or not s_list:
             return current_list
-        err_dict = {int(v['value_error'], 16) if '0x' in str(v['value_error'])
-                    else int(v['value_error']): v['name_error'] for v in s_list}
+        err_dict = {v.value: v for v in s_list}
         big_error = 0
         j = 0
         for adr in r_request:
@@ -297,9 +294,9 @@ class EVONode:
                 else:
                     current_list.add(f'Неизвестная ошибка ({big_error})')
             else:
-                for e_num, e_name in err_dict.items():
+                for e_num, e_obj in err_dict.items():
                     if big_error & e_num:
-                        current_list.add(e_name)
+                        current_list.add(e_obj)
         return current_list
 
     def erase_errors(self, adapter: CANAdater):

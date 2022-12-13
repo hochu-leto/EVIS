@@ -74,6 +74,7 @@ from pandas import ExcelWriter
 
 import VMU_monitor_ui
 from CANAdater import CANAdapter
+from EVOErrors import EvoError
 from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
@@ -311,6 +312,44 @@ def want_to_value_change():
         window.log_lbl.setText(f'Параметр {current_param.name} {text}')
 
 
+def show_error():
+    current_err_name = ''
+    current_err = EvoError()
+    try:
+        current_node_text = window.errors_tree.currentItem().parent().text(0)
+        current_err_name = window.nodes_tree.currentItem().text(0)
+    except AttributeError:
+        current_node_text = window.nodes_tree.currentItem().text(0)
+    if current_err_name:
+        for current_err in window.thread.err_dict[current_node_text]:
+            if current_err.name == current_err_name:
+                break
+    else:
+        current_err = window.thread.err_dict[current_node_text][0]
+    window.errors_browser.setText(current_err.description +
+                                  '\n'.join(current_err.check_link))
+    if current_err.important_parameters:
+        err_param_list = [find_param(window.thread.current_nodes_list, par, current_err.node.name)[0]
+                          for par in current_err.important_parameters]
+        user_node = window.thread.current_nodes_list[len(window.current_nodes_list) - 1]
+        if current_err.name not in user_node.group_params_dict.keys():
+            user_node.group_params_dict[current_err.name] = err_param_list
+
+            item = QTreeWidgetItem()
+            item.setText(0, current_err.name)
+            rowcount = window.nodes_tree.topLevelItemCount() - 1
+            window.nodes_tree.topLevelItem(rowcount).addChild(item)
+
+            if window.thread.current_node == user_node:
+                show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
+            else:   # и немного красоты - раскрываем, спускаем и подкрашиваем
+                window.nodes_tree.topLevelItem(rowcount).setExpanded(True)
+                item.setBackground(0, QColor(254, 0, 0, 30))
+                window.nodes_tree.show()
+                index = window.nodes_tree.indexFromItem(item, 0)
+                window.nodes_tree.scrollTo(index)
+
+
 def params_list_changed():  # если в левом окошке выбираем разные блоки или группы параметров
     is_run = False
     current_group_params = ''
@@ -388,7 +427,7 @@ def erase_errors():
     # и трём все ошибки
     for nod in window.current_nodes_list:
         nod.erase_errors(can_adapter)
-    window.show_error_tree({})
+    window.add_new_errors({})
     # запускаем поток снова, если был остановлен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
@@ -429,6 +468,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.tr = SaveToFileThread()
         self.tr.adapter = can_adapter
         self.tr.SignalOfReady.connect(self.progress_bar_fulling)
+        self.errors_tree.setColumnCount(1)
+        self.errors_tree.header().close()
+        self.nodes_tree.setColumnCount(1)
+        self.nodes_tree.header().close()
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
@@ -456,8 +499,49 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                                 has_compare_params=self.thread.current_node.has_compare_params)
 
     @pyqtSlot(dict)  # добавляем ошибки в окошко
-    def add_new_errors(self, err_dict: dict):
-        self.show_error_tree(err_dict)
+    def add_new_errors(self, nds: dict):
+        cur_item = ''
+        # запоминаю где сейчас курсор - тупо по тексту
+        try:
+            old_item_name = window.errors_tree.currentItem().text(0)
+        except AttributeError:
+            old_item_name = ''
+
+        self.errors_tree.clear()
+        items = []
+        for nod, nod_err in nds.items():
+            if nod_err:
+                # создаю основные вкладки - названия блоков
+                item = QTreeWidgetItem()
+                item_name = f'{nod}({len(nod_err)})'
+                item.setText(0, item_name)
+                if old_item_name == item_name:
+                    # если если ранее выбранный блок среди имеющихся, запоминаю его
+                    cur_item = item
+                for err in nod_err:
+                    # подвкладки - ошибки
+                    child_item = QTreeWidgetItem()
+                    child_item.setText(0, err.name)
+                    if err.critical:
+                        child_item.setBackground(0, QColor(254, 0, 0, 30))
+                    else:
+                        child_item.setBackground(0, QColor(247, 242, 26, 30))
+                    item.addChild(child_item)
+                    # если ранее курсор стоял на группе, запоминаю ее
+                    if old_item_name == err.name:  # не работает для рулевых - нужно запоминать и имя блока тоже
+                        cur_item = child_item
+                items.append(item)
+
+        if not items:
+            item = QTreeWidgetItem()
+            item.setText(0, 'Ошибок нет')
+            items.append(item)
+        self.errors_tree.insertTopLevelItems(0, items)
+        # если курсор стоял на блоке, который отсутствует в нынешнем списке, то курсор на самый первый блок...
+        if not cur_item:
+            cur_item = self.errors_tree.topLevelItem(0)
+        if cur_item.childCount():
+            self.errors_tree.setCurrentItem(cur_item)
 
     @pyqtSlot(int, str, bool)
     def progress_bar_fulling(self, percent: int, err: str, is_finished: bool):
@@ -539,8 +623,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             old_item_name = ''
 
         self.nodes_tree.clear()
-        self.nodes_tree.setColumnCount(1)
-        self.nodes_tree.header().close()
         items = []
 
         for nd in nds:
@@ -569,49 +651,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if self.thread.current_node not in nds:
             self.thread.current_node = nds[0]
         self.show_node_name(self.thread.current_node)
-
-    def show_error_tree(self, nds: dict):
-        cur_item = ''
-        # запоминаю где сейчас курсор - тупо по тексту
-        try:
-            old_item_name = window.errors_tree.currentItem().text(0)
-        except AttributeError:
-            old_item_name = ''
-
-        self.errors_tree.clear()
-        self.errors_tree.setColumnCount(1)
-        self.errors_tree.header().close()
-        items = []
-        #   ругается, что ндс - нифига не словарь
-        for nod, nod_err in nds.items():
-            if nod_err:
-                # создаю основные вкладки - названия блоков
-                item = QTreeWidgetItem()
-                item_name = f'{nod}({len(nod_err)})'
-                item.setText(0, item_name)
-                if old_item_name == item_name:
-                    # если если ранее выбранный блок среди имеющихся, запоминаю его
-                    cur_item = item
-                for err in nod_err:
-                    # подвкладки - ошибки
-                    child_item = QTreeWidgetItem()
-                    child_item.setText(0, str(err))
-                    item.addChild(child_item)
-                    # если ранее курсор стоял на группе, запоминаю ее
-                    if old_item_name == str(err):  # не работает для рулевых - нужно запоминать и имя блока тоже
-                        cur_item = child_item
-                items.append(item)
-
-        if not items:
-            item = QTreeWidgetItem()
-            item.setText(0, 'Ошибок нет')
-            items.append(item)
-        self.errors_tree.insertTopLevelItems(0, items)
-        # если курсор стоял на блоке, который отсутствует в нынешнем списке, то курсор на самый первый блок...
-        if not cur_item:
-            cur_item = self.errors_tree.topLevelItem(0)
-        if cur_item.childCount():
-            self.errors_tree.setCurrentItem(cur_item)
 
     def show_node_name(self, nd: EVONode):
         # чтоб юзер понимал в каком блоке он находится
@@ -915,6 +954,7 @@ if __name__ == '__main__':
     window.main_tab.currentChanged.connect(window.change_tab)
     # подключаю сигналы нажатия на окошки
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
+    window.errors_tree.currentItemChanged.connect(show_error)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
     # и сигналы нажатия на кнопки
@@ -947,7 +987,7 @@ if __name__ == '__main__':
     window.current_nodes_list = list(nodes_dict.values()).copy()
     window.thread.current_nodes_list = window.current_nodes_list
     # показываю дерево с блоками и что ошибок нет
-    window.show_error_tree({})
+    window.add_new_errors({})
     window.show_nodes_tree(window.current_nodes_list)
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if window.current_nodes_list and params_list_changed():
