@@ -60,13 +60,17 @@
  из одного блока можно напрямую заливать в другой. Или их ограничить до минимума или предлагать делать изменение вручную
 
 """
+import datetime
 import sys
 
+import pandas as pd
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog
 import pathlib
+
+from pandas import ExcelWriter
 
 import VMU_monitor_ui
 from CANAdater import CANAdapter
@@ -86,6 +90,35 @@ vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
 sleep_thread = SleepThread(3)
+
+
+def record_log():
+    # window.thread.is_recording = True if not window.thread.is_recording else False
+    state = window.thread.is_recording
+    window.nodes_tree.setEnabled(state)
+    window.vmu_param_table.setEnabled(state)
+    window.compare_btn.setEnabled(state)
+    window.save_eeprom_btn.setEnabled(state)
+    window.save_to_file_btn.setEnabled(state)
+    window.reset_faults.setEnabled(state)
+    window.management_tab.setEnabled(state)
+    window.connect_btn.setEnabled(state)
+    if not state:  # начинаю запись
+        window.thread.is_recording = True
+        window.log_record_btn.setText('Остановить запись')
+    else:
+        window.thread.is_recording = False
+        window.log_record_btn.setText('Запись текущих параметров')
+        if window.thread.record_dict:
+            file_name = window.nodes_tree.currentItem().text(0).replace('.', '_')
+            now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            file_name = pathlib.Path(dir_path, 'ECU_Records', f'{file_name}_{now}.xlsx')
+            df = pd.DataFrame(window.thread.record_dict)
+            df_t = df.transpose()
+            window.thread.record_dict.clear()
+            ex_wr = ExcelWriter(file_name, mode="w")
+            with ex_wr as writer:
+                df_t.to_excel(writer)
 
 
 def make_compare_params_list():
@@ -408,6 +441,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         if len(list_of_params) < 2 and isinstance(list_of_params[0], str):
             err = str(list_of_params[0])
             if self.thread.isRunning():
+                if self.thread.is_recording:
+                    record_log()
                 self.thread.quit()
                 self.thread.wait()
                 QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
@@ -612,7 +647,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.node_list_defined = check
             self.log_lbl.setText(f'Обнаружено {check * len(self.current_nodes_list)} блоков')
 
-        if not self.thread.isRunning():
+        check = not self.thread.isRunning()
+        self.log_record_btn.setEnabled(check)
+
+        if check:
             self.thread.iter_count = 1
             self.thread.start()
             self.connect_btn.setText("Отключиться")
@@ -907,6 +945,7 @@ if __name__ == '__main__':
     window.compare_btn.clicked.connect(make_compare_params_list)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.save_to_file_btn.setEnabled(False)
+    window.log_record_btn.clicked.connect(record_log)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     alt_node_list = full_node_list(vmu_param_file).copy()
     window.current_nodes_list = alt_node_list.copy()
@@ -924,10 +963,3 @@ if __name__ == '__main__':
         splash.finish(window)  # Убираем заставку
         app.exec_()  # и запускаем приложение
 
-'''
-сейчас есть несколько проблем
-
-- надо придумать какие нужны файлы и как они должны храниться для списка параметров и ошибок по блокам
-    в блоках по версиям ПО. То, что делает Антон не подходит для всех блоков, Тип json хорош, но его нужно переделывать
-- 
-'''

@@ -344,7 +344,7 @@ def feel_req_list(protocol: str, p_list: list):
     return req_list
 
 
-def adding_to_csv_file(name_or_value: str, vmu_params_list: list, recording_file_name: str):
+def adding_to_csv_file(vmu_params_list: list, recording_file_name: str, name_or_value=True):
     if not recording_file_name:
         return
     data = []

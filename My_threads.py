@@ -12,7 +12,6 @@ from helper import empty_par, buf_to_string
 
 # поток для сохранения в файл настроек блока
 # возвращает сигналу о процентах выполнения, сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
-
 class SaveToFileThread(QThread):
     SignalOfReady = pyqtSignal(int, str, bool)
     err_thread_signal = pyqtSignal(str)
@@ -120,6 +119,9 @@ class MainThread(QThread):
     current_node = EVONode()
     adapter = None  # CANAdapter()
     magic_word = 100794368
+    is_recording = False
+    record_dict = {}
+    thread_timer = 0
 
     def __init__(self):
         super().__init__()
@@ -127,6 +129,8 @@ class MainThread(QThread):
 
     def run(self):
         def emitting():  # передача заполненного списка параметров
+            print(time.perf_counter_ns() - self.thread_timer)
+            self.thread_timer = time.perf_counter_ns()
             self.threadSignalAThread.emit(self.ans_list)
             self.params_counter = 0
             self.errors_counter = 0
@@ -146,7 +150,7 @@ class MainThread(QThread):
                     # если период опроса текущего параметра не кратен текущей итерации,
                     # заполняем его нулями, чтоб в таблице осталось его старое значение
                     # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
-                    self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
+                    # self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
                     self.params_counter += 1
                     if self.params_counter >= self.len_param_list:
                         self.params_counter = 0
@@ -176,6 +180,10 @@ class MainThread(QThread):
             if self.params_counter >= self.len_param_list:
                 self.params_counter = 0
                 emitting()
+                if self.is_recording:
+                    dt = datetime.datetime.now()
+                    dt = dt.strftime("%H:%M:%S.%f")
+                    self.record_dict[dt] = {par.name: par.value for par in self.current_params_list}
 
         def request_errors():
             # опрос ошибок, на это время опрос параметров отключается
@@ -196,7 +204,7 @@ class MainThread(QThread):
                 self.err_thread_signal.emit(err_dict)
             timer.start(send_delay)
 
-        send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
+        send_delay = 1  # задержка отправки в кан сообщений методом подбора с таким не зависает
         err_req_delay = 500
         self.max_errors = 3
         self.len_param_list = len(self.current_params_list)
