@@ -77,7 +77,8 @@ from CANAdater import CANAdapter
 from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
-from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file
+from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file, \
+    make_node_list
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param
 
@@ -948,6 +949,7 @@ if __name__ == '__main__':
     window.log_record_btn.clicked.connect(record_log)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     alt_node_list = full_node_list(vmu_param_file).copy()
+    make_node_list(vmu_param_file)
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
     # показываю дерево с блоками и что ошибок нет

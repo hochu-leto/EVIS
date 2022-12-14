@@ -30,7 +30,6 @@ type_values = {
     'SIGNED32': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_int32},
     'FLOAT': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_uint8},
     'VISIBLE_STRING': {'min': 0, 'max': 255, 'type': 0x21, 'func': can_to_char}
-
 }
 
 
@@ -41,7 +40,7 @@ class Parametr:
                  'group', 'size', 'value', 'name',
                  'scale', 'scaleB', 'period', 'degree',
                  'min_value', 'max_value', 'widget', 'node',
-                 'req_list', 'set_list', 'compare_value')
+                 'req_list', 'set_list', 'compare_value', 'value_dict')
 
     def __init__(self, param=None, node=None):
         if param is None:
@@ -84,6 +83,8 @@ class Parametr:
 
         self.min_value = check_value(type_values[self.type]['min'], 'min_value')
         self.max_value = check_value(type_values[self.type]['max'], 'max_value')
+        v_table = check_string('values_table')
+        self.value_dict = {int(val.split(':')[0]): val.split(':')[1] for val in v_table.split(',')} if v_table else {}
         # из editable и соответствующего списка
         self.widget = 'QtWidgets'
         # что ставить, если node не передали - emptyNode - который получается, если в EVONode ничего не передать

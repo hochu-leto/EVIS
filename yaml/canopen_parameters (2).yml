@@ -16,15 +16,15 @@ readme:
   Опциональные поля: 
     offset: > 
       Смещение для перевода полученного integer-значения в дробное по формуле value = (raw_value * mult) - offset. 
-      Указывается только для физических величин, которые нуждаются в конвертации. Если у параметра поля 'mult' и 
-      'offset' оба равны 0, то они могут не указываться.
+      Указывается только для физических величин, которые нуждаются в конвертации. Если значение 0, то может не 
+      указываться.
     mult: > 
       Множитель для перевода полученного integer-значения в дробное по формуле value = (raw_value * mult) - offset. 
-      Указывается только для физических величин, которые нуждаются в конвертации. Если у параметра поля 'mult' и 
-      'offset' оба равны 0, то они могут не указываться.
+      Указывается только для физических величин, которые нуждаются в конвертации. Если значение 1, то может не 
+      указываться.
     eeprom: > 
       Наличие поля показывает, что этот параметр сохраняется в энергонезависимую память. Запись и чтение осуществляются 
-      по со стороны пользователя. При включении КВУ чтение параметров из EEPROM происходит автоматически.
+      по запросам со стороны пользователя. При включении КВУ чтение параметров из EEPROM происходит автоматически.
     value: >  
       Предназначено для сохранения актуального значения параметра при выгрузке конфигурации из КВУ в файл и обратно. 
       Может быть указано и для ro-параметра (для анализа конфигурации), и для rw-параметра (для быстрой загрузки 
@@ -58,7 +58,7 @@ canopen_parameters:
 
     - 
       name: DEVICE_SOFTWARE_VERSION
-      index: !!int 0x1009
+      index: !!int 0x100A
       subindex: !!int 0
       access: ro
       type: string
@@ -67,7 +67,7 @@ canopen_parameters:
 
     - 
       name: COMMIT_SHORT_SHA
-      index: !!int 0x2003
+      index: !!int 0x2103
       subindex: !!int 1
       access: ro
       type: uint32
@@ -76,7 +76,7 @@ canopen_parameters:
       
     - 
       name: COMMIT_TIMESTAMP_DAY
-      index: !!int 0x2003
+      index: !!int 0x2103
       subindex: !!int 2
       access: ro
       type: uint8
@@ -85,7 +85,7 @@ canopen_parameters:
       
     - 
       name: COMMIT_TIMESTAMP_MONTH
-      index: !!int 0x2003
+      index: !!int 0x2103
       subindex: !!int 3
       access: ro
       type: uint8
@@ -94,11 +94,67 @@ canopen_parameters:
 
     - 
       name: COMMIT_TIMESTAMP_YEAR
-      index: !!int 0x2003
+      index: !!int 0x2103
       subindex: !!int 4
       access: ro
       type: uint8
       description: Дата создания соответствующего коммита на Gitlab (год)
+      value:
+
+    - 
+      name: DEVICE_SN_0
+      index: !!int 0x2180
+      subindex: !!int 1
+      access: ro
+      type: uint32
+      description: Байты 0..3 серийного номера КВУ
+      value:
+
+    - 
+      name: DEVICE_SN_1
+      index: !!int 0x2180
+      subindex: !!int 2
+      access: ro
+      type: uint32
+      description: Байты 4..7 серийного номера КВУ
+      value:
+
+    - 
+      name: DEVICE_SN_2
+      index: !!int 0x2180
+      subindex: !!int 3
+      access: ro
+      type: uint32
+      description: Байты 8..11 серийного номера КВУ
+      value:
+
+    - 
+      name: DEVICE_SN_3
+      index: !!int 0x2180
+      subindex: !!int 4
+      access: ro
+      type: uint32
+      description: Байты 12..15 серийного номера КВУ
+      value:
+
+    - 
+      name: USER_DATA_0
+      index: !!int 0x2181
+      subindex: !!int 1
+      access: rw
+      type: uint32
+      description: Регистр пользовательских данных 0
+      eeprom:
+      value:
+
+    - 
+      name: USER_DATA_1
+      index: !!int 0x2181
+      subindex: !!int 2
+      access: rw
+      type: uint32
+      description: Регистр пользовательских данных 1
+      eeprom:
       value:
        
 # ---------------------------------------------------------------------------- #
@@ -134,7 +190,6 @@ canopen_parameters:
       access: rw
       type: uint8
       description: Включение ручного режима управления
-      value:
 
     - 
       name: OUTPUTS_SERVICE_MODE
@@ -159,7 +214,6 @@ canopen_parameters:
           "Гидравлический тормоз. Клапаны 1,8"
           "Гидравлический тормоз. Клапаны 2,9"
           "Статус зарядки"
-      value:
 
     - 
       name: BRAKES_TYPE
@@ -171,9 +225,9 @@ canopen_parameters:
       eeprom:
       value:
       values_table:
-        0: none
-        1: smooth
-        2: discrete
+        0: Отключено
+        1: Плавный тормоз
+        2: Дискретный тормоз
 
     - 
       name: SYSTEM_MAINLOOP_TIME
@@ -201,7 +255,7 @@ canopen_parameters:
   discrete_inputs:
     - 
       name: DI_ANTIFREEZE_LOW
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 1
       access: ro
       type: uint8
@@ -213,7 +267,7 @@ canopen_parameters:
 
     - 
       name: DI_BRAKE_FLUID_LOW
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 2
       access: ro
       type: uint8
@@ -225,7 +279,7 @@ canopen_parameters:
 
     - 
       name: DI_SUSPENSION_ENABLE
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 3
       access: ro
       type: uint8
@@ -237,19 +291,19 @@ canopen_parameters:
     
     - 
       name: DI_HEAD_LIGHTS
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 4
       access: ro
       type: uint8
-      description: Ручное включение передних фар. Если выключено, то исполняются команды КВУ
+      description: Разрешение управления ближним светом командами от БКУ
       value:
       values_table:
-        0: Выключены/обрыв (физический уровень LOW)
-        1: Включено (физический уровень HIGH)
+        0: Запрещено/обрыв (физический уровень LOW)
+        1: Разрешено (физический уровень HIGH)
 
     - 
       name: DI_RED_BUTTON
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 5
       access: ro
       type: uint32
@@ -261,7 +315,7 @@ canopen_parameters:
 
     - 
       name: DI_CHARGER_PLUG
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 6
       access: ro
       type: uint32
@@ -273,51 +327,51 @@ canopen_parameters:
 
     - 
       name: DI_BLOCK4_DOOR
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 7
       access: ro
       type: uint32
       description: Состояние концевика на дверце блока 4
       value:
       values_table:
-        0: Дверца открыта/обрыв (физический уровень LOW)
-        1: Дверца закрыта (физический уровень HIGH)
+        0: Дверца закрыта (физический уровень HIGH)
+        1: Дверца открыта/обрыв (физический уровень LOW)
 
     - 
       name: DI_LEFT_DOOR
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 8
       access: ro
       type: uint32
       description: Состояние концевика на левом борту
       value:
       values_table:
-        0: Борт открыт/обрыв (физический уровень LOW)
-        1: Борт закрыт (физический уровень HIGH)
+        0: Борт закрыт (физический уровень HIGH)
+        1: Борт открыт/обрыв (физический уровень LOW)
 
     - 
       name: DI_RIGHT_DOOR
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 9
       access: ro
       type: uint32
       description: Состояние концевика на правом борту
       value:
       values_table:
-        0: Борт открыт/обрыв (физический уровень LOW)
-        1: Борт закрыт (физический уровень HIGH)
+        0: Борт закрыт (физический уровень HIGH)
+        1: Борт открыт/обрыв (физический уровень LOW)
 
     - 
       name: DI_CAR_HOOD
-      index: !!int 0x2165
+      index: !!int 0x2170
       subindex: !!int 10
       access: ro
       type: uint32
       description: Состояние концевика на капоте
       value:
       values_table:
-        0: Капот открыт/обрыв (физический уровень LOW)
-        1: Капот закрыт (физический уровень HIGH)
+        0: Капот закрыт (физический уровень HIGH)
+        1: Капот открыт/обрыв (физический уровень LOW)
         
 # ---------------------------------------------------------------------------- #
 #                               Discrete Outputs                               #
@@ -481,7 +535,6 @@ canopen_parameters:
       type: uint8
       description: > 
        Командное значение в сервисном режиме для дискретного выхода "Парковочный тормоз".
-      value:
 
     - 
       name: DO_SERVICE_CMD_CHARGE_CP
@@ -491,7 +544,6 @@ canopen_parameters:
       type: uint8
       description: >
        Командное значение в сервисном режиме для дискретного выхода "Разрешение зарядки".
-      value:
 
     - 
       name: DO_SERVICE_CMD_START_PSTED
@@ -501,7 +553,6 @@ canopen_parameters:
       type: uint8
       description: > 
        Командное значение в сервисном режиме для дискретного выхода "Старт ПСТЭД".
-      value:
 
     - 
       name: DO_SERVICE_CMD_SUSP_VALVE_UP_1
@@ -510,8 +561,7 @@ canopen_parameters:
       access: rw
       type: uint8
       description: > 
-       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска нагнетание 1".
-      value:
+       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска нагнетание "FL".
 
     - 
       name: DO_SERVICE_CMD_SUSP_VALVE_UP_2
@@ -520,8 +570,7 @@ canopen_parameters:
       access: rw
       type: uint8
       description: > 
-       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска нагнетание 2".
-      value:
+       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска нагнетание FR".
 
     - 
       name: DO_SERVICE_CMD_SUSP_VALVE_UP_3
@@ -530,8 +579,7 @@ canopen_parameters:
       access: rw
       type: uint8
       description: > 
-       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска нагнетание 3".
-      value:
+       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска нагнетание RL".
 
     - 
       name: DO_SERVICE_CMD_SUSP_VALVE_UP_4
@@ -540,8 +588,7 @@ canopen_parameters:
       access: rw
       type: uint8
       description: > 
-       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска нагнетание 4".
-      value:
+       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска нагнетание RR".
 
     - 
       name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_1
@@ -550,8 +597,7 @@ canopen_parameters:
       access: rw
       type: uint8
       description: > 
-       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска сброс 1".
-      value:
+       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска сброс FL".
 
     - 
       name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_2
@@ -560,8 +606,7 @@ canopen_parameters:
       access: rw
       type: uint8
       description: > 
-       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска сброс 2".
-      value:
+       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска сброс FR".
 
     - 
       name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_3
@@ -570,8 +615,7 @@ canopen_parameters:
       access: rw
       type: uint8
       description: > 
-       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска сброс 3".
-      value:
+       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска сброс RL".
 
     - 
       name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_4
@@ -580,8 +624,7 @@ canopen_parameters:
       access: rw
       type: uint8
       description: > 
-       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска сброс 4".
-      value:
+       Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска сброс RR".
 
     - 
       name: DO_SERVICE_CMD_BRAKE_PUMP
@@ -591,7 +634,6 @@ canopen_parameters:
       type: uint8
       description: > 
        Командное значение в сервисном режиме для дискретного выхода "Гидравлический тормоз. Помпа".
-      value:
 
     - 
       name: DO_SERVICE_CMD_BRAKE_VALVE_1_8
@@ -601,7 +643,6 @@ canopen_parameters:
       type: uint8
       description: > 
        Командное значение в сервисном режиме для дискретного выхода "Гидравлический тормоз. Клапаны 1,8".
-      value:
 
     - 
       name: DO_SERVICE_CMD_BRAKE_VALVE_2_9
@@ -611,7 +652,6 @@ canopen_parameters:
       type: uint8
       description: > 
        Командное значение в сервисном режиме для дискретного выхода "Гидравлический тормоз. Клапаны 2,9".
-      value:
 
     - 
       name: DO_SERVICE_CMD_CHARGE_STATE
@@ -621,7 +661,6 @@ canopen_parameters:
       type: uint8
       description: > 
        Командное значение в сервисном режиме для дискретного выхода "Статус зарядки".
-      value:
 
     - 
       name: DO_STATE_PARKING_BRAKE
@@ -944,6 +983,21 @@ canopen_parameters:
       units: мс
 
 # ---------------------------------------------------------------------------- #
+#                                Lights Control                                #
+# ---------------------------------------------------------------------------- #
+  lights_control:
+    - 
+      name: LIGHTS_TURN_INDICATORS_PERIOD
+      index: !!int 0x2101
+      subindex: !!int 1
+      access: rw
+      type: uint16
+      description: Период мигания поворотников в аварийном режиме КВУ
+      eeprom:
+      value:
+      units: мс
+
+# ---------------------------------------------------------------------------- #
 #                                 Motor Control                                #
 # ---------------------------------------------------------------------------- #
   motor_control:
@@ -971,22 +1025,10 @@ canopen_parameters:
       subindex: !!int 3
       access: ro
       type: int16
-      description: >
-        Запрашиваемый момент [Нм]/ток статора (в зависимости от режима управления), отправляемый на ПСТЭД
+      description: Запрашиваемый момент, отправляемый на ПСТЭД
+      mult: !!float 0.00305
       value:
-      units: Нм или А
-
-    - 
-      name: TO_PSTED_FLUX_CURRENT
-      index: !!int 0x2107
-      subindex: !!int 4
-      access: ro
-      type: uint8
-      description: Желаемый ток обмотки возбуждения в режиме управления по току, отправляемый на ПСТЭД
-      offset: !!float 0.
-      mult: !!float 0.19608
-      value:
-      units: А
+      units: "%"
 
     - 
       name: TO_PSTED_BMS_VOLTAGE
@@ -995,32 +1037,9 @@ canopen_parameters:
       access: ro
       type: uint16
       description: Текущее напряжение батареи, отправляемое на ПСТЭД
-      offset: !!float 0.
       mult: !!float 0.1
       value:
       units: В
-
-    - 
-      name: TO_PSTED_ANGLE
-      index: !!int 0x2107
-      subindex: !!int 7
-      access: ro
-      type: int16
-      description: Желаемый электрический угол в режиме управления по току, отправляемый на ПСТЭД
-      offset: !!float 0.
-      mult: !!float 0.01099
-      value:
-      units: град
-
-    - 
-      name: TO_PSTED_MOTOR_SPEED_LIMIT
-      index: !!int 0x2107
-      subindex: !!int 8
-      access: ro
-      type: uint16
-      description: Желаемое ограничение скорости вращения двигателя, отправляемое на ПСТЭД
-      value:
-      units: об/мин
 
     - 
       name: FROM_PSTED_STATUS
@@ -1028,13 +1047,13 @@ canopen_parameters:
       subindex: !!int 1
       access: ro
       type: uint32
-      description: Статусный байт, полученный от ПСТЭД
+      description: > 
+       Статусный байт, полученный от ПСТЭД:
+        bit 0 - Инвертор готов к работе
+        bit 1 - Критическая ошибка
+        bit 2 - Некритическая ошибка/близко к какому-либо защитному лимиту
+        bit 3 - Перегрев
       value:
-      values_table:
-        BIT0: Инвертор готов к работе
-        BIT1: Критическая ошибка
-        BIT2: Некритическая ошибка/близко к какому-либо защитному лимиту
-        BIT3: Перегрев
 
     - 
       name: FROM_PSTED_TORQUE
@@ -1043,10 +1062,9 @@ canopen_parameters:
       access: ro
       type: int8
       description: Текущий момент, полученный от ПСТЭД
-      offset: !!float 0.
-      mult: !!float 0.0079
+      mult: !!float 0.7874
       value:
-      units: Нм
+      units: "%"
 
     - 
       name: FROM_PSTED_MOTOR_SPEED
@@ -1055,7 +1073,6 @@ canopen_parameters:
       access: ro
       type: int16
       description: Текущая скорость вращения двигателя, полученная от ПСТЭД
-      offset: !!float 0.
       mult: !!float 0.24415
       value:
       units: об/мин
@@ -1067,7 +1084,6 @@ canopen_parameters:
       access: ro
       type: int8
       description: Текущий ток статора, полученный от ПСТЭД
-      offset: !!float 0.
       mult: !!float 5.11811
       value:
       units: А
@@ -1079,7 +1095,6 @@ canopen_parameters:
       access: ro
       type: int8
       description: Текущая мощность, полученная от ПСТЭД
-      offset: !!float 0.
       mult: !!float 1.1811
       value:
       units: кВт
@@ -1090,9 +1105,8 @@ canopen_parameters:
       subindex: !!int 6
       access: ro
       type: uint8
-      description: Текущее высокое напряжение на инверторе, полученное от ПСТЭД
-      offset: !!float 0.
-      mult: !!float 0.0079
+      description: Текущее напряжение в звене постоянного тока, полученное от ПСТЭД
+      mult: !!float 6.353
       value:
       units: В
 
@@ -1103,10 +1117,9 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Текущее выходное напряжение инвертора, полученное от ПСТЭД
-      offset: !!float 0.
-      mult: !!float 0.00392
+      mult: !!float 0.392
       value:
-      units: "[0..1]"
+      units: "%"
 
     - 
       name: FROM_PSTED_MOTOR_TEMP
@@ -1115,6 +1128,7 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Текущая температура двигателя, полученная от ПСТЭД
+      offset: !!float 40.0
       value:
       units: град
 
@@ -1125,6 +1139,7 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Текущая температура обмотки возбуждения, полученная от ПСТЭД
+      offset: !!float 40.0
       value:
       units: град
 
@@ -1135,6 +1150,7 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Текущая температура радиатора, полученная от ПСТЭД
+      offset: !!float 40.0
       value:
       units: град
 
@@ -1145,6 +1161,7 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Текущая внутренняя температура инвертора, полученная от ПСТЭД
+      offset: !!float 40.0
       value:
       units: град
 
@@ -1191,10 +1208,8 @@ canopen_parameters:
       access: rw
       type: int16
       description: Желаемый момент двигателя в ручном режиме управления
-      offset: !!float 0.
-      mult: !!float 0.00003
-      value:
-      units: "[-1..1]"
+      mult: !!float 0.00305
+      units: "%"
 
     - 
       name: PSTED_TORQUE_INVERT
@@ -1202,7 +1217,7 @@ canopen_parameters:
       subindex: !!int 1
       access: rw
       type: uint8
-      description: Инвертировать значение желаемого момента/тока статора при отправке на ПСТЭД
+      description: Инвертировать значение желаемого момента при отправке на ПСТЭД
       eeprom:
       value:
 
@@ -1213,11 +1228,10 @@ canopen_parameters:
       access: rw
       type: uint16
       description: Моментный параметр рампы
-      offset: !!float 0.
-      mult: !!float 0.00003
+      mult: !!float 0.0015
       eeprom:
       value:
-      units: Нм
+      units: "%"
 
     - 
       name: PSTED_RAMP_TIME
@@ -1230,67 +1244,6 @@ canopen_parameters:
       value:
       units: мс
 
-    - 
-      name: PSTED_CONTROL_MODE
-      index: !!int 0x2109
-      subindex: !!int 5
-      access: rw
-      type: uint8
-      description: Режим управления инвертором
-      eeprom:
-      value:
-      values_table:
-        0: Управление по моменту
-        1: Управление по току
-
-    - 
-      name: PSTED_MAX_STATOR_CURRENT
-      index: !!int 0x2109
-      subindex: !!int 6
-      access: rw
-      type: uint16
-      description: Ограничение максимального тока статора
-      eeprom:
-      value:
-      units: А
-
-    - 
-      name: PSTED_IF_TO_IQ_MULT
-      index: !!int 0x2109
-      subindex: !!int 7
-      access: rw
-      type: uint16
-      description: Коэффициент связи токов, используемый в режиме управления по току
-      offset: !!float 0.
-      mult: !!float 0.000015
-      eeprom:
-      value:
-      units: "[0..1]"
-
-    - 
-      name: PSTED_DEFAULT_ANGLE
-      index: !!int 0x2109
-      subindex: !!int 8
-      access: rw
-      type: int16
-      description: Дефолтный электрический угол в режиме управления по току
-      offset: !!float 0.
-      mult: !!float 0.01099
-      eeprom:
-      value:
-      units: град
-
-    - 
-      name: PSTED_DEFAULT_MOTOR_SPEED_LIMIT
-      index: !!int 0x2109
-      subindex: !!int 9
-      access: rw
-      type: uint16
-      description: Дефолтное ограничение скорости вращения двигателя
-      eeprom:
-      value:
-      units: об/мин
-
 # ---------------------------------------------------------------------------- #
 #                               Steering Control                               #
 # ---------------------------------------------------------------------------- #
@@ -1302,7 +1255,6 @@ canopen_parameters:
       access: rw
       type: int16
       description: Желаемое положение передней рулевой рейки в ручном режиме управления,
-      value:
       units: "[-30000..30000]"
 
     - 
@@ -1312,7 +1264,6 @@ canopen_parameters:
       access: rw
       type: int16
       description: Желаемое положение задней рулевой рейки в ручном режиме управления,
-      value:
       units: "[-30000..30000]"
 
     - 
@@ -1367,6 +1318,24 @@ canopen_parameters:
       value:
 
     - 
+      name: FROM_STEERING_FRONT_ERRORS
+      index: !!int 0x2111
+      subindex: !!int 6
+      access: ro
+      type: uint8
+      description: > 
+       Подробное описание ошибки задней рулевой рейки
+        бит 0 - Авария модуля
+        бит 1 - Короткое замыкание на выходе
+        бит 2 - Авария датчика положения/калибровки
+        бит 3 - Перегрев силового радиатора
+        бит 4 - Перенапряжение Udc
+        бит 5 - Пониженное напряжение Udc
+        бит 6 - Длительная токовая перегрузка
+        бит 7 - Неправильная полярность DC-мотора
+      value:
+
+    - 
       name: STEERING_FRONT_ZERO
       index: !!int 0x2111
       subindex: !!int 7
@@ -1415,13 +1384,13 @@ canopen_parameters:
       subindex: !!int 11
       access: ro
       type: uint8
-      description: Байт статуса передней рулевой рейки, полученный от рейки
+      description: > 
+       Байт статуса передней рулевой рейки, полученный от рейки
+        бит 0 - Активна/неактивна
+        бит 1 - Флаг ошибки
+        бит 2 - Флаг предупреждения
+        бит 3 - Флаг перегрева
       value:
-      values_table:
-        BIT3: Перегрев
-        BIT4: Превышение тока
-        BIT5: Слишком низкое напряжение
-        BIT6: Слишком высокое напряжение
 
     - 
       name: FROM_STEERING_FRONT_CURRENT
@@ -1440,6 +1409,7 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Текущая температура передней рулевой рейки, полученная от рейки
+      offset: !!float 40.0
       value:
       units: град
 
@@ -1450,6 +1420,7 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Текущая температура мотора передней рулевой рейки, полученная от рейки
+      offset: !!float 40.0
       value:
       units: град
 
@@ -1492,6 +1463,24 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Разрешение работы задней рулевой рейки
+      value:
+
+    - 
+      name: FROM_STEERING_REAR_ERRORS
+      index: !!int 0x2112
+      subindex: !!int 6
+      access: ro
+      type: uint8
+      description: > 
+       Подробное описание ошибки задней рулевой рейки
+        бит 0 - Авария модуля
+        бит 1 - Короткое замыкание на выходе
+        бит 2 - Авария датчика положения/калибровки
+        бит 3 - Перегрев силового радиатора
+        бит 4 - Перенапряжение Udc
+        бит 5 - Пониженное напряжение Udc
+        бит 6 - Длительная токовая перегрузка
+        бит 7 - Неправильная полярность DC-мотора
       value:
 
     - 
@@ -1543,13 +1532,13 @@ canopen_parameters:
       subindex: !!int 11
       access: ro
       type: uint8
-      description: Байт статуса задней рулевой рейки, полученный от рейки
+      description: > 
+       Байт статуса задней рулевой рейки, полученный от рейки
+        бит 0 - Активна/неактивна
+        бит 1 - Флаг ошибки
+        бит 2 - Флаг предупреждения
+        бит 3 - Флаг перегрева
       value:
-      values_table:
-        BIT3: Перегрев
-        BIT4: Превышение тока
-        BIT5: Слишком низкое напряжение
-        BIT6: Слишком высокое напряжение
 
     - 
       name: FROM_STEERING_REAR_CURRENT
@@ -1568,6 +1557,7 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Текущая температура задней рулевой рейки, полученная от рейки
+      offset: !!float 40.0
       value:
       units: град
 
@@ -1578,6 +1568,7 @@ canopen_parameters:
       access: ro
       type: uint8
       description: Текущая температура мотора задней рулевой рейки, полученная от рейки
+      offset: !!float 40.0
       value:
       units: град
 
@@ -1654,6 +1645,7 @@ canopen_parameters:
         5: Stop Turn Off
         6: Stop Fault
         7: Turn Off
+        8: Fault Exit
 
     - 
       name: MAINFSM_STARTUP_TIMEOUT
@@ -1663,7 +1655,7 @@ canopen_parameters:
       type: uint16
       description: > 
         Пауза после включения КВУ перед переходом в Disarmed, необходимая для включения исполнительных узлов
-        eeprom:
+      eeprom:
       value:
       units: мс
 
@@ -1679,13 +1671,15 @@ canopen_parameters:
       units: мс
 
     - 
-      name: MAINFSM_PSTED_EM_STOP_SIGNAL
+      name: MAINFSM_FAULT_EXIT_TIMEOUT
       index: !!int 0x2114
       subindex: !!int 4
-      access: ro
-      type: uint8
-      description: Флаг, показывающий, что основная машина состояний инициирует сигнал "Emergency Stop" на ПСТЭД
+      access: rw
+      type: uint16
+      description: Время нахождения КВУ в состоянии "Fault Exit"
+      eeprom:
       value:
+      units: мс
 
     - 
       name: VEHICLE_STOP_VELOCITY_THRES
@@ -1884,82 +1878,82 @@ canopen_parameters:
 # ---------------------------------------------------------------------------- #
   pneumatic_suspension:
     - 
-      name: SUSPENSION_CUR_HEIGHT_1
+      name: SUSPENSION_CUR_HEIGHT_FL
       index: !!int 0x2130
       subindex: !!int 2
       access: ro
       type: int16
-      description: Текущая высота на подушке 1 (после обработки и учитывая смещение для БКУ)
+      description: Текущая высота на подушке FL (после обработки и учитывая смещение для БКУ)
       value:
       units: мм
 
     - 
-      name: SUSPENSION_CUR_HEIGHT_2
+      name: SUSPENSION_CUR_HEIGHT_FR
       index: !!int 0x2130
       subindex: !!int 3
       access: ro
       type: int16
-      description: Текущая высота на подушке 2 (после обработки и учитывая смещение для БКУ)
+      description: Текущая высота на подушке FR (после обработки и учитывая смещение для БКУ)
       value:
       units: мм
 
     - 
-      name: SUSPENSION_CUR_HEIGHT_3
+      name: SUSPENSION_CUR_HEIGHT_RL
       index: !!int 0x2130
       subindex: !!int 4
       access: ro
       type: int16
-      description: Текущая высота на подушке 3 (после обработки и учитывая смещение для БКУ)
+      description: Текущая высота на подушке RL (после обработки и учитывая смещение для БКУ)
       value:
       units: мм
 
     - 
-      name: SUSPENSION_CUR_HEIGHT_4
+      name: SUSPENSION_CUR_HEIGHT_RR
       index: !!int 0x2130
       subindex: !!int 5
       access: ro
       type: int16
-      description: Текущая высота на подушке 4 (после обработки и учитывая смещение для БКУ)
+      description: Текущая высота на подушке RR (после обработки и учитывая смещение для БКУ)
       value:
       units: мм
 
     - 
-      name: SUSPENSION_CUR_PRESSURE_1
+      name: SUSPENSION_CUR_PRESSURE_FL
       index: !!int 0x2130
       subindex: !!int 6
       access: ro
       type: uint16
-      description: Текущее давление в подушке 1
+      description: Текущее давление в подушке FL
       value:
       units: мбар
 
     - 
-      name: SUSPENSION_CUR_PRESSURE_2
+      name: SUSPENSION_CUR_PRESSURE_FR
       index: !!int 0x2130
       subindex: !!int 7
       access: ro
       type: uint16
-      description: Текущее давление в подушке 2
+      description: Текущее давление в подушке FR
       value:
       units: мбар
 
     - 
-      name: SUSPENSION_CUR_PRESSURE_3
+      name: SUSPENSION_CUR_PRESSURE_RL
       index: !!int 0x2130
       subindex: !!int 8
       access: ro
       type: uint16
-      description: Текущее давление в подушке 3
+      description: Текущее давление в подушке RL
       value:
       units: мбар
 
     - 
-      name: SUSPENSION_CUR_PRESSURE_4
+      name: SUSPENSION_CUR_PRESSURE_RR
       index: !!int 0x2130
       subindex: !!int 9
       access: ro
       type: uint16
-      description: Текущее давление в подушке 4
+      description: Текущее давление в подушке RR
       value:
       units: мбар
 
@@ -1973,82 +1967,82 @@ canopen_parameters:
       value:
 
     - 
-      name: SUSPENSION_CUR_RAW_HEIGHT_1
+      name: SUSPENSION_CUR_RAW_HEIGHT_FL
       index: !!int 0x2130
       subindex: !!int 11
       access: ro
       type: int16
-      description: Текущая высота на подушке 1 (сырое значение с датчика)
+      description: Текущая высота на подушке FL (сырое значение с датчика)
       value:
       units: мм
 
     - 
-      name: SUSPENSION_CUR_RAW_HEIGHT_2
+      name: SUSPENSION_CUR_RAW_HEIGHT_FR
       index: !!int 0x2130
       subindex: !!int 12
       access: ro
       type: int16
-      description: Текущая высота на подушке 2 (сырое значение с датчика)
+      description: Текущая высота на подушке FR (сырое значение с датчика)
       value:
       units: мм
 
     - 
-      name: SUSPENSION_CUR_RAW_HEIGHT_3
+      name: SUSPENSION_CUR_RAW_HEIGHT_RL
       index: !!int 0x2130
       subindex: !!int 13
       access: ro
       type: int16
-      description: Текущая высота на подушке 3 (сырое значение с датчика)
+      description: Текущая высота на подушке RL (сырое значение с датчика)
       value:
       units: мм
 
     - 
-      name: SUSPENSION_CUR_RAW_HEIGHT_4
+      name: SUSPENSION_CUR_RAW_HEIGHT_RR
       index: !!int 0x2130
       subindex: !!int 14
       access: ro
       type: int16
-      description: Текущая высота на подушке 4 (сырое значение с датчика)
+      description: Текущая высота на подушке RR (сырое значение с датчика)
       value:
       units: мм
 
     - 
-      name: SUSPENSION_CUR_RAW_PWD_1
+      name: SUSPENSION_CUR_RAW_PWD_FL
       index: !!int 0x2130
       subindex: !!int 15
       access: ro
       type: uint32
-      description: Длительность импульса с датчика высоты 1, по которой расчитывается высота в [мм]
+      description: Длительность импульса с датчика высоты FL, по которой расчитывается высота в [мм]
       value:
       units: мкс
 
     - 
-      name: SUSPENSION_CUR_RAW_PWD_2
+      name: SUSPENSION_CUR_RAW_PWD_FR
       index: !!int 0x2130
       subindex: !!int 16
       access: ro
       type: uint32
-      description: Длительность импульса с датчика высоты 2, по которой расчитывается высота в [мм]
+      description: Длительность импульса с датчика высоты FR, по которой расчитывается высота в [мм]
       value:
       units: мкс
 
     - 
-      name: SUSPENSION_CUR_RAW_PWD_3
+      name: SUSPENSION_CUR_RAW_PWD_RL
       index: !!int 0x2130
       subindex: !!int 17
       access: ro
       type: uint32
-      description: Длительность импульса с датчика высоты 3, по которой расчитывается высота в [мм]
+      description: Длительность импульса с датчика высоты RL, по которой расчитывается высота в [мм]
       value:
       units: мкс
 
     - 
-      name: SUSPENSION_CUR_RAW_PWD_4
+      name: SUSPENSION_CUR_RAW_PWD_RR
       index: !!int 0x2130
       subindex: !!int 18
       access: ro
       type: uint32
-      description: Длительность импульса с датчика высоты 4, по которой расчитывается высота в [мм]
+      description: Длительность импульса с датчика высоты RR, по которой расчитывается высота в [мм]
       value:
       units: мкс
 
@@ -2108,173 +2102,173 @@ canopen_parameters:
       value: "[0..1]"
 
     - 
-      name: SUSPENSION_HEIGHT_INVERT_1
+      name: SUSPENSION_HEIGHT_INVERT_FL
       index: !!int 0x2131
       subindex: !!int 6
       access: rw
       type: uint8
-      description: Инвертировать значение датчика высоты 1
+      description: Инвертировать значение датчика высоты FL
       eeprom:
       value:
 
     - 
-      name: SUSPENSION_HEIGHT_INVERT_2
+      name: SUSPENSION_HEIGHT_INVERT_FR
       index: !!int 0x2131
       subindex: !!int 7
       access: rw
       type: uint8
-      description: Инвертировать значение датчика высоты 2
+      description: Инвертировать значение датчика высоты FR
       eeprom:
       value:
 
     - 
-      name: SUSPENSION_HEIGHT_INVERT_3
+      name: SUSPENSION_HEIGHT_INVERT_RL
       index: !!int 0x2131
       subindex: !!int 8
       access: rw
       type: uint8
-      description: Инвертировать значение датчика высоты 3
+      description: Инвертировать значение датчика высоты RL
       eeprom:
       value:
 
     - 
-      name: SUSPENSION_HEIGHT_INVERT_4
+      name: SUSPENSION_HEIGHT_INVERT_RR
       index: !!int 0x2131
       subindex: !!int 9
       access: rw
       type: uint8
-      description: Инвертировать значение датчика высоты 4
+      description: Инвертировать значение датчика высоты RR
       eeprom:
       value:
 
     - 
-      name: SUSPENSION_HEIGHT_OFFSET_1
+      name: SUSPENSION_HEIGHT_OFFSET_FL
       index: !!int 0x2131
       subindex: !!int 10
       access: rw
       type: int16
-      description: Смещение значения высоты 1 для взаимодействия с БКУ
+      description: Смещение значения высоты FL для взаимодействия с БКУ
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_OFFSET_2
+      name: SUSPENSION_HEIGHT_OFFSET_FR
       index: !!int 0x2131
       subindex: !!int 11
       access: rw
       type: int16
-      description: Смещение значения высоты 2 для взаимодействия с БКУ
+      description: Смещение значения высоты FR для взаимодействия с БКУ
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_OFFSET_3
+      name: SUSPENSION_HEIGHT_OFFSET_RL
       index: !!int 0x2131
       subindex: !!int 12
       access: rw
       type: int16
-      description: Смещение значения высоты 3 для взаимодействия с БКУ
+      description: Смещение значения высоты RL для взаимодействия с БКУ
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_OFFSET_4
+      name: SUSPENSION_HEIGHT_OFFSET_RR
       index: !!int 0x2131
       subindex: !!int 13
       access: rw
       type: int16
-      description: Смещение значения высоты 4 для взаимодействия с БКУ
+      description: Смещение значения высоты RR для взаимодействия с БКУ
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_SENSOR_MIN_1
+      name: SUSPENSION_HEIGHT_SENSOR_MIN_FL
       index: !!int 0x2131
       subindex: !!int 14
       access: rw
       type: uint16
-      description: Значение датчика высоты 1 (сырое) в самом нижнем положении подвески
+      description: Значение датчика высоты FL (сырое) в самом нижнем положении подвески
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_SENSOR_MIN_2
+      name: SUSPENSION_HEIGHT_SENSOR_MIN_FR
       index: !!int 0x2131
       subindex: !!int 15
       access: rw
       type: uint16
-      description: Значение датчика высоты 2 (сырое) в самом нижнем положении подвески
+      description: Значение датчика высоты FR (сырое) в самом нижнем положении подвески
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_SENSOR_MIN_3
+      name: SUSPENSION_HEIGHT_SENSOR_MIN_RL
       index: !!int 0x2131
       subindex: !!int 16
       access: rw
       type: uint16
-      description: Значение датчика высоты 3 (сырое) в самом нижнем положении подвески
+      description: Значение датчика высоты RL (сырое) в самом нижнем положении подвески
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_SENSOR_MIN_4
+      name: SUSPENSION_HEIGHT_SENSOR_MIN_RR
       index: !!int 0x2131
       subindex: !!int 17
       access: rw
       type: uint16
-      description: Значение датчика высоты 4 (сырое) в самом нижнем положении подвески
+      description: Значение датчика высоты RR (сырое) в самом нижнем положении подвески
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_SENSOR_MAX_1
+      name: SUSPENSION_HEIGHT_SENSOR_MAX_FL
       index: !!int 0x2131
       subindex: !!int 18
       access: rw
       type: uint16
-      description: Значение датчика высоты 1 (сырое) в самом верхнем положении подвески
+      description: Значение датчика высоты FL (сырое) в самом верхнем положении подвески
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_SENSOR_MAX_2
+      name: SUSPENSION_HEIGHT_SENSOR_MAX_FR
       index: !!int 0x2131
       subindex: !!int 19
       access: rw
       type: uint16
-      description: Значение датчика высоты 2 (сырое) в самом верхнем положении подвески
+      description: Значение датчика высоты FR (сырое) в самом верхнем положении подвески
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_SENSOR_MAX_3
+      name: SUSPENSION_HEIGHT_SENSOR_MAX_RL
       index: !!int 0x2131
       subindex: !!int 20
       access: rw
       type: uint16
-      description: Значение датчика высоты 3 (сырое) в самом верхнем положении подвески
+      description: Значение датчика высоты RL (сырое) в самом верхнем положении подвески
       eeprom:
       value:
       units: мм
 
     - 
-      name: SUSPENSION_HEIGHT_SENSOR_MAX_4
+      name: SUSPENSION_HEIGHT_SENSOR_MAX_RR
       index: !!int 0x2131
       subindex: !!int 21
       access: rw
       type: uint16
-      description: Значение датчика высоты 4 (сырое) в самом верхнем положении подвески
+      description: Значение датчика высоты RR (сырое) в самом верхнем положении подвески
       eeprom:
       value:
       units: мм
@@ -2317,19 +2311,9 @@ canopen_parameters:
 # ---------------------------------------------------------------------------- #
   voltage_monitoring:
     - 
-      name: SYSTEM_12V
-      index: !!int 0x2135
-      subindex: !!int 1
-      access: ro
-      type: uint16
-      description: Текущее напряжение на шине 12 В
-      value:
-      units: мВ
-
-    - 
       name: SYSTEM_24V
       index: !!int 0x2135
-      subindex: !!int 2
+      subindex: !!int 1
       access: ro
       type: uint16
       description: Текущее напряжение на шине 24 В
@@ -2337,31 +2321,19 @@ canopen_parameters:
       units: мВ
 
     - 
-      name: SYSTEM_12V_LOW_LIM
+      name: SYSTEM_12V
       index: !!int 0x2135
-      subindex: !!int 3
-      access: rw
+      subindex: !!int 2
+      access: ro
       type: uint16
-      description: Нижний допустимый предел напряжения на шине 12 В
-      eeprom:
-      value:
-      units: мВ
-
-    - 
-      name: SYSTEM_12V_HIGH_LIM
-      index: !!int 0x2135
-      subindex: !!int 4
-      access: rw
-      type: uint16
-      description: Верхний допустимый предел напряжения на шине 12 В
-      eeprom:
+      description: Текущее напряжение на шине 12 В
       value:
       units: мВ
 
     - 
       name: SYSTEM_24V_LOW_LIM
       index: !!int 0x2135
-      subindex: !!int 5
+      subindex: !!int 3
       access: rw
       type: uint16
       description: Нижний допустимый предел напряжения на шине 24 В
@@ -2372,10 +2344,32 @@ canopen_parameters:
     - 
       name: SYSTEM_24V_HIGH_LIM
       index: !!int 0x2135
-      subindex: !!int 6
+      subindex: !!int 4
       access: rw
       type: uint16
       description: Верхний допустимый предел напряжения на шине 24 В
+      eeprom:
+      value:
+      units: мВ
+
+    - 
+      name: SYSTEM_12V_LOW_LIM
+      index: !!int 0x2135
+      subindex: !!int 5
+      access: rw
+      type: uint16
+      description: Нижний допустимый предел напряжения на шине 12 В
+      eeprom:
+      value:
+      units: мВ
+
+    - 
+      name: SYSTEM_12V_HIGH_LIM
+      index: !!int 0x2135
+      subindex: !!int 6
+      access: rw
+      type: uint16
+      description: Верхний допустимый предел напряжения на шине 12 В
       eeprom:
       value:
       units: мВ
@@ -2406,15 +2400,6 @@ canopen_parameters:
       value:
       units: мс
 
-    - 
-      name: BMS_MULTIMSG_PAGE_DEBUG
-      index: !!int 0x2140
-      subindex: !!int 7
-      access: ro
-      type: uint32
-      description: Параметр для отладки multi-message
-      value:
-
 # ---------------------------------------------------------------------------- #
 #                                Parking Brake                                 #
 # ---------------------------------------------------------------------------- #
@@ -2425,8 +2410,7 @@ canopen_parameters:
       subindex: !!int 1
       access: rw
       type: uint8
-      description: Команда на зажатие ручного тормоза в ручном режиме управления
-      value:
+      description: Команда на зажатие парковочного тормоза в ручном режиме управления
 
     - 
       name: PARKING_BRAKE_HELD
@@ -2469,13 +2453,10 @@ canopen_parameters:
     - 
       name: DISCRETE_BRAKE_MANUAL_CONTROL_CMD
       index: !!int 0x2146
-      subindex: !!int 2
+      subindex: !!int 3
       access: rw
-      type: uint16
-      description: Время удержания давления в контуре. Включает в себя DISCRETE_BRAKE_ACCUM_TIMEOUT
-      eeprom:
-      value:
-      units: мс
+      type: uint8
+      description: Команда на включение гидравлического тормоза в ручном режиме управления
 
 # ---------------------------------------------------------------------------- #
 #                                     ABS                                      #
@@ -2551,72 +2532,17 @@ canopen_parameters:
       value:
 
     - 
-      name: ABS_SENSOR_MAPPING_FL
+      name: ABS_SUPPRESS_INVALID_DATA_ERRORS
       index: !!int 0x2160
       subindex: !!int 7
       access: rw
       type: uint8
-      description: >
-       Параметр для назначения конкретного датчика на позицию "Передний левый"
+      description: Включение/выключение обработки накопленных ошибок датчиков ABS
       eeprom:
       value:
       values_table:
-       0: Пин 115
-       1: Пин 139
-       2: Пин 116
-       3: Пин 140
-       4: Отключено
-
-    - 
-      name: ABS_SENSOR_MAPPING_FR
-      index: !!int 0x2160
-      subindex: !!int 8
-      access: rw
-      type: uint8
-      description: >
-       Параметр для назначения конкретного датчика на позицию "Передний правый"
-      eeprom:
-      value:
-      values_table:
-       0: Пин 115
-       1: Пин 139
-       2: Пин 116
-       3: Пин 140
-       4: Отключено
-
-    - 
-      name: ABS_SENSOR_MAPPING_RL
-      index: !!int 0x2160
-      subindex: !!int 9
-      access: rw
-      type: uint8
-      description: >
-       Параметр для назначения конкретного датчика на позицию "Задний левый"
-      eeprom:
-      value:
-      values_table:
-       0: Пин 115
-       1: Пин 139
-       2: Пин 116
-       3: Пин 140
-       4: Отключено
-
-    - 
-      name: ABS_SENSOR_MAPPING_RR
-      index: !!int 0x2160
-      subindex: !!int 10
-      access: rw
-      type: uint8
-      description: >
-       Параметр для назначения конкретного датчика на позицию "Задний правый"
-      eeprom:
-      value:
-      values_table:
-       0: Пин 115
-       1: Пин 139
-       2: Пин 116
-       3: Пин 140
-       4: Отключено
+       0: Невалидные значения частоты будут принимать значения 'ошибка' при отправке на БКУ
+       1: Невалидные значения частоты будут обрабатываться как обычные
 
     - 
       name: ABS_FILTER_FACTOR
@@ -2654,7 +2580,7 @@ canopen_parameters:
     - 
       name: ABS_WHEEL_FREQ_FR
       index: !!int 0x2160
-      subindex: !!int 13
+      subindex: !!int 14
       access: ro
       type: int16
       description: Частота вращения колеса "Переднее правое"
@@ -2665,7 +2591,7 @@ canopen_parameters:
     - 
       name: ABS_WHEEL_FREQ_RL
       index: !!int 0x2160
-      subindex: !!int 13
+      subindex: !!int 15
       access: ro
       type: int16
       description: Частота вращения колеса "Заднее левое"
@@ -2676,7 +2602,7 @@ canopen_parameters:
     - 
       name: ABS_WHEEL_FREQ_RR
       index: !!int 0x2160
-      subindex: !!int 13
+      subindex: !!int 16
       access: ro
       type: int16
       description: Частота вращения колеса "Заднее правое"
@@ -2830,7 +2756,7 @@ canopen_parameters:
       subindex: !!int 7
       access: ro
       type: uint32
-      description: Команда от БКУ на состояние левого поворотника (контроль мигания осуществляется на стороне БКУ)
+      description: Команда от БКУ на включение левого поворотника (контроль мигания осуществляется на стороне БКУ)
       value:
 
     - 
@@ -2839,7 +2765,7 @@ canopen_parameters:
       subindex: !!int 8
       access: ro
       type: uint32
-      description: Команда от БКУ на состояние правого поворотника (контроль мигания осуществляется на стороне БКУ)
+      description: Команда от БКУ на включение правого поворотника (контроль мигания осуществляется на стороне БКУ)
       value:
 
     - 
@@ -2848,7 +2774,7 @@ canopen_parameters:
       subindex: !!int 9
       access: ro
       type: uint32
-      description: Команда от БКУ на состояние стоп-сигналов
+      description: Команда от БКУ на включение стоп-сигналов
       value:
 
     - 
@@ -2857,7 +2783,7 @@ canopen_parameters:
       subindex: !!int 10
       access: ro
       type: uint32
-      description: Команда от БКУ на состояние задних ходовых огней
+      description: Команда от БКУ на включение сигнала заднего хода
       value:
 
     - 
@@ -2866,7 +2792,7 @@ canopen_parameters:
       subindex: !!int 11
       access: ro
       type: uint32
-      description: Команда от БКУ на состояние передних ходовых огней
+      description: Команда от БКУ на включение ар ближнего света
       value:
 
     - 

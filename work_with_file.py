@@ -3,6 +3,7 @@ import os
 
 import pandas
 import pandas as pd
+import yaml
 from PyQt5.QtWidgets import QMessageBox
 from pandas import ExcelWriter
 
@@ -232,6 +233,38 @@ def fill_par_dict(file):
     return node_params_dict
 
 
+def fill_par_dict_from_yaml(file):
+    with open(file, "r", encoding="UTF8") as stream:
+        try:
+            canopen_params = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    node_params_dict = {group: [Parametr(p) for p in group_params]
+                        for group, group_params in canopen_params.items()}
+    return node_params_dict
+
+
+def fill_err_list_from_yaml(file):
+    with open(file, "r", encoding="UTF8") as stream:
+        try:
+            canopen_error = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    node_err_list = [EvoError(e) for e in canopen_error]
+    return node_err_list
+
+
+def fill_nodes_dict_from_yaml(file):
+    with open(file, "r", encoding="windows-1251") as stream:
+        try:
+            nodes = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    node_dict = {name: EVONode(n) for name, n in nodes}
+    return node_dict
+
+
+
 def make_node_list(file_name):
     file = pandas.ExcelFile(file_name)
     # начинаю с проверки что есть лист с ошибками и лист с блоками
@@ -247,6 +280,9 @@ def make_node_list(file_name):
         ev_node_list.append(EVONode(node))
         node_dict[node['name']] = EVONode(node)
     # здесь я имею словарь ключ - имя блока , значение - словарь с параметрами ( не по группам)
+
+    # with open(r'Data/all_nodes.yaml', 'w', encoding='windows-1251') as file:
+    #     documents = yaml.dump({n['name']: n for n in node_list}, file, allow_unicode=True, encoding="UTF8")
 
     err_dict = fill_error_dict(file, 'errors')
     # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с ошибками
