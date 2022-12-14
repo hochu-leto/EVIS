@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem
 
 import Dialog_params
 import my_dialog
-
+TheBestNode = 'Избранное'
 NewParamsList = 'Новый список'
 
 empty_par = {'name': '',

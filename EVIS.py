@@ -77,10 +77,9 @@ from CANAdater import CANAdapter
 from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
-from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file, \
-    make_node_list
+from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param
+    show_new_vmu_params, find_param, TheBestNode
 
 can_adapter = CANAdapter()
 
@@ -236,7 +235,7 @@ def want_to_value_change():
                         if current_param.node.save_to_eeprom:
                             current_param.node.param_was_changed = True
                             # В Избранном кнопку не активируем, может быть несколько блоков. Возможно, я когда-то смогу
-                            if window.thread.current_node.name != 'Избранное':
+                            if window.thread.current_node.name != TheBestNode:
                                 window.save_eeprom_btn.setEnabled(True)
                                 if window.thread.current_node.name == 'Инвертор_МЭИ':
                                     QMessageBox.information(window, "Информация", f'Параметр будет работать, \n'
@@ -269,7 +268,7 @@ def want_to_value_change():
         new_param = Parametr(current_param.to_dict(), current_param.node)
         if window.thread.current_node != user_node:
             new_param.name = f'{new_param.name}#{new_param.node.name}'
-        text = 'добавлен в список Избранное'
+        text = f'добавлен в блок {TheBestNode}'
         next_cell.setBackground(QColor(254, 0, 0, 30))
         # если Новый список есть в Избранном
         if NewParamsList in user_node.group_params_dict.keys():
@@ -280,7 +279,7 @@ def want_to_value_change():
                     p = par
             # если есть, то удаляю его (как-то тупо определяю, надо переделать)
             if p:
-                text = 'удалён из списка Избранное'
+                text = f'удалён из блока {TheBestNode}'
                 window.vmu_param_table.item(c_row, c_col + 1).setBackground(QColor(254, 254, 254, 30))
                 was_run = False
                 # останавливаю поток и удаляю параметр из Нового списка
@@ -304,10 +303,11 @@ def want_to_value_change():
             user_node.group_params_dict[NewParamsList] = [new_param]
             item = QTreeWidgetItem()
             item.setText(0, NewParamsList)
-            item.setBackground(0, QColor(254, 0, 0, 30))
             rowcount = window.nodes_tree.topLevelItemCount() - 1
             window.nodes_tree.topLevelItem(rowcount).addChild(item)
+            # и немного красоты - раскрываем, спускаем и подкрашиваем
             window.nodes_tree.topLevelItem(rowcount).setExpanded(True)
+            item.setBackground(0, QColor(254, 0, 0, 30))
             window.nodes_tree.show()
             index = window.nodes_tree.indexFromItem(item, 0)
             window.nodes_tree.scrollTo(index)
@@ -510,7 +510,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                     del user_node.group_params_dict[NewParamsList]
                     # проверяю удалось ли сохранить список
                     if save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file):
-                        err_mess = f'{val} успешно сохранён в Избранное'
+                        err_mess = f'{val} успешно сохранён в {TheBestNode}'
                         state = True
                         # создаём новый итем для дерева
                         child_item = QTreeWidgetItem()
@@ -949,7 +949,6 @@ if __name__ == '__main__':
     window.log_record_btn.clicked.connect(record_log)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     alt_node_list = full_node_list(vmu_param_file).copy()
-    make_node_list(vmu_param_file)
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
     # показываю дерево с блоками и что ошибок нет

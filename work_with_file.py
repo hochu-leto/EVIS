@@ -1,7 +1,6 @@
 import datetime
 import os
 
-import pandas
 import pandas as pd
 import yaml
 from PyQt5.QtWidgets import QMessageBox
@@ -11,6 +10,7 @@ from EVOErrors import EvoError
 from helper import NewParamsList, empty_par
 from EVONode import EVONode
 from Parametr import Parametr
+from helper import empty_par, TheBestNode
 
 value_type_dict = {'UNSIGNED16': 0x2B,
                    'SIGNED16': 0x2B,
@@ -25,7 +25,7 @@ need_fields = {'name', 'address', 'type'}
 
 def fill_sheet_dict(file_name):
     need_fields = {'name', 'address', 'value'}
-    file = pandas.ExcelFile(file_name)
+    file = pd.ExcelFile(file_name)
     sheets_dict = {}
 
     for sheet_name in file.sheet_names:
@@ -266,7 +266,7 @@ def fill_nodes_dict_from_yaml(file):
 
 
 def make_node_list(file_name):
-    file = pandas.ExcelFile(file_name)
+    file = pd.ExcelFile(file_name)
     # начинаю с проверки что есть лист с ошибками и лист с блоками
     if not {'node', 'errors'}.issubset(file.sheet_names):
         QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
@@ -301,104 +301,109 @@ def make_node_list(file_name):
         if node_name in wr_dict.keys():
             ev_node.errors_list = wr_dict[node_name]
 
-
-        ev_node.group_params_dict = node_params_dict.copy() if node_params_dict else {NewParamsList: []}
-        nodes_list.append(ev_node)
-
-    return nodes_list
-
-
-def check_id(string: str):
-    if str(string) == 'nan':
-        return 'nan'
-    if '0x' in string:
-        return int(string.replace('0x', ''), 16)
-    elif '0b' in string:
-        return int(string.replace('0b', ''), 2)
-    else:
-        return int(string)
-
-
-def fill_vmu_list(vmu_params_list):
-    exit_list = []
-    for par in vmu_params_list:
-        if str(par['name']) != 'nan':
-            if str(par['address']) != 'nan':
-                if isinstance(par['address'], str):
-                    if '0x' in par['address']:
-                        par['address'] = par['address'].rsplit('x')[1]
-                        par['address'] = int(par['address'], 16)
-                    elif '0b' in par['address']:
-                        par['address'] = par['address'].rsplit('b')[1]
-                        par['address'] = int(par['address'], 2)
+        if node_name in par_dict.keys():
+            for group in par_dict[node_name].values():
+                for param in group:
+                    if node_name == TheBestNode:    # Избранное надо раскидывать - параметры м/б из разных блоков
+                        param.check_node(node_dict)
                     else:
-                        par['address'] = int(par['address'])
-                if str(par['scale']) == 'nan' or par['scale'] == 0:
-                    par['scale'] = 1
-                if 'scaleB' not in par.keys() or str(par['scaleB']) == 'nan':
-                    par['scaleB'] = 0
+                        param.node = ev_node
+            ev_node.group_params_dict = par_dict[node_name]
 
-                if 'period' not in par.keys() or str(par['period']) == 'nan' or par['period'] <= 0:
-                    par['period'] = 1
-                elif par['period'] > 1000:
-                    par['period'] = 1000
-
-                exit_list.append(par)
-    return exit_list
+    return node_dict
 
 
-def make_vmu_error_dict(file_name):
-    excel_data_df = pandas.read_excel(file_name)
-    vmu_er_list = excel_data_df.to_dict(orient='records')
-    ex_dict = {}
-    for par in vmu_er_list:
-        if str(par['Code']) != 'nan':
-            ex_dict[par['Code']] = par['Description']
-    return ex_dict
+# def check_id(string: str):
+#     if str(string) == 'nan':
+#         return 'nan'
+#     if '0x' in string:
+#         return int(string.replace('0x', ''), 16)
+#     elif '0b' in string:
+#         return int(string.replace('0b', ''), 2)
+#     else:
+#         return int(string)
 
 
-def feel_req_list(protocol: str, p_list: list):
-    req_list = []
-    for par in p_list:
-        if par['type'] in value_type_dict.keys():
-            value_type = value_type_dict[par['type']]
-        else:
-            value_type = 0x2B
-        address = int(par['address'])
-        # print('address =   ', address)
-        MSB = ((address & 0xFF0000) >> 16)
-        LSB = ((address & 0xFF00) >> 8)
-        sub_index = address & 0xFF
-        if protocol == 'CANOpen':
-            data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
-        elif protocol == 'MODBUS':
-            data = [0, 0, 0, 0, sub_index, LSB, value_type, 0x03]
-        else:
-            data = bytearray([0, 0, 0, 0, 0, 0, 0, 0])
-        # pprint(data)
-        req_list.append(data)
-    return req_list
+# def fill_vmu_list(vmu_params_list):
+#     exit_list = []
+#     for par in vmu_params_list:
+#         if str(par['name']) != 'nan':
+#             if str(par['address']) != 'nan':
+#                 if isinstance(par['address'], str):
+#                     if '0x' in par['address']:
+#                         par['address'] = par['address'].rsplit('x')[1]
+#                         par['address'] = int(par['address'], 16)
+#                     elif '0b' in par['address']:
+#                         par['address'] = par['address'].rsplit('b')[1]
+#                         par['address'] = int(par['address'], 2)
+#                     else:
+#                         par['address'] = int(par['address'])
+#                 if str(par['scale']) == 'nan' or par['scale'] == 0:
+#                     par['scale'] = 1
+#                 if 'scaleB' not in par.keys() or str(par['scaleB']) == 'nan':
+#                     par['scaleB'] = 0
+#
+#                 if 'period' not in par.keys() or str(par['period']) == 'nan' or par['period'] <= 0:
+#                     par['period'] = 1
+#                 elif par['period'] > 1000:
+#                     par['period'] = 1000
+#
+#                 exit_list.append(par)
+#     return exit_list
 
 
-def adding_to_csv_file(vmu_params_list: list, recording_file_name: str, name_or_value=True):
-    if not recording_file_name:
-        return
-    data = []
-    data_string = []
-    for par in vmu_params_list:
-        data_string.append(par[name_or_value])
-    dt = datetime.datetime.now()
-    dt = dt.strftime("%H:%M:%S.%f")
-    if name_or_value == 'name':
-        dt = 'time'
-    data_string.append(dt)
-    data.append(data_string)
-    df = pandas.DataFrame(data)
-    # df.to_csv(recording_file_name,
-    #           mode='a',
-    #           header=False,
-    #           index=False,
-    #           encoding='windows-1251')
+# def make_vmu_error_dict(file_name):
+#     excel_data_df = pd.read_excel(file_name)
+#     vmu_er_list = excel_data_df.to_dict(orient='records')
+#     ex_dict = {}
+#     for par in vmu_er_list:
+#         if str(par['Code']) != 'nan':
+#             ex_dict[par['Code']] = par['Description']
+#     return ex_dict
+
+
+# def feel_req_list(protocol: str, p_list: list):
+#     req_list = []
+#     for par in p_list:
+#         if par['type'] in value_type_dict.keys():
+#             value_type = value_type_dict[par['type']]
+#         else:
+#             value_type = 0x2B
+#         address = int(par['address'])
+#         # print('address =   ', address)
+#         MSB = ((address & 0xFF0000) >> 16)
+#         LSB = ((address & 0xFF00) >> 8)
+#         sub_index = address & 0xFF
+#         if protocol == 'CANOpen':
+#             data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
+#         elif protocol == 'MODBUS':
+#             data = [0, 0, 0, 0, sub_index, LSB, value_type, 0x03]
+#         else:
+#             data = bytearray([0, 0, 0, 0, 0, 0, 0, 0])
+#         # pprint(data)
+#         req_list.append(data)
+#     return req_list
+
+
+# def adding_to_csv_file(vmu_params_list: list, recording_file_name: str, name_or_value=True):
+#     if not recording_file_name:
+#         return
+#     data = []
+#     data_string = []
+#     for par in vmu_params_list:
+#         data_string.append(par[name_or_value])
+#     dt = datetime.datetime.now()
+#     dt = dt.strftime("%H:%M:%S.%f")
+#     if name_or_value == 'name':
+#         dt = 'time'
+#     data_string.append(dt)
+#     data.append(data_string)
+#     df = pandas.DataFrame(data)
+#     # df.to_csv(recording_file_name,
+#     #           mode='a',
+#     #           header=False,
+#     #           index=False,
+#     #           encoding='windows-1251')
 
 
 def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):

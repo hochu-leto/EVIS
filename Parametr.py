@@ -176,3 +176,16 @@ class Parametr:
             exit_dict[k] = self.__getattribute__(k)
         exit_dict['editable'] = 1 if exit_dict['editable'] else 0
         return exit_dict
+
+    def check_node(self, node_dict: dict):
+        if '#' in self.name:
+            node_name = self.name.split('#')[1]
+            if node_name in node_dict.keys():
+                self.node = node_dict[node_name]
+                return True
+            else:
+                print('Этого блока нет в словаре')
+                return False
+        else:
+            print('В имени параметра нет разделителя')
+            return False
