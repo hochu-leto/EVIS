@@ -46,7 +46,7 @@ class Parametr:
         if param is None:
             param = empty_par
         if node is None:
-            node = EVONode
+            node = EVONode()
 
         def check_value(value, name: str):
             v = value if name not in list(param.keys()) \

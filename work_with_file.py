@@ -1,5 +1,5 @@
-import datetime
 import os
+import pathlib
 
 import pandas as pd
 import yaml
@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMessageBox
 from pandas import ExcelWriter
 
 from EVOErrors import EvoError
-from helper import NewParamsList, empty_par
+from helper import NewParamsList, get_nearest_lower_value
 from EVONode import EVONode
 from Parametr import Parametr
 from helper import empty_par, TheBestNode
@@ -23,8 +23,9 @@ value_type_dict = {'UNSIGNED16': 0x2B,
 need_fields = {'name', 'address', 'type'}
 
 
+# ------------------------------------- заполнение словаря для сравнения----------------------------
+# можно несколько блоков в одном файле
 def fill_sheet_dict(file_name):
-    need_fields = {'name', 'address', 'value'}
     file = pd.ExcelFile(file_name)
     sheets_dict = {}
 
@@ -53,71 +54,27 @@ def fill_sheet_dict(file_name):
     return sheets_dict
 
 
-def fill_node_list(file_name):
-    need_fields = {'name', 'address', 'type'}
-    file = pandas.ExcelFile(file_name)
-    bookmark_dict = {}
-    if 'nodes' not in file.sheet_names:
-        QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
-        return
-    # sheet "nodes" is founded
-    for sheet_name in file.sheet_names:  # пробегаюсь по всем листам документа
-        sheet = file.parse(sheet_name=sheet_name)
-        headers = list(sheet.columns.values)
-        if set(need_fields).issubset(headers):  # если в заголовках есть все нужные поля
-            sheet_params_list = sheet.to_dict(orient='records')  # то запихиваю весь этот лист со всеми
-            bookmark_dict[sheet_name] = sheet_params_list  # строками в словарь,где ключ - название страницы
-
-    node_sheet = file.parse(sheet_name='nodes')
-    node_list = node_sheet.to_dict(orient='records')  # парсим лист "nodes"
-    for node in node_list:
-        node_name = node['name']
-        node_params_list = {}
-        for params_list in bookmark_dict.keys():  # бегу по словарю со списками параметров
-            prev_group_name = ''
-            p_list = []
-            if node_name in params_list:
-                for param in bookmark_dict[params_list]:
-                    if str(param['name']) != 'nan':
-                        if 'group ' in param['name']:
-                            node_params_list[prev_group_name] = p_list.copy()
-                            p_list = []
-                            prev_group_name = param['name'].replace('group ', '')
-                        else:
-                            #  получается, что здесь я не проверяю наличие нужных поле у параметра
-                            #  это происходит только при заполнении списка vmu_params_list
-                            #  здесь нужно в список добавлять объект Параметр с полями и методами
-                            p_list.append(param)
-                node_params_list[prev_group_name] = p_list.copy()
-                del node_params_list['']
-        if node_params_list:
-            node['params_list'] = node_params_list.copy()
-        node['req_id'] = check_id(node['req_id'])
-        node['ans_id'] = check_id(node['ans_id'])
-
-    return node_list
-
-
+# ------------------------------------- заполнение основного словаря из файла----------------------------
+# работающая сейчас версия с экселем
 def full_node_list(file_name):
-    need_fields = {'name', 'address', 'type'}
-    file = pandas.ExcelFile(file_name)
+    file = pd.ExcelFile(file_name)
 
-    def fill_er_list(sheet_name: str):
-        err_sheet = file.parse(sheet_name=sheet_name)
-        err_list = err_sheet.to_dict(orient='records')  # парсим лист "errors"
-        err_dict = {}
+    def fill_er_list(sheets_name: str):
+        err_sheet = file.parse(sheet_name=sheets_name)
+        err_list = err_sheet.to_dict(orient='records')  # парим лист "errors"
+        error_dict = {}
         prev_node_name = ''
         e_list = []
         for er in err_list:
             if isinstance(er['value_error'], str) and 'node' in er['value_error']:
-                err_dict[prev_node_name] = e_list.copy()
+                error_dict[prev_node_name] = e_list.copy()
                 e_list = []
                 prev_node_name = er['value_error'].replace('node ', '')
             else:
                 e_list.append(er)
-        err_dict[prev_node_name] = e_list.copy()
-        del err_dict['']
-        return err_dict
+        error_dict[prev_node_name] = e_list.copy()
+        del error_dict['']
+        return error_dict
 
     bookmark_dict = {}
     if not {'node', 'errors'}.issubset(file.sheet_names):
@@ -189,6 +146,8 @@ def full_node_list(file_name):
     return nodes_list
 
 
+# =========================================версия для ошибок-объектов============================
+# ------------------------------------- заполнение словаря с ошибками----------------------------
 def fill_error_dict(file, sheet_name: str, critical=True):
     err_sheet = file.parse(sheet_name=sheet_name)
     err_list = err_sheet.to_dict(orient='records')  # парсим лист "errors"
@@ -209,6 +168,7 @@ def fill_error_dict(file, sheet_name: str, critical=True):
     return err_dict
 
 
+# ------------------------------------- заполнения словаря с параметрами -----------------------------
 def fill_par_dict(file):
     bookmark_dict = {}
     node_params_dict = {}
@@ -233,38 +193,7 @@ def fill_par_dict(file):
     return node_params_dict
 
 
-def fill_par_dict_from_yaml(file):
-    with open(file, "r", encoding="UTF8") as stream:
-        try:
-            canopen_params = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-    node_params_dict = {group: [Parametr(p) for p in group_params]
-                        for group, group_params in canopen_params.items()}
-    return node_params_dict
-
-
-def fill_err_list_from_yaml(file):
-    with open(file, "r", encoding="UTF8") as stream:
-        try:
-            canopen_error = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-    node_err_list = [EvoError(e) for e in canopen_error]
-    return node_err_list
-
-
-def fill_nodes_dict_from_yaml(file):
-    with open(file, "r", encoding="windows-1251") as stream:
-        try:
-            nodes = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-    node_dict = {name: EVONode(n) for name, n in nodes}
-    return node_dict
-
-
-
+# ------------------------------------- финальное заполнения словаря с блоками -----------------------------
 def make_node_list(file_name):
     file = pd.ExcelFile(file_name)
     # начинаю с проверки что есть лист с ошибками и лист с блоками
@@ -311,104 +240,88 @@ def make_node_list(file_name):
             ev_node.group_params_dict = par_dict[node_name]
 
     return node_dict
+# =================================================================================================================
 
 
-# def check_id(string: str):
-#     if str(string) == 'nan':
-#         return 'nan'
-#     if '0x' in string:
-#         return int(string.replace('0x', ''), 16)
-#     elif '0b' in string:
-#         return int(string.replace('0b', ''), 2)
-#     else:
-#         return int(string)
+# =========================================версия для ошибок-объектов и ямл-файлов============================
+# ------------------------------------- заполнение списка с ошибками----------------------------
+def fill_err_list_from_yaml(file):
+    with open(file, "r", encoding="UTF8") as stream:
+        try:
+            canopen_error = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    node_err_list = [EvoError(e) for e in canopen_error]
+    return node_err_list
 
 
-# def fill_vmu_list(vmu_params_list):
-#     exit_list = []
-#     for par in vmu_params_list:
-#         if str(par['name']) != 'nan':
-#             if str(par['address']) != 'nan':
-#                 if isinstance(par['address'], str):
-#                     if '0x' in par['address']:
-#                         par['address'] = par['address'].rsplit('x')[1]
-#                         par['address'] = int(par['address'], 16)
-#                     elif '0b' in par['address']:
-#                         par['address'] = par['address'].rsplit('b')[1]
-#                         par['address'] = int(par['address'], 2)
-#                     else:
-#                         par['address'] = int(par['address'])
-#                 if str(par['scale']) == 'nan' or par['scale'] == 0:
-#                     par['scale'] = 1
-#                 if 'scaleB' not in par.keys() or str(par['scaleB']) == 'nan':
-#                     par['scaleB'] = 0
-#
-#                 if 'period' not in par.keys() or str(par['period']) == 'nan' or par['period'] <= 0:
-#                     par['period'] = 1
-#                 elif par['period'] > 1000:
-#                     par['period'] = 1000
-#
-#                 exit_list.append(par)
-#     return exit_list
+# ------------------------------------- заполнения словаря с группами параметров -----------------------------
+def fill_par_dict_from_yaml(file):
+    with open(file, "r", encoding="UTF8") as stream:
+        try:
+            canopen_params = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    node_params_dict = {group: [Parametr(p) for p in group_params]
+                        for group, group_params in canopen_params.items()}
+    return node_params_dict
 
 
-# def make_vmu_error_dict(file_name):
-#     excel_data_df = pd.read_excel(file_name)
-#     vmu_er_list = excel_data_df.to_dict(orient='records')
-#     ex_dict = {}
-#     for par in vmu_er_list:
-#         if str(par['Code']) != 'nan':
-#             ex_dict[par['Code']] = par['Description']
-#     return ex_dict
+# ------------------------------------- заполнения словаря со всеми блоками -----------------------------
+def fill_nodes_dict_from_yaml(file):
+    with open(file, "r", encoding="windows-1251") as stream:
+        try:
+            nodes = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    node_dict = {name: EVONode(n) for name, n in nodes}
+    return node_dict
 
 
-# def feel_req_list(protocol: str, p_list: list):
-#     req_list = []
-#     for par in p_list:
-#         if par['type'] in value_type_dict.keys():
-#             value_type = value_type_dict[par['type']]
-#         else:
-#             value_type = 0x2B
-#         address = int(par['address'])
-#         # print('address =   ', address)
-#         MSB = ((address & 0xFF0000) >> 16)
-#         LSB = ((address & 0xFF00) >> 8)
-#         sub_index = address & 0xFF
-#         if protocol == 'CANOpen':
-#             data = [0x40, LSB, MSB, sub_index, 0, 0, 0, 0]
-#         elif protocol == 'MODBUS':
-#             data = [0, 0, 0, 0, sub_index, LSB, value_type, 0x03]
-#         else:
-#             data = bytearray([0, 0, 0, 0, 0, 0, 0, 0])
-#         # pprint(data)
-#         req_list.append(data)
-#     return req_list
+def get_immediate_subdirectories(a_dir):
+    return [name for name in os.listdir(a_dir)
+            if os.path.isdir(os.path.join(a_dir, name))]
 
 
-# def adding_to_csv_file(vmu_params_list: list, recording_file_name: str, name_or_value=True):
-#     if not recording_file_name:
-#         return
-#     data = []
-#     data_string = []
-#     for par in vmu_params_list:
-#         data_string.append(par[name_or_value])
-#     dt = datetime.datetime.now()
-#     dt = dt.strftime("%H:%M:%S.%f")
-#     if name_or_value == 'name':
-#         dt = 'time'
-#     data_string.append(dt)
-#     data.append(data_string)
-#     df = pandas.DataFrame(data)
-#     # df.to_csv(recording_file_name,
-#     #           mode='a',
-#     #           header=False,
-#     #           index=False,
-#     #           encoding='windows-1251')
+# ------------------------------------- сборка блока по объекту -----------------------------
+def make_node(node: EVONode):
+    par_file = 'parameters.yaml'
+    err_file = 'errors.yaml'
+    param_dir = pathlib.Path(os.getcwd(), 'Data')
+    for directory in get_immediate_subdirectories(param_dir):
+        if node.name in directory:
+            param_dir = pathlib.Path(param_dir, node.name)
+            f_v = node.firmware_version
+            if not f_v or f_v == '---':
+                param_dir = pathlib.Path(param_dir, 'Default')
+            else:
+                version_list = [int(v) for v in get_immediate_subdirectories(param_dir) if v.isdigit()]
+                min_vers = get_nearest_lower_value(version_list, f_v) if version_list else 0
+                param_dir = pathlib.Path(param_dir, str(min_vers) if min_vers else 'Default')
+            # надо узнать есть ли файлы с параметрами и ошибками в этой папке
+            yaml_files_list = [x for x in os.listdir(param_dir) if x.endswith(".yaml")]
+
+            if par_file in yaml_files_list:
+                group_params_dict = fill_par_dict_from_yaml(pathlib.Path(param_dir, par_file))
+                for group in group_params_dict.values():
+                    for param in group:
+                        param.node = node
+                node.group_params_dict = group_params_dict
+
+            if err_file in yaml_files_list:
+                node.errors_list = fill_err_list_from_yaml(err_file)
+
+
+# ------------------------------------- финальное заполнения словаря с блоками -----------------------------
+def make_nodes_dict(node_dict):
+    for name, node in node_dict.items():
+        pass
+# =============================================================================================================
 
 
 def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
     if sheet_name is None:
-        sheet_name = 'Избранное'
+        sheet_name = TheBestNode
     all_params_list = []
     param_dict = param_d.copy()
     for group_name, param_list in param_dict.items():

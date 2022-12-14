@@ -221,6 +221,15 @@ def log_uncaught_exceptions(ex_cls, ex, tb):
     quit()
 
 
+def get_nearest_lower_value(iterable, value):
+    if value in iterable:
+        return value
+    iterable.append(value)
+    iterable.sort()
+    ind = iterable.index(value)
+    return iterable[ind - 1] if ind else ind
+
+
 def zero_del(s):
     return f'{round(s, 5):>8}'.rstrip('0').rstrip('.')
 
