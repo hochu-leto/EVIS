@@ -1,0 +1,42 @@
+- check_link: важная ссылка1, важная ссылка2, важная ссылка197
+  critical: true
+  description_error: тут какое-то описание по ошибке  'авария модуля'
+  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  name_error: ' авария модуля'
+  value_error: '0x1'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка198
+  critical: true
+  description_error: тут какое-то описание по ошибке  'авария датчика положения/калибровки'
+  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  name_error: ' авария датчика положения/калибровки'
+  value_error: '0x4'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка199
+  critical: true
+  description_error: тут какое-то описание по ошибке  'перегрев силового радиатора'
+  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  name_error: ' перегрев силового радиатора'
+  value_error: '0x80'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка200
+  critical: true
+  description_error: тут какое-то описание по ошибке  'перенапряжение Udc'
+  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  name_error: ' перенапряжение Udc'
+  value_error: '0x200'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка201
+  critical: true
+  description_error: тут какое-то описание по ошибке  'понижение напряжения Udc'
+  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  name_error: ' понижение напряжения Udc'
+  value_error: '0x400'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка202
+  critical: true
+  description_error: тут какое-то описание по ошибке  'длительная токовая перегрузка'
+  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  name_error: ' длительная токовая перегрузка'
+  value_error: '0x2000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка203
+  critical: true
+  description_error: тут какое-то описание по ошибке  'неправильная полярность DC-мотора'
+  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  name_error: ' неправильная полярность DC-мотора'
+  value_error: '0x4000'

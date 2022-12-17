@@ -38,7 +38,7 @@ class Parametr:
     __slots__ = ('address', 'type',
                  'editable', 'unit', 'description',
                  'group', 'size', 'value', 'name',
-                 'scale', 'scaleB', 'period', 'degree',
+                 'scale', 'offset', 'period', 'degree',
                  'min_value', 'max_value', 'widget', 'node',
                  'req_list', 'set_list', 'compare_value', 'value_dict')
 
@@ -75,7 +75,7 @@ class Parametr:
         self.compare_value = 0
         self.name = check_string('name', 'NoName')
         self.scale = float(check_value(1, 'scale'))  # на что домножаем число из КАНа
-        self.scaleB = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
+        self.offset = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
         self.period = int(check_value(1, 'period'))  # период опроса параметра 1=каждый цикл 1000=очень редко
         self.period = 1000 if self.period > 1001 else self.period  # проверять горячие буквы, что входят в
         # статические параметры, чтоб период был = 1001
@@ -84,7 +84,9 @@ class Parametr:
         self.min_value = check_value(type_values[self.type]['min'], 'min_value')
         self.max_value = check_value(type_values[self.type]['max'], 'max_value')
         v_table = check_string('values_table')
-        self.value_dict = {int(val.split(':')[0]): val.split(':')[1] for val in v_table.split(',')} if v_table else {}
+        self.value_dict = v_table if isinstance(v_table, dict) \
+            else {int(val.split(':')[0]): val.split(':')[1]
+                  for val in v_table.split(',')} if v_table else {}
         # из editable и соответствующего списка
         self.widget = 'QtWidgets'
         # что ставить, если node не передали - emptyNode - который получается, если в EVONode ничего не передать
@@ -113,7 +115,7 @@ class Parametr:
             self.set_list = data + [sub_index, LSB, value_type, 0x10]
 
     def set_val(self, adapter: CANAdater, value):
-        value += self.scaleB
+        value += self.offset
         value *= self.scale
         if self.degree:
             value *= 10 ** self.degree
@@ -165,7 +167,7 @@ class Parametr:
             if self.degree:
                 self.value /= 10 ** self.degree
             self.value /= self.scale
-            self.value -= self.scaleB
+            self.value -= self.offset
             return self.value
         else:
             return 'Адрес не совпадает'

@@ -77,7 +77,8 @@ from CANAdater import CANAdapter
 from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
-from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file
+from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file, \
+    fill_nodes_dict_from_yaml, make_nodes_dict
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode
 
@@ -87,6 +88,8 @@ dir_path = str(pathlib.Path.cwd())
 # файл где все блоки, параметры, ошибки
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
+nodes_yaml_file = pathlib.Path(dir_path, 'Data', 'all_nodes.yaml')
+
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
 sleep_thread = SleepThread(3)
@@ -951,6 +954,7 @@ if __name__ == '__main__':
     alt_node_list = full_node_list(vmu_param_file).copy()
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
+    node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
     # показываю дерево с блоками и что ошибок нет
     window.show_error_tree({})
     window.show_nodes_tree(alt_node_list)

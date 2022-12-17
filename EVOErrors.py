@@ -35,9 +35,10 @@ class EvoError:
                                        and str(raw_err_dict[name]) != 'nan' else s
             return st
 
-        def check_bool(name: str,):
+        def check_bool(name: str, ):
             st = True if name in list(raw_err_dict.keys()) \
-                                       and str(raw_err_dict[name]) != 'nan' else False
+                         and str(raw_err_dict[name]) != 'nan' \
+                         and raw_err_dict[name] else False
             return st
 
         def check_number(name: str, value=0):

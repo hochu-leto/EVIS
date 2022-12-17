@@ -21,6 +21,9 @@ value_type_dict = {'UNSIGNED16': 0x2B,
                    'FLOAT': 0x23}
 
 need_fields = {'name', 'address', 'type'}
+Default = 'Default'
+par_file = 'parameters.yaml'
+err_file = 'errors.yaml'
 
 
 # ------------------------------------- заполнение словаря для сравнения----------------------------
@@ -246,7 +249,7 @@ def make_node_list(file_name):
 # =========================================версия для ошибок-объектов и ямл-файлов============================
 # ------------------------------------- заполнение списка с ошибками----------------------------
 def fill_err_list_from_yaml(file):
-    with open(file, "r", encoding="UTF8") as stream:
+    with open(file, "r", encoding="windows-1251") as stream:
         try:
             canopen_error = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
@@ -257,7 +260,7 @@ def fill_err_list_from_yaml(file):
 
 # ------------------------------------- заполнения словаря с группами параметров -----------------------------
 def fill_par_dict_from_yaml(file):
-    with open(file, "r", encoding="UTF8") as stream:
+    with open(file, "r", encoding="windows-1251") as stream:
         try:
             canopen_params = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
@@ -274,7 +277,7 @@ def fill_nodes_dict_from_yaml(file):
             nodes = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
-    node_dict = {name: EVONode(n) for name, n in nodes}
+    node_dict = {name: EVONode(n) for name, n in nodes.items()}
     return node_dict
 
 
@@ -284,38 +287,75 @@ def get_immediate_subdirectories(a_dir):
 
 
 # ------------------------------------- сборка блока по объекту -----------------------------
-def make_node(node: EVONode):
-    par_file = 'parameters.yaml'
-    err_file = 'errors.yaml'
-    param_dir = pathlib.Path(os.getcwd(), 'Data')
-    for directory in get_immediate_subdirectories(param_dir):
-        if node.name in directory:
-            param_dir = pathlib.Path(param_dir, node.name)
+def fill_node(node: EVONode):
+    data_dir = pathlib.Path(os.getcwd(), 'Data')
+    for directory in get_immediate_subdirectories(data_dir):
+        if directory in node.name:
+
+            node_dir = pathlib.Path(data_dir, directory)
+            param_dir = err_dir = Default
+            try:
+                group_params_dict = fill_par_dict_from_yaml(pathlib.Path(node_dir, param_dir, par_file))
+            except FileNotFoundError:
+                print(f'В папке {Default} нет списка параметров для блока {node.name}. Нужны параметры по-умолчанию')
+                return False
+
+            try:
+                node.errors_list = fill_err_list_from_yaml(pathlib.Path(node_dir, err_dir, err_file))
+            except FileNotFoundError:
+                print(f'В папке {Default} нет списка ошибок для блока {node.name}. Нужны ошибки по-умолчанию')
+                return False
+
             f_v = node.firmware_version
-            if not f_v or f_v == '---':
-                param_dir = pathlib.Path(param_dir, 'Default')
-            else:
-                version_list = [int(v) for v in get_immediate_subdirectories(param_dir) if v.isdigit()]
-                min_vers = get_nearest_lower_value(version_list, f_v) if version_list else 0
-                param_dir = pathlib.Path(param_dir, str(min_vers) if min_vers else 'Default')
-            # надо узнать есть ли файлы с параметрами и ошибками в этой папке
-            yaml_files_list = [x for x in os.listdir(param_dir) if x.endswith(".yaml")]
 
-            if par_file in yaml_files_list:
-                group_params_dict = fill_par_dict_from_yaml(pathlib.Path(param_dir, par_file))
-                for group in group_params_dict.values():
-                    for param in group:
-                        param.node = node
-                node.group_params_dict = group_params_dict
+            if f_v and f_v != '---':
+                version_list = [int(v) for v in get_immediate_subdirectories(node_dir) if v.isdigit()]
+                if version_list:
+                    min_vers = get_nearest_lower_value(version_list, f_v)
+                    if min_vers:
+                        try:
+                            group_params_dict = fill_par_dict_from_yaml(pathlib.Path(node_dir, str(min_vers), par_file))
+                            param_dir = min_vers
+                        except FileNotFoundError:
+                            print(f'В папке {param_dir} нет списка параметров для блока {node.name}')
 
-            if err_file in yaml_files_list:
-                node.errors_list = fill_err_list_from_yaml(err_file)
+                        try:
+                            node.errors_list = fill_err_list_from_yaml(pathlib.Path(node_dir, str(min_vers), err_file))
+                            err_dir = min_vers
+                        except FileNotFoundError:
+                            print(f'В папке {Default} нет списка ошибок для блока {node.name}.')
+
+            for group in group_params_dict.values():
+                for param in group:
+                    param.node = node
+            node.group_params_dict = group_params_dict
+            print(f'для блока {node.name} с версией ПО {node.firmware_version} '
+                  f'применяю параметры из папки {param_dir} и ошибки из папки {err_dir}')
+            return node
+    print(f'для блока {node.name} нет папки с параметрами')
+    return False
 
 
 # ------------------------------------- финальное заполнения словаря с блоками -----------------------------
 def make_nodes_dict(node_dict):
+    types_node_dict = dict(
+        TTC='КВУ_ТТС',
+        МЭИ='Инвертор_МЭИ',
+        Инвертор_Цикл='Инвертор_Цикл+',
+        КВУ_Цикл='КВУ_Цикл+',
+        ТАБ='ТАБ',
+        Рулевая='Рулевая'
+    )
+    final_nodes_dict = {}
     for name, node in node_dict.items():
-        pass
+        full_node = fill_node(node)
+        if full_node:
+            if name == TheBestNode:
+                full_node.group_params_dict = {group_name: [param.check_node(node_dict) for param in group_params]
+                                               for group_name, group_params in full_node.group_params_dict.items()}
+            final_nodes_dict[name] = full_node
+    return final_nodes_dict
+
 # =============================================================================================================
 
 

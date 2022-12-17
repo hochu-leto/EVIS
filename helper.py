@@ -69,6 +69,7 @@ def find_param(nodes_list, s, node_name=None):
                                   if s in param.name or s in param.description]
     return list_of_params
 
+
 def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False):
     # show_table = getattr(w, table)
     show_table.setRowCount(0)

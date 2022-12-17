@@ -58,7 +58,7 @@ print(f'В логе {ln_log} строк')
 timest = df2.to_dict()['TimeStamp']
 df_phys_t = None
 for dbc_can in dbc_files_list:
-    db = can_decoder.load_dbc(dbc_can)
+    db = can_decoder.load_dbc(dbc_can)    #.load_dbc(dbc_can)
     df_decoder = can_decoder.DataFrameDecoder(db)
     df_phys = df_decoder.decode_frame(df2, columns_to_drop=["CAN ID", "Raw Value", "PGN", "Source Address"])
 
