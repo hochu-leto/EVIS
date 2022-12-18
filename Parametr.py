@@ -29,7 +29,7 @@ type_values = {
     'UNSIGNED32': {'min': 0, 'max': 4294967295, 'type': 0x23, 'func': ctypes.c_uint32},
     'SIGNED32': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_int32},
     'FLOAT': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_uint8},
-    'VISIBLE_STRING': {'min': 0, 'max': 255, 'type': 0x21, 'func': can_to_char}
+    'VISIBLE_STRING': {'min': 0, 'max': 255, 'type': 0x21, 'func': ctypes.c_int32}  # can_to_char}
 }
 
 

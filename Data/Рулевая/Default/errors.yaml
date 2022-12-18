@@ -1,42 +1,48 @@
 - check_link: важная ссылка1, важная ссылка2, важная ссылка197
   critical: true
-  description_error: тут какое-то описание по ошибке  'авария модуля'
+  description_error: Аппаратная реализация на основе компаратора с выходным триггером. Потребляемый инвертором ток непрерывно контролируется при помощи компаратора. Уровень срабатывания фиксирован, устанавливается аппаратным способом с порогом срабатывания 300-450 А.
   important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
   name_error: ' авария модуля'
   value_error: '0x1'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка197
+  critical: true
+  description_error: Программный контроль мгновенных всплесков и выбросов выходного тока блока по модулю возникающих при коротких замыканиях Уровень срабатывания настраивается в параметре C4.2 SC_Level (352 DEC). Временная задержка срабатывания настраивается в C4.18 SCFltDelay (368 DEC).
+  important_parametr: СТАТУС РАБОТЫ, Car number,  SCFltDelay
+  name_error: 'Максимальная токовая защита'
+  value_error: '0x2'
 - check_link: важная ссылка1, важная ссылка2, важная ссылка198
   critical: true
-  description_error: тут какое-то описание по ошибке  'авария датчика положения/калибровки'
-  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  description_error: Контроль связи с датчиком положения рулевой рейки Hella Фиксированные настройки
+  important_parametr: СТАТУС РАБОТЫ, ErrPosition,  PositionAbs
   name_error: ' авария датчика положения/калибровки'
   value_error: '0x4'
 - check_link: важная ссылка1, важная ссылка2, важная ссылка199
   critical: true
-  description_error: тут какое-то описание по ошибке  'перегрев силового радиатора'
-  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  description_error: Контроль за превышением максимальной температуры охлаждающего радиатора блока Максимальный уровень температуры срабатывания настраивается в параметре C4.5 RadOverHeat (355DEC). Временная задержка срабатывания настраивается в параметре C4.21 RadOverHeatDel (371 DEC).
+  important_parametr: СТАТУС РАБОТЫ, RadOverHeatDel,  RadOverHeat, PositionAbs
   name_error: ' перегрев силового радиатора'
   value_error: '0x80'
 - check_link: важная ссылка1, важная ссылка2, важная ссылка200
   critical: true
-  description_error: тут какое-то описание по ошибке  'перенапряжение Udc'
-  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
-  name_error: ' перенапряжение Udc'
+  description_error: Контроль за превышением напряжения блока. Максимальный уровень напряжения срабатывания настраивается в параметре B2.21 UnVoltWarnLev (106 DEC). Временная задержка срабатывания настраивается в параметре B2.32 UnVoltWarnTime (117 DEC).
+  important_parametr: СТАТУС РАБОТЫ, UnVoltWarnTime, UnVoltWarnLev,  PositionAbs
+  name_error: 'Повышенное напряжение питания '
   value_error: '0x200'
 - check_link: важная ссылка1, важная ссылка2, важная ссылка201
   critical: true
-  description_error: тут какое-то описание по ошибке  'понижение напряжения Udc'
-  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
-  name_error: ' понижение напряжения Udc'
+  description_error: Контроль за уменьшением напряжения блока. Минимальный уровень напряжения срабатывания настраивается в параметре B2.22 OvVoltWarnLev (107 DEC). Временная задержка срабатывания настраивается в параметре B2.33 OvVoltWarnTime (118 DEC)
+  important_parametr: СТАТУС РАБОТЫ, OvVoltWarnLev, OvVoltWarnTime, PositionAbs
+  name_error: 'Пониженное напряжение питания '
   value_error: '0x400'
 - check_link: важная ссылка1, важная ссылка2, важная ссылка202
   critical: true
-  description_error: тут какое-то описание по ошибке  'длительная токовая перегрузка'
-  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  description_error: Контроль за длительной токовой перегрузкой блока. Максимальный уровень тока при длительной перегрузке настраивается в параметре B2.20 OvCurrWarnLev (105 DEC). Временная задержка срабатывания настраивается в параметре B2.31 OvCurrWarnTime (116 DEC).
+  important_parametr: СТАТУС РАБОТЫ, OvCurrWarnTime, OvCurrWarnLev, PositionAbs
   name_error: ' длительная токовая перегрузка'
   value_error: '0x2000'
 - check_link: важная ссылка1, важная ссылка2, важная ссылка203
   critical: true
-  description_error: тут какое-то описание по ошибке  'неправильная полярность DC-мотора'
-  important_parametr: СТАТУС РАБОТЫ, Car number,  PositionAbs
+  description_error: Проверка правильности подключения электродвигатель при начальном тестировании. Амплитуда сигнала при начальном тесте C4.33 SetTestCurr (383 DEC). Минимальный уровень позиции при начальном тесте C4.7 RevErrLevel (357 DEC). Задержка времени при начальном тесте C4.23 RevErrFltDelay (373 DEC).
+  important_parametr: СТАТУС РАБОТЫ, SetTestCurr, RevErrLevel, RevErrFltDelay
   name_error: ' неправильная полярность DC-мотора'
   value_error: '0x4000'

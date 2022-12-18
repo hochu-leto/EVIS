@@ -1,4 +1,4 @@
-A0.Process state:
+A0.Process state&A1.Position, Load:
 - address: '0x0000'
   code: 0.0.0
   degree: .nan
@@ -12,22 +12,22 @@ A0.Process state:
   type: SIGNED16
   unit: .nan
   values_table:
-    0: 'ModFlt '
-    1: 'SC1Flt '
-    2: 'HellaFlt '
-    3: 'DINstopFlt '
-    4: 'PosMAGFlt '
-    5: 'NoMoveFlt '
-    6: 'I2tFlt '
-    7: 'TempFlt '
-    8: 'OpenMotor '
-    9: 'OvVoltFlt '
-    10: 'UnVoltFlt '
-    11: 'NoCAN '
-    12: 'NoMB '
-    13: 'OverCurrFlt '
-    14: 'RevErrFlt '
-    15: 'REZERV_15 '
+    '0': 'ModFlt '
+    '1': 'SC1Flt '
+    '10': 'UnVoltFlt '
+    '11': 'NoCAN '
+    '12': 'NoMB '
+    '13': 'OverCurrFlt '
+    '14': 'RevErrFlt '
+    '15': 'REZERV_15 '
+    '2': 'HellaFlt '
+    '3': 'DINstopFlt '
+    '4': 'PosMAGFlt '
+    '5': 'NoMoveFlt '
+    '6': 'I2tFlt '
+    '7': 'TempFlt '
+    '8': 'OpenMotor '
+    '9': 'OvVoltFlt '
 - address: '0x0001'
   code: 0.0.1
   degree: .nan
@@ -100,7 +100,7 @@ A0.Process state:
   size: 4.0
   type: SIGNED32
   unit: .nan
-A1.Position, Load:
+A2.Device:
 - address: '0x0011'
   code: 0.1.0
   degree: 1.0
@@ -149,7 +149,7 @@ A1.Position, Load:
   size: 2.0
   type: UNSIGNED16
   unit: V
-A2.Device:
+A3.Ver PO / ADC:
 - address: '0x0015'
   code: 0.2.0
   degree: 1.0
@@ -222,7 +222,7 @@ A2.Device:
   size: 2.0
   type: UNSIGNED16
   unit: .nan
-A3.Ver PO / ADC:
+B0.Global configuration:
 - address: '0x0020'
   code: 0.3.0
   degree: .nan
@@ -236,8 +236,8 @@ A3.Ver PO / ADC:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: FORWARD
-    1: 'REAR '
+    '0': FORWARD
+    '1': 'REAR '
 - address: '0x0021'
   code: 0.3.1
   degree: .nan
@@ -276,12 +276,12 @@ A3.Ver PO / ADC:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: SER_NUM
-    1: DIPSW_1
-    2: FORWARD
-    3: 'REAR '
-    4: REZERV4
-    5: REZERV5
+    '0': SER_NUM
+    '1': DIPSW_1
+    '2': FORWARD
+    '3': 'REAR '
+    '4': REZERV4
+    '5': REZERV5
 - address: '0x0026'
   code: 0.3.4
   degree: .nan
@@ -390,7 +390,7 @@ A3.Ver PO / ADC:
   size: 4.0
   type: SIGNED32
   unit: .nan
-B0.Global configuration:
+B1.Rezerv Group:
 - address: '0x003c'
   code: 1.0.0
   degree: .nan
@@ -404,17 +404,17 @@ B0.Global configuration:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: 'NOT USED '
-    1: '20 kHz '
-    2: '10 kHz '
-    3: '6.667 kHz '
-    4: '5 kHz '
-    5: '4 kHz '
-    6: '3.333 kHz '
-    7: '2.857 kHz '
-    8: '2.5 kHz '
-    9: '2.222 kHz '
-    10: '2.0 kHz '
+    '0': 'NOT USED '
+    '1': '20 kHz '
+    '10': '2.0 kHz '
+    '2': '10 kHz '
+    '3': '6.667 kHz '
+    '4': '5 kHz '
+    '5': '4 kHz '
+    '6': '3.333 kHz '
+    '7': '2.857 kHz '
+    '8': '2.5 kHz '
+    '9': '2.222 kHz '
 - address: '0x003f'
   code: 1.0.1
   degree: .nan
@@ -487,7 +487,7 @@ B0.Global configuration:
   size: 2.0
   type: UNSIGNED16
   unit: .nan
-B1.Rezerv Group:
+B2.CAN_BURR30&B3.WORK_TIME:
 - address: '0x004b'
   code: 1.1.0
   degree: .nan
@@ -512,7 +512,6 @@ B1.Rezerv Group:
   size: 2.0
   type: UNSIGNED16
   unit: .nan
-B2.CAN_BURR30:
 - address: '0x0059'
   code: 1.2.0
   degree: .nan
@@ -526,23 +525,23 @@ B2.CAN_BURR30:
   type: SIGNED16
   unit: .nan
   values_table:
-    0: 'NONE '
-    1: 'RUN_FRWD_STEER '
-    2: 'RUN_REAR_STEER '
-    3: SET_ZERO_FORWARD
-    4: 'SET_ZERO_REAR '
-    5: 'Rezerv4 '
-    6: 'Rezerv5 '
-    7: 'Rezerv6 '
-    8: 'Rezerv7 '
-    9: 'Rezerv8 '
-    10: 'Rezerv9 '
-    11: 'Rezerv10 '
-    12: 'Rezerv11 '
-    13: 'Rezerv12 '
-    14: 'Rezerv13 '
-    15: 'Rezerv14 '
-    16: 'Rezerv15 '
+    '0': 'NONE '
+    '1': 'RUN_FRWD_STEER '
+    '10': 'Rezerv9 '
+    '11': 'Rezerv10 '
+    '12': 'Rezerv11 '
+    '13': 'Rezerv12 '
+    '14': 'Rezerv13 '
+    '15': 'Rezerv14 '
+    '16': 'Rezerv15 '
+    '2': 'RUN_REAR_STEER '
+    '3': SET_ZERO_FORWARD
+    '4': 'SET_ZERO_REAR '
+    '5': 'Rezerv4 '
+    '6': 'Rezerv5 '
+    '7': 'Rezerv6 '
+    '8': 'Rezerv7 '
+    '9': 'Rezerv8 '
 - address: '0x005a'
   code: 1.2.1
   degree: .nan
@@ -604,23 +603,23 @@ B2.CAN_BURR30:
   type: SIGNED16
   unit: .nan
   values_table:
-    0: 'Enabled '
-    1: 'Alarm '
-    2: 'OverCurr '
-    3: 'OverHeat '
-    4: 'LowVolt '
-    5: 'HiVolt '
-    6: 'Rezerv5 '
-    7: 'Rezerv6 '
-    8: 'Rezerv7 '
-    9: 'Rezerv8 '
-    10: 'Rezerv9 '
-    11: 'Rezerv10 '
-    12: 'Rezerv11 '
-    13: 'Rezerv12 '
-    14: 'Rezerv13 '
-    15: 'Rezerv14 '
-    16: 'Rezerv15 '
+    '0': 'Enabled '
+    '1': 'Alarm '
+    '10': 'Rezerv9 '
+    '11': 'Rezerv10 '
+    '12': 'Rezerv11 '
+    '13': 'Rezerv12 '
+    '14': 'Rezerv13 '
+    '15': 'Rezerv14 '
+    '16': 'Rezerv15 '
+    '2': 'OverCurr '
+    '3': 'OverHeat '
+    '4': 'LowVolt '
+    '5': 'HiVolt '
+    '6': 'Rezerv5 '
+    '7': 'Rezerv6 '
+    '8': 'Rezerv7 '
+    '9': 'Rezerv8 '
 - address: '0x005f'
   code: 1.2.6
   degree: .nan
@@ -791,8 +790,8 @@ B2.CAN_BURR30:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: 'NORMAL MODE '
-    1: 'INVERS MODE '
+    '0': 'NORMAL MODE '
+    '1': 'INVERS MODE '
 - address: '0x006e'
   code: 1.2.20
   degree: 2.0
@@ -866,7 +865,7 @@ B2.CAN_BURR30:
   size: 2.0
   type: UNSIGNED16
   unit: .nan
-B3.WORK_TIME:
+C0.Connection:
 - address: '0x0078'
   code: 1.3.0
   degree: .nan
@@ -880,8 +879,8 @@ B3.WORK_TIME:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: '¬€ Àﬁ◊≈ÕŒ '
-    1: '¬ Àﬁ◊≈ÕŒ '
+    '0': '¬€ Àﬁ◊≈ÕŒ '
+    '1': '¬ Àﬁ◊≈ÕŒ '
 - address: '0x0079'
   code: 1.3.1
   degree: 1.0
@@ -955,9 +954,9 @@ B3.WORK_TIME:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: 'Õ≈“  ŒÃ¿Õƒ€ '
-    1: '«¿ƒ¿“‹ '
-C0.Connection:
+    '0': 'Õ≈“  ŒÃ¿Õƒ€ '
+    '1': '«¿ƒ¿“‹ '
+C1.PositionSens:
 - address: '0x0096'
   code: 2.0.0
   degree: .nan
@@ -995,16 +994,16 @@ C0.Connection:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: '2400 BAUD '
-    1: '4800 BAUD '
-    2: '9600 BAUD '
-    3: '19200 BAUD '
-    4: '38400 BAUD '
-    5: '57600 BAUD '
-    6: '115200 BAUD '
-    7: '230400 BAUD '
-    8: '460800 BAUD '
-    9: '921600 BAUD '
+    '0': '2400 BAUD '
+    '1': '4800 BAUD '
+    '2': '9600 BAUD '
+    '3': '19200 BAUD '
+    '4': '38400 BAUD '
+    '5': '57600 BAUD '
+    '6': '115200 BAUD '
+    '7': '230400 BAUD '
+    '8': '460800 BAUD '
+    '9': '921600 BAUD '
 - address: '0x0099'
   code: 2.0.3
   degree: .nan
@@ -1174,10 +1173,10 @@ C0.Connection:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: '125 '
-    1: '250 '
-    2: '500 '
-C1.PositionSens:
+    '0': '125 '
+    '1': '250 '
+    '2': '500 '
+C2.Regulators:
 - address: '0x00d0'
   code: 2.1.0
   degree: 4.0
@@ -1203,8 +1202,8 @@ C1.PositionSens:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: 'NORMAL MODE '
-    1: 'INVERS MODE '
+    '0': 'NORMAL MODE '
+    '1': 'INVERS MODE '
 - address: '0x00f0'
   code: 2.1.2
   degree: .nan
@@ -1218,8 +1217,8 @@ C1.PositionSens:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: '¬€ Àﬁ◊≈ÕŒ '
-    1: '¬ Àﬁ◊≈ÕŒ '
+    '0': '¬€ Àﬁ◊≈ÕŒ '
+    '1': '¬ Àﬁ◊≈ÕŒ '
 - address: '0x00f1'
   code: 2.1.3
   degree: .nan
@@ -1244,7 +1243,7 @@ C1.PositionSens:
   size: 2.0
   type: SIGNED16
   unit: .nan
-C2.Regulators:
+C3.FBSensors:
 - address: '0x00fa'
   code: 2.2.0
   degree: 4.0
@@ -1521,7 +1520,7 @@ C2.Regulators:
   size: 2.0
   type: SIGNED16
   unit: .nan
-C3.FBSensors:
+C4.Protections:
 - address: '0x012c'
   code: 2.3.0
   degree: 4.0
@@ -1798,7 +1797,7 @@ C3.FBSensors:
   size: 2.0
   type: UNSIGNED16
   unit: .nan
-C4.Protections:
+C5.CAN:
 - address: '0x015e'
   code: 2.4.0
   degree: .nan
@@ -1812,22 +1811,22 @@ C4.Protections:
   type: SIGNED16
   unit: .nan
   values_table:
-    0: 'ModFlt '
-    1: 'SC1Flt '
-    2: 'HellaFlt '
-    3: 'DINstopFlt '
-    4: 'PosMAGFlt '
-    5: 'NoMoveFlt '
-    6: 'I2tFlt '
-    7: 'TempFlt '
-    8: 'OpenMotor '
-    9: 'OvVoltFlt '
-    10: 'UnVoltFlt '
-    11: 'NoCAN '
-    12: 'NoMB '
-    13: 'OverCurrFlt '
-    14: 'RevErrFlt '
-    15: 'REZERV_15 '
+    '0': 'ModFlt '
+    '1': 'SC1Flt '
+    '10': 'UnVoltFlt '
+    '11': 'NoCAN '
+    '12': 'NoMB '
+    '13': 'OverCurrFlt '
+    '14': 'RevErrFlt '
+    '15': 'REZERV_15 '
+    '2': 'HellaFlt '
+    '3': 'DINstopFlt '
+    '4': 'PosMAGFlt '
+    '5': 'NoMoveFlt '
+    '6': 'I2tFlt '
+    '7': 'TempFlt '
+    '8': 'OpenMotor '
+    '9': 'OvVoltFlt '
 - address: '0x0160'
   code: 2.4.1
   degree: 2.0
@@ -1960,7 +1959,7 @@ C4.Protections:
   size: 2.0
   type: SIGNED16
   unit: POS
-C5.CAN:
+C6.Options 6&D0.Device control:
 - address: '0x0193'
   code: 2.5.0
   degree: 2.0
@@ -1973,7 +1972,6 @@ C5.CAN:
   size: 2.0
   type: SIGNED16
   unit: A
-C6.Options 6:
 - address: '0x01cc'
   code: 2.6.0
   degree: .nan
@@ -2214,7 +2212,7 @@ C6.Options 6:
   size: 2.0
   type: UNSIGNED16
   unit: .nan
-D0.Device control:
+D1.Calibration:
 - address: '0x01f4'
   code: 3.0.0
   degree: .nan
@@ -2228,12 +2226,12 @@ D0.Device control:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: 'STOP '
-    1: 'RUN '
-    2: 'NOT USED '
-    3: 'NOT USED '
-    4: 'NOT USED '
-    5: 'RESET FAULT '
+    '0': 'STOP '
+    '1': 'RUN '
+    '2': 'NOT USED '
+    '3': 'NOT USED '
+    '4': 'NOT USED '
+    '5': 'RESET FAULT '
 - address: '0x01f5'
   code: 3.0.1
   degree: .nan
@@ -2247,13 +2245,13 @@ D0.Device control:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: 'SCALAR '
-    1: 'CURRENT MODE '
-    2: 'FIND ROTOR POS '
-    3: 'SPEED CONTROL '
-    4: 'POS CNTRL INCR '
-    5: 'TORQUE MODE '
-    6: 'NOT USED '
+    '0': 'SCALAR '
+    '1': 'CURRENT MODE '
+    '2': 'FIND ROTOR POS '
+    '3': 'SPEED CONTROL '
+    '4': 'POS CNTRL INCR '
+    '5': 'TORQUE MODE '
+    '6': 'NOT USED '
 - address: '0x01f6'
   code: 3.0.2
   degree: 2.0
@@ -2315,7 +2313,6 @@ D0.Device control:
   type: VISIBLE_STRING
   unit: .nan
   values_table:
-    0: 'MB CONTROL '
-    1: 'CAN CONTROL '
-    2: 'CAN CTRL_ETT '
-D1.Calibration: []
+    '0': 'MB CONTROL '
+    '1': 'CAN CONTROL '
+    '2': 'CAN CTRL_ETT '

@@ -951,10 +951,11 @@ if __name__ == '__main__':
     window.save_to_file_btn.setEnabled(False)
     window.log_record_btn.clicked.connect(record_log)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
-    alt_node_list = full_node_list(vmu_param_file).copy()
+    # alt_node_list = full_node_list(vmu_param_file).copy()
+    node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
+    alt_node_list = list(node_dict.values()).copy()
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
-    node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
     # показываю дерево с блоками и что ошибок нет
     window.show_error_tree({})
     window.show_nodes_tree(alt_node_list)

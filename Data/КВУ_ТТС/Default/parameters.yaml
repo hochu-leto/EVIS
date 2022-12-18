@@ -178,35 +178,6 @@ abs:
   type: SIGNED16
   units: Гц
   value: null
-bms:
-- access: rw
-  address: '0x214003'
-  description: Пороговое минимальное допустимое напряжение на ПСТЭД после завершения
-    предзаряда
-  editable: true
-  eeprom: null
-  index: 8512
-  name: BMS_PSTED_PRECHARGE_THRES
-  scale: 1
-  scaleB: 0
-  subindex: 3
-  type: UNSIGNED16
-  units: В
-  value: null
-- access: rw
-  address: '0x214004'
-  description: Время игнорирования ошибки по напряжению после подключения зарядной
-    вилки
-  editable: true
-  eeprom: null
-  index: 8512
-  name: BMS_IGNORE_VOLT_ERR_TIMEOUT
-  scale: 1
-  scaleB: 0
-  subindex: 4
-  type: UNSIGNED16
-  units: мс
-  value: null
 common:
 - access: rw
   address: '0x210201'
@@ -536,43 +507,6 @@ device_info:
   subindex: 2
   type: UNSIGNED32
   value: null
-discrete_brake:
-- access: rw
-  address: '0x214601'
-  description: Время накачки давления в контур для осуществления торможения
-  editable: true
-  eeprom: null
-  index: 8518
-  name: DISCRETE_BRAKE_ACCUM_TIMEOUT
-  scale: 1
-  scaleB: 0
-  subindex: 1
-  type: UNSIGNED16
-  units: мс
-  value: null
-- access: rw
-  address: '0x214602'
-  description: Время удержания давления в контуре. Включает в себя DISCRETE_BRAKE_ACCUM_TIMEOUT
-  editable: true
-  eeprom: null
-  index: 8518
-  name: DISCRETE_BRAKE_PROCESS_TIMEOUT
-  scale: 1
-  scaleB: 0
-  subindex: 2
-  type: UNSIGNED16
-  units: мс
-  value: null
-- access: rw
-  address: '0x214603'
-  description: Команда на включение гидравлического тормоза в ручном режиме управления
-  editable: true
-  index: 8518
-  name: DISCRETE_BRAKE_MANUAL_CONTROL_CMD
-  scale: 1
-  scaleB: 0
-  subindex: 3
-  type: UNSIGNED8
 discrete_inputs:
 - access: ro
   address: '0x217001'
@@ -1594,7 +1528,7 @@ iolib_errors:
   subindex: 5
   type: UNSIGNED16
   value: null
-j1939:
+j1939&lights_control:
 - access: ro
   address: '0x210006'
   description: 'Флаг, показывающий, что в настоящий момент КВУ получает сообщение
@@ -1806,7 +1740,6 @@ j1939:
   type: UNSIGNED16
   units: мс
   value: null
-lights_control:
 - access: rw
   address: '0x210101'
   description: Период мигания поворотников в аварийном режиме КВУ
@@ -1820,7 +1753,7 @@ lights_control:
   type: UNSIGNED16
   units: мс
   value: null
-main_fsm:
+main_fsm&power_management:
 - access: ro
   address: '0x211401'
   description: Текущее состояние основной машины состояний КВУ (см. описание на Confluence)
@@ -1898,6 +1831,19 @@ main_fsm:
   subindex: 17
   type: SIGNED16
   units: м/с
+  value: null
+- access: rw
+  address: '0x212002'
+  description: Пауза перед отключением питания для штатного завершения работы БКУ
+  editable: true
+  eeprom: null
+  index: 8480
+  name: POWER_BKU_TURNOFF_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: мс
   value: null
 motor_control:
 - access: ro
@@ -2186,31 +2132,6 @@ motor_control:
   type: UNSIGNED16
   units: мс
   value: null
-parking_brake:
-- access: rw
-  address: '0x214501'
-  description: Команда на зажатие парковочного тормоза в ручном режиме управления
-  editable: true
-  index: 8517
-  name: PARKING_BRAKE_MANUAL_CONTROL_CMD
-  scale: 1
-  scaleB: 0
-  subindex: 1
-  type: UNSIGNED8
-- access: ro
-  address: '0x214502'
-  description: Текущее состояние парковочного тормоза
-  editable: false
-  index: 8517
-  name: PARKING_BRAKE_HELD
-  scale: 1
-  scaleB: 0
-  subindex: 2
-  type: UNSIGNED8
-  value: null
-  value_table:
-    0: Отжат
-    1: Зажат
 pneumatic_suspension:
 - access: ro
   address: '0x213002'
@@ -2728,20 +2649,6 @@ pneumatic_suspension:
   scale: 1
   scaleB: 0
   subindex: 24
-  type: UNSIGNED16
-  units: мс
-  value: null
-power_management:
-- access: rw
-  address: '0x212002'
-  description: Пауза перед отключением питания для штатного завершения работы БКУ
-  editable: true
-  eeprom: null
-  index: 8480
-  name: POWER_BKU_TURNOFF_TIMEOUT
-  scale: 1
-  scaleB: 0
-  subindex: 2
   type: UNSIGNED16
   units: мс
   value: null
@@ -3324,7 +3231,7 @@ steering_control:
   type: UNSIGNED8
   units: град
   value: null
-voltage_monitoring:
+voltage_monitoring&bms&parking_brake&discrete_brake:
 - access: ro
   address: '0x213501'
   description: Текущее напряжение на шине 24 В
@@ -3401,3 +3308,91 @@ voltage_monitoring:
   type: UNSIGNED16
   units: мВ
   value: null
+- access: rw
+  address: '0x214003'
+  description: Пороговое минимальное допустимое напряжение на ПСТЭД после завершения
+    предзаряда
+  editable: true
+  eeprom: null
+  index: 8512
+  name: BMS_PSTED_PRECHARGE_THRES
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  units: В
+  value: null
+- access: rw
+  address: '0x214004'
+  description: Время игнорирования ошибки по напряжению после подключения зарядной
+    вилки
+  editable: true
+  eeprom: null
+  index: 8512
+  name: BMS_IGNORE_VOLT_ERR_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x214501'
+  description: Команда на зажатие парковочного тормоза в ручном режиме управления
+  editable: true
+  index: 8517
+  name: PARKING_BRAKE_MANUAL_CONTROL_CMD
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+- access: ro
+  address: '0x214502'
+  description: Текущее состояние парковочного тормоза
+  editable: false
+  index: 8517
+  name: PARKING_BRAKE_HELD
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+  value_table:
+    0: Отжат
+    1: Зажат
+- access: rw
+  address: '0x214601'
+  description: Время накачки давления в контур для осуществления торможения
+  editable: true
+  eeprom: null
+  index: 8518
+  name: DISCRETE_BRAKE_ACCUM_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x214602'
+  description: Время удержания давления в контуре. Включает в себя DISCRETE_BRAKE_ACCUM_TIMEOUT
+  editable: true
+  eeprom: null
+  index: 8518
+  name: DISCRETE_BRAKE_PROCESS_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x214603'
+  description: Команда на включение гидравлического тормоза в ручном режиме управления
+  editable: true
+  index: 8518
+  name: DISCRETE_BRAKE_MANUAL_CONTROL_CMD
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8

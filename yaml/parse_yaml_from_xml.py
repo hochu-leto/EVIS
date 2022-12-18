@@ -1,9 +1,6 @@
 import xml.etree.ElementTree as ET
 from operator import itemgetter
-from pprint import pprint
-
 from tkinter import filedialog as fd
-
 import yaml
 
 excepted_scale_format = ['6144', '12288']
@@ -52,7 +49,6 @@ for tag in nodes:
 
     scale = int(t['scale_value'])
     if scale:
-        # scale = 16777216 / int(scale)
         scale = 0x100000 / scale
 
     if t['scale_format'] in excepted_scale_format:
@@ -87,5 +83,5 @@ for par in final_list:
             f_list.append(par)
 del final_dict['']
 
-with open(r'parameters_vector.yaml', 'w', encoding='windows-1251') as file:
+with open(r'parameters_vector_psted.yaml', 'w', encoding='windows-1251') as file:
     documents = yaml.dump(final_dict, file, allow_unicode=True)
