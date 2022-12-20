@@ -160,7 +160,7 @@ class MainThread(QThread):
                         emitting()
                         return
             if current_param.node.name in (node.name for node in self.current_nodes_list):
-                param = current_param.get_value(self.adapter)   # ---!!!если параметр строковый, будет None!!---
+                param = current_param.get_value(self.adapter)  # ---!!!если параметр строковый, будет None!!---
                 # print(current_param.name, current_param.value)
                 # если строка - значит ошибка
                 if isinstance(param, str):
@@ -188,13 +188,15 @@ class MainThread(QThread):
                     dt = datetime.datetime.now()
                     dt = dt.strftime("%H:%M:%S.%f")
                     self.record_dict[dt] = {par.name: par.value for par in self.current_params_list}
+                else:
+                    pass
+                    # request_errors()
 
         def request_errors():
             # опрос ошибок, на это время опрос параметров отключается
-            timer.stop()
+            # timer.stop()
             all_errors_counter = len(self.err_dict)
             for nd in self.current_nodes_list:
-
                 nd.current_errors_list = nd.check_errors(self.adapter).copy()
                 nd.current_warnings_list = nd.check_errors(self.adapter, False).copy()
 
@@ -202,9 +204,9 @@ class MainThread(QThread):
 
             if len(self.err_dict) > all_errors_counter:
                 self.err_thread_signal.emit(self.err_dict)
-            timer.start(send_delay)
+            # timer.start(send_delay)
 
-        send_delay = 1  # задержка отправки в кан сообщений методом подбора с таким не зависает
+        send_delay = 5  # задержка отправки в кан сообщений методом подбора с таким не зависает
         err_req_delay = 500
         self.max_errors = 3
         self.len_param_list = len(self.current_params_list)
@@ -296,7 +298,7 @@ class WaitCanAnswerThread(QThread):
                 return
 
             if self.id_for_read:
-                ans = self.adapter.can_read(self.id_for_read)   # приходит список кадров, если всё хорошо
+                ans = self.adapter.can_read(self.id_for_read)  # приходит список кадров, если всё хорошо
 
                 if isinstance(ans, dict):
                     for ti, a in ans.items():

@@ -314,10 +314,7 @@ def fill_node(node: EVONode):
             if f_v and f_v != '---':
                 version_list = [int(v) for v in get_immediate_subdirectories(node_dir) if v.isdigit()]
                 if version_list:
-                    print(f'список папок в директории {node_dir}:')
-                    pprint(version_list)
                     min_vers = get_nearest_lower_value(version_list, f_v)
-                    print(f'подходящая папка {min_vers}')
                     if min_vers:
                         try:
                             group_params_dict = fill_par_dict_from_yaml(pathlib.Path(node_dir, str(min_vers), par_file))

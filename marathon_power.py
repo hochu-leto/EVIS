@@ -326,6 +326,7 @@ class CANMarathon(AdapterCAN):
         buffer = self.Buffer()
 
         buffer.id = ctypes.c_uint32(can_id_req)
+        # print(hex(self.BCI_bt0), end='    ')
         # print(hex(buffer.id), end='    ')
         j = 0
         for i in message:

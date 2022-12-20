@@ -29,7 +29,8 @@ type_values = {
     'UNSIGNED32': {'min': 0, 'max': 4294967295, 'type': 0x23, 'func': ctypes.c_uint32},
     'SIGNED32': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_int32},
     'FLOAT': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_uint8},
-    'VISIBLE_STRING': {'min': 0, 'max': 255, 'type': 0x21, 'func': ctypes.c_int32}  # can_to_char}
+    'VISIBLE_STRING': {'min': 0, 'max': 255, 'type': 0x21, 'func': ctypes.c_int32},  # can_to_char}
+    'DATE': {'min': 0, 'max': 4294967295, 'type': 0x23, 'func': ctypes.c_uint32}  # can_to_char}
 }
 
 
@@ -140,14 +141,15 @@ class Parametr:
             # на случай когда идёт чтение с двух каналов
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.req_list)
         if isinstance(value_data, str):
+            # print(value_data)
             return value_data
         if self.node.protocol == 'CANOpen':
             if value_data[0] == 0x41:  # это запрос на длинный параметр строчный
                 # print(self.name, end='   ')
                 # for i in value_data:
                 #     print(hex(i), end=' ')
-                value = self.read_string_from_can(adapter, value_data[4])
-                # print(value, self.value_string)
+                data = adapter.can_request_long(self.node.request_id, self.node.answer_id, value_data[4])
+                value = self.string_from_can(data)
                 if not self.value_string:  # ошибка, если свой стринг пустой
                     return value
                 self.value = None
@@ -161,6 +163,9 @@ class Parametr:
                     (value_data[6] << 16) + \
                     (value_data[5] << 8) + value_data[4]
         elif self.node.protocol == 'MODBUS':
+            # print(self.name, end='   ')
+            # for i in value_data:
+            #     print(hex(i), end=' ')
             # для реек вот так  address_ans = '0x' + int_to_hex_str(data[5]) + int_to_hex_str(data[4]) наверное
             # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
             address_ans = '0x' + int_to_hex_str(value_data[5]) + int_to_hex_str(value_data[4])
@@ -171,10 +176,20 @@ class Parametr:
         # принятый адрес должен совпадать с тем же адресом, что был отправлен
         if address_ans.upper() == self.address.upper():
             if self.type not in type_values.keys():
-                self.type = 'UNSIGNED32'
+                self.type = 'SIGNED32'
             self.value = type_values[self.type]['func'](value).value
             if self.type == 'FLOAT':
                 self.value = bytes_to_float(value_data[-4:])
+            elif self.type == 'VISIBLE_STRING':
+                self.string_from_can(value_data)
+                self.value = None
+                return self.value
+            elif self.type == 'DATA':
+                # self.string_from_can(value_data)
+                # do something
+                self.value_string = '20.12.2022'
+                self.value = None
+                return self.value
 
             if self.degree:
                 self.value /= 10 ** self.degree
@@ -204,8 +219,7 @@ class Parametr:
             print('В имени параметра нет разделителя')
             return False
 
-    def read_string_from_can(self, adapter: CANAdater, len_mess):
-        value = adapter.can_request_long(self.node.request_id, self.node.answer_id, len_mess)
+    def string_from_can(self, value):
         if isinstance(value, str):
             self.value_string = ''
             return value

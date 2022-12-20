@@ -19,10 +19,10 @@ type_dict = dict(UINT32='UNSIGNED32',
                  ENUM='UNSIGNED16',
                  INT16='SIGNED16',
                  UNION='SIGNED16',
-                 STR='VISIBLE_STRING',
+                 STR='UNSIGNED8',
                  STRING='VISIBLE_STRING',
                  INT32='SIGNED32',
-                 DATE='SIGNED32',
+                 DATE='DATE',
                  FLOAT32='FLOAT'
                  )
 
