@@ -1,0 +1,562 @@
+CONTACTOR:
+- address: '0x210300'
+  description: Напряжение срабатывания основного контактора
+  editable: true
+  group: CONTACTOR
+  name: DCLINK_CHARGE_THRESHOLD
+  type: FLOAT
+  unit: V
+- address: '0x210301'
+  description: Максимальное время ожидания нарастания напряжения в ЗПТ до уровня срабатывания
+    основного контактора
+  editable: true
+  group: CONTACTOR
+  name: DCLINK_CHARGE_TIMEOUT
+  type: UNSIGNED32
+  unit: ms
+- address: '0x210302'
+  description: Время выдержки от срабатывания основного контактора до отключения зарядного
+    контактора
+  editable: true
+  group: CONTACTOR
+  name: DCLINK_CONTACTOR_HOLDUP
+  type: UNSIGNED32
+  unit: ms
+- address: '0x210303'
+  description: Пороговое напряжение шины постоянного тока при отключении
+  editable: true
+  group: CONTACTOR
+  name: DCLINK_DISCHARGE_THRESHOLD
+  type: FLOAT
+  unit: V
+- address: '0x210304'
+  description: Максимальное время ожидания паденияния напряжения в ЗПТ до размыкания
+    основного контактора
+  editable: true
+  group: CONTACTOR
+  name: DCLINK_DISCHARGE_TIMEOUT
+  type: UNSIGNED32
+  unit: ms
+CONVERTER&DEVICE:
+- address: '0x210200'
+  description: Уставка защиты от понижения напряжения в ЗПТ
+  editable: true
+  group: CONVERTER
+  name: UVP_DC
+  type: FLOAT
+  unit: V
+- address: '0x210201'
+  description: Уставка защиты от повышения напряжения в ЗПТ
+  editable: true
+  group: CONVERTER
+  name: OVP_DC
+  type: FLOAT
+  unit: V
+- address: '0x210202'
+  description: Уставка защиты от превышения фазного тока
+  editable: true
+  group: CONVERTER
+  name: OCP_PHASE
+  type: FLOAT
+  unit: A
+- address: '0x210203'
+  description: Уставка защиты от превышения тока возбуждения
+  editable: true
+  group: CONVERTER
+  name: OCP_FIELD
+  type: FLOAT
+  unit: A
+- address: '0x210204'
+  description: Уставка защиты от превышения тока ЗПТ
+  editable: true
+  group: CONVERTER
+  name: OCP_DC
+  type: FLOAT
+  unit: A
+- address: '0x210205'
+  description: Уставка защиты от перегрева ключей
+  editable: true
+  group: CONVERTER
+  name: OTP_JUNCTION
+  type: FLOAT
+  unit: В°C
+- address: '0x210206'
+  description: Уставка защиты от перегрева инвертора
+  editable: true
+  group: CONVERTER
+  name: OTP_CASE
+  type: FLOAT
+  unit: В°C
+- address: '0x210207'
+  description: Температура включения вентилятора
+  editable: true
+  group: CONVERTER
+  name: FAN_TEMP_TH_ON
+  type: FLOAT
+  unit: В°C
+- address: '0x210208'
+  description: Температура выключения вентилятора
+  editable: true
+  group: CONVERTER
+  name: FAN_TEMP_TH_OFF
+  type: FLOAT
+  unit: В°C
+- address: '0x100800'
+  description: Имя устройства
+  editable: false
+  group: DEVICE
+  name: DEVICE NAME
+  type: VISIBLE_STRING
+  unit: ''
+- address: '0x210009'
+  description: Серийный номер двигателя
+  editable: true
+  group: DEVICE
+  name: S_N_ENGINE
+  type: UNSIGNED32
+  unit: ''
+- address: '0x210209'
+  description: Серийный номер инвертора
+  editable: true
+  group: DEVICE
+  name: S_N_INVERTOR
+  type: UNSIGNED32
+  unit: ''
+MCOSERVER:
+- address: '0x210400'
+  description: Период HeartBeat
+  editable: true
+  group: MCOSERVER
+  name: PERIOD_HB
+  type: UNSIGNED32
+  unit: ms
+- address: '0x210401'
+  description: Период сообщения по 0х181
+  editable: true
+  group: MCOSERVER
+  name: PERIOD_TPDO1
+  type: UNSIGNED32
+  unit: ms
+- address: '0x210402'
+  description: Период сообщения по 0х281
+  editable: true
+  group: MCOSERVER
+  name: PERIOD_TPDO2
+  type: UNSIGNED32
+  unit: ms
+- address: '0x210403'
+  description: Период сообщения по 0х381
+  editable: true
+  group: MCOSERVER
+  name: PERIOD_TPDO3
+  type: UNSIGNED32
+  unit: ms
+- address: '0x210404'
+  description: Период сообщения по 0х481
+  editable: true
+  group: MCOSERVER
+  name: PERIOD_TPDO4
+  type: UNSIGNED32
+  unit: ms
+MODEL&MODEL_FLUX_WEAKENING:
+- address: '0x210100'
+  description: Тип управляющего задания
+  editable: true
+  group: MODEL
+  name: REFERENCE
+  type: UNSIGNED16
+  unit: n-M
+- address: '0x210109'
+  description: Максимальный ток двигателя в двигательном режиме
+  editable: true
+  group: MODEL
+  name: IS_MOTOR_MAX
+  type: FLOAT
+  unit: A
+- address: '0x21010A'
+  description: Максимальный ток двигателя в режиме торможения
+  editable: true
+  group: MODEL
+  name: IS_GENER_MAX
+  type: FLOAT
+  unit: A
+- address: '0x21010B'
+  description: Максимальный ток возбуждения
+  editable: true
+  group: MODEL
+  name: IF_MAX
+  type: FLOAT
+  unit: A
+- address: '0x21010C'
+  description: Максимальный момент в положительном направлении
+  editable: true
+  group: MODEL
+  name: TORQUE_POS_MAX
+  type: FLOAT
+  unit: Nm
+- address: '0x21010D'
+  description: Максимальный момент в отрицательном направлении
+  editable: true
+  group: MODEL
+  name: TORQUE_NEG_MAX
+  type: FLOAT
+  unit: Nm
+- address: '0x21010E'
+  description: Максимальная скорость
+  editable: true
+  group: MODEL
+  name: SPEED_MAX
+  type: FLOAT
+  unit: rpm
+- address: '0x21010F'
+  description: Коэффициент усиления пропорциональной составляющей регулятора ослабления
+    поля
+  editable: true
+  group: MODEL_FLUX_WEAKENING
+  name: KP_FLUXWEAK
+  type: FLOAT
+  unit: ''
+- address: '0x210110'
+  description: Коэффициент усиления интегрирующей составляющей регулятора ослабления
+    поля
+  editable: true
+  group: MODEL_FLUX_WEAKENING
+  name: KI_FLUXWEAK
+  type: FLOAT
+  unit: ''
+- address: '0x210111'
+  description: Ограничение выхода регулятора ослабления поля
+  editable: true
+  group: MODEL_FLUX_WEAKENING
+  name: ID_MAX_FLUXWEAK
+  type: FLOAT
+  unit: A
+MODEL_REGULATORS:
+- address: '0x210101'
+  description: Коэффициент усиления пропорциональной составляющей регулятора скорости
+  editable: true
+  group: MODEL_REGULATORS
+  name: KP_SPEED
+  type: FLOAT
+  unit: ''
+- address: '0x210102'
+  description: Коэффициент усиления интегрирующей составляющей регулятора скорости
+  editable: true
+  group: MODEL_REGULATORS
+  name: KI_SPEED
+  type: FLOAT
+  unit: ''
+- address: '0x210103'
+  description: Коэффициент усиления пропорциональной составляющей регулятора тока
+    Id
+  editable: true
+  group: MODEL_REGULATORS
+  name: KP_ID
+  type: FLOAT
+  unit: ''
+- address: '0x210104'
+  description: Коэффициент усиления интегрирующей составляющей регулятора тока Id
+  editable: true
+  group: MODEL_REGULATORS
+  name: KI_ID
+  type: FLOAT
+  unit: ''
+- address: '0x210105'
+  description: Коэффициент усиления пропорциональной составляющей регулятора тока
+    Iq
+  editable: true
+  group: MODEL_REGULATORS
+  name: KP_IQ
+  type: FLOAT
+  unit: ''
+- address: '0x210106'
+  description: Коэффициент усиления интегрирующей составляющей регулятора тока Iq
+  editable: true
+  group: MODEL_REGULATORS
+  name: KI_IQ
+  type: FLOAT
+  unit: ''
+- address: '0x210107'
+  description: Коэффициент усиления пропорциональной составляющей регулятора тока
+    возбуждения
+  editable: true
+  group: MODEL_REGULATORS
+  name: KP_IF
+  type: FLOAT
+  unit: ''
+- address: '0x210108'
+  description: Коэффициент усиления интегрирующей составляющей регулятора тока возбуждения
+  editable: true
+  group: MODEL_REGULATORS
+  name: KI_IF
+  type: FLOAT
+  unit: ''
+MOTOR:
+- address: '0x210000'
+  description: Сопротивление обмоток статора
+  editable: true
+  group: MOTOR
+  name: R
+  type: FLOAT
+  unit: О©
+- address: '0x210001'
+  description: Индуктивность по оси D
+  editable: true
+  group: MOTOR
+  name: LD
+  type: FLOAT
+  unit: H
+- address: '0x210002'
+  description: 'Коэффициент зависимости LD от тока возбуждения '
+  editable: true
+  group: MOTOR
+  name: KLD
+  type: FLOAT
+  unit: ''
+- address: '0x210003'
+  description: Индуктивность по оси Q
+  editable: true
+  group: MOTOR
+  name: LQ
+  type: FLOAT
+  unit: H
+- address: '0x210004'
+  description: 'Коэффициент зависимости LQ от тока возбуждения '
+  editable: true
+  group: MOTOR
+  name: KLQ
+  type: FLOAT
+  unit: ''
+- address: '0x210005'
+  description: Уставка защиты от перегрева двигателя
+  editable: true
+  group: MOTOR
+  name: OTP_STATOR
+  type: FLOAT
+  unit: В°C
+- address: '0x210006'
+  description: Уставка защиты от перегрева обмотки возбуждения
+  editable: true
+  group: MOTOR
+  name: OTP_FW
+  type: FLOAT
+  unit: В°C
+- address: '0x210007'
+  description: Температура включения вентилятора
+  editable: true
+  group: MOTOR
+  name: FAN_TEMP_TH_ON
+  type: FLOAT
+  unit: В°C
+- address: '0x210008'
+  description: Температура выключения вентилятора
+  editable: true
+  group: MOTOR
+  name: FAN_TEMP_TH_OFF
+  type: FLOAT
+  unit: В°C
+POSSENS&SOFTWARE:
+- address: '0x210500'
+  description: Порядок секторов ДПР
+  editable: true
+  group: POSSENS
+  name: SECTORS
+  type: UNSIGNED32
+  unit: ''
+- address: '0x210501'
+  description: Амплитуда фазного тока при калибровке
+  editable: true
+  group: POSSENS
+  name: CAL_S_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x210502'
+  description: Ток ОВ при калибровке
+  editable: true
+  group: POSSENS
+  name: CAL_F_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x210503'
+  description: Скорость вращения двигателя при калибровке
+  editable: true
+  group: POSSENS
+  name: CAL_SPEED_RPM
+  type: FLOAT
+  unit: rpm
+- address: '0x5FFF00'
+  description: Версия ПО
+  editable: false
+  group: SOFTWARE
+  name: SOFTWARE VERSION
+  type: UNSIGNED32
+  unit: ''
+- address: '0x5FFF01'
+  description: Версия сборки
+  editable: false
+  group: SOFTWARE
+  name: BUILD CONFIGURATION
+  type: VISIBLE_STRING
+  unit: ''
+WATCH:
+- address: '0x200000'
+  description: Время работы
+  editable: false
+  group: WATCH
+  name: UPTIME
+  type: FLOAT
+  unit: s
+- address: '0x200001'
+  description: 'Состояние '
+  editable: false
+  group: WATCH
+  name: DRIVE_STATE
+  type: UNSIGNED16
+  unit: ''
+- address: '0x200002'
+  description: Ошибки
+  editable: false
+  group: WATCH
+  name: FAULTS
+  type: UNSIGNED32
+  unit: ''
+- address: '0x200003'
+  description: Напряжение ЗПТ
+  editable: false
+  group: WATCH
+  name: DC_VOLTAGE
+  type: FLOAT
+  unit: V
+- address: '0x200004'
+  description: Потребляемый ток
+  editable: false
+  group: WATCH
+  name: DC_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x200005'
+  description: Ток обмотки возбуждения
+  editable: true
+  group: WATCH
+  name: FIELD_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x200006'
+  description: Ток статора
+  editable: false
+  group: WATCH
+  name: STATOR_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x200007'
+  description: Ток фазы А
+  editable: false
+  group: WATCH
+  name: PHA_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x200008'
+  description: Ток фазы В
+  editable: false
+  group: WATCH
+  name: PHB_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x200009'
+  description: Ток фазы С
+  editable: false
+  group: WATCH
+  name: PHC_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x20000A'
+  description: Ток Id
+  editable: false
+  group: WATCH
+  name: D_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x20000B'
+  description: Ток Iq
+  editable: false
+  group: WATCH
+  name: Q_CURRENT
+  type: FLOAT
+  unit: A
+- address: '0x20000C'
+  description: Температура фазы А
+  editable: false
+  group: WATCH
+  name: PHA_TEMP
+  type: FLOAT
+  unit: В°C
+- address: '0x20000D'
+  description: Температура фазы В
+  editable: false
+  group: WATCH
+  name: PHB_TEMP
+  type: FLOAT
+  unit: В°C
+- address: '0x20000E'
+  description: Температура фазы С
+  editable: false
+  group: WATCH
+  name: PHC_TEMP
+  type: FLOAT
+  unit: В°C
+- address: '0x20000F'
+  description: Температура воздуха
+  editable: false
+  group: WATCH
+  name: CASE_TEMP
+  type: FLOAT
+  unit: В°C
+- address: '0x200010'
+  description: Температура статора
+  editable: false
+  group: WATCH
+  name: MOTOR_S_TEMP
+  type: FLOAT
+  unit: В°C
+- address: '0x200011'
+  description: Температура ОВ
+  editable: false
+  group: WATCH
+  name: MOTOR_FW_TEMP
+  type: FLOAT
+  unit: В°C
+- address: '0x200012'
+  description: Gamma
+  editable: true
+  group: WATCH
+  name: GAMMA_ANGLE_DEG
+  type: FLOAT
+  unit: В°
+- address: '0x200013'
+  description: Скорость мотора
+  editable: true
+  group: WATCH
+  name: SPEED_RPM
+  type: FLOAT
+  unit: rpm
+- address: '0x200014'
+  description: Момент
+  editable: false
+  group: WATCH
+  name: TORQUE
+  type: FLOAT
+  unit: Nm
+- address: '0x200015'
+  description: Мощность механическая
+  editable: false
+  group: WATCH
+  name: MECH_POWER
+  type: FLOAT
+  unit: W
+- address: '0x200016'
+  description: Мощность электрическая
+  editable: false
+  group: WATCH
+  name: OUT_ELEC_POWER
+  type: FLOAT
+  unit: W
