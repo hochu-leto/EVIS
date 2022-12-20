@@ -1,5 +1,7 @@
 from operator import itemgetter
 from tkinter import filedialog as fd
+
+import pandas
 import yaml
 from parse_yaml_for_burr import type_dict, check_dict
 
@@ -17,6 +19,9 @@ if __name__ == '__main__':
     with open(file_name, "r") as file:
         nodes = file.readlines()
 
+    excel_data_df = pandas.read_excel('mpei.xlsx')
+    desc_dict = {par['address']: par['description'] for par in excel_data_df.to_dict(orient='records')}
+
     final_list = []
 
     for tag in nodes:
@@ -26,6 +31,8 @@ if __name__ == '__main__':
             tg['name'] = t[4].strip()[1:-1]
             tg['group'] = t[3].strip()[1:-1]
             tg['address'] = t[0].strip()[2:] + t[1].strip()[2:-1]
+            if tg['address'] in desc_dict.keys():
+                tg['description'] = desc_dict[tg['address']]
             v_type = t[6].strip()[3:]
             tg['type'] = type_dict[v_type] if v_type in type_dict.keys() else 'SIGNED32'
             if t[5] != '""':
