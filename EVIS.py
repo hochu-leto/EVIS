@@ -168,7 +168,7 @@ def save_to_eeprom(node=None):
 
         if node.name == 'Инвертор_МЭИ':
             voltage = find_param(window.current_nodes_list, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0]
-            err = voltage.get_value(can_adapter.adapters_dict[125])
+            err = voltage.get_value(can_adapter.adapters_dict[125])     # ---!!!если параметр строковый, будет None!!---
             if not isinstance(err, str):
                 # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
                 if err < 30:
@@ -226,7 +226,7 @@ def want_to_value_change():
                     # отправляю параметр, полученный из диалогового окна
                     current_param.set_val(can_adapter, float(val))
                     # и сразу же проверяю записался ли он в блок
-                    value_data = current_param.get_value(can_adapter)
+                    value_data = current_param.get_value(can_adapter)   # ---!!!если параметр строковый, будет None!!---
                     if isinstance(value_data, str):
                         new_val = ''
                     else:
@@ -357,7 +357,6 @@ def check_node_online(all_node_list: list):
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
     for nd in all_node_list:
         node_serial = nd.get_serial_number(can_adapter)
-        print(nd.name, node_serial)
         if node_serial:
             nd.firmware_version = nd.get_firmware_version(can_adapter)
             # тут выясняется, что на старых машинах, где Инвертор_Цикл+ кто-то отвечает по ID Инвертор_МЭИ,
@@ -380,7 +379,7 @@ def check_node_online(all_node_list: list):
     # на случай если только избранное найдено - значит ни один блок не ответил
     if exit_list[0].cut_firmware() == 'EVOCARGO':
         return all_node_list.copy(), False
-
+    exit_list = make_nodes_dict({node.name: node for node in exit_list}).values()
     window.nodes_tree.currentItemChanged.disconnect()
     window.show_nodes_tree(exit_list)
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
@@ -951,9 +950,9 @@ if __name__ == '__main__':
     window.save_to_file_btn.setEnabled(False)
     window.log_record_btn.clicked.connect(record_log)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
-    # alt_node_list = full_node_list(vmu_param_file).copy()
-    node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
-    alt_node_list = list(node_dict.values()).copy()
+    alt_node_list = full_node_list(vmu_param_file).copy()
+    # node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
+    # alt_node_list = list(node_dict.values()).copy()
     window.current_nodes_list = alt_node_list.copy()
     window.thread.current_nodes_list = window.current_nodes_list
     # показываю дерево с блоками и что ошибок нет
@@ -969,3 +968,8 @@ if __name__ == '__main__':
         splash.finish(window)  # Убираем заставку
         app.exec_()  # и запускаем приложение
 
+# нужно переходить на словарь блоков
+# изначально подгрузить только блоки с серийниками, пробить который отвечает,
+# и грузить те, которые ответили, возможно асинхронно
+# если нет подключения брать дефолтный список из памяти -
+# возможно через пикл подгрузить пустышку с названиями-описаниями

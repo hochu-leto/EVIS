@@ -40,7 +40,7 @@ class Parametr:
                  'group', 'size', 'value', 'name',
                  'scale', 'offset', 'period', 'degree',
                  'min_value', 'max_value', 'widget', 'node',
-                 'req_list', 'set_list', 'compare_value', 'value_dict')
+                 'req_list', 'set_list', 'value_compare', 'value_dict', 'value_string')
 
     def __init__(self, param=None, node=None):
         if param is None:
@@ -50,6 +50,7 @@ class Parametr:
 
         def check_value(value, name: str):
             v = value if name not in list(param.keys()) \
+                         or not param[name] \
                          or str(param[name]) == 'nan' \
                          or param[name] == 0 \
                 else (param[name] if not isinstance(param[name], str)
@@ -71,8 +72,8 @@ class Parametr:
         self.description = check_string('description')  # описание параметра по русски
         self.group = check_string('group')  # неиспользуемое поле в подарок от Векторов
         self.size = check_string('size')  # это какой-то атавизм от блоков БУРР
-        self.value = 0
-        self.compare_value = 0
+        self.value = check_value(0, 'value')
+        self.value_compare = 0
         self.name = check_string('name', 'NoName')
         self.scale = float(check_value(1, 'scale'))  # на что домножаем число из КАНа
         self.offset = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
@@ -93,6 +94,7 @@ class Parametr:
         self.node = node
         self.req_list = []
         self.set_list = []
+        self.value_string = ''
 
     # формирует посылку в зависимости от протокола
     def get_list(self):
@@ -140,6 +142,16 @@ class Parametr:
         if isinstance(value_data, str):
             return value_data
         if self.node.protocol == 'CANOpen':
+            if value_data[0] == 0x41:  # это запрос на длинный параметр строчный
+                # print(self.name, end='   ')
+                # for i in value_data:
+                #     print(hex(i), end=' ')
+                value = self.read_string_from_can(adapter, value_data[4])
+                # print(value, self.value_string)
+                if not self.value_string:  # ошибка, если свой стринг пустой
+                    return value
+                self.value = None
+                return self.value
             #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
             address_ans = '0x' \
                           + int_to_hex_str(value_data[2]) \
@@ -191,3 +203,14 @@ class Parametr:
         else:
             print('В имени параметра нет разделителя')
             return False
+
+    def read_string_from_can(self, adapter: CANAdater, len_mess):
+        value = adapter.can_request_long(self.node.request_id, self.node.answer_id, len_mess)
+        if isinstance(value, str):
+            self.value_string = ''
+            return value
+        self.value_string = ''
+        for byte in value:
+            self.value_string += chr(byte)
+        s = self.value_string.strip()
+        return int(s) if s.isdigit() else s

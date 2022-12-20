@@ -1,5 +1,6 @@
 import os
 import pathlib
+from pprint import pprint
 
 import pandas as pd
 import yaml
@@ -29,6 +30,7 @@ err_file = 'errors.yaml'
 # ------------------------------------- заполнение словаря для сравнения----------------------------
 # можно несколько блоков в одном файле
 def fill_sheet_dict(file_name):
+    #  пока принимает только эксель
     file = pd.ExcelFile(file_name)
     sheets_dict = {}
 
@@ -39,17 +41,18 @@ def fill_sheet_dict(file_name):
         if set(need_fields).issubset(headers):
             sheet_params_dict = sheet.to_dict(orient='records')
             prev_group_name = ''
-            p_dict = {}
+            p_list = []
 
             for param in sheet_params_dict:
                 if str(param['name']) != 'nan':
                     if 'group ' in param['name']:
-                        node_params_dict[prev_group_name] = p_dict.copy()
-                        p_dict = {}
+                        node_params_dict[prev_group_name] = p_list.copy()
+                        p_list.clear()
                         prev_group_name = param['name'].replace('group ', '')
                     else:
-                        p_dict[param['name']] = param['value']
-                node_params_dict[prev_group_name] = p_dict.copy()
+                        #  делает словарь только с имя-значение. скорее нужно делать полный параметр
+                        p_list.append(Parametr(param))
+                node_params_dict[prev_group_name] = p_list.copy()
 
             del node_params_dict['']
             if node_params_dict:
@@ -311,19 +314,22 @@ def fill_node(node: EVONode):
             if f_v and f_v != '---':
                 version_list = [int(v) for v in get_immediate_subdirectories(node_dir) if v.isdigit()]
                 if version_list:
+                    print(f'список папок в директории {node_dir}:')
+                    pprint(version_list)
                     min_vers = get_nearest_lower_value(version_list, f_v)
+                    print(f'подходящая папка {min_vers}')
                     if min_vers:
                         try:
                             group_params_dict = fill_par_dict_from_yaml(pathlib.Path(node_dir, str(min_vers), par_file))
                             param_dir = min_vers
                         except FileNotFoundError:
-                            print(f'В папке {param_dir} нет списка параметров для блока {node.name}')
+                            print(f'В папке {min_vers} нет списка параметров для блока {node.name}')
 
                         try:
                             node.errors_list = fill_err_list_from_yaml(pathlib.Path(node_dir, str(min_vers), err_file))
                             err_dir = min_vers
                         except FileNotFoundError:
-                            print(f'В папке {Default} нет списка ошибок для блока {node.name}.')
+                            print(f'В папке {min_vers} нет списка ошибок для блока {node.name}.')
 
             for group in group_params_dict.values():
                 for param in group:
@@ -338,14 +344,7 @@ def fill_node(node: EVONode):
 
 # ------------------------------------- финальное заполнения словаря с блоками -----------------------------
 def make_nodes_dict(node_dict):
-    types_node_dict = dict(
-        TTC='КВУ_ТТС',
-        МЭИ='Инвертор_МЭИ',
-        Инвертор_Цикл='Инвертор_Цикл+',
-        КВУ_Цикл='КВУ_Цикл+',
-        ТАБ='ТАБ',
-        Рулевая='Рулевая'
-    )
+
     final_nodes_dict = {}
     for name, node in node_dict.items():
         full_node = fill_node(node)
@@ -386,9 +385,17 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
 
 
 def fill_compare_values(node: EVONode, dict_for_compare: dict):
-    for group_name, group_params in node.group_params_dict.items():
-        if group_name in dict_for_compare.keys():
-            for param in group_params:
-                if param.name in dict_for_compare[group_name].keys():
-                    param.compare_value = dict_for_compare[group_name][param.name]
+    all_compare_params = {}
+    for group in dict_for_compare.values():
+        for par in group.copy():
+            all_compare_params[par.address] = par.value
+    all_current_params = []
+    for group in node.group_params_dict.values():
+        for p in group:
+            all_current_params.append(p)
+
+    for cur_p in all_current_params:
+        if cur_p.address in all_compare_params.keys():
+            cur_p.value_compare = all_compare_params[cur_p.address]
+            del all_compare_params[cur_p.address]
     node.has_compare_params = True

@@ -1,0 +1,3398 @@
+abs:
+- access: rw
+  address: '0x216001'
+  description: Количество зубцов на измерительном колесе, которое считывает энкодер
+  editable: true
+  eeprom: null
+  index: 8544
+  name: ABS_WHEEL_TICKS
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x216002'
+  description: Диаметр колес
+  editable: true
+  eeprom: null
+  index: 8544
+  name: ABS_WHEEL_DIAMETER
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x216003'
+  description: Пороговая скорость колес, используемая для детекции ошибок датчиков
+    АБС
+  editable: true
+  eeprom: null
+  index: 8544
+  mult: 0.2441
+  name: ABS_WHEEL_MIN_SPEED_THRESHOLD
+  scale: 4.096681687832855
+  scaleB: 0
+  subindex: 3
+  type: SIGNED16
+  units: об/мин
+  value: null
+- access: rw
+  address: '0x216004'
+  description: Пороговая скорость мотора, используемая для детекции ошибок датчиков
+    АБС
+  editable: true
+  eeprom: null
+  index: 8544
+  mult: 0.2441
+  name: ABS_MOTOR_MIN_SPEED_THRESHOLD
+  scale: 4.096681687832855
+  scaleB: 0
+  subindex: 4
+  type: SIGNED16
+  units: об/мин
+  value: null
+- access: rw
+  address: '0x216005'
+  description: 'Количество ошибок датчика на одном колесе, задетектированных в течение
+    одной минуты, при котором выставляется  предупреждение.
+
+    '
+  editable: true
+  eeprom: null
+  index: 8544
+  name: ABS_WARNING_COUNT_THRESHOLD
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED16
+  value: null
+- access: rw
+  address: '0x216006'
+  description: 'Количество ошибок датчика на одном колесе, задетектированных в течение
+    одной минуты, при котором выставляется  критическая ошибка.
+
+    '
+  editable: true
+  eeprom: null
+  index: 8544
+  name: ABS_FAULT_COUNT_THRESHOLD
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED16
+  value: null
+- access: rw
+  address: '0x216007'
+  description: Включение/выключение обработки накопленных ошибок датчиков ABS
+  editable: true
+  eeprom: null
+  index: 8544
+  name: ABS_SUPPRESS_INVALID_DATA_ERRORS
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED8
+  value: null
+  values_table:
+    0: Невалидные значения частоты будут принимать значения 'ошибка' при отправке
+      на БКУ
+    1: Невалидные значения частоты будут обрабатываться как обычные
+- access: rw
+  address: '0x21600B'
+  description: Коэффициент фильтрации датчиков ABS
+  editable: true
+  eeprom: null
+  index: 8544
+  mult: 0.0039
+  name: ABS_FILTER_FACTOR
+  scale: 256.4102564102564
+  scaleB: 0
+  subindex: 11
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21600C'
+  description: Скорость ВАТС, посчитанная на основании валидных датчиков
+  editable: false
+  index: 8544
+  mult: 0.01
+  name: ABS_VEHICLE_VELOCITY
+  scale: 100.0
+  scaleB: 0
+  subindex: 12
+  type: SIGNED16
+  units: м/с
+  value: null
+- access: ro
+  address: '0x21600D'
+  description: Частота вращения колеса "Переднее левое"
+  editable: false
+  index: 8544
+  mult: 0.002
+  name: ABS_WHEEL_FREQ_FL
+  scale: 500.0
+  scaleB: 0
+  subindex: 13
+  type: SIGNED16
+  units: Гц
+  value: null
+- access: ro
+  address: '0x21600E'
+  description: Частота вращения колеса "Переднее правое"
+  editable: false
+  index: 8544
+  mult: 0.002
+  name: ABS_WHEEL_FREQ_FR
+  scale: 500.0
+  scaleB: 0
+  subindex: 14
+  type: SIGNED16
+  units: Гц
+  value: null
+- access: ro
+  address: '0x21600F'
+  description: Частота вращения колеса "Заднее левое"
+  editable: false
+  index: 8544
+  mult: 0.002
+  name: ABS_WHEEL_FREQ_RL
+  scale: 500.0
+  scaleB: 0
+  subindex: 15
+  type: SIGNED16
+  units: Гц
+  value: null
+- access: ro
+  address: '0x216010'
+  description: Частота вращения колеса "Заднее правое"
+  editable: false
+  index: 8544
+  mult: 0.002
+  name: ABS_WHEEL_FREQ_RR
+  scale: 500.0
+  scaleB: 0
+  subindex: 16
+  type: SIGNED16
+  units: Гц
+  value: null
+common:
+- access: rw
+  address: '0x210201'
+  description: 'Запрос на чтение всех сохраненных параметров из энергонезависимой
+    памяти. Для осуществления достаточно одного  SDO на запись со значением "1". При
+    чтении этого параметра отображается число выполненных соответствующих  запросов
+    с момента запуска КВУ.
+
+    '
+  editable: true
+  index: 8450
+  name: EEPROM_READ_REQUEST
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED32
+- access: rw
+  address: '0x210202'
+  description: 'Запрос на запись в энергонезависимую память текущих значений всех
+    сохраняемых параметров. Для осуществления  достаточно одного SDO на запись со
+    значением "1". При чтении этого параметра отображается число выполненных  соответствующих
+    запросов с момента запуска КВУ.
+
+    '
+  editable: true
+  index: 8450
+  name: EEPROM_WRITE_REQUEST
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED32
+- access: rw
+  address: '0x210001'
+  description: Включение ручного режима управления
+  editable: true
+  index: 8448
+  name: MANUAL_CONTROL
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+- access: rw
+  address: '0x210003'
+  description: "Включение сервисного режима работы следующих дискретных выходов КВУ:\n\
+    \  \"Парковочный тормоз\"\n  \"Разрешение зарядки\"\n  \"Старт ПСТЭД\"\n  \"Пневмоподвеска\
+    \ нагнетание 1\"\n  \"Пневмоподвеска нагнетание 2\"\n  \"Пневмоподвеска нагнетание\
+    \ 3\"\n  \"Пневмоподвеска нагнетание 4\"\n  \"Пневмоподвеска сброс 1\"\n  \"Пневмоподвеска\
+    \ сброс 2\"\n  \"Пневмоподвеска сброс 3\"\n  \"Пневмоподвеска сброс 4\"\n  \"\
+    Гидравлический тормоз. Помпа\"\n  \"Гидравлический тормоз. Клапаны 1,8\"\n  \"\
+    Гидравлический тормоз. Клапаны 2,9\"\n  \"Статус зарядки\"\n"
+  editable: true
+  index: 8448
+  name: OUTPUTS_SERVICE_MODE
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8
+- access: rw
+  address: '0x210004'
+  description: Тип тормозной системы, которая используется на этой машине
+  editable: true
+  eeprom: null
+  index: 8448
+  name: BRAKES_TYPE
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED8
+  value: null
+  values_table:
+    0: Отключено
+    1: Плавный тормоз
+    2: Дискретный тормоз
+- access: ro
+  address: '0x212101'
+  description: Текущее время исполнения одного цикла ПО КВУ
+  editable: false
+  index: 8481
+  name: SYSTEM_MAINLOOP_TIME
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED32
+  units: мкс
+  value: null
+- access: ro
+  address: '0x212102'
+  description: Максимальное зафиксированное время исполнения одного цикла ПО КВУ после
+    включения
+  editable: false
+  index: 8481
+  name: SYSTEM_MAINLOOP_MAX_TIME
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED32
+  units: мкс
+  value: null
+cooling_fan:
+- access: rw
+  address: '0x216501'
+  description: Температура двигателя, ниже которой вентилятор можно отключать
+  editable: true
+  eeprom: null
+  index: 8549
+  name: COOLING_MOTOR_TEMP_MIN
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x216502'
+  description: Температура двигателя, выше которой вентилятор нужно включать
+  editable: true
+  eeprom: null
+  index: 8549
+  name: COOLING_MOTOR_TEMP_MAX
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x216503'
+  description: Температура инвертора, ниже которой вентилятор можно отключать
+  editable: true
+  eeprom: null
+  index: 8549
+  name: COOLING_INVERTER_TEMP_MIN
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x216504'
+  description: Температура инвертора, выше которой вентилятор нужно включать
+  editable: true
+  eeprom: null
+  index: 8549
+  name: COOLING_INVERTER_TEMP_MAX
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x216505'
+  description: Температура обмотки, ниже которой вентилятор можно отключать
+  editable: true
+  eeprom: null
+  index: 8549
+  name: COOLING_COIL_TEMP_MIN
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x216506'
+  description: Температура обмотки, выше которой вентилятор нужно включать
+  editable: true
+  eeprom: null
+  index: 8549
+  name: COOLING_COIL_TEMP_MAX
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x216507'
+  description: Включение/выключение функционала вентилятора
+  editable: true
+  eeprom: null
+  index: 8549
+  name: COOLING_ENABLE
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED8
+  value: null
+device_info:
+- access: ro
+  address: '0x100800'
+  description: Имя устройства
+  editable: false
+  index: 4104
+  name: DEVICE_NAME
+  scale: 1
+  scaleB: 0
+  subindex: 0
+  type: VISIBLE_STRING
+  value: null
+- access: ro
+  address: '0x100900'
+  description: Версия аппаратного обеспечения
+  editable: false
+  index: 4105
+  name: DEVICE_HARDWARE_VERSION
+  scale: 1
+  scaleB: 0
+  subindex: 0
+  type: VISIBLE_STRING
+  value: null
+- access: ro
+  address: '0x100a00'
+  description: Версия программного обеспечения
+  editable: false
+  index: 4106
+  name: DEVICE_SOFTWARE_VERSION
+  scale: 1
+  scaleB: 0
+  subindex: 0
+  type: VISIBLE_STRING
+  value: null
+- access: ro
+  address: '0x210301'
+  description: Short-SHA соответствующего коммита на Gitlab
+  editable: false
+  index: 8451
+  name: COMMIT_SHORT_SHA
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x210302'
+  description: Дата создания соответствующего коммита на Gitlab (день)
+  editable: false
+  index: 8451
+  name: COMMIT_TIMESTAMP_DAY
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210303'
+  description: Дата создания соответствующего коммита на Gitlab (месяц)
+  editable: false
+  index: 8451
+  name: COMMIT_TIMESTAMP_MONTH
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210304'
+  description: Дата создания соответствующего коммита на Gitlab (год)
+  editable: false
+  index: 8451
+  name: COMMIT_TIMESTAMP_YEAR
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x218001'
+  description: Байты 0..3 серийного номера КВУ
+  editable: false
+  index: 8576
+  name: DEVICE_SN_0
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x218002'
+  description: Байты 4..7 серийного номера КВУ
+  editable: false
+  index: 8576
+  name: DEVICE_SN_1
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x218003'
+  description: Байты 8..11 серийного номера КВУ
+  editable: false
+  index: 8576
+  name: DEVICE_SN_2
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x218004'
+  description: Байты 12..15 серийного номера КВУ
+  editable: false
+  index: 8576
+  name: DEVICE_SN_3
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED32
+  value: null
+- access: rw
+  address: '0x218101'
+  description: Регистр пользовательских данных 0
+  editable: true
+  eeprom: null
+  index: 8577
+  name: USER_DATA_0
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED32
+  value: null
+- access: rw
+  address: '0x218102'
+  description: Регистр пользовательских данных 1
+  editable: true
+  eeprom: null
+  index: 8577
+  name: USER_DATA_1
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED32
+  value: null
+discrete_inputs:
+- access: ro
+  address: '0x217001'
+  description: Уровень охлаждающей жидкости
+  editable: false
+  index: 8560
+  name: DI_ANTIFREEZE_LOW
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+  values_table:
+    0: OK/обрыв (физический уровень HIGH)
+    1: Задетекирован низкий уровень ОЖ (физический уровень LOW)
+- access: ro
+  address: '0x217002'
+  description: Уровень тормозной жидкости
+  editable: false
+  index: 8560
+  name: DI_BRAKE_FLUID_LOW
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+  values_table:
+    0: OK/обрыв (физический уровень HIGH)
+    1: Задетекирован низкий уровень ТЖ (физический уровень LOW)
+- access: ro
+  address: '0x217003'
+  description: Включение режима управления пневмоподвеской с КВУ
+  editable: false
+  index: 8560
+  name: DI_SUSPENSION_ENABLE
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8
+  value: null
+  values_table:
+    0: Управление отключено/обрыв (физический уровень LOW)
+    1: Управление включено (физический уровень HIGH)
+- access: ro
+  address: '0x217004'
+  description: Разрешение управления ближним светом командами от БКУ
+  editable: false
+  index: 8560
+  name: DI_HEAD_LIGHTS
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED8
+  value: null
+  values_table:
+    0: Запрещено/обрыв (физический уровень LOW)
+    1: Разрешено (физический уровень HIGH)
+- access: ro
+  address: '0x217005'
+  description: Нажатие кнопки "Стоп КВУ"
+  editable: false
+  index: 8560
+  name: DI_RED_BUTTON
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED32
+  value: null
+  values_table:
+    0: Кнопка отжата (физический уровень HIGH)
+    1: Кнопка нажата/обрыв (физический уровень LOW)
+- access: ro
+  address: '0x217006'
+  description: Состояние зарядной вилки
+  editable: false
+  index: 8560
+  name: DI_CHARGER_PLUG
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED32
+  value: null
+  values_table:
+    0: Не воткнута/обрыв (физический уровень LOW)
+    1: Воткнута (физический уровень HIGH)
+- access: ro
+  address: '0x217007'
+  description: Состояние концевика на дверце блока 4
+  editable: false
+  index: 8560
+  name: DI_BLOCK4_DOOR
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED32
+  value: null
+  values_table:
+    0: Дверца закрыта (физический уровень HIGH)
+    1: Дверца открыта/обрыв (физический уровень LOW)
+- access: ro
+  address: '0x217008'
+  description: Состояние концевика на левом борту
+  editable: false
+  index: 8560
+  name: DI_LEFT_DOOR
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: UNSIGNED32
+  value: null
+  values_table:
+    0: Борт закрыт (физический уровень HIGH)
+    1: Борт открыт/обрыв (физический уровень LOW)
+- access: ro
+  address: '0x217009'
+  description: Состояние концевика на правом борту
+  editable: false
+  index: 8560
+  name: DI_RIGHT_DOOR
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: UNSIGNED32
+  value: null
+  values_table:
+    0: Борт закрыт (физический уровень HIGH)
+    1: Борт открыт/обрыв (физический уровень LOW)
+- access: ro
+  address: '0x21700A'
+  description: Состояние концевика на капоте
+  editable: false
+  index: 8560
+  name: DI_CAR_HOOD
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: UNSIGNED32
+  value: null
+  values_table:
+    0: Капот закрыт (физический уровень HIGH)
+    1: Капот открыт/обрыв (физический уровень LOW)
+discrete_outputs:
+- access: ro
+  address: '0x217201'
+  description: 'IOLIB-статус дискретного выхода "Парковочный тормоз". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_PARKING_BRAKE
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x217202'
+  description: 'IOLIB-статус дискретного выхода "Разрешение зарядки". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_CHARGE_CP
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x217203'
+  description: 'IOLIB-статус дискретного выхода "Старт ПСТЭД". Расшифровка указана
+    в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_START_PSTED
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x217204'
+  description: 'IOLIB-статус дискретного выхода "Пневмоподвеска нагнетание 1". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_SUSP_VALVE_UP_1
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x217205'
+  description: 'IOLIB-статус дискретного выхода "Пневмоподвеска нагнетание 2". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_SUSP_VALVE_UP_2
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x217206'
+  description: 'IOLIB-статус дискретного выхода "Пневмоподвеска нагнетание 3". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_SUSP_VALVE_UP_3
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x217207'
+  description: 'IOLIB-статус дискретного выхода "Пневмоподвеска нагнетание 4". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_SUSP_VALVE_UP_4
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x217208'
+  description: 'IOLIB-статус дискретного выхода "Пневмоподвеска сброс 1". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_SUSP_VALVE_DOWN_1
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x217209'
+  description: 'IOLIB-статус дискретного выхода "Пневмоподвеска сброс 2". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_SUSP_VALVE_DOWN_2
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x21720A'
+  description: 'IOLIB-статус дискретного выхода "Пневмоподвеска сброс 3". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_SUSP_VALVE_DOWN_3
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x21720B'
+  description: 'IOLIB-статус дискретного выхода "Пневмоподвеска сброс 4". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_SUSP_VALVE_DOWN_4
+  scale: 1
+  scaleB: 0
+  subindex: 11
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x21720C'
+  description: 'IOLIB-статус дискретного выхода "Гидравлический тормоз. Помпа". Расшифровка
+    указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_BRAKE_PUMP
+  scale: 1
+  scaleB: 0
+  subindex: 12
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x21720D'
+  description: 'IOLIB-статус дискретного выхода "Гидравлический тормоз. Клапаны 1,8".
+    Расшифровка указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_BRAKE_VALVE_1_8
+  scale: 1
+  scaleB: 0
+  subindex: 13
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x21720E'
+  description: 'IOLIB-статус дискретного выхода "Гидравлический тормоз. Клапаны 2,9".
+    Расшифровка указана в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_BRAKE_VALVE_2_9
+  scale: 1
+  scaleB: 0
+  subindex: 14
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x21720F'
+  description: 'IOLIB-статус дискретного выхода "Статус зарядки". Расшифровка указана
+    в iolib_errors.yaml
+
+    '
+  editable: false
+  index: 8562
+  name: DO_STATUS_CHARGE_STATE
+  scale: 1
+  scaleB: 0
+  subindex: 15
+  type: UNSIGNED16
+  value: null
+- access: rw
+  address: '0x217301'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Парковочный
+    тормоз".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_PARKING_BRAKE
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+- access: rw
+  address: '0x217302'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Разрешение
+    зарядки".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_CHARGE_CP
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+- access: rw
+  address: '0x217303'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Старт
+    ПСТЭД".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_START_PSTED
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8
+- access: rw
+  address: '0x217304'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    нагнетание "FL".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_SUSP_VALVE_UP_1
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED8
+- access: rw
+  address: '0x217305'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    нагнетание FR".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_SUSP_VALVE_UP_2
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED8
+- access: rw
+  address: '0x217306'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    нагнетание RL".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_SUSP_VALVE_UP_3
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED8
+- access: rw
+  address: '0x217307'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    нагнетание RR".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_SUSP_VALVE_UP_4
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED8
+- access: rw
+  address: '0x217308'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    сброс FL".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_1
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: UNSIGNED8
+- access: rw
+  address: '0x217309'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    сброс FR".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_2
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: UNSIGNED8
+- access: rw
+  address: '0x21730A'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    сброс RL".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_3
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: UNSIGNED8
+- access: rw
+  address: '0x21730B'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    сброс RR".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_4
+  scale: 1
+  scaleB: 0
+  subindex: 11
+  type: UNSIGNED8
+- access: rw
+  address: '0x21730C'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Гидравлический
+    тормоз. Помпа".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_BRAKE_PUMP
+  scale: 1
+  scaleB: 0
+  subindex: 12
+  type: UNSIGNED8
+- access: rw
+  address: '0x21730D'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Гидравлический
+    тормоз. Клапаны 1,8".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_BRAKE_VALVE_1_8
+  scale: 1
+  scaleB: 0
+  subindex: 13
+  type: UNSIGNED8
+- access: rw
+  address: '0x21730E'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Гидравлический
+    тормоз. Клапаны 2,9".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_BRAKE_VALVE_2_9
+  scale: 1
+  scaleB: 0
+  subindex: 14
+  type: UNSIGNED8
+- access: rw
+  address: '0x21730F'
+  description: 'Командное значение в сервисном режиме для дискретного выхода "Статус
+    зарядки".
+
+    '
+  editable: true
+  index: 8563
+  name: DO_SERVICE_CMD_CHARGE_STATE
+  scale: 1
+  scaleB: 0
+  subindex: 15
+  type: UNSIGNED8
+- access: ro
+  address: '0x217401'
+  description: 'Команда, подаваемая на дискретный выход "Парковочный тормоз" в обычном
+    (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_PARKING_BRAKE
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x217402'
+  description: 'Команда, подаваемая на дискретный выход "Разрешение зарядки" в обычном
+    (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_CHARGE_CP
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x217403'
+  description: 'Команда, подаваемая на дискретный выход "Старт ПСТЭД" в обычном (не
+    сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_START_PSTED
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x217404'
+  description: 'Команда, подаваемая на дискретный выход "Пневмоподвеска нагнетание
+    1" в обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_SUSP_VALVE_UP_1
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x217405'
+  description: 'Команда, подаваемая на дискретный выход "Пневмоподвеска нагнетание
+    2" в обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_SUSP_VALVE_UP_2
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x217406'
+  description: 'Команда, подаваемая на дискретный выход "Пневмоподвеска нагнетание
+    3" в обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_SUSP_VALVE_UP_3
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x217407'
+  description: 'Команда, подаваемая на дискретный выход "Пневмоподвеска нагнетание
+    4" в обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_SUSP_VALVE_UP_4
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x217408'
+  description: 'Команда, подаваемая на дискретный выход "Пневмоподвеска сброс 1" в
+    обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_SUSP_VALVE_DOWN_1
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x217409'
+  description: 'Команда, подаваемая на дискретный выход "Пневмоподвеска сброс 2" в
+    обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_SUSP_VALVE_DOWN_2
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21740A'
+  description: 'Команда, подаваемая на дискретный выход "Пневмоподвеска сброс 3" в
+    обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_SUSP_VALVE_DOWN_3
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21740B'
+  description: 'Команда, подаваемая на дискретный выход "Пневмоподвеска сброс 4" в
+    обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_SUSP_VALVE_DOWN_4
+  scale: 1
+  scaleB: 0
+  subindex: 11
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21740C'
+  description: 'Команда, подаваемая на дискретный выход "Гидравлический тормоз. Помпа"
+    в обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_BRAKE_PUMP
+  scale: 1
+  scaleB: 0
+  subindex: 12
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21740D'
+  description: 'Команда, подаваемая на дискретный выход "Гидравлический тормоз. Клапаны
+    1,8" в обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_BRAKE_VALVE_1_8
+  scale: 1
+  scaleB: 0
+  subindex: 13
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21740E'
+  description: 'Команда, подаваемая на дискретный выход "Гидравлический тормоз. Клапаны
+    2,9" в обычном (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_BRAKE_VALVE_2_9
+  scale: 1
+  scaleB: 0
+  subindex: 14
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21740F'
+  description: 'Команда, подаваемая на дискретный выход "Статус зарядки" в обычном
+    (не сервисном) режиме.
+
+    '
+  editable: false
+  index: 8564
+  name: DO_STATE_CHARGE_STATE
+  scale: 1
+  scaleB: 0
+  subindex: 15
+  type: UNSIGNED8
+  value: null
+error_monitoring:
+- access: ro
+  address: '0x212401'
+  description: 'Код критической ошибки КВУ. Если ошибок несколько, значение меняется
+    с периодом ERROR_CODE_CHANGE_PERIOD
+
+    '
+  editable: false
+  index: 8484
+  name: FAULT_CODE
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x212402'
+  description: Количество критических ошибок КВУ
+  editable: false
+  index: 8484
+  name: FAULTS_NUM
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x212403'
+  description: 'Код некритической ошибки КВУ. Если ошибок несколько, значение меняется
+    с периодом ERROR_CODE_CHANGE_PERIOD
+
+    '
+  editable: false
+  index: 8484
+  name: WARNING_CODE
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x212404'
+  description: Количество некритических ошибок КВУ
+  editable: false
+  index: 8484
+  name: WARNING_NUM
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x212405'
+  description: Длительность показа одного кода ошибки в параметрах FAULT_CODE и WARNING_CODE
+  editable: true
+  eeprom: null
+  index: 8484
+  name: ERROR_CODE_CHANGE_PERIOD
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x212501'
+  description: 'Запрос на сброс ошибок КВУ и операции ресета исполнительных устройств
+    для сброса их ошибок. Для осуществления  достаточно одного SDO на запись со значением
+    "1". При чтении этого параметра отображается число выполненных  соответствующих
+    запросов с момента запуска КВУ.
+
+    '
+  editable: true
+  index: 8485
+  name: ERRORS_RESET_CMD
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED32
+- access: ro
+  address: '0x212601'
+  description: 'Лог критических ошибок представляет собой кольцевой буфер из 10 ячеек.
+    Этот параметр показывает номер ячейки, в  которой отображается самый свежий код
+    ошибки. Нумерация идет с 0 до 9
+
+    '
+  editable: false
+  index: 8486
+  name: ERROR_LOG_LAST_INDEX
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x212602'
+  description: Ячейка номер 0 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_0
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x212603'
+  description: Ячейка номер 1 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_1
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x212604'
+  description: Ячейка номер 2 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_2
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x212605'
+  description: Ячейка номер 3 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_3
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x212606'
+  description: Ячейка номер 4 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_4
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x212607'
+  description: Ячейка номер 5 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_5
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x212608'
+  description: Ячейка номер 6 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_6
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x212609'
+  description: Ячейка номер 7 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_7
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x21260A'
+  description: Ячейка номер 8 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_8
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x21260B'
+  description: Ячейка номер 9 лога критических ошибок
+  editable: false
+  index: 8486
+  name: ERROR_LOG_9
+  scale: 1
+  scaleB: 0
+  subindex: 11
+  type: UNSIGNED16
+  value: null
+iolib_errors:
+- access: ro
+  address: '0x211301'
+  description: Последний обработанный код ошибки от внутренней библиотеки IOLIB КВУ
+  editable: false
+  index: 8467
+  name: IOLIB_ERROR_CODE
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x211302'
+  description: Источник последней обработанный ошибки от внутренней библиотеки IOLIB
+    КВУ
+  editable: false
+  index: 8467
+  name: IOLIB_ERROR_DEVICE
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x211303'
+  description: Количество задетектированных ошибок в секции CFG FLASH
+  editable: false
+  eeprom: null
+  index: 8467
+  name: IOLIB_CFG_FLASH_ERRORS
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x211304'
+  description: Количество задетектированных ошибок в секции FLASH
+  editable: false
+  eeprom: null
+  index: 8467
+  name: IOLIB_FLASH_ERRORS
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x211305'
+  description: Количество задетектированных ошибок в RAM
+  editable: false
+  eeprom: null
+  index: 8467
+  name: IOLIB_RAM_ERRORS
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED16
+  value: null
+j1939&lights_control:
+- access: ro
+  address: '0x210006'
+  description: 'Флаг, показывающий, что в настоящий момент КВУ получает сообщение
+    "Основное управление" (PGN 0xFF81). Сообщение  может присылать либо БКУ (SA 0xA5),
+    либо джойстик (SA 0xA4).
+
+    '
+  editable: false
+  index: 8448
+  name: AUTOPILOT_ONLINE
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210005'
+  description: 'Флаг, показывающий, включен ли прием сообщений от БКУ. Сообщения от
+    БКУ игнорируются, если на шине присутствует  джойстик. При пропадании джойстика
+    опять становится возможным прием команд от БКУ.
+
+    '
+  editable: false
+  index: 8448
+  name: BKU_RX_ENABLED
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210401'
+  description: 'КВУ видит присутствие БКУ на шине. Детекция происходит по сообщению
+    "Основное управление" (PGN 0xFF81),  полученному на шине CAN2 с адреса БКУ (0xA5).
+    Примечание: если на шине также присутствует джойстик, то данный  флаг будет показывать
+    ''false'', т.к. прием сообщений от БКУ будет выключен (см. BKU_RX_ENABLED)
+
+    '
+  editable: false
+  index: 8452
+  name: BKU_ONLINE
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210402'
+  description: 'КВУ видит присутствие ПСТЭД на шине. Детекция происходит при наличии
+    на шине CAN1 хотя бы одного сообщения с  CAN-ID, младший байт которого равен 0x81
+
+    '
+  editable: false
+  index: 8452
+  name: PSTED_ONLINE
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210403'
+  description: 'КВУ видит присутствие передней рулевой рейки на шине. Детекция происходит
+    при наличии на шине CAN1 хотя бы  одного сообщения с CAN-ID, младший байт которого
+    равен 0x8F
+
+    '
+  editable: false
+  index: 8452
+  name: STEERING_FRONT_ONLINE
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210404'
+  description: 'КВУ видит присутствие задней рулевой рейки на шине. Детекция происходит
+    при наличии на шине CAN1 хотя бы одного  сообщения с CAN-ID, младший байт которого
+    равен 0x90
+
+    '
+  editable: false
+  index: 8452
+  name: STEERING_REAR_ONLINE
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210405'
+  description: 'КВУ видит присутствие зарядного устройства на шине. Детекция происходит
+    при наличии на шине CAN2 хотя бы одного  сообщения с SA 0xE5
+
+    '
+  editable: false
+  index: 8452
+  name: CHARGER_ONLINE
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210406'
+  description: 'КВУ видит присутствие BMS на шине. Детекция происходит при наличии
+    на шине CAN2 хотя бы одного сообщения  с SA 0xF4
+
+    '
+  editable: false
+  index: 8452
+  name: BMS_ONLINE
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210407'
+  description: 'КВУ видит присутствие джойстика на шине. Детекция происходит по сообщению
+    "Основное управление" (PGN 0xFF81),  полученному на шине CAN2 с адреса джойстика
+    (0xA4).
+
+    '
+  editable: false
+  index: 8452
+  name: JOYSTICK_ONLINE
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x210501'
+  description: Таймаут детекции присутствия БКУ на шине CAN2
+  editable: true
+  eeprom: null
+  index: 8453
+  name: BKU_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x210502'
+  description: Таймаут детекции присутствия ПСТЭД на шине CAN1
+  editable: true
+  eeprom: null
+  index: 8453
+  name: PSTED_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x210503'
+  description: Таймаут детекции присутствия рулевых реек на шине CAN1
+  editable: true
+  eeprom: null
+  index: 8453
+  name: STEERING_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x210504'
+  description: Таймаут детекции присутствия зарядного устройства на шине CAN2
+  editable: true
+  eeprom: null
+  index: 8453
+  name: CHARGER_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x210505'
+  description: Таймаут детекции присутствия BMS на шине CAN2
+  editable: true
+  eeprom: null
+  index: 8453
+  name: BMS_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x210506'
+  description: Таймаут детекции присутствия джойстика на шине CAN2
+  editable: true
+  eeprom: null
+  index: 8453
+  name: JOYSTICK_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x210101'
+  description: Период мигания поворотников в аварийном режиме КВУ
+  editable: true
+  eeprom: null
+  index: 8449
+  name: LIGHTS_TURN_INDICATORS_PERIOD
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED16
+  units: мс
+  value: null
+main_fsm&power_management:
+- access: ro
+  address: '0x211401'
+  description: Текущее состояние основной машины состояний КВУ (см. описание на Confluence)
+  editable: false
+  index: 8468
+  name: MAINFSM_CURRENT_STATE
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+  values_table:
+    0: Undefined
+    1: Init
+    2: Fault
+    3: Disarmed
+    4: Armed
+    5: Stop Turn Off
+    6: Stop Fault
+    7: Turn Off
+    8: Fault Exit
+- access: rw
+  address: '0x211402'
+  description: 'Пауза после включения КВУ перед переходом в Disarmed, необходимая
+    для включения исполнительных узлов
+
+    '
+  editable: true
+  eeprom: null
+  index: 8468
+  name: MAINFSM_STARTUP_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x211403'
+  description: Максимально допустимое время нахождения КВУ в состояниях "Stop Fault"
+    и "Stop Turn Off"
+  editable: true
+  eeprom: null
+  index: 8468
+  name: MAINFSM_VEHICLE_STOP_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x211404'
+  description: Время нахождения КВУ в состоянии "Fault Exit"
+  editable: true
+  eeprom: null
+  index: 8468
+  name: MAINFSM_FAULT_EXIT_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x216011'
+  description: Порог скорости, ниже которого ВАТС считается остановившимся
+  editable: true
+  eeprom: null
+  index: 8544
+  mult: 0.01
+  name: VEHICLE_STOP_VELOCITY_THRES
+  scale: 100.0
+  scaleB: 0
+  subindex: 17
+  type: SIGNED16
+  units: м/с
+  value: null
+- access: rw
+  address: '0x212002'
+  description: Пауза перед отключением питания для штатного завершения работы БКУ
+  editable: true
+  eeprom: null
+  index: 8480
+  name: POWER_BKU_TURNOFF_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: мс
+  value: null
+motor_control:
+- access: ro
+  address: '0x210701'
+  description: Флаг запуска инвертора, отправляемый на ПСТЭД
+  editable: false
+  index: 8455
+  name: TO_PSTED_RUN
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210702'
+  description: Флаг аварийной остановки инвертора, отправляемый на ПСТЭД
+  editable: false
+  index: 8455
+  name: TO_PSTED_EM_STOP
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x210703'
+  description: Запрашиваемый момент, отправляемый на ПСТЭД
+  editable: false
+  index: 8455
+  mult: 0.00305
+  name: TO_PSTED_CMD_VALUE
+  scale: 327.86885245901635
+  scaleB: 0
+  subindex: 3
+  type: SIGNED16
+  units: '%'
+  value: null
+- access: ro
+  address: '0x210705'
+  description: Текущее напряжение батареи, отправляемое на ПСТЭД
+  editable: false
+  index: 8455
+  mult: 0.1
+  name: TO_PSTED_BMS_VOLTAGE
+  scale: 10.0
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED16
+  units: В
+  value: null
+- access: ro
+  address: '0x210801'
+  description: "Статусный байт, полученный от ПСТЭД:\n bit 0 - Инвертор готов к работе\n\
+    \ bit 1 - Критическая ошибка\n bit 2 - Некритическая ошибка/близко к какому-либо\
+    \ защитному лимиту\n bit 3 - Перегрев\n"
+  editable: false
+  index: 8456
+  name: FROM_PSTED_STATUS
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x210802'
+  description: Текущий момент, полученный от ПСТЭД
+  editable: false
+  index: 8456
+  mult: 0.7874
+  name: FROM_PSTED_TORQUE
+  scale: 1.27000254000508
+  scaleB: 0
+  subindex: 2
+  type: SIGNED8
+  units: '%'
+  value: null
+- access: ro
+  address: '0x210803'
+  description: Текущая скорость вращения двигателя, полученная от ПСТЭД
+  editable: false
+  index: 8456
+  mult: 0.24415
+  name: FROM_PSTED_MOTOR_SPEED
+  scale: 4.095842719639566
+  scaleB: 0
+  subindex: 3
+  type: SIGNED16
+  units: об/мин
+  value: null
+- access: ro
+  address: '0x210804'
+  description: Текущий ток статора, полученный от ПСТЭД
+  editable: false
+  index: 8456
+  mult: 5.11811
+  name: FROM_PSTED_CURRENT
+  scale: 0.19538462440236729
+  scaleB: 0
+  subindex: 4
+  type: SIGNED8
+  units: А
+  value: null
+- access: ro
+  address: '0x210805'
+  description: Текущая мощность, полученная от ПСТЭД
+  editable: false
+  index: 8456
+  mult: 1.1811
+  name: FROM_PSTED_POWER
+  scale: 0.8466683600033866
+  scaleB: 0
+  subindex: 5
+  type: SIGNED8
+  units: кВт
+  value: null
+- access: ro
+  address: '0x210806'
+  description: Текущее напряжение в звене постоянного тока, полученное от ПСТЭД
+  editable: false
+  index: 8456
+  mult: 6.353
+  name: FROM_PSTED_VOLTAGE
+  scale: 0.15740594994490792
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED8
+  units: В
+  value: null
+- access: ro
+  address: '0x210807'
+  description: Текущее выходное напряжение инвертора, полученное от ПСТЭД
+  editable: false
+  index: 8456
+  mult: 0.392
+  name: FROM_PSTED_OUT_VOLTAGE
+  scale: 2.5510204081632653
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED8
+  units: '%'
+  value: null
+- access: ro
+  address: '0x210808'
+  description: Текущая температура двигателя, полученная от ПСТЭД
+  editable: false
+  index: 8456
+  name: FROM_PSTED_MOTOR_TEMP
+  offset: 40.0
+  scale: 1
+  scaleB: 40.0
+  subindex: 8
+  type: UNSIGNED8
+  units: град
+  value: null
+- access: ro
+  address: '0x210809'
+  description: Текущая температура обмотки возбуждения, полученная от ПСТЭД
+  editable: false
+  index: 8456
+  name: FROM_PSTED_FLUX_COIL_TEMP
+  offset: 40.0
+  scale: 1
+  scaleB: 40.0
+  subindex: 9
+  type: UNSIGNED8
+  units: град
+  value: null
+- access: ro
+  address: '0x21080A'
+  description: Текущая температура радиатора, полученная от ПСТЭД
+  editable: false
+  index: 8456
+  name: FROM_PSTED_RADIATOR_TEMP
+  offset: 40.0
+  scale: 1
+  scaleB: 40.0
+  subindex: 10
+  type: UNSIGNED8
+  units: град
+  value: null
+- access: ro
+  address: '0x21080B'
+  description: Текущая внутренняя температура инвертора, полученная от ПСТЭД
+  editable: false
+  index: 8456
+  name: FROM_PSTED_INTERNAL_TEMP
+  offset: 40.0
+  scale: 1
+  scaleB: 40.0
+  subindex: 11
+  type: UNSIGNED8
+  units: град
+  value: null
+- access: ro
+  address: '0x21080C'
+  description: Байт состояния изоляции, полученный от ПСТЭД
+  editable: false
+  index: 8456
+  name: FROM_PSTED_ISOLATION_STATUS
+  scale: 1
+  scaleB: 0
+  subindex: 12
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x21080D'
+  description: Регистр ошибок 1, полученный от ПСТЭД
+  editable: false
+  index: 8456
+  name: FROM_PSTED_ERRORS_1
+  scale: 1
+  scaleB: 0
+  subindex: 13
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x21080E'
+  description: Регистр ошиок 2, полученный от ПСТЭД
+  editable: false
+  index: 8456
+  name: FROM_PSTED_ERRORS_2
+  scale: 1
+  scaleB: 0
+  subindex: 14
+  type: UNSIGNED16
+  value: null
+- access: ro
+  address: '0x21080F'
+  description: Регистр некритических ошибок, полученный от ПСТЭД
+  editable: false
+  index: 8456
+  name: FROM_PSTED_WARNINGS
+  scale: 1
+  scaleB: 0
+  subindex: 15
+  type: UNSIGNED16
+  value: null
+- access: rw
+  address: '0x210810'
+  description: Желаемый момент двигателя в ручном режиме управления
+  editable: true
+  index: 8456
+  mult: 0.00305
+  name: PSTED_MANUAL_CONTROL_REF_TORQUE
+  scale: 327.86885245901635
+  scaleB: 0
+  subindex: 16
+  type: SIGNED16
+  units: '%'
+- access: rw
+  address: '0x210901'
+  description: Инвертировать значение желаемого момента при отправке на ПСТЭД
+  editable: true
+  eeprom: null
+  index: 8457
+  name: PSTED_TORQUE_INVERT
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x210902'
+  description: Моментный параметр рампы
+  editable: true
+  eeprom: null
+  index: 8457
+  mult: 0.0015
+  name: PSTED_RAMP_MAX_TORQUE
+  scale: 666.6666666666666
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: '%'
+  value: null
+- access: rw
+  address: '0x210903'
+  description: Времменной параметр рампы
+  editable: true
+  eeprom: null
+  index: 8457
+  name: PSTED_RAMP_TIME
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  units: мс
+  value: null
+pneumatic_suspension:
+- access: ro
+  address: '0x213002'
+  description: Текущая высота на подушке FL (после обработки и учитывая смещение для
+    БКУ)
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_HEIGHT_FL
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: SIGNED16
+  units: мм
+  value: null
+- access: ro
+  address: '0x213003'
+  description: Текущая высота на подушке FR (после обработки и учитывая смещение для
+    БКУ)
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_HEIGHT_FR
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: SIGNED16
+  units: мм
+  value: null
+- access: ro
+  address: '0x213004'
+  description: Текущая высота на подушке RL (после обработки и учитывая смещение для
+    БКУ)
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_HEIGHT_RL
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: SIGNED16
+  units: мм
+  value: null
+- access: ro
+  address: '0x213005'
+  description: Текущая высота на подушке RR (после обработки и учитывая смещение для
+    БКУ)
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_HEIGHT_RR
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: SIGNED16
+  units: мм
+  value: null
+- access: ro
+  address: '0x213006'
+  description: Текущее давление в подушке FL
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_PRESSURE_FL
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED16
+  units: мбар
+  value: null
+- access: ro
+  address: '0x213007'
+  description: Текущее давление в подушке FR
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_PRESSURE_FR
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED16
+  units: мбар
+  value: null
+- access: ro
+  address: '0x213008'
+  description: Текущее давление в подушке RL
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_PRESSURE_RL
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: UNSIGNED16
+  units: мбар
+  value: null
+- access: ro
+  address: '0x213009'
+  description: Текущее давление в подушке RR
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_PRESSURE_RR
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: UNSIGNED16
+  units: мбар
+  value: null
+- access: ro
+  address: '0x21300A'
+  description: Регистр ошибок таска управления подвеской. Дублируется в кодах ошибок.
+  editable: false
+  index: 8496
+  name: SUSPENSION_TASK_ERR_REG
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x21300B'
+  description: Текущая высота на подушке FL (сырое значение с датчика)
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_RAW_HEIGHT_FL
+  scale: 1
+  scaleB: 0
+  subindex: 11
+  type: SIGNED16
+  units: мм
+  value: null
+- access: ro
+  address: '0x21300C'
+  description: Текущая высота на подушке FR (сырое значение с датчика)
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_RAW_HEIGHT_FR
+  scale: 1
+  scaleB: 0
+  subindex: 12
+  type: SIGNED16
+  units: мм
+  value: null
+- access: ro
+  address: '0x21300D'
+  description: Текущая высота на подушке RL (сырое значение с датчика)
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_RAW_HEIGHT_RL
+  scale: 1
+  scaleB: 0
+  subindex: 13
+  type: SIGNED16
+  units: мм
+  value: null
+- access: ro
+  address: '0x21300E'
+  description: Текущая высота на подушке RR (сырое значение с датчика)
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_RAW_HEIGHT_RR
+  scale: 1
+  scaleB: 0
+  subindex: 14
+  type: SIGNED16
+  units: мм
+  value: null
+- access: ro
+  address: '0x21300F'
+  description: Длительность импульса с датчика высоты FL, по которой расчитывается
+    высота в [мм]
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_RAW_PWD_FL
+  scale: 1
+  scaleB: 0
+  subindex: 15
+  type: UNSIGNED32
+  units: мкс
+  value: null
+- access: ro
+  address: '0x213010'
+  description: Длительность импульса с датчика высоты FR, по которой расчитывается
+    высота в [мм]
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_RAW_PWD_FR
+  scale: 1
+  scaleB: 0
+  subindex: 16
+  type: UNSIGNED32
+  units: мкс
+  value: null
+- access: ro
+  address: '0x213011'
+  description: Длительность импульса с датчика высоты RL, по которой расчитывается
+    высота в [мм]
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_RAW_PWD_RL
+  scale: 1
+  scaleB: 0
+  subindex: 17
+  type: UNSIGNED32
+  units: мкс
+  value: null
+- access: ro
+  address: '0x213012'
+  description: Длительность импульса с датчика высоты RR, по которой расчитывается
+    высота в [мм]
+  editable: false
+  index: 8496
+  name: SUSPENSION_CUR_RAW_PWD_RR
+  scale: 1
+  scaleB: 0
+  subindex: 18
+  type: UNSIGNED32
+  units: мкс
+  value: null
+- access: rw
+  address: '0x213101'
+  description: Максимальное допустимое давление в подушках
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_PRESSURE_MAX
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED16
+  units: мбар
+  value: null
+- access: rw
+  address: '0x213102'
+  description: Минимальное допустимое давление в подушках
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_PRESSURE_MIN
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: мбар
+  value: null
+- access: rw
+  address: '0x213103'
+  description: Зона нечувствительности регулятора высоты
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_TOLERANCE
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213104'
+  description: Коэффициент фильтрации значений датичков давления
+  editable: true
+  eeprom: null
+  index: 8497
+  mult: 0.0039
+  name: SUSPENSION_PRESSURE_SENSOR_FILTER
+  scale: 256.4102564102564
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED8
+  value: '[0..1]'
+- access: rw
+  address: '0x213105'
+  description: Коэффициент фильтрации значений датичков высоты
+  editable: true
+  eeprom: null
+  index: 8497
+  mult: 0.0039
+  name: SUSPENSION_HEIGHT_SENSOR_FILTER
+  scale: 256.4102564102564
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED8
+  value: '[0..1]'
+- access: rw
+  address: '0x213106'
+  description: Инвертировать значение датчика высоты FL
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_INVERT_FL
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x213107'
+  description: Инвертировать значение датчика высоты FR
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_INVERT_FR
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x213108'
+  description: Инвертировать значение датчика высоты RL
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_INVERT_RL
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x213109'
+  description: Инвертировать значение датчика высоты RR
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_INVERT_RR
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x21310A'
+  description: Смещение значения высоты FL для взаимодействия с БКУ
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_OFFSET_FL
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: SIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x21310B'
+  description: Смещение значения высоты FR для взаимодействия с БКУ
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_OFFSET_FR
+  scale: 1
+  scaleB: 0
+  subindex: 11
+  type: SIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x21310C'
+  description: Смещение значения высоты RL для взаимодействия с БКУ
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_OFFSET_RL
+  scale: 1
+  scaleB: 0
+  subindex: 12
+  type: SIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x21310D'
+  description: Смещение значения высоты RR для взаимодействия с БКУ
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_OFFSET_RR
+  scale: 1
+  scaleB: 0
+  subindex: 13
+  type: SIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x21310E'
+  description: Значение датчика высоты FL (сырое) в самом нижнем положении подвески
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_SENSOR_MIN_FL
+  scale: 1
+  scaleB: 0
+  subindex: 14
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x21310F'
+  description: Значение датчика высоты FR (сырое) в самом нижнем положении подвески
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_SENSOR_MIN_FR
+  scale: 1
+  scaleB: 0
+  subindex: 15
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213110'
+  description: Значение датчика высоты RL (сырое) в самом нижнем положении подвески
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_SENSOR_MIN_RL
+  scale: 1
+  scaleB: 0
+  subindex: 16
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213111'
+  description: Значение датчика высоты RR (сырое) в самом нижнем положении подвески
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_SENSOR_MIN_RR
+  scale: 1
+  scaleB: 0
+  subindex: 17
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213112'
+  description: Значение датчика высоты FL (сырое) в самом верхнем положении подвески
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_SENSOR_MAX_FL
+  scale: 1
+  scaleB: 0
+  subindex: 18
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213113'
+  description: Значение датчика высоты FR (сырое) в самом верхнем положении подвески
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_SENSOR_MAX_FR
+  scale: 1
+  scaleB: 0
+  subindex: 19
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213114'
+  description: Значение датчика высоты RL (сырое) в самом верхнем положении подвески
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_SENSOR_MAX_RL
+  scale: 1
+  scaleB: 0
+  subindex: 20
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213115'
+  description: Значение датчика высоты RR (сырое) в самом верхнем положении подвески
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_SENSOR_MAX_RR
+  scale: 1
+  scaleB: 0
+  subindex: 21
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213116'
+  description: Самое нижнее положение подвески (высота положения рамы от уровня земли)
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_MIN
+  scale: 1
+  scaleB: 0
+  subindex: 22
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213117'
+  description: Самое верхнее положение подвески (высота положения рамы от уровня земли)
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_HEIGHT_MAX
+  scale: 1
+  scaleB: 0
+  subindex: 23
+  type: UNSIGNED16
+  units: мм
+  value: null
+- access: rw
+  address: '0x213118'
+  description: Время задержки перед реакцией подвески
+  editable: true
+  eeprom: null
+  index: 8497
+  name: SUSPENSION_EXEC_DELAY
+  scale: 1
+  scaleB: 0
+  subindex: 24
+  type: UNSIGNED16
+  units: мс
+  value: null
+rx_from_bku:
+- access: ro
+  address: '0x219001'
+  description: Команда от БКУ на переход в режим "Armed"
+  editable: false
+  index: 8592
+  name: FROM_BKU_ARM
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x219002'
+  description: Команда от БКУ на зажатие парковочного тормоза
+  editable: false
+  index: 8592
+  name: FROM_BKU_PARKING_BRAKE
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x219003'
+  description: Команда от БКУ на активацию дискретного тормоза
+  editable: false
+  index: 8592
+  name: FROM_BKU_DISCRETE_BRAKE
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x219004'
+  description: Команда от БКУ на задание момента ПСТЭД
+  editable: false
+  index: 8592
+  mult: 0.01
+  name: FROM_BKU_TORQUE
+  offset: 100.0
+  scale: 100.0
+  scaleB: 100.0
+  subindex: 4
+  type: UNSIGNED32
+  units: '%'
+  value: null
+- access: ro
+  address: '0x219005'
+  description: Команда от БКУ на задание положения передней рулевой рейки
+  editable: false
+  index: 8592
+  mult: 0.01
+  name: FROM_BKU_STEERING_FRONT
+  offset: 100.0
+  scale: 100.0
+  scaleB: 100.0
+  subindex: 5
+  type: UNSIGNED32
+  units: '%'
+  value: null
+- access: ro
+  address: '0x219006'
+  description: Команда от БКУ на задание значения плавного торможения
+  editable: false
+  index: 8592
+  mult: 0.4
+  name: FROM_BKU_SMOOTH_BRAKE
+  scale: 2.5
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED32
+  units: '%'
+  value: null
+- access: ro
+  address: '0x219007'
+  description: Команда от БКУ на включение левого поворотника (контроль мигания осуществляется
+    на стороне БКУ)
+  editable: false
+  index: 8592
+  name: FROM_BKU_LIGHT_TURN_LEFT
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x219008'
+  description: Команда от БКУ на включение правого поворотника (контроль мигания осуществляется
+    на стороне БКУ)
+  editable: false
+  index: 8592
+  name: FROM_BKU_LIGHT_TURN_RIGHT
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x219009'
+  description: Команда от БКУ на включение стоп-сигналов
+  editable: false
+  index: 8592
+  name: FROM_BKU_LIGHT_STOP
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x21900A'
+  description: Команда от БКУ на включение сигнала заднего хода
+  editable: false
+  index: 8592
+  name: FROM_BKU_LIGHT_BACK
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x21900B'
+  description: Команда от БКУ на включение ар ближнего света
+  editable: false
+  index: 8592
+  name: FROM_BKU_LIGHT_HEAD
+  scale: 1
+  scaleB: 0
+  subindex: 11
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x21900C'
+  description: Команда от БКУ на задание положения задней рулевой рейки
+  editable: false
+  index: 8592
+  mult: 0.01
+  name: FROM_BKU_STEERING_REAR
+  offset: 100.0
+  scale: 100.0
+  scaleB: 100.0
+  subindex: 12
+  type: UNSIGNED32
+  units: '%'
+  value: null
+- access: ro
+  address: '0x21900D'
+  description: Команда от БКУ на активацию управления пневмоподвеской
+  editable: false
+  index: 8592
+  name: FROM_BKU_SUSPENSION_ENABLE
+  scale: 1
+  scaleB: 0
+  subindex: 13
+  type: UNSIGNED32
+  value: null
+- access: ro
+  address: '0x21900E'
+  description: Команда от БКУ на высоту пневмоподвески 1
+  editable: false
+  index: 8592
+  mult: 2.0
+  name: FROM_BKU_SUSPENSION_HEIGHT_1
+  offset: 250.0
+  scale: 0.5
+  scaleB: 250.0
+  subindex: 14
+  type: UNSIGNED32
+  units: мм
+  value: null
+- access: ro
+  address: '0x21900F'
+  description: Команда от БКУ на высоту пневмоподвески 2
+  editable: false
+  index: 8592
+  mult: 2.0
+  name: FROM_BKU_SUSPENSION_HEIGHT_2
+  offset: 250.0
+  scale: 0.5
+  scaleB: 250.0
+  subindex: 15
+  type: UNSIGNED32
+  units: мм
+  value: null
+- access: ro
+  address: '0x219010'
+  description: Команда от БКУ на высоту пневмоподвески 3
+  editable: false
+  index: 8592
+  mult: 2.0
+  name: FROM_BKU_SUSPENSION_HEIGHT_3
+  offset: 250.0
+  scale: 0.5
+  scaleB: 250.0
+  subindex: 16
+  type: UNSIGNED32
+  units: мм
+  value: null
+- access: ro
+  address: '0x219011'
+  description: Команда от БКУ на высоту пневмоподвески 4
+  editable: false
+  index: 8592
+  mult: 2.0
+  name: FROM_BKU_SUSPENSION_HEIGHT_4
+  offset: 250.0
+  scale: 0.5
+  scaleB: 250.0
+  subindex: 17
+  type: UNSIGNED32
+  units: мм
+  value: null
+steering_control:
+- access: rw
+  address: '0x211001'
+  description: Желаемое положение передней рулевой рейки в ручном режиме управления,
+  editable: true
+  index: 8464
+  name: STEERING_FRONT_MANUAL_CONTROL_CMD
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: SIGNED16
+  units: '[-30000..30000]'
+- access: rw
+  address: '0x211002'
+  description: Желаемое положение задней рулевой рейки в ручном режиме управления,
+  editable: true
+  index: 8464
+  name: STEERING_REAR_MANUAL_CONTROL_CMD
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: SIGNED16
+  units: '[-30000..30000]'
+- access: rw
+  address: '0x211003'
+  description: Включение управления задней рулевой рейкой
+  editable: true
+  eeprom: null
+  index: 8464
+  name: STEERING_REAR_ENABLE
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x211102'
+  description: Текущее положение передней рулевой рейки, отправляемое на БКУ
+  editable: false
+  index: 8465
+  mult: 1.0
+  name: TO_BKU_STEERING_FRONT_POSITION
+  offset: 30000.0
+  scale: 1.0
+  scaleB: 30000.0
+  subindex: 2
+  type: UNSIGNED32
+  units: '[-30000..30000]'
+  value: null
+- access: ro
+  address: '0x211103'
+  description: Желаемое положение, отправляемое на переднюю рулевую рейку
+  editable: false
+  index: 8465
+  name: TO_STEERING_FRONT_CMD
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: SIGNED16
+  units: '[-1000..1000]'
+  value: null
+- access: ro
+  address: '0x211104'
+  description: Текущее положение передней рулевой рейки, получаемое с рейки
+  editable: false
+  index: 8465
+  name: FROM_STEERING_FRONT_POSITION
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: SIGNED16
+  units: '[-1000..1000]'
+  value: null
+- access: ro
+  address: '0x211105'
+  description: Разрешение работы передней рулевой рейки
+  editable: false
+  index: 8465
+  name: TO_STEERING_FRONT_RUN
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x211106'
+  description: "Подробное описание ошибки задней рулевой рейки\n бит 0 - Авария модуля\n\
+    \ бит 1 - Короткое замыкание на выходе\n бит 2 - Авария датчика положения/калибровки\n\
+    \ бит 3 - Перегрев силового радиатора\n бит 4 - Перенапряжение Udc\n бит 5 - Пониженное\
+    \ напряжение Udc\n бит 6 - Длительная токовая перегрузка\n бит 7 - Неправильная\
+    \ полярность DC-мотора\n"
+  editable: false
+  index: 8465
+  name: FROM_STEERING_FRONT_ERRORS
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x211107'
+  description: Нулевое положение передней рулевой рейки
+  editable: true
+  eeprom: null
+  index: 8465
+  name: STEERING_FRONT_ZERO
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: SIGNED16
+  units: '[-30000..30000]'
+  value: null
+- access: rw
+  address: '0x211108'
+  description: Максимальное отклонение в положительную сторону передней рулевой рейки
+  editable: true
+  eeprom: null
+  index: 8465
+  name: STEERING_FRONT_MAX
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: SIGNED16
+  units: '[-30000..30000]'
+  value: null
+- access: rw
+  address: '0x211109'
+  description: Максимальное отклонение в отрицательную сторону передней рулевой рейки
+  editable: true
+  eeprom: null
+  index: 8465
+  name: STEERING_FRONT_MIN
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: SIGNED16
+  units: '[-30000..30000]'
+  value: null
+- access: rw
+  address: '0x21110A'
+  description: Инвертировать команду для передней рулевой рейки
+  editable: true
+  eeprom: null
+  index: 8465
+  name: STEERING_FRONT_INVERT
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21110B'
+  description: "Байт статуса передней рулевой рейки, полученный от рейки\n бит 0 -\
+    \ Активна/неактивна\n бит 1 - Флаг ошибки\n бит 2 - Флаг предупреждения\n бит\
+    \ 3 - Флаг перегрева\n"
+  editable: false
+  index: 8465
+  name: FROM_STEERING_FRONT_STATUS
+  scale: 1
+  scaleB: 0
+  subindex: 11
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21110C'
+  description: Текущее значение тока в передней рулевой рейки, полученное от рейки
+  editable: false
+  index: 8465
+  name: FROM_STEERING_FRONT_CURRENT
+  scale: 1
+  scaleB: 0
+  subindex: 12
+  type: SIGNED16
+  units: А
+  value: null
+- access: ro
+  address: '0x21110D'
+  description: Текущая температура передней рулевой рейки, полученная от рейки
+  editable: false
+  index: 8465
+  name: FROM_STEERING_FRONT_TEMP
+  offset: 40.0
+  scale: 1
+  scaleB: 40.0
+  subindex: 13
+  type: UNSIGNED8
+  units: град
+  value: null
+- access: ro
+  address: '0x21110E'
+  description: Текущая температура мотора передней рулевой рейки, полученная от рейки
+  editable: false
+  index: 8465
+  name: FROM_STEERING_FRONT_MOTOR_TEMP
+  offset: 40.0
+  scale: 1
+  scaleB: 40.0
+  subindex: 14
+  type: UNSIGNED8
+  units: град
+  value: null
+- access: ro
+  address: '0x211202'
+  description: Текущее положение задней рулевой рейки, отправляемое на БКУ
+  editable: false
+  index: 8466
+  mult: 1.0
+  name: TO_BKU_STEERING_REAR_POSITION
+  offset: 30000.0
+  scale: 1.0
+  scaleB: 30000.0
+  subindex: 2
+  type: UNSIGNED32
+  units: '[-30000..30000]'
+  value: null
+- access: ro
+  address: '0x211203'
+  description: Желаемое положение, отправляемое на заднюю рулевую рейку
+  editable: false
+  index: 8466
+  name: TO_STEERING_REAR_CMD
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: SIGNED16
+  units: '[-1000..1000]'
+  value: null
+- access: ro
+  address: '0x211204'
+  description: Текущее положение задней рулевой рейки, получаемое с рейки
+  editable: false
+  index: 8466
+  name: FROM_STEERING_REAR_POSITION
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: SIGNED16
+  units: '[-1000..1000]'
+  value: null
+- access: ro
+  address: '0x211205'
+  description: Разрешение работы задней рулевой рейки
+  editable: false
+  index: 8466
+  name: TO_STEERING_REAR_RUN
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x211206'
+  description: "Подробное описание ошибки задней рулевой рейки\n бит 0 - Авария модуля\n\
+    \ бит 1 - Короткое замыкание на выходе\n бит 2 - Авария датчика положения/калибровки\n\
+    \ бит 3 - Перегрев силового радиатора\n бит 4 - Перенапряжение Udc\n бит 5 - Пониженное\
+    \ напряжение Udc\n бит 6 - Длительная токовая перегрузка\n бит 7 - Неправильная\
+    \ полярность DC-мотора\n"
+  editable: false
+  index: 8466
+  name: FROM_STEERING_REAR_ERRORS
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED8
+  value: null
+- access: rw
+  address: '0x211207'
+  description: Нулевое положение задней рулевой рейки
+  editable: true
+  eeprom: null
+  index: 8466
+  name: STEERING_REAR_ZERO
+  scale: 1
+  scaleB: 0
+  subindex: 7
+  type: SIGNED16
+  units: '[-30000..30000]'
+  value: null
+- access: rw
+  address: '0x211208'
+  description: Максимальное отклонение в положительную сторону задней рулевой рейки
+  editable: true
+  eeprom: null
+  index: 8466
+  name: STEERING_REAR_MAX
+  scale: 1
+  scaleB: 0
+  subindex: 8
+  type: SIGNED16
+  units: '[-30000..30000]'
+  value: null
+- access: rw
+  address: '0x211209'
+  description: Максимальное отклонение в отрицательную сторону задней рулевой рейки
+  editable: true
+  eeprom: null
+  index: 8466
+  name: STEERING_REAR_MIN
+  scale: 1
+  scaleB: 0
+  subindex: 9
+  type: SIGNED16
+  units: '[-30000..30000]'
+  value: null
+- access: rw
+  address: '0x21120A'
+  description: Инвертировать команду для задней рулевой рейки
+  editable: true
+  eeprom: null
+  index: 8466
+  name: STEERING_REAR_INVERT
+  scale: 1
+  scaleB: 0
+  subindex: 10
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21120B'
+  description: "Байт статуса задней рулевой рейки, полученный от рейки\n бит 0 - Активна/неактивна\n\
+    \ бит 1 - Флаг ошибки\n бит 2 - Флаг предупреждения\n бит 3 - Флаг перегрева\n"
+  editable: false
+  index: 8466
+  name: FROM_STEERING_REAR_STATUS
+  scale: 1
+  scaleB: 0
+  subindex: 11
+  type: UNSIGNED8
+  value: null
+- access: ro
+  address: '0x21120C'
+  description: Текущее значение тока в задней рулевой рейки, полученное от рейки
+  editable: false
+  index: 8466
+  name: FROM_STEERING_REAR_CURRENT
+  scale: 1
+  scaleB: 0
+  subindex: 12
+  type: SIGNED16
+  units: А
+  value: null
+- access: ro
+  address: '0x21120D'
+  description: Текущая температура задней рулевой рейки, полученная от рейки
+  editable: false
+  index: 8466
+  name: FROM_STEERING_REAR_TEMP
+  offset: 40.0
+  scale: 1
+  scaleB: 40.0
+  subindex: 13
+  type: UNSIGNED8
+  units: град
+  value: null
+- access: ro
+  address: '0x21120E'
+  description: Текущая температура мотора задней рулевой рейки, полученная от рейки
+  editable: false
+  index: 8466
+  name: FROM_STEERING_REAR_MOTOR_TEMP
+  offset: 40.0
+  scale: 1
+  scaleB: 40.0
+  subindex: 14
+  type: UNSIGNED8
+  units: град
+  value: null
+voltage_monitoring&bms&parking_brake&discrete_brake:
+- access: ro
+  address: '0x213501'
+  description: Текущее напряжение на шине 24 В
+  editable: false
+  index: 8501
+  name: SYSTEM_24V
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED16
+  units: мВ
+  value: null
+- access: ro
+  address: '0x213502'
+  description: Текущее напряжение на шине 12 В
+  editable: false
+  index: 8501
+  name: SYSTEM_12V
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: мВ
+  value: null
+- access: rw
+  address: '0x213503'
+  description: Нижний допустимый предел напряжения на шине 24 В
+  editable: true
+  eeprom: null
+  index: 8501
+  name: SYSTEM_24V_LOW_LIM
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  units: мВ
+  value: null
+- access: rw
+  address: '0x213504'
+  description: Верхний допустимый предел напряжения на шине 24 В
+  editable: true
+  eeprom: null
+  index: 8501
+  name: SYSTEM_24V_HIGH_LIM
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED16
+  units: мВ
+  value: null
+- access: rw
+  address: '0x213505'
+  description: Нижний допустимый предел напряжения на шине 12 В
+  editable: true
+  eeprom: null
+  index: 8501
+  name: SYSTEM_12V_LOW_LIM
+  scale: 1
+  scaleB: 0
+  subindex: 5
+  type: UNSIGNED16
+  units: мВ
+  value: null
+- access: rw
+  address: '0x213506'
+  description: Верхний допустимый предел напряжения на шине 12 В
+  editable: true
+  eeprom: null
+  index: 8501
+  name: SYSTEM_12V_HIGH_LIM
+  scale: 1
+  scaleB: 0
+  subindex: 6
+  type: UNSIGNED16
+  units: мВ
+  value: null
+- access: rw
+  address: '0x214003'
+  description: Пороговое минимальное допустимое напряжение на ПСТЭД после завершения
+    предзаряда
+  editable: true
+  eeprom: null
+  index: 8512
+  name: BMS_PSTED_PRECHARGE_THRES
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED16
+  units: В
+  value: null
+- access: rw
+  address: '0x214004'
+  description: Время игнорирования ошибки по напряжению после подключения зарядной
+    вилки
+  editable: true
+  eeprom: null
+  index: 8512
+  name: BMS_IGNORE_VOLT_ERR_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 4
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x214501'
+  description: Команда на зажатие парковочного тормоза в ручном режиме управления
+  editable: true
+  index: 8517
+  name: PARKING_BRAKE_MANUAL_CONTROL_CMD
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED8
+- access: ro
+  address: '0x214502'
+  description: Текущее состояние парковочного тормоза
+  editable: false
+  index: 8517
+  name: PARKING_BRAKE_HELD
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED8
+  value: null
+  value_table:
+    0: Отжат
+    1: Зажат
+- access: rw
+  address: '0x214601'
+  description: Время накачки давления в контур для осуществления торможения
+  editable: true
+  eeprom: null
+  index: 8518
+  name: DISCRETE_BRAKE_ACCUM_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 1
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x214602'
+  description: Время удержания давления в контуре. Включает в себя DISCRETE_BRAKE_ACCUM_TIMEOUT
+  editable: true
+  eeprom: null
+  index: 8518
+  name: DISCRETE_BRAKE_PROCESS_TIMEOUT
+  scale: 1
+  scaleB: 0
+  subindex: 2
+  type: UNSIGNED16
+  units: мс
+  value: null
+- access: rw
+  address: '0x214603'
+  description: Команда на включение гидравлического тормоза в ручном режиме управления
+  editable: true
+  index: 8518
+  name: DISCRETE_BRAKE_MANUAL_CONTROL_CMD
+  scale: 1
+  scaleB: 0
+  subindex: 3
+  type: UNSIGNED8

@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem
 
 import Dialog_params
 import my_dialog
+
 TheBestNode = 'Избранное'
 NewParamsList = 'Новый список'
 
@@ -87,7 +88,7 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         name = par.name
         unit = par.unit
         description = par.description
-        compare = par.compare_value if isinstance(par.compare_value, str) else zero_del(par.compare_value)
+        compare = par.value_compare if isinstance(par.value_compare, str) else zero_del(par.value_compare)
 
         if par.editable:
             color_opacity = 30
@@ -125,7 +126,8 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 def show_new_vmu_params(params_list, table, has_compare_params=False):
     row = 0
     for par in params_list:
-        v_name = par.value if isinstance(par.value, str) else zero_del(par.value)
+        v_name = par.value_string if par.value_string else \
+            par.value if isinstance(par.value, str) else zero_del(par.value)
         value_item = QTableWidgetItem(v_name)
         if par.editable:
             flags = (value_item.flags() | Qt.ItemIsEditable)
@@ -232,7 +234,7 @@ def get_nearest_lower_value(iterable, value):
 
 
 def zero_del(s):
-    return f'{round(s, 5):>8}'.rstrip('0').rstrip('.')
+    return f'{round(s, 5):>8}'.rstrip('0').rstrip('.') if s is not None else 'NaN'
 
 
 def int_to_hex_str(x: int):

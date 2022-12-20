@@ -41,13 +41,16 @@ class SaveToFileThread(QThread):
             # while param.value:
             #     self.params_counter += 1
             #     param = all_params_list[self.params_counter]
-            if not param.value:
+            if not param.value and not param.value_string:
                 if param.address and int(param.address, 16) > 0:  # нужно чтоб параметр группы не проскочил
+                    # ---!!!если параметр строковый, будет None!!---
                     param = all_params_list[self.params_counter].get_value(self.adapter)
 
                     while isinstance(param, str):
                         self.errors_counter += 1
+                        # ---!!!если параметр строковый, будет None!!---
                         param = all_params_list[self.params_counter].get_value(self.adapter)
+
                         if self.errors_counter >= self.max_errors:
                             self.errors_counter = 0
                             self.params_counter = 0
@@ -129,7 +132,7 @@ class MainThread(QThread):
 
     def run(self):
         def emitting():  # передача заполненного списка параметров
-            print(time.perf_counter_ns() - self.thread_timer)
+            # print(time.perf_counter_ns() - self.thread_timer)
             self.thread_timer = time.perf_counter_ns()
             self.threadSignalAThread.emit(self.ans_list)
             self.params_counter = 0
@@ -157,7 +160,8 @@ class MainThread(QThread):
                         emitting()
                         return
             if current_param.node.name in (node.name for node in self.current_nodes_list):
-                param = current_param.get_value(self.adapter)
+                param = current_param.get_value(self.adapter)   # ---!!!если параметр строковый, будет None!!---
+                # print(current_param.name, current_param.value)
                 # если строка - значит ошибка
                 if isinstance(param, str):
                     self.errors_counter += 1
@@ -216,7 +220,7 @@ class MainThread(QThread):
         timer.start(send_delay)
 
         err_timer = QTimer()
-        err_timer.timeout.connect(request_errors)
+        # err_timer.timeout.connect(request_errors)
         err_timer.start(err_req_delay)
 
         loop = QEventLoop()
