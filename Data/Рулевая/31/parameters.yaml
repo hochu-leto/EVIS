@@ -313,7 +313,7 @@ A3.Ver PO / ADC:
   name: A3.1 WheelTyp
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': FORWARD
@@ -353,7 +353,7 @@ A3.Ver PO / ADC:
   name: A3.4 WheelTypeSet
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': SER_NUM
@@ -553,7 +553,7 @@ B0.Global configuration&B1.Rezerv Group:
   name: B0.0 PWM_Period_Scale
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NOT USED '
@@ -577,7 +577,7 @@ B0.Global configuration&B1.Rezerv Group:
   name: B0.1 SSI Encoder type
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'UNDEFINED '
@@ -618,7 +618,7 @@ B0.Global configuration&B1.Rezerv Group:
   name: B0.5 PWM Type
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'U-V DC-MOTOR '
@@ -634,7 +634,7 @@ B0.Global configuration&B1.Rezerv Group:
   name: B0.6 PROJECT
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NOT SELECTED '
@@ -662,7 +662,7 @@ B0.Global configuration&B1.Rezerv Group:
   name: B0.8 Method Incr Encod
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NONE '
@@ -1074,7 +1074,7 @@ B2.CAN_Poppel:
   name: B2.24 CANPDO_ByteOrder
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NORMAL MODE '
@@ -1234,7 +1234,7 @@ C0.Connection:
   name: C0.2 MB baude rate
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': '2400 BAUD '
@@ -1438,7 +1438,7 @@ C1.PositionSens:
   name: C1.4 MechTetaDir
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NORMAL MODE '
@@ -1453,7 +1453,7 @@ C1.PositionSens:
   name: C1.5 SpdDir
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NORMAL MODE '
@@ -1468,7 +1468,7 @@ C1.PositionSens:
   name: C1.6 SpdRefDir
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NORMAL MODE '
@@ -1483,7 +1483,7 @@ C1.PositionSens:
   name: C1.7 IncPosReset
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NO COMMAND '
@@ -1522,7 +1522,7 @@ C1.PositionSens:
   name: C1.20 PwmDir
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NORMAL MODE '
@@ -1814,7 +1814,7 @@ C2.Regulators:
   name: C2.23 POS_RampType
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'NO '
@@ -3298,7 +3298,7 @@ D0.Device control:
   name: 'D0.0 ComandSet '
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'STOP '
@@ -3317,7 +3317,7 @@ D0.Device control:
   name: 'D0.1 ModeSet '
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'SCALAR '
@@ -3385,7 +3385,7 @@ D0.Device control:
   name: D0.6 CAN_Control
   period: 1
   size: 2.0
-  type: UNSIGNED8
+  type: UNSIGNED16
   unit: .nan
   values_table:
     '0': 'MB CONTROL '

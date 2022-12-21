@@ -19,7 +19,7 @@ empty_par = {'name': '',
              'editable': '',
              'description': '',
              'scale': '',
-             'scaleB': '',
+             'offset': '',
              'unit': '',
              'value': '',
              'type': '',
@@ -88,7 +88,9 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         name = par.name
         unit = par.unit
         description = par.description
-        compare = par.value_compare if isinstance(par.value_compare, str) else zero_del(par.value_compare)
+        v_c = par.value_compare
+        compare = v_c if isinstance(v_c, str) else zero_del(v_c)
+        print(v_c, compare)
 
         if par.editable:
             color_opacity = 30

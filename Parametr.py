@@ -181,7 +181,7 @@ class Parametr:
             if self.type == 'FLOAT':
                 self.value = bytes_to_float(value_data[-4:])
             elif self.type == 'VISIBLE_STRING':
-                self.string_from_can(value_data)
+                self.string_from_can(value_data[-4:])
                 self.value = None
                 return self.value
             elif self.type == 'DATA':
@@ -224,7 +224,17 @@ class Parametr:
             self.value_string = ''
             return value
         self.value_string = ''
+        s = ''
         for byte in value:
-            self.value_string += chr(byte)
-        s = self.value_string.strip()
-        return int(s) if s.isdigit() else s
+            if 'Ethernet_' in self.name or '_Ip' in self.name:
+                self.editable = False
+                s += str(byte) + '.'
+            elif '_Mac' in self.name:
+                self.editable = False
+                s += int_to_hex_str(byte) + ':'
+            elif '_time' in self.name:
+                s += str(byte)
+            else:
+                s += chr(byte)
+        self.value_string = s.strip().rstrip('.').rstrip(':')
+        return int(self.value_string) if self.value_string.isdigit() else self.value_string

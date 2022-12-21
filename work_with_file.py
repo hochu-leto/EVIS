@@ -385,7 +385,7 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
     all_compare_params = {}
     for group in dict_for_compare.values():
         for par in group.copy():
-            all_compare_params[par.address] = par.value
+            all_compare_params[par.address] = par
     all_current_params = []
     for group in node.group_params_dict.values():
         for p in group:
@@ -393,6 +393,7 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
 
     for cur_p in all_current_params:
         if cur_p.address in all_compare_params.keys():
-            cur_p.value_compare = all_compare_params[cur_p.address]
-            del all_compare_params[cur_p.address]
+            compare_par = all_compare_params[cur_p.address]
+            cur_p.value_compare = compare_par.value_string if compare_par.value_string else float(compare_par.value)
+            # del all_compare_params[cur_p.address]
     node.has_compare_params = True
