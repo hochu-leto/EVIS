@@ -1,3 +1,64 @@
+Identity&Pre-defined Error Field&Consumer Heartbeat Time&Server SDO Parameter&Client SDO 1 Parameter:
+- address: '0x101801'
+  editable: false
+  name: Vendor ID
+  type: UNSIGNED32
+  value: 706
+- address: '0x101802'
+  editable: false
+  name: Product Code
+  type: UNSIGNED32
+  value: 401
+- address: '0x101803'
+  editable: false
+  name: Revision Number
+  type: UNSIGNED32
+  value: 0
+- address: '0x101804'
+  editable: false
+  name: Serial Number
+  type: UNSIGNED32
+  value: 0
+- address: '0x100300'
+  editable: true
+  name: Number of Errors
+  type: UNSIGNED8
+  value: 1
+- address: '0x100301'
+  editable: false
+  name: Standard Error Field
+  type: UNSIGNED32
+  value: 0
+- address: '0x101602'
+  editable: true
+  name: Consumer Heartbeat Time
+  type: UNSIGNED32
+  value: 0
+- address: '0x120001'
+  editable: false
+  name: COB ID Client to Server (Receive SDO)
+  type: UNSIGNED32
+  value: 3104
+- address: '0x120002'
+  editable: false
+  name: COB ID Server to Client (Transmit SDO)
+  type: UNSIGNED32
+  value: 2976
+- address: '0x128001'
+  editable: true
+  name: COB ID Client to Server (Transmit SDO)
+  type: UNSIGNED32
+  value: 3104
+- address: '0x128002'
+  editable: true
+  name: COB ID Server to Client (Receive SDO)
+  type: UNSIGNED32
+  value: 2976
+- address: '0x128003'
+  editable: true
+  name: Node ID of the SDO Server
+  type: UNSIGNED8
+  value: 10
 batteryOvercurrent:
 - address: '0x220001'
   editable: false
@@ -17,22 +78,6 @@ batteryOvercurrent:
 - address: '0x220004'
   editable: false
   name: CurrentLoadTolerant
-  type: FLOAT
-  value: 0.0
-energy:
-- address: '0x408001'
-  editable: false
-  name: Plus
-  type: FLOAT
-  value: 0.0
-- address: '0x408002'
-  editable: false
-  name: Minus
-  type: FLOAT
-  value: 0.0
-- address: '0x408003'
-  editable: false
-  name: Balance
   type: FLOAT
   value: 0.0
 fs:
@@ -680,506 +725,506 @@ pdo:
 selectedCellResistance:
 - address: '0x406501'
   editable: false
-  name: g_selectedCellResistance 1
+  name: selectedCellResistance 1
   type: FLOAT
   value: 0.0
 - address: '0x406502'
   editable: false
-  name: g_selectedCellResistance 2
+  name: selectedCellResistance 2
   type: FLOAT
   value: 0.0
 - address: '0x406503'
   editable: false
-  name: g_selectedCellResistance 3
+  name: selectedCellResistance 3
   type: FLOAT
   value: 0.0
 - address: '0x406504'
   editable: false
-  name: g_selectedCellResistance 4
+  name: selectedCellResistance 4
   type: FLOAT
   value: 0.0
 - address: '0x406505'
   editable: false
-  name: g_selectedCellResistance 5
+  name: selectedCellResistance 5
   type: FLOAT
   value: 0.0
 - address: '0x406506'
   editable: false
-  name: g_selectedCellResistance 6
+  name: selectedCellResistance 6
   type: FLOAT
   value: 0.0
 - address: '0x406507'
   editable: false
-  name: g_selectedCellResistance 7
+  name: selectedCellResistance 7
   type: FLOAT
   value: 0.0
 - address: '0x406508'
   editable: false
-  name: g_selectedCellResistance 8
+  name: selectedCellResistance 8
   type: FLOAT
   value: 0.0
 - address: '0x406509'
   editable: false
-  name: g_selectedCellResistance 9
+  name: selectedCellResistance 9
   type: FLOAT
   value: 0.0
 - address: '0x40650A'
   editable: false
-  name: g_selectedCellResistance 10
+  name: selectedCellResistance 10
   type: FLOAT
   value: 0.0
 - address: '0x40650B'
   editable: false
-  name: g_selectedCellResistance 11
+  name: selectedCellResistance 11
   type: FLOAT
   value: 0.0
 - address: '0x40650C'
   editable: false
-  name: g_selectedCellResistance 12
+  name: selectedCellResistance 12
   type: FLOAT
   value: 0.0
 - address: '0x40650D'
   editable: false
-  name: g_selectedCellResistance 13
+  name: selectedCellResistance 13
   type: FLOAT
   value: 0.0
 - address: '0x40650E'
   editable: false
-  name: g_selectedCellResistance 14
+  name: selectedCellResistance 14
   type: FLOAT
   value: 0.0
 - address: '0x40650F'
   editable: false
-  name: g_selectedCellResistance 15
+  name: selectedCellResistance 15
   type: FLOAT
   value: 0.0
 - address: '0x406510'
   editable: false
-  name: g_selectedCellResistance 16
+  name: selectedCellResistance 16
   type: FLOAT
   value: 0.0
 - address: '0x406511'
   editable: false
-  name: g_selectedCellResistance 17
+  name: selectedCellResistance 17
   type: FLOAT
   value: 0.0
 - address: '0x406512'
   editable: false
-  name: g_selectedCellResistance 18
+  name: selectedCellResistance 18
   type: FLOAT
   value: 0.0
 - address: '0x406513'
   editable: false
-  name: g_selectedCellResistance 19
+  name: selectedCellResistance 19
   type: FLOAT
   value: 0.0
 - address: '0x406514'
   editable: false
-  name: g_selectedCellResistance 20
+  name: selectedCellResistance 20
   type: FLOAT
   value: 0.0
 selectedCellSoc:
 - address: '0x406401'
   editable: false
-  name: g_selectedCellSoc 1
+  name: selectedCellSoc 1
   type: FLOAT
   value: 0.0
 - address: '0x406402'
   editable: false
-  name: g_selectedCellSoc 2
+  name: selectedCellSoc 2
   type: FLOAT
   value: 0.0
 - address: '0x406403'
   editable: false
-  name: g_selectedCellSoc 3
+  name: selectedCellSoc 3
   type: FLOAT
   value: 0.0
 - address: '0x406404'
   editable: false
-  name: g_selectedCellSoc 4
+  name: selectedCellSoc 4
   type: FLOAT
   value: 0.0
 - address: '0x406405'
   editable: false
-  name: g_selectedCellSoc 5
+  name: selectedCellSoc 5
   type: FLOAT
   value: 0.0
 - address: '0x406406'
   editable: false
-  name: g_selectedCellSoc 6
+  name: selectedCellSoc 6
   type: FLOAT
   value: 0.0
 - address: '0x406407'
   editable: false
-  name: g_selectedCellSoc 7
+  name: selectedCellSoc 7
   type: FLOAT
   value: 0.0
 - address: '0x406408'
   editable: false
-  name: g_selectedCellSoc 8
+  name: selectedCellSoc 8
   type: FLOAT
   value: 0.0
 - address: '0x406409'
   editable: false
-  name: g_selectedCellSoc 9
+  name: selectedCellSoc 9
   type: FLOAT
   value: 0.0
 - address: '0x40640A'
   editable: false
-  name: g_selectedCellSoc 10
+  name: selectedCellSoc 10
   type: FLOAT
   value: 0.0
 - address: '0x40640B'
   editable: false
-  name: g_selectedCellSoc 11
+  name: selectedCellSoc 11
   type: FLOAT
   value: 0.0
 - address: '0x40640C'
   editable: false
-  name: g_selectedCellSoc 12
+  name: selectedCellSoc 12
   type: FLOAT
   value: 0.0
 - address: '0x40640D'
   editable: false
-  name: g_selectedCellSoc 13
+  name: selectedCellSoc 13
   type: FLOAT
   value: 0.0
 - address: '0x40640E'
   editable: false
-  name: g_selectedCellSoc 14
+  name: selectedCellSoc 14
   type: FLOAT
   value: 0.0
 - address: '0x40640F'
   editable: false
-  name: g_selectedCellSoc 15
+  name: selectedCellSoc 15
   type: FLOAT
   value: 0.0
 - address: '0x406410'
   editable: false
-  name: g_selectedCellSoc 16
+  name: selectedCellSoc 16
   type: FLOAT
   value: 0.0
 - address: '0x406411'
   editable: false
-  name: g_selectedCellSoc 17
+  name: selectedCellSoc 17
   type: FLOAT
   value: 0.0
 - address: '0x406412'
   editable: false
-  name: g_selectedCellSoc 18
+  name: selectedCellSoc 18
   type: FLOAT
   value: 0.0
 - address: '0x406413'
   editable: false
-  name: g_selectedCellSoc 19
+  name: selectedCellSoc 19
   type: FLOAT
   value: 0.0
 - address: '0x406414'
   editable: false
-  name: g_selectedCellSoc 20
+  name: selectedCellSoc 20
   type: FLOAT
   value: 0.0
 selectedCellState:
 - address: '0x406101'
   editable: false
-  name: g_selectedCellState 1
+  name: selectedCellState 1
   type: UNSIGNED16
   value: 0
 - address: '0x406102'
   editable: false
-  name: g_selectedCellState 2
+  name: selectedCellState 2
   type: UNSIGNED16
   value: 0
 - address: '0x406103'
   editable: false
-  name: g_selectedCellState 3
+  name: selectedCellState 3
   type: UNSIGNED16
   value: 0
 - address: '0x406104'
   editable: false
-  name: g_selectedCellState 4
+  name: selectedCellState 4
   type: UNSIGNED16
   value: 0
 - address: '0x406105'
   editable: false
-  name: g_selectedCellState 5
+  name: selectedCellState 5
   type: UNSIGNED16
   value: 0
 - address: '0x406106'
   editable: false
-  name: g_selectedCellState 6
+  name: selectedCellState 6
   type: UNSIGNED16
   value: 0
 - address: '0x406107'
   editable: false
-  name: g_selectedCellState 7
+  name: selectedCellState 7
   type: UNSIGNED16
   value: 0
 - address: '0x406108'
   editable: false
-  name: g_selectedCellState 8
+  name: selectedCellState 8
   type: UNSIGNED16
   value: 0
 - address: '0x406109'
   editable: false
-  name: g_selectedCellState 9
+  name: selectedCellState 9
   type: UNSIGNED16
   value: 0
 - address: '0x40610A'
   editable: false
-  name: g_selectedCellState 10
+  name: selectedCellState 10
   type: UNSIGNED16
   value: 0
 - address: '0x40610B'
   editable: false
-  name: g_selectedCellState 11
+  name: selectedCellState 11
   type: UNSIGNED16
   value: 0
 - address: '0x40610C'
   editable: false
-  name: g_selectedCellState 12
+  name: selectedCellState 12
   type: UNSIGNED16
   value: 0
 - address: '0x40610D'
   editable: false
-  name: g_selectedCellState 13
+  name: selectedCellState 13
   type: UNSIGNED16
   value: 0
 - address: '0x40610E'
   editable: false
-  name: g_selectedCellState 14
+  name: selectedCellState 14
   type: UNSIGNED16
   value: 0
 - address: '0x40610F'
   editable: false
-  name: g_selectedCellState 15
+  name: selectedCellState 15
   type: UNSIGNED16
   value: 0
 - address: '0x406110'
   editable: false
-  name: g_selectedCellState 16
+  name: selectedCellState 16
   type: UNSIGNED16
   value: 0
 - address: '0x406111'
   editable: false
-  name: g_selectedCellState 17
+  name: selectedCellState 17
   type: UNSIGNED16
   value: 0
 - address: '0x406112'
   editable: false
-  name: g_selectedCellState 18
+  name: selectedCellState 18
   type: UNSIGNED16
   value: 0
 - address: '0x406113'
   editable: false
-  name: g_selectedCellState 19
+  name: selectedCellState 19
   type: UNSIGNED16
   value: 0
 - address: '0x406114'
   editable: false
-  name: g_selectedCellState 20
+  name: selectedCellState 20
   type: UNSIGNED16
   value: 0
 selectedCellTemperature:
 - address: '0x406301'
   editable: false
-  name: g_selectedCellTemperature 1
+  name: selectedCellTemperature 1
   type: FLOAT
   value: 0.0
 - address: '0x406302'
   editable: false
-  name: g_selectedCellTemperature 2
+  name: selectedCellTemperature 2
   type: FLOAT
   value: 0.0
 - address: '0x406303'
   editable: false
-  name: g_selectedCellTemperature 3
+  name: selectedCellTemperature 3
   type: FLOAT
   value: 0.0
 - address: '0x406304'
   editable: false
-  name: g_selectedCellTemperature 4
+  name: selectedCellTemperature 4
   type: FLOAT
   value: 0.0
 - address: '0x406305'
   editable: false
-  name: g_selectedCellTemperature 5
+  name: selectedCellTemperature 5
   type: FLOAT
   value: 0.0
 - address: '0x406306'
   editable: false
-  name: g_selectedCellTemperature 6
+  name: selectedCellTemperature 6
   type: FLOAT
   value: 0.0
 - address: '0x406307'
   editable: false
-  name: g_selectedCellTemperature 7
+  name: selectedCellTemperature 7
   type: FLOAT
   value: 0.0
 - address: '0x406308'
   editable: false
-  name: g_selectedCellTemperature 8
+  name: selectedCellTemperature 8
   type: FLOAT
   value: 0.0
 - address: '0x406309'
   editable: false
-  name: g_selectedCellTemperature 9
+  name: selectedCellTemperature 9
   type: FLOAT
   value: 0.0
 - address: '0x40630A'
   editable: false
-  name: g_selectedCellTemperature 10
+  name: selectedCellTemperature 10
   type: FLOAT
   value: 0.0
 - address: '0x40630B'
   editable: false
-  name: g_selectedCellTemperature 11
+  name: selectedCellTemperature 11
   type: FLOAT
   value: 0.0
 - address: '0x40630C'
   editable: false
-  name: g_selectedCellTemperature 12
+  name: selectedCellTemperature 12
   type: FLOAT
   value: 0.0
 - address: '0x40630D'
   editable: false
-  name: g_selectedCellTemperature 13
+  name: selectedCellTemperature 13
   type: FLOAT
   value: 0.0
 - address: '0x40630E'
   editable: false
-  name: g_selectedCellTemperature 14
+  name: selectedCellTemperature 14
   type: FLOAT
   value: 0.0
 - address: '0x40630F'
   editable: false
-  name: g_selectedCellTemperature 15
+  name: selectedCellTemperature 15
   type: FLOAT
   value: 0.0
 - address: '0x406310'
   editable: false
-  name: g_selectedCellTemperature 16
+  name: selectedCellTemperature 16
   type: FLOAT
   value: 0.0
 - address: '0x406311'
   editable: false
-  name: g_selectedCellTemperature 17
+  name: selectedCellTemperature 17
   type: FLOAT
   value: 0.0
 - address: '0x406312'
   editable: false
-  name: g_selectedCellTemperature 18
+  name: selectedCellTemperature 18
   type: FLOAT
   value: 0.0
 - address: '0x406313'
   editable: false
-  name: g_selectedCellTemperature 19
+  name: selectedCellTemperature 19
   type: FLOAT
   value: 0.0
 - address: '0x406314'
   editable: false
-  name: g_selectedCellTemperature 20
+  name: selectedCellTemperature 20
   type: FLOAT
   value: 0.0
 selectedCellVoltage:
 - address: '0x406201'
   editable: false
-  name: g_selectedCellVoltage 1
+  name: selectedCellVoltage 1
   type: FLOAT
   value: 0.0
 - address: '0x406202'
   editable: false
-  name: g_selectedCellVoltage 2
+  name: selectedCellVoltage 2
   type: FLOAT
   value: 0.0
 - address: '0x406203'
   editable: false
-  name: g_selectedCellVoltage 3
+  name: selectedCellVoltage 3
   type: FLOAT
   value: 0.0
 - address: '0x406204'
   editable: false
-  name: g_selectedCellVoltage 4
+  name: selectedCellVoltage 4
   type: FLOAT
   value: 0.0
 - address: '0x406205'
   editable: false
-  name: g_selectedCellVoltage 5
+  name: selectedCellVoltage 5
   type: FLOAT
   value: 0.0
 - address: '0x406206'
   editable: false
-  name: g_selectedCellVoltage 6
+  name: selectedCellVoltage 6
   type: FLOAT
   value: 0.0
 - address: '0x406207'
   editable: false
-  name: g_selectedCellVoltage 7
+  name: selectedCellVoltage 7
   type: FLOAT
   value: 0.0
 - address: '0x406208'
   editable: false
-  name: g_selectedCellVoltage 8
+  name: selectedCellVoltage 8
   type: FLOAT
   value: 0.0
 - address: '0x406209'
   editable: false
-  name: g_selectedCellVoltage 9
+  name: selectedCellVoltage 9
   type: FLOAT
   value: 0.0
 - address: '0x40620A'
   editable: false
-  name: g_selectedCellVoltage 10
+  name: selectedCellVoltage 10
   type: FLOAT
   value: 0.0
 - address: '0x40620B'
   editable: false
-  name: g_selectedCellVoltage 11
+  name: selectedCellVoltage 11
   type: FLOAT
   value: 0.0
 - address: '0x40620C'
   editable: false
-  name: g_selectedCellVoltage 12
+  name: selectedCellVoltage 12
   type: FLOAT
   value: 0.0
 - address: '0x40620D'
   editable: false
-  name: g_selectedCellVoltage 13
+  name: selectedCellVoltage 13
   type: FLOAT
   value: 0.0
 - address: '0x40620E'
   editable: false
-  name: g_selectedCellVoltage 14
+  name: selectedCellVoltage 14
   type: FLOAT
   value: 0.0
 - address: '0x40620F'
   editable: false
-  name: g_selectedCellVoltage 15
+  name: selectedCellVoltage 15
   type: FLOAT
   value: 0.0
 - address: '0x406210'
   editable: false
-  name: g_selectedCellVoltage 16
+  name: selectedCellVoltage 16
   type: FLOAT
   value: 0.0
 - address: '0x406211'
   editable: false
-  name: g_selectedCellVoltage 17
+  name: selectedCellVoltage 17
   type: FLOAT
   value: 0.0
 - address: '0x406212'
   editable: false
-  name: g_selectedCellVoltage 18
+  name: selectedCellVoltage 18
   type: FLOAT
   value: 0.0
 - address: '0x406213'
   editable: false
-  name: g_selectedCellVoltage 19
+  name: selectedCellVoltage 19
   type: FLOAT
   value: 0.0
 - address: '0x406214'
   editable: false
-  name: g_selectedCellVoltage 20
+  name: selectedCellVoltage 20
   type: FLOAT
   value: 0.0
 selectedLogic:
@@ -1259,7 +1304,7 @@ softwareSignals:
   name: DischargingContactorFeedback
   type: SIGNED16
   value: -1
-system:
+system&energy:
 - address: '0x407001'
   editable: true
   name: Soc
@@ -1800,84 +1845,139 @@ system:
   name: CurrentAuxZeroLevel
   type: FLOAT
   value: 0.0
+- address: '0x408001'
+  editable: false
+  name: Plus
+  type: FLOAT
+  value: 0.0
+- address: '0x408002'
+  editable: false
+  name: Minus
+  type: FLOAT
+  value: 0.0
+- address: '0x408003'
+  editable: false
+  name: Balance
+  type: FLOAT
+  value: 0.0
 watch:
+- address: '0x100000'
+  editable: false
+  name: Device Type
+  type: UNSIGNED32
+  value: 418
+- address: '0x100100'
+  editable: false
+  name: Error Register
+  type: UNSIGNED8
+  value: 0
+- address: '0x100500'
+  editable: true
+  name: SYNC COB ID
+  type: UNSIGNED32
+  value: 128
+- address: '0x100600'
+  editable: true
+  name: Communication Cycle Period
+  type: UNSIGNED32
+  value: 1000000
+- address: '0x100800'
+  editable: false
+  name: Manufacturer Device Name
+  type: VISIBLE_STRING
+  value: BMS Main NG
+- address: '0x100900'
+  editable: false
+  name: Manufacturer Hardware Version
+  type: VISIBLE_STRING
+  value: '2.0'
+- address: '0x100a00'
+  editable: false
+  name: Manufacturer Software Version
+  type: VISIBLE_STRING
+  value: 1.0.0
+- address: '0x101700'
+  editable: true
+  name: Producer Heartbeat Time
+  type: UNSIGNED16
+  value: 0
 - address: '0x2fff00'
   editable: false
-  name: g_serial
+  name: serial
   type: VISIBLE_STRING
   value: '000001'
 - address: '0x400000'
   editable: false
-  name: g_discreteInputs
+  name: discreteInputs
   type: UNSIGNED16
   value: 0
 - address: '0x401000'
   editable: false
-  name: g_current
+  name: current
   type: FLOAT
   value: 0.0
 - address: '0x401100'
   editable: false
-  name: g_temperature
+  name: temperature
   type: FLOAT
   value: 0.0
 - address: '0x401200'
   editable: false
-  name: g_humidity
+  name: humidity
   type: FLOAT
   value: 0.0
 - address: '0x401300'
   editable: false
-  name: g_currentAux
+  name: currentAux
   type: FLOAT
   value: 0.0
 - address: '0x401400'
   editable: false
-  name: g_currentFinal
+  name: currentFinal
   type: FLOAT
   value: 0.0
 - address: '0x401500'
   editable: false
-  name: g_temperature2
+  name: temperature2
   type: FLOAT
   value: 0.0
 - address: '0x401a00'
   editable: false
-  name: g_voltage12V
+  name: voltage12V
   type: FLOAT
   value: 0.0
 - address: '0x402000'
   editable: false
-  name: g_errorsReg1
+  name: errorsReg1
   type: UNSIGNED32
   value: 0
 - address: '0x402100'
   editable: false
-  name: g_errorsReg2
+  name: errorsReg2
   type: UNSIGNED32
   value: 0
 - address: '0x403000'
   editable: false
-  name: g_internalState
+  name: internalState
   type: UNSIGNED32
   value: 0
 - address: '0x404000'
   editable: false
-  name: g_discreteOutputs
+  name: discreteOutputs
   type: UNSIGNED16
   value: 0
 - address: '0x405000'
   editable: false
-  name: g_relays
+  name: relays
   type: UNSIGNED16
   value: 0
 - address: '0x405100'
   editable: false
-  name: g_feedbacks
+  name: feedbacks
   type: UNSIGNED16
   value: 0
 - address: '0x410000'
   editable: false
-  name: g_time
+  name: time
   type: VISIBLE_STRING
   value: ''

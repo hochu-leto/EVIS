@@ -27,8 +27,8 @@ empty_node = {
     'req_id': 0x500,
     'ans_id': 0x481,
     'protocol': 'CANOpen',
-    'serial_number': 0,
-    'firm_version': 0,
+    'serial_number': '',
+    'firm_version': '',
     'errors_req': '0x000000',
     'errors_erase': '0x000000',
     'v_errors_erase': 0,
@@ -66,6 +66,7 @@ class EVONode:
 
         def check_string(name: str, s=''):
             st = nod[name] if name in list(nod.keys()) \
+                              and nod[name]\
                               and str(nod[name]) != 'nan' else s
             return st
 
@@ -73,10 +74,12 @@ class EVONode:
         self.request_id = check_address('req_id', 0x500)
         self.answer_id = check_address('ans_id', 0x481)
         self.protocol = check_string('protocol', 'CANOpen')
-        self.request_serial_number = check_address('serial_number')
+        s_v = check_string('serial_number', [])
+        self.request_serial_number = s_v if isinstance(s_v, list) else [int(i, 16) for i in s_v.split(',')]
         self.serial_number = ''
-        self.request_firmware_version = check_address('firm_version')
-        self.firmware_version = '---'
+        f_v = check_string('firm_version', [])
+        self.request_firmware_version = f_v if isinstance(f_v, list) else [int(i, 16) for i in f_v.split(',')]
+        self.firmware_version = ''
 
         self.error_request = [int(i, 16) if i else 0 for i in check_string('errors_req').split(',')]
         if err_list:
@@ -132,15 +135,20 @@ class EVONode:
 
         if self.protocol == 'CANOpen':
             if value[0] == 0x41:  # это запрос на длинный параметр строчный
-                value = self.read_string_from_can(adapter)
-                if isinstance(value, str):  # тоже надо переделать
+                data = adapter.can_request_long(self.request_id, self.answer_id, value[4])
+                value = self.read_string_from_can(data)
+                if not self.string_from_can:  # ошибка, если свой стринг пустой
                     return value
+                # если есть стринг - значит всё хорошо и отправляем None
+                return None
+
             else:
                 value = (value[7] << 24) + \
                         (value[6] << 16) + \
                         (value[5] << 8) + value[4]
         elif self.protocol == 'MODBUS':
-            value = value[0]
+            # value = value[0]
+            value = (value[3] << 24) + (value[2] << 16) + (value[1] << 8) + value[0]
         else:
             value = ctypes.c_int32(value)
         return value
@@ -180,31 +188,25 @@ class EVONode:
             print()
             return ''  # если пусто, значит, норм ушла
 
-    def get_serial_number(self, adapter: CANAdater):
-        if self.name == 'КВУ_ТТС':
-            r = self.get_serial_for_ttc(adapter)
-            if r:
-                return r
+    def get_data(self, adapter: CANAdater, address_list=None):
+        if address_list is None:
+            address_list = self.request_serial_number
+        elif isinstance(address_list, list):
+            return address_list
 
-        if self.serial_number:
-            return self.serial_number
-
-        serial = self.get_val(self.request_serial_number, adapter) if self.request_serial_number else 777
-        if isinstance(serial, str):
+        s_n = ''
+        for get_s in address_list:
+            s_n = self.get_val(get_s, adapter)
             if self.string_from_can:
-                serial = ''
                 for s in self.string_from_can:
                     if s.isprintable():
-                        serial += s
+                        s_n += s
                 self.string_from_can = ''
-            else:
-                serial = ''
-        elif self.name == 'Инвертор_МЭИ':  # Бега костыль
-            serial = check_printable(serial)
+            elif not isinstance(s_n, str):
+                s_n = check_printable(s_n)
 
-        self.serial_number = serial
-        # print(f'{self.name} - {serial=}')
-        return self.serial_number
+        print(f'{self.name} - {s_n=}')
+        return s_n
 
     # Потому-то кому-то приспичило передавать серийник в чарах
     # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,
@@ -232,16 +234,15 @@ class EVONode:
         return int(self.serial_number) if ser else ser
 
     def get_firmware_version(self, adapter: CANAdater):
-        if not isinstance(self.firmware_version, str):
+        if self.firmware_version:
             return self.firmware_version
         f_list = self.get_val(self.request_firmware_version, adapter) if self.request_firmware_version else 0
         if isinstance(f_list, str):
             if self.string_from_can:
-                self.string_from_can = ''
-            else:
-                f_list = '---'
+                f_list = self.string_from_can
+
         self.firmware_version = f_list
-        # print(f'{self.name} - {f_list=}')
+        print(f'{self.name} - {f_list=}')
         return self.firmware_version
 
     def cut_firmware(self):
@@ -306,8 +307,9 @@ class EVONode:
             self.current_errors_list.clear()
             self.current_warnings_list.clear()
 
-    def read_string_from_can(self, adapter: CANAdater):
-        value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
+    def read_string_from_can(self, value):
+        # value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
+        # это сделано только для инвертора мэи, который должен ответить
         if isinstance(value, str):
             self.string_from_can = ''
             return value

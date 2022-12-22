@@ -46,7 +46,7 @@
   name: ÊÂÓ_ÒÒÑ
   protocol: CANOpen
   req_id: '0x00000603'
-  serial_number: '0x101700'
+  serial_number: '0x218001,0x218002,0x218003,0x218004'
   to_eeprom: '0x210202'
   v_errors_erase: 1.0
   warnings_req: '0x212403'

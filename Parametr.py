@@ -137,7 +137,7 @@ class Parametr:
         if not self.req_list:
             self.get_list()
         while adapter.is_busy:
-            sleep(0.0001)  # очень костыльный момент, ждёт миллисекунду, чтоб освободился адаптер
+            pass  # очень костыльный момент, ждёт миллисекунду, чтоб освободился адаптер
             # на случай когда идёт чтение с двух каналов
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.req_list)
         if isinstance(value_data, str):
@@ -184,7 +184,7 @@ class Parametr:
                 self.string_from_can(value_data[-4:])
                 self.value = None
                 return self.value
-            elif self.type == 'DATA':
+            elif self.type == 'DATE':
                 # self.string_from_can(value_data)
                 # do something
                 self.value_string = '20.12.2022'

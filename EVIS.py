@@ -356,9 +356,11 @@ def check_node_online(all_node_list: list):
     has_invertor = False
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
     for nd in all_node_list:
-        node_serial = nd.get_serial_number(can_adapter)
-        if node_serial:
-            nd.firmware_version = nd.get_firmware_version(can_adapter)
+        if nd.request_serial_number:
+            nd.serial_number = nd.get_data(can_adapter, nd.request_serial_number)
+        if nd.serial_number:
+            if nd.request_firmware_version:
+                nd.firmware_version = nd.get_data(can_adapter, nd.request_firmware_version)
             # тут выясняется, что на старых машинах, где Инвертор_Цикл+ кто-то отвечает по ID Инвертор_МЭИ,
             # может и китайские рейки, нет особого желания разбираться. Вообщем это костыль, чтоб он не вылазил
             if 'Инвертор_Цикл+' in nd.name:
