@@ -131,7 +131,7 @@ def make_compare_params_list():
         compare_nodes_dict = fill_sheet_dict(file_name)
         comp_node_name = ''
         if compare_nodes_dict:
-            for cur_node in window.thread.current_nodes_list:
+            for cur_node in window.thread.current_nodes_dict.values():
                 # как минимум, два варианта что этот блок присутствует
                 #  - если имя страницы, он же ключ у словаря из файла совпадает с имеющимся сейчас блоком
                 #  - если список параметров, хотя бы частично, совпадает со списком параметров имеющегося блока
@@ -167,7 +167,7 @@ def save_to_eeprom(node=None):
             isRun = False
 
         if node.name == 'Инвертор_МЭИ':
-            voltage = find_param(window.current_nodes_list, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0]
+            voltage = find_param(window.thread.current_nodes_dict, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0]
             err = voltage.get_value(can_adapter.adapters_dict[125])     # ---!!!если параметр строковый, будет None!!---
             if not isinstance(err, str):
                 # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
@@ -266,7 +266,7 @@ def want_to_value_change():
     # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
         # достаю список Избранное
-        user_node = window.current_nodes_list[len(window.current_nodes_list) - 1]
+        user_node = window.thread.current_nodes_dict[TheBestNode]
         # из текущего параметра делаю новый с новым именем через #
         new_param = Parametr(current_param.to_dict(), current_param.node)
         if window.thread.current_node != user_node:
@@ -328,15 +328,13 @@ def params_list_changed():  # если мы в левом окошке выби�
     except AttributeError:
         current_node_text = window.nodes_tree.currentItem().text(0)
     # определяю что за блок выбран
-    for nod in window.current_nodes_list:
-        if current_node_text in nod.name:
-            window.thread.current_node = nod
-            # если не выбрана какая-то конкретная, то выбираю первую группу блока
-            if current_group_params:
-                window.thread.current_params_list = nod.group_params_dict[current_group_params]
-            else:
-                window.thread.current_params_list = nod.group_params_dict[list(nod.group_params_dict.keys())[0]]
-            break
+    nod = window.thread.current_nodes_dict[current_node_text]
+    window.thread.current_node = nod
+    # если не выбрана какая-то конкретная, то выбираю первую группу блока
+    if current_group_params:
+        window.thread.current_params_list = nod.group_params_dict[current_group_params]
+    else:
+        window.thread.current_params_list = nod.group_params_dict[list(nod.group_params_dict.keys())[0]]
     # тормозим поток
     if window.thread.isRunning():
         is_run = True
@@ -351,11 +349,11 @@ def params_list_changed():  # если мы в левом окошке выби�
     return True
 
 
-def check_node_online(all_node_list: list):
-    exit_list = []
+def check_node_online(all_node_dict: dict):
+    exit_dict = {}
     has_invertor = False
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
-    for nd in all_node_list:
+    for nd in all_node_dict.values():
         if nd.request_serial_number:
             nd.serial_number = nd.get_data(can_adapter, nd.request_serial_number)
         if nd.serial_number:
@@ -371,21 +369,21 @@ def check_node_online(all_node_list: list):
                 window.joy_bind_btn.setEnabled(True)
                 window.susp_zero_btn.setEnabled(True)
                 window.load_from_eeprom_btn.setEnabled(True)
-            exit_list.append(nd)
+            exit_dict[nd.name] = nd
     if has_invertor:
-        for nd in exit_list:
-            if 'Инвертор_МЭИ' in nd.name:
-                exit_list.remove(nd)
-                window.invertor_mpei_box.setEnabled(False)
-                break
+        if 'Инвертор_МЭИ' in exit_dict.keys():
+            del exit_dict['Инвертор_МЭИ']
+            window.invertor_mpei_box.setEnabled(False)
     # на случай если только избранное найдено - значит ни один блок не ответил
-    if exit_list[0].cut_firmware() == 'EVOCARGO':
-        return all_node_list.copy(), False
-    exit_list = make_nodes_dict({node.name: node for node in exit_list}).values()
+    # if exit_dict[0].cut_firmware() == 'EVOCARGO':
+    if len(exit_dict) < 2:
+        return all_node_dict.copy(), False
+    exit_dict = make_nodes_dict(exit_dict)
+
     window.nodes_tree.currentItemChanged.disconnect()
-    window.show_nodes_tree(exit_list)
+    window.show_nodes_tree(list(exit_dict.values()))
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
-    return exit_list, True
+    return exit_dict, True
 
 
 def erase_errors():
@@ -395,7 +393,7 @@ def erase_errors():
         is_run = True
         window.connect_to_node()
     # и трём все ошибки
-    for nod in window.current_nodes_list:
+    for nod in window.thread.current_nodes_dict.values():
         nod.erase_errors(can_adapter)
     window.show_error_tree({})
     # запускаем поток снова, если был остановлен
@@ -426,11 +424,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # Это нужно для инициализации нашего дизайна
         self.all_params_dict = {}
         self.setupUi(self)
-        self.current_nodes_list = []
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
         self.thread = MainThread()
-        self.thread.current_nodes_list = self.current_nodes_list
         self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
         self.thread.err_thread_signal.connect(self.add_new_errors)
         self.thread.adapter = can_adapter
@@ -455,9 +451,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if can_adapter.isDefined:
                 can_adapter.close_canal_can()
             if err == 'Адаптер не подключен':
-                # self.current_nodes_list = []
-                # можно было бы избавиться от этой переменной, проверять, что список не пустой, но пусть будет
-                # self.node_list_defined = False
                 can_adapter.isDefined = False
         else:
             show_new_vmu_params(params_list=self.thread.current_params_list,
@@ -507,7 +500,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 val = dialog.lineEdit.text()
                 if val and val != NewParamsList:
                     # берём последний в списке блоков блок - Это Избранное
-                    user_node = self.current_nodes_list[len(window.current_nodes_list) - 1]
+                    user_node = self.thread.current_nodes_dict[TheBestNode]
                     # создаём в его словаре параметров ещё одну пару - копию нового списка
                     user_node.group_params_dict[val] = user_node.group_params_dict[NewParamsList].copy()
                     # а Новый список удаляем
@@ -644,13 +637,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         # надо это добавить!
         if not self.node_list_defined:
             self.log_lbl.setText('Определяются имеющиеся на шине CAN блоки...')
-            self.current_nodes_list, check = check_node_online(alt_node_list)
-            self.thread.current_nodes_list = self.current_nodes_list
+            self.thread.current_nodes_dict, check = check_node_online(self.thread.current_nodes_dict)
             params_list_changed()
             self.reset_faults.setEnabled(check)
             self.save_to_file_btn.setEnabled(check)
             self.node_list_defined = check
-            self.log_lbl.setText(f'Обнаружено {check * len(self.current_nodes_list)} блоков')
+            self.log_lbl.setText(f'Обнаружено {check * len(self.thread.current_nodes_dict)} блоков')
 
         check = not self.thread.isRunning()
         self.log_record_btn.setEnabled(check)
@@ -667,10 +659,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     def closeEvent(self, event):
         # может, есть смысл сделать из этого функцию, дабы не повторять дважды
-        ln = len(window.current_nodes_list)
-        user_node_dict = self.current_nodes_list[ln - 1].group_params_dict
 
-        for node in window.thread.current_nodes_list:
+        for node in self.thread.current_nodes_dict.values():
             if node.param_was_changed:
                 msg = QMessageBox(self)
                 msg.setWindowTitle("Параметры не сохранены")
@@ -686,11 +676,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 if msg.clickedButton() == buttonAceptar:
                     save_to_eeprom(node)
 
-        if NewParamsList in user_node_dict.keys():
-            if not self.save_list_to_file(user_node_dict[NewParamsList],
-                                          f'В {NewParamsList} добавлены параметры \n'
-                                          f' нужно сохранить этот список?'):
-                event.ignore()
+        if TheBestNode in self.thread.current_nodes_dict.keys():
+            user_node_dict = self.thread.current_nodes_dict[TheBestNode].group_params_dict
+            if NewParamsList in user_node_dict.keys():
+                if not self.save_list_to_file(user_node_dict[NewParamsList],
+                                              f'В {NewParamsList} добавлены параметры \n'
+                                              f' нужно сохранить этот список?'):
+                    event.ignore()
 
         msg = QMessageBox(self)
         msg.setWindowTitle("Выход")
@@ -729,24 +721,19 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
 # --------------------------------------------------- кнопки управления ----------------------------------------------
 def load_from_eeprom():
-    answer = 'Неизвестная ошибка'
-
-    for node in window.thread.current_nodes_list:
-        if node.name == 'КВУ_ТТС':
-            if node.request_id in window.thread.adapter.id_nodes_dict.keys():
-                adapter_can2 = window.thread.adapter.id_nodes_dict[node.request_id]
-                print('Отправляю команду на запрос из еепром')
-                answer = node.send_val(0x210201, adapter_can2, value=0x01)  # это адрес вытащить из еепром для кву ттс
-                if answer:
-                    answer = 'Команду выполнить не удалось\n' + answer
-                else:
-                    QMessageBox.information(window, "Успешный успех!", 'Параметры загружены из ЕЕПРОМ', QMessageBox.Ok)
-                    node.param_was_changed = False
-                    return
-            else:
-                answer = 'В списке адаптеров канал 250 не найден'
+    node = window.thread.current_nodes_dict['КВУ_ТТС']
+    if node.request_id in window.thread.adapter.id_nodes_dict.keys():
+        adapter_can2 = window.thread.adapter.id_nodes_dict[node.request_id]
+        print('Отправляю команду на запрос из еепром')
+        answer = node.send_val(0x210201, adapter_can2, value=0x01)  # это адрес вытащить из еепром для кву ттс
+        if answer:
+            answer = 'Команду выполнить не удалось\n' + answer
         else:
-            answer = 'В списке блоков КВУ_ТТС не найден'
+            QMessageBox.information(window, "Успешный успех!", 'Параметры загружены из ЕЕПРОМ', QMessageBox.Ok)
+            node.param_was_changed = False
+            return
+    else:
+        answer = 'В списке адаптеров канал 250 не найден'
 
     QMessageBox.critical(window, "Ошибка", answer, QMessageBox.Ok)
 
@@ -781,7 +768,7 @@ def mpei_calibrate():
     param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'SPEED_RPM', 'FIELD_CURRENT',
                                 'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']  # 'STATOR_CURRENT', 'TORQUE',
     for p_name in param_list_for_calibrate:
-        wait_thread.imp_par_list.append(find_param(window.current_nodes_list, p_name, node_name='Инвертор_МЭИ')[0])
+        wait_thread.imp_par_list.append(find_param(window.thread.current_nodes_dict, p_name, node_name='Инвертор_МЭИ')[0])
 
     wait_thread.req_delay = 50
     wait_thread.adapter = can_adapter.adapters_dict[125]
@@ -802,18 +789,17 @@ def mpei_calibrate():
             dialog.change_mess(st, list_of_params)
         else:
             print('Поток калибровки остановлен')
-            for node in window.thread.current_nodes_list:
-                if node.name == 'Инвертор_МЭИ':
-                    # передавать надо исключительно в первый кан
-                    if node.request_id in window.thread.adapter.id_nodes_dict.keys():
-                        adapter_can1 = window.thread.adapter.id_nodes_dict[node.request_id]
-                        faults = list(node.check_errors(adapter=adapter_can1))
-                        if not faults:
-                            st.append('Ошибок во время калибровки не появилось')
-                        else:
-                            faults.insert(0, 'Во время калибровки возникли ошибки: ')
-                            st += faults
-                        dialog.change_mess(st)
+            node = window.thread.current_nodes_dict['Инвертор_МЭИ']
+            # передавать надо исключительно в первый кан
+            if node.request_id in window.thread.adapter.id_nodes_dict.keys():
+                adapter_can1 = window.thread.adapter.id_nodes_dict[node.request_id]
+                faults = list(node.check_errors(adapter=adapter_can1))
+                if not faults:
+                    st.append('Ошибок во время калибровки не появилось')
+                else:
+                    faults.insert(0, 'Во время калибровки возникли ошибки: ')
+                    st += faults
+                dialog.change_mess(st)
 
     wait_thread.SignalOfProcess.connect(check_dialog_mess)
 
@@ -873,7 +859,7 @@ def suspension_to_zero():
                                  'SUSPENSION_HEIGHT_CUR_3', 'SUSPENSION_PRESSURE_CUR_3',
                                  'SUSPENSION_HEIGHT_CUR_4', 'SUSPENSION_PRESSURE_CUR_4', ]
     for p_name in param_list_for_suspension:
-        wait_thread.imp_par_list.append(find_param(window.current_nodes_list, p_name)[0])
+        wait_thread.imp_par_list.append(find_param(window.thread.current_nodes_dict, p_name)[0])
 
     if not can_adapter.isDefined:
         if not can_adapter.find_adapters():
@@ -952,16 +938,15 @@ if __name__ == '__main__':
     window.save_to_file_btn.setEnabled(False)
     window.log_record_btn.clicked.connect(record_log)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
-    alt_node_list = full_node_list(vmu_param_file).copy()
-    # node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
+    # alt_node_list = full_node_list(vmu_param_file).copy()
+    node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
     # alt_node_list = list(node_dict.values()).copy()
-    window.current_nodes_list = alt_node_list.copy()
-    window.thread.current_nodes_list = window.current_nodes_list
+    window.thread.current_nodes_dict = node_dict.copy()
     # показываю дерево с блоками и что ошибок нет
     window.show_error_tree({})
-    window.show_nodes_tree(alt_node_list)
+    window.show_nodes_tree(list(node_dict.values()))      # ---------------!!!!!!!!!! проверить, исправить на словарь!!!-----
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
-    if alt_node_list and params_list_changed():
+    if node_dict and params_list_changed():
         if can_adapter.find_adapters():
             window.connect_to_node()
         else:
@@ -970,7 +955,6 @@ if __name__ == '__main__':
         splash.finish(window)  # Убираем заставку
         app.exec_()  # и запускаем приложение
 
-# нужно переходить на словарь блоков
 # изначально подгрузить только блоки с серийниками, пробить который отвечает,
 # и грузить те, которые ответили, возможно асинхронно
 # если нет подключения брать дефолтный список из памяти -

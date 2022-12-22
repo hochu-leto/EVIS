@@ -311,7 +311,7 @@ def fill_node(node: EVONode):
 
             f_v = node.firmware_version
 
-            if f_v and f_v != '---':
+            if f_v and not isinstance(f_v, str):
                 version_list = [int(v) for v in get_immediate_subdirectories(node_dir) if v.isdigit()]
                 if version_list:
                     min_vers = get_nearest_lower_value(version_list, f_v)
@@ -341,7 +341,6 @@ def fill_node(node: EVONode):
 
 # ------------------------------------- финальное заполнения словаря с блоками -----------------------------
 def make_nodes_dict(node_dict):
-
     final_nodes_dict = {}
     for name, node in node_dict.items():
         full_node = fill_node(node)

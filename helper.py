@@ -55,19 +55,18 @@ def buf_to_string(buf):
     return s
 
 
-def find_param(nodes_list, s, node_name=None):
+def find_param(nodes_dict: dict, s: str, node_name=None):
+    list_of_params = []
     if node_name is None:
-        list_of_params = [param for nd in nodes_list
+        list_of_params = [param for nd in nodes_dict.values()
                           for param_list in nd.group_params_dict.values()
                           for param in param_list
                           if s in param.name or s in param.description]
-    else:
-        list_of_params = []
-        for nd in nodes_list:
-            if node_name in nd.name:
-                list_of_params = [param for param_list in nd.group_params_dict.values()
-                                  for param in param_list
-                                  if s in param.name or s in param.description]
+    elif node_name not in nodes_dict.keys():
+        nd = nodes_dict[node_name]
+        list_of_params = [param for param_list in nd.group_params_dict.values()
+                          for param in param_list
+                          if s in param.name or s in param.description]
     return list_of_params
 
 

@@ -2,24 +2,10 @@
 тот самый объект параметра, который имеет все нужные поля, умеет запрашивать своё значение и записывать в блок нужное
 """
 import ctypes
-from time import sleep
 
 import CANAdater
-from EVONode import EVONode
+# from EVONode import EVONode
 from helper import bytes_to_float, int_to_hex_str, float_to_int, empty_par
-
-
-# здесь когда-то будет возможность читать текст из посылки, пока нет
-def can_to_char(value):
-    # задел под чтение стрингов
-    # value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
-    # time.sleep(1)
-    # print(self.name, end='    ')
-    # for byte in value:
-    #     print(hex(byte), end=' ')
-    # print()
-    pass
-
 
 type_values = {
     'UNSIGNED8': {'min': 0, 'max': 255, 'type': 0x2F, 'func': ctypes.c_uint8},
@@ -46,8 +32,8 @@ class Parametr:
     def __init__(self, param=None, node=None):
         if param is None:
             param = empty_par
-        if node is None:
-            node = EVONode()
+        # if node is None:
+        #     node = EVONode()
 
         def check_value(value, name: str):
             v = value if name not in list(param.keys()) \

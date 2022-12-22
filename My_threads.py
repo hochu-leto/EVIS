@@ -128,7 +128,7 @@ class MainThread(QThread):
 
     def __init__(self):
         super().__init__()
-        self.current_nodes_list = []
+        self.current_nodes_dict = {}
 
     def run(self):
         def emitting():  # передача заполненного списка параметров
@@ -159,7 +159,7 @@ class MainThread(QThread):
                         self.params_counter = 0
                         emitting()
                         return
-            if current_param.node.name in (node.name for node in self.current_nodes_list):
+            if current_param.node.name in self.current_nodes_dict.keys():
                 param = current_param.get_value(self.adapter)  # ---!!!если параметр строковый, будет None!!---
                 # print(current_param.name, current_param.value)
                 # если строка - значит ошибка
@@ -170,7 +170,8 @@ class MainThread(QThread):
                         return
                 else:
                     self.errors_counter = 0
-                    if param == self.magic_word:
+                    if param == self.magic_word:    # здесь можно вкорячить проверкуна стринг параметра и
+                        # на NOne который можно выставлять при ответе блока 80
                         current_param.period = 1001
                         current_param.value = 'Параметр \nотсутствует'
             else:
@@ -196,7 +197,7 @@ class MainThread(QThread):
             # опрос ошибок, на это время опрос параметров отключается
             # timer.stop()
             all_errors_counter = len(self.err_dict)
-            for nd in self.current_nodes_list:
+            for nd in self.current_nodes_dict.values():
                 nd.current_errors_list = nd.check_errors(self.adapter).copy()
                 nd.current_warnings_list = nd.check_errors(self.adapter, False).copy()
 
@@ -230,16 +231,15 @@ class MainThread(QThread):
 
     def send_to_mpei(self, command):
         answer = 'Команда не прошла'
-        for node in self.current_nodes_list:
-            if node.name == 'Инвертор_МЭИ':
-                # передавать надо исключительно в первый кан
-                if node.request_id in self.adapter.id_nodes_dict.keys():
-                    adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
-                    if self.isRunning():
-                        self.wait(100)
-                    answer = node.send_val(invertor_command_dict[command][0], adapter_can1)
-                else:
-                    answer = 'Нет связи с CAN1-адаптером'
+        node = self.current_nodes_dict['Инвертор_МЭИ']
+        # передавать надо исключительно в первый кан
+        if node.request_id in self.adapter.id_nodes_dict.keys():
+            adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
+            if self.isRunning():
+                self.wait(100)
+            answer = node.send_val(invertor_command_dict[command][0], adapter_can1)
+        else:
+            answer = 'Нет связи с CAN1-адаптером'
         return answer
 
     def invertor_command(self, command: str, tr=None):

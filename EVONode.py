@@ -21,6 +21,15 @@ invertor_command_dict = {
                         ' - высокое напряжение ВЫКЛЮЧЕНО',),
     'RESET_FAULTS': (0x200205, "Ошибки Инвертора сброшены", '')}
 
+'''
+
+    address: '0x218001'
+    description: Байты 0..3 серийного номера КВУ
+    editable: false
+    name: DEVICE_SN_0
+    type: UNSIGNED32
+'''
+
 
 empty_node = {
     'name': 'NoName',
@@ -191,7 +200,7 @@ class EVONode:
     def get_data(self, adapter: CANAdater, address_list=None):
         if address_list is None:
             address_list = self.request_serial_number
-        elif isinstance(address_list, list):
+        elif not isinstance(address_list, list):
             return address_list
 
         s_n = ''
@@ -202,10 +211,10 @@ class EVONode:
                     if s.isprintable():
                         s_n += s
                 self.string_from_can = ''
-            elif not isinstance(s_n, str):
-                s_n = check_printable(s_n)
+            # elif not isinstance(s_n, str):
+            #     s_n = check_printable(s_n)
 
-        print(f'{self.name} - {s_n=}')
+        # print(f'{self.name} - {s_n=}')
         return s_n
 
     # Потому-то кому-то приспичило передавать серийник в чарах
