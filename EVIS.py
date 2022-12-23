@@ -61,17 +61,16 @@
 
 """
 import datetime
+import pickle
 import sys
-
+import time
 import pandas as pd
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
-from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
+from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog
 import pathlib
-
 from pandas import ExcelWriter
-
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVOErrors import EvoError
@@ -90,6 +89,7 @@ dir_path = str(pathlib.Path.cwd())
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 nodes_yaml_file = pathlib.Path(dir_path, 'Data', 'all_nodes.yaml')
+nodes_pickle_file = pathlib.Path(dir_path, 'Data', 'all_nodes.pickle')
 
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
@@ -126,7 +126,7 @@ def record_log():
 
 
 def make_compare_params_list():
-    file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами КВУ', dir_path,
+    file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', dir_path,
                                             "Excel tables (*.xlsx)")[0]
     if file_name and ('.xls' in file_name):
         compare_nodes_dict = fill_sheet_dict(file_name)
@@ -942,6 +942,7 @@ def set_log_lbl(s: str):
 
 
 if __name__ == '__main__':
+    start_time = time.perf_counter()
     app = QApplication([])
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
@@ -981,9 +982,13 @@ if __name__ == '__main__':
     window.save_to_file_btn.setEnabled(False)
     window.log_record_btn.clicked.connect(record_log)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
-    # alt_node_list = full_node_list(vmu_param_file).copy()
-    node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
-    # alt_node_list = list(node_dict.values()).copy()
+    try:
+        with open(nodes_pickle_file, 'rb') as f:
+            node_dict = pickle.load(f)
+    except FileNotFoundError:
+        node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
+        with open(nodes_pickle_file, 'wb') as f:
+            pickle.dump(node_dict, f)
     window.thread.current_nodes_dict = node_dict.copy()
     # показываю дерево с блоками и что ошибок нет
     window.add_new_errors({})
@@ -996,9 +1001,5 @@ if __name__ == '__main__':
             window.log_lbl.setText('Адаптер не подключен')
         window.show()  # Показываем окно
         splash.finish(window)  # Убираем заставку
+        print(time.perf_counter() - start_time)
         app.exec_()  # и запускаем приложение
-
-# изначально подгрузить только блоки с серийниками, пробить который отвечает,
-# и грузить те, которые ответили, возможно асинхронно
-# если нет подключения брать дефолтный список из памяти -
-# возможно через пикл подгрузить пустышку с названиями-описаниями

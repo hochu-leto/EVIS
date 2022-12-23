@@ -190,8 +190,8 @@ class MainThread(QThread):
                     dt = dt.strftime("%H:%M:%S.%f")
                     self.record_dict[dt] = {par.name: par.value for par in self.current_params_list}
                 else:
-                    pass
-                    # request_errors()
+                    # pass
+                    request_errors()
 
         def request_errors():
             # опрос ошибок, на это время опрос параметров отключается

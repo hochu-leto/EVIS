@@ -1,5 +1,6 @@
 import os
 import pathlib
+import pickle
 from pprint import pprint
 
 import pandas as pd
@@ -24,7 +25,9 @@ value_type_dict = {'UNSIGNED16': 0x2B,
 need_fields = {'name', 'address', 'type'}
 Default = 'Default'
 par_file = 'parameters.yaml'
+par_pick_file = 'parameters.pickle'
 err_file = 'errors.yaml'
+err_pick_file = 'errors.pickle'
 
 
 # ------------------------------------- заполнение словаря для сравнения----------------------------
@@ -289,6 +292,32 @@ def get_immediate_subdirectories(a_dir):
             if os.path.isdir(os.path.join(a_dir, name))]
 
 
+# -------------------------------------
+def try_load_pickle(f, dir_name):
+    if f == 'params':
+        func = fill_par_dict_from_yaml
+        file = par_file
+        p_file = par_pick_file
+    elif f == 'errors':
+        func = fill_err_list_from_yaml
+        file = err_file
+        p_file = err_pick_file
+    else:
+        return False
+    try:
+        with open(pathlib.Path(dir_name, p_file), 'rb') as f:
+            dict_or_list = pickle.load(f)
+    except FileNotFoundError:
+        try:
+            dict_or_list = func(pathlib.Path(dir_name,file))
+            with open(pathlib.Path(dir_name, p_file), 'wb') as f:
+                pickle.dump(dict_or_list, f)
+        except FileNotFoundError:
+            print(f'В папке {dir_name} нет списка {f} для блока ', end=' ')
+            return False
+    return dict_or_list
+
+
 # ------------------------------------- сборка блока по объекту -----------------------------
 def fill_node(node: EVONode):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
@@ -297,18 +326,13 @@ def fill_node(node: EVONode):
 
             node_dir = pathlib.Path(data_dir, directory)
             param_dir = err_dir = Default
-            try:
-                group_params_dict = fill_par_dict_from_yaml(pathlib.Path(node_dir, param_dir, par_file))
-            except FileNotFoundError:
-                print(f'В папке {Default} нет списка параметров для блока {node.name}. Нужны параметры по-умолчанию')
+            t_dir = pathlib.Path(node_dir, Default)
+            node.group_params_dict = try_load_pickle('params', t_dir)
+            print(node.name)
+            node.errors_list = try_load_pickle('errors', t_dir)
+            print(node.name)
+            if not node.group_params_dict or not node.errors_list:
                 return False
-
-            try:
-                node.errors_list = fill_err_list_from_yaml(pathlib.Path(node_dir, err_dir, err_file))
-            except FileNotFoundError:
-                print(f'В папке {Default} нет списка ошибок для блока {node.name}. Нужны ошибки по-умолчанию')
-                return False
-
             f_v = node.firmware_version
 
             if f_v and not isinstance(f_v, str):
@@ -316,22 +340,21 @@ def fill_node(node: EVONode):
                 if version_list:
                     min_vers = get_nearest_lower_value(version_list, f_v)
                     if min_vers:
-                        try:
-                            group_params_dict = fill_par_dict_from_yaml(pathlib.Path(node_dir, str(min_vers), par_file))
+                        t_dir = pathlib.Path(data_dir, str(min_vers))
+                        params_dict = try_load_pickle('params', t_dir)
+                        print(node.name)
+                        if params_dict:
                             param_dir = min_vers
-                        except FileNotFoundError:
-                            print(f'В папке {min_vers} нет списка параметров для блока {node.name}')
-
-                        try:
-                            node.errors_list = fill_err_list_from_yaml(pathlib.Path(node_dir, str(min_vers), err_file))
+                            node.group_params_dict = params_dict.copy()
+                        errors_list = try_load_pickle('errors', t_dir)
+                        print(node.name)
+                        if errors_list:
                             err_dir = min_vers
-                        except FileNotFoundError:
-                            print(f'В папке {min_vers} нет списка ошибок для блока {node.name}.')
+                            node.errors_list = errors_list.copy()
 
-            for group in group_params_dict.values():
+            for group in node.group_params_dict.values():
                 for param in group:
                     param.node = node
-            node.group_params_dict = group_params_dict
             print(f'для блока {node.name} с версией ПО {node.firmware_version} '
                   f'применяю параметры из папки {param_dir} и ошибки из папки {err_dir}')
             return node
