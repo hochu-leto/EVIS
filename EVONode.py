@@ -1,6 +1,7 @@
 import ctypes
 
 import CANAdater
+from Parametr import Parametr
 from helper import int_to_hex_str
 
 invertor_command_dict = {
@@ -22,14 +23,7 @@ invertor_command_dict = {
     'RESET_FAULTS': (0x200205, "Ошибки Инвертора сброшены", '')}
 
 '''
-
-    address: '0x218001'
-    description: Байты 0..3 серийного номера КВУ
-    editable: false
-    name: DEVICE_SN_0
-    type: UNSIGNED32
 '''
-
 
 empty_node = {
     'name': 'NoName',
@@ -75,7 +69,7 @@ class EVONode:
 
         def check_string(name: str, s=''):
             st = nod[name] if name in list(nod.keys()) \
-                              and nod[name]\
+                              and nod[name] \
                               and str(nod[name]) != 'nan' else s
             return st
 
@@ -83,11 +77,10 @@ class EVONode:
         self.request_id = check_address('req_id', 0x500)
         self.answer_id = check_address('ans_id', 0x481)
         self.protocol = check_string('protocol', 'CANOpen')
-        s_v = check_string('serial_number', [])
-        self.request_serial_number = s_v if isinstance(s_v, list) else [int(i, 16) for i in s_v.split(',')]
+        # теперь в серийнике, версии ПО и ошибках будут списки параметров, по которым всё это опрашивается
+        self.request_serial_number = [Parametr(p, node=self) for p in nod['serial_number']]
         self.serial_number = ''
-        f_v = check_string('firm_version', [])
-        self.request_firmware_version = f_v if isinstance(f_v, list) else [int(i, 16) for i in f_v.split(',')]
+        self.request_firmware_version = [Parametr(p, node=self) for p in nod['firm_version']]
         self.firmware_version = ''
 
         self.error_request = [int(i, 16) if i else 0 for i in check_string('errors_req').split(',')]
@@ -202,20 +195,16 @@ class EVONode:
             address_list = self.request_serial_number
         elif not isinstance(address_list, list):
             return address_list
-
-        s_n = ''
-        for get_s in address_list:
-            s_n = self.get_val(get_s, adapter)
-            if self.string_from_can:
-                for s in self.string_from_can:
-                    if s.isprintable():
-                        s_n += s
-                self.string_from_can = ''
-            # elif not isinstance(s_n, str):
-            #     s_n = check_printable(s_n)
-
-        # print(f'{self.name} - {s_n=}')
-        return s_n
+        num = ''
+        for adr in address_list:
+            ans = adr.get_value(adapter)
+            print(ans, adr.value_string, end=' ')
+            if adr.value_string:
+                num += adr.value_string
+            elif not isinstance(ans, str):
+                num += str(ans).rstrip('0').rstrip('.')
+        print(num)
+        return int(num) if num.isdigit() else num
 
     # Потому-то кому-то приспичило передавать серийник в чарах
     # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,

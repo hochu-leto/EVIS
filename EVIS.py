@@ -355,9 +355,11 @@ def check_node_online(all_node_dict: dict):
     # из всех возможных блоков выбираем те, которые отвечают на запрос серийника
     for nd in all_node_dict.values():
         if nd.request_serial_number:
+            print(nd.name, 'serial=  ', end=' ')
             nd.serial_number = nd.get_data(can_adapter, nd.request_serial_number)
-        if nd.serial_number:
+        if nd.serial_number != '':
             if nd.request_firmware_version:
+                print(nd.name, 'firmware=  ', end=' ')
                 nd.firmware_version = nd.get_data(can_adapter, nd.request_firmware_version)
             # тут выясняется, что на старых машинах, где Инвертор_Цикл+ кто-то отвечает по ID Инвертор_МЭИ,
             # может и китайские рейки, нет особого желания разбираться. Вообщем это костыль, чтоб он не вылазил
@@ -376,7 +378,7 @@ def check_node_online(all_node_dict: dict):
             window.invertor_mpei_box.setEnabled(False)
     # на случай если только избранное найдено - значит ни один блок не ответил
     # if exit_dict[0].cut_firmware() == 'EVOCARGO':
-    if len(exit_dict) < 2:
+    if len(exit_dict) < 2 and TheBestNode in exit_dict.keys():
         return all_node_dict.copy(), False
     exit_dict = make_nodes_dict(exit_dict)
 
@@ -944,7 +946,7 @@ if __name__ == '__main__':
     window.thread.current_nodes_dict = node_dict.copy()
     # показываю дерево с блоками и что ошибок нет
     window.show_error_tree({})
-    window.show_nodes_tree(list(node_dict.values()))      # ---------------!!!!!!!!!! проверить, исправить на словарь!!!-----
+    window.show_nodes_tree(list(node_dict.values())) # ---------------!!!!!!!!!! проверить, исправить на словарь!!!-----
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if node_dict and params_list_changed():
         if can_adapter.find_adapters():

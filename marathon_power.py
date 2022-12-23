@@ -506,7 +506,7 @@ class CANMarathon(AdapterCAN):
                         if can_id_ans == buff.id:
                             for r in range(1, 7):
                                 exit_list.append(buff.data[r])
-                                if len(exit_list) > l_byte - 2:
+                                if len(exit_list) > l_byte - 1:
                                     return exit_list
                     else:
                         err = 65535 - 15    # надо исправлять это безобразие
