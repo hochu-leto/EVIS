@@ -223,6 +223,18 @@ A2.Device:
   type: UNSIGNED16
   unit: .nan
 A3.Ver PO / ADC:
+- address: '0x001f'
+  code: 0.3.13
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 32750.0
+  min_value: -32750.0
+  name: A3.0 Car number
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
 - address: '0x0020'
   code: 0.3.0
   degree: .nan
@@ -233,7 +245,7 @@ A3.Ver PO / ADC:
   name: A3.1 WheelTyp
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': FORWARD
@@ -273,7 +285,7 @@ A3.Ver PO / ADC:
   name: A3.4 WheelTypeSet
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': SER_NUM
@@ -401,7 +413,7 @@ B0.Global configuration&B1.Rezerv Group:
   name: B0.0 PWM_Period_Scale
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': 'NOT USED '
@@ -787,7 +799,7 @@ B2.CAN_BURR30:
   name: B2.24 CANPDO_ByteOrder
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': 'NORMAL MODE '
@@ -876,7 +888,7 @@ B3.WORK_TIME:
   name: B3.0 SecOutInd
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': '¬€ Àﬁ◊≈ÕŒ '
@@ -951,7 +963,7 @@ B3.WORK_TIME:
   name: B3.9 Reset
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': 'Õ≈“  ŒÃ¿Õƒ€ '
@@ -991,7 +1003,7 @@ C0.Connection:
   name: C0.2 MB baude rate
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': '2400 BAUD '
@@ -1170,7 +1182,7 @@ C0.Connection:
   name: C0.18 CanSpeed
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': '125 '
@@ -1199,7 +1211,7 @@ C1.PositionSens:
   name: C1.20 PwmDir
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': 'NORMAL MODE '
@@ -1214,7 +1226,7 @@ C1.PositionSens:
   name: C1.40 AutoTestMode
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': '¬€ Àﬁ◊≈ÕŒ '
@@ -2223,7 +2235,7 @@ D0.Device control:
   name: 'D0.0 ComandSet '
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': 'STOP '
@@ -2242,7 +2254,7 @@ D0.Device control:
   name: 'D0.1 ModeSet '
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': 'SCALAR '
@@ -2310,7 +2322,7 @@ D0.Device control:
   name: D0.6 CAN_Control
   period: 1
   size: 2.0
-  type: UNSIGNED16
+  type: SIGNED16
   unit: .nan
   values_table:
     '0': 'MB CONTROL '

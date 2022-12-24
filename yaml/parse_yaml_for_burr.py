@@ -14,17 +14,18 @@ empty_par = {'name': '',
              'degree': '',
              'period': ''}
 
-type_dict = dict(UINT32='UNSIGNED32',
-                 UINT16='UNSIGNED16',
-                 ENUM='UNSIGNED16',
-                 INT16='SIGNED16',
-                 UNION='SIGNED16',
-                 STR='UNSIGNED16',
-                 STRING='VISIBLE_STRING',
-                 INT32='SIGNED32',
-                 DATE='DATE',
-                 FLOAT32='FLOAT'
-                 )
+type_dict = dict(
+    UINT32='UNSIGNED32',
+    UINT16='UNSIGNED16',
+    ENUM='UNSIGNED16',
+    INT16='SIGNED16',
+    UNION='SIGNED16',
+    STR='SIGNED16',
+    STRING='VISIBLE_STRING',
+    INT32='SIGNED32',
+    DATE='DATE',
+    FLOAT32='FLOAT'
+)
 
 
 def check_dict(par_dict: dict):

@@ -123,6 +123,7 @@ def record_log():
             ex_wr = ExcelWriter(file_name, mode="w")
             with ex_wr as writer:
                 df_t.to_excel(writer)
+            QMessageBox.information(window, "Успешный успех!", f'Лог сохранён в файл {file_name}', QMessageBox.Ok)
 
 
 def make_compare_params_list():

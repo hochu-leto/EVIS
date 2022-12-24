@@ -1,6 +1,7 @@
 import os
 import pathlib
 import pickle
+import time
 from pprint import pprint
 
 import pandas as pd
@@ -309,7 +310,7 @@ def try_load_pickle(f, dir_name):
             dict_or_list = pickle.load(f)
     except FileNotFoundError:
         try:
-            dict_or_list = func(pathlib.Path(dir_name,file))
+            dict_or_list = func(pathlib.Path(dir_name, file))
             with open(pathlib.Path(dir_name, p_file), 'wb') as f:
                 pickle.dump(dict_or_list, f)
         except FileNotFoundError:
@@ -323,7 +324,6 @@ def fill_node(node: EVONode):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
     for directory in get_immediate_subdirectories(data_dir):
         if directory in node.name:
-
             node_dir = pathlib.Path(data_dir, directory)
             param_dir = err_dir = Default
             t_dir = pathlib.Path(node_dir, Default)
@@ -366,12 +366,15 @@ def fill_node(node: EVONode):
 def make_nodes_dict(node_dict):
     final_nodes_dict = {}
     for name, node in node_dict.items():
+        start_time = time.perf_counter()
+
         full_node = fill_node(node)
         if full_node:
             if name == TheBestNode:
                 full_node.group_params_dict = {group_name: [param.check_node(node_dict) for param in group_params]
                                                for group_name, group_params in full_node.group_params_dict.items()}
             final_nodes_dict[name] = full_node
+        print(node.name, time.perf_counter() - start_time)
     return final_nodes_dict
 
 # =============================================================================================================
