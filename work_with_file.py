@@ -293,7 +293,7 @@ def get_immediate_subdirectories(a_dir):
             if os.path.isdir(os.path.join(a_dir, name))]
 
 
-# -------------------------------------
+# ------------------------------------- попытка загрузки пикл, либо сериализация ямл -------------------------------
 def try_load_pickle(f, dir_name):
     if f == 'params':
         func = fill_par_dict_from_yaml

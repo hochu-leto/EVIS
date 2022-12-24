@@ -127,8 +127,18 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 def show_new_vmu_params(params_list, table, has_compare_params=False):
     row = 0
     for par in params_list:
-        v_name = par.value_string if par.value_string else \
-            par.value if isinstance(par.value, str) else zero_del(par.value)
+        if par.value_string:
+            v_name = par.value_string
+        elif isinstance(par.value, str):
+            v_name = par.value
+        elif par.value_dict:
+            k = int(par.value)
+            if k in par.value_dict:
+                v_name = par.value_dict[k]
+            else:
+                v_name = f'{k} нет в словаре'
+        else:
+            v_name = zero_del(par.value)
         value_item = QTableWidgetItem(v_name)
         if par.editable:
             flags = (value_item.flags() | Qt.ItemIsEditable)
