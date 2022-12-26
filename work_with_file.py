@@ -2,7 +2,6 @@ import os
 import pathlib
 import pickle
 import time
-from pprint import pprint
 
 import pandas as pd
 import yaml
@@ -29,6 +28,11 @@ par_file = 'parameters.yaml'
 par_pick_file = 'parameters.pickle'
 err_file = 'errors.yaml'
 err_pick_file = 'errors.pickle'
+dir_path = str(pathlib.Path.cwd())
+vmu_param_file = 'table_for_params_new_VMU.xlsx'
+vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
+nodes_yaml_file = pathlib.Path(dir_path, 'Data', 'all_nodes.yaml')
+nodes_pickle_file = pathlib.Path(dir_path, 'Data', 'all_nodes.pickle')
 
 
 # ------------------------------------- заполнение словаря для сравнения----------------------------
@@ -243,13 +247,15 @@ def make_node_list(file_name):
         if node_name in par_dict.keys():
             for group in par_dict[node_name].values():
                 for param in group:
-                    if node_name == TheBestNode:    # Избранное надо раскидывать - параметры м/б из разных блоков
+                    if node_name == TheBestNode:  # Избранное надо раскидывать - параметры м/б из разных блоков
                         param.check_node(node_dict)
                     else:
                         param.node = ev_node
             ev_node.group_params_dict = par_dict[node_name]
 
     return node_dict
+
+
 # =================================================================================================================
 
 
@@ -261,6 +267,8 @@ def fill_err_list_from_yaml(file):
             canopen_error = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
+    if canopen_error is None:
+        canopen_error = []
     node_err_list = [EvoError(e) for e in canopen_error]
     return node_err_list
 
@@ -272,6 +280,8 @@ def fill_par_dict_from_yaml(file):
             canopen_params = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
+    if canopen_params is None:
+        canopen_params = {}
     node_params_dict = {group: [Parametr(p) for p in group_params]
                         for group, group_params in canopen_params.items()}
     return node_params_dict
@@ -328,19 +338,16 @@ def fill_node(node: EVONode):
             param_dir = err_dir = Default
             t_dir = pathlib.Path(node_dir, Default)
             node.group_params_dict = try_load_pickle('params', t_dir)
-            print(node.name)
             node.errors_list = try_load_pickle('errors', t_dir)
-            print(node.name)
             if not node.group_params_dict or not node.errors_list:
                 return False
             f_v = node.firmware_version
-
             if f_v and not isinstance(f_v, str):
                 version_list = [int(v) for v in get_immediate_subdirectories(node_dir) if v.isdigit()]
                 if version_list:
                     min_vers = get_nearest_lower_value(version_list, f_v)
                     if min_vers:
-                        t_dir = pathlib.Path(data_dir, str(min_vers))
+                        t_dir = pathlib.Path(node_dir, str(min_vers))
                         params_dict = try_load_pickle('params', t_dir)
                         print(node.name)
                         if params_dict:
@@ -367,15 +374,19 @@ def make_nodes_dict(node_dict):
     final_nodes_dict = {}
     for name, node in node_dict.items():
         start_time = time.perf_counter()
-
         full_node = fill_node(node)
         if full_node:
-            if name == TheBestNode:
-                full_node.group_params_dict = {group_name: [param.check_node(node_dict) for param in group_params]
-                                               for group_name, group_params in full_node.group_params_dict.items()}
+            # if name == TheBestNode:
+            #     full_node.group_params_dict = {group_name: [param.check_node(node_dict) for param in group_params]
+            #                                    for group_name, group_params in full_node.group_params_dict.items()}
             final_nodes_dict[name] = full_node
         print(node.name, time.perf_counter() - start_time)
+    if TheBestNode not in final_nodes_dict.keys():
+        node_dict[TheBestNode].group_params_dict[NewParamsList] = []
+        final_nodes_dict[TheBestNode] = node_dict[TheBestNode]
+
     return final_nodes_dict
+
 
 # =============================================================================================================
 
@@ -404,6 +415,19 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
     with ex_wr as writer:
         df.to_excel(writer, index=False, sheet_name=sheet_name)
     return True
+
+
+def save_p_dict_to_file(par_dict: dict):
+    data_dir = pathlib.Path(os.getcwd(), 'Data')
+    file_name = pathlib.Path(data_dir, TheBestNode, Default, NewParamsList)
+    try:
+        with open(file_name, 'wb') as f:
+            pickle.dump(par_dict, f)
+        if os.path.isfile(nodes_pickle_file):
+            os.remove(nodes_pickle_file)
+        return True
+    except PermissionError:
+        return False
 
 
 def fill_compare_values(node: EVONode, dict_for_compare: dict):

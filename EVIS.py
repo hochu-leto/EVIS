@@ -78,18 +78,13 @@ from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
 from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file, \
-    fill_nodes_dict_from_yaml, make_nodes_dict
+    fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, vmu_param_file, nodes_pickle_file, nodes_yaml_file, \
+    save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode
 
 can_adapter = CANAdapter()
 
-dir_path = str(pathlib.Path.cwd())
-# файл где все блоки, параметры, ошибки
-vmu_param_file = 'table_for_params_new_VMU.xlsx'
-vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
-nodes_yaml_file = pathlib.Path(dir_path, 'Data', 'all_nodes.yaml')
-nodes_pickle_file = pathlib.Path(dir_path, 'Data', 'all_nodes.pickle')
 
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
@@ -379,7 +374,7 @@ def params_list_changed():  # если в левом окошке выбирае
     if window.thread.isRunning():
         is_run = True
         window.connect_to_node()
-    # отображаем имя блока, серийник и всё такое и обновляю список параметров в окошке справа
+    # отображаем имя блока, ерийник и всё такое и обновляю список параметров в окошке справа
     window.show_node_name(window.thread.current_node)
     show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
                            has_compare=window.thread.current_node.has_compare_params)
@@ -418,8 +413,9 @@ def check_node_online(all_node_dict: dict):
             window.invertor_mpei_box.setEnabled(False)
     # на случай если только избранное найдено - значит ни один блок не ответил
     # if exit_dict[0].cut_firmware() == 'EVOCARGO':
-    if len(exit_dict) < 2 and TheBestNode in exit_dict.keys():
+    if not exit_dict:
         return all_node_dict.copy(), False
+    exit_dict[TheBestNode] = all_node_dict[TheBestNode]
     exit_dict = make_nodes_dict(exit_dict)
 
     window.nodes_tree.currentItemChanged.disconnect()
@@ -594,7 +590,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                     # а Новый список удаляем
                     del user_node.group_params_dict[NewParamsList]
                     # проверяю удалось ли сохранить список
-                    if save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file):
+                    # if save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file):
+                    if save_p_dict_to_file(self.thread.current_node.group_params_dict):
                         err_mess = f'{val} успешно сохранён в {TheBestNode}'
                         state = True
                         # создаём новый итем для дерева
@@ -721,7 +718,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         if TheBestNode in self.thread.current_nodes_dict.keys():
             user_node_dict = self.thread.current_nodes_dict[TheBestNode].group_params_dict
-            if NewParamsList in user_node_dict.keys():
+            if NewParamsList in user_node_dict.keys() and user_node_dict[NewParamsList]:
                 if not self.save_list_to_file(user_node_dict[NewParamsList],
                                               f'В {NewParamsList} добавлены параметры \n'
                                               f' нужно сохранить этот список?'):
