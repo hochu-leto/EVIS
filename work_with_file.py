@@ -373,16 +373,14 @@ def fill_node(node: EVONode):
 def make_nodes_dict(node_dict):
     final_nodes_dict = {}
     for name, node in node_dict.items():
-        start_time = time.perf_counter()
         full_node = fill_node(node)
         if full_node:
-            # if name == TheBestNode:
-            #     full_node.group_params_dict = {group_name: [param.check_node(node_dict) for param in group_params]
-            #                                    for group_name, group_params in full_node.group_params_dict.items()}
             final_nodes_dict[name] = full_node
-        print(node.name, time.perf_counter() - start_time)
+    # надо добавить избранное, если его нет
     if TheBestNode not in final_nodes_dict.keys():
-        node_dict[TheBestNode].group_params_dict[NewParamsList] = []
+        # и если в избранном нет параметров - добавить Новый список
+        if not node_dict[TheBestNode].group_params_dict:
+            node_dict[TheBestNode].group_params_dict[NewParamsList] = []
         final_nodes_dict[TheBestNode] = node_dict[TheBestNode]
 
     return final_nodes_dict
@@ -419,7 +417,7 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
 
 def save_p_dict_to_file(par_dict: dict):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
-    file_name = pathlib.Path(data_dir, TheBestNode, Default, NewParamsList)
+    file_name = pathlib.Path(data_dir, TheBestNode, Default, par_pick_file)
     try:
         with open(file_name, 'wb') as f:
             pickle.dump(par_dict, f)

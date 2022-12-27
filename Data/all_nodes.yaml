@@ -184,7 +184,7 @@
   protocol: CANOpen
   req_id: '0x00000620'
   serial_number:
-    - address: '0x2A0001'
+    - address: '0x002A01'
       editable: false
       name: serial
       type: VISIBLE_STRING

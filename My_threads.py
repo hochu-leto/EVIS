@@ -201,7 +201,7 @@ class MainThread(QThread):
                 nd.current_errors_list = nd.check_errors(self.adapter).copy()
                 nd.current_warnings_list = nd.check_errors(self.adapter, False).copy()
 
-                self.err_dict[nd.name] = sorted(list(nd.current_errors_list.union(nd.current_warnings_list)))
+                self.err_dict[nd.name] = list(nd.current_errors_list.union(nd.current_warnings_list))
 
             if len(self.err_dict) > all_errors_counter:
                 self.err_thread_signal.emit(self.err_dict)

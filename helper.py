@@ -6,7 +6,8 @@ import traceback
 
 from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QColor
-from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox
+from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
+    QComboBox
 
 import Dialog_params
 import my_dialog
@@ -62,7 +63,7 @@ def find_param(nodes_dict: dict, s: str, node_name=None):
                           for param_list in nd.group_params_dict.values()
                           for param in param_list
                           if s in param.name or s in param.description]
-    elif node_name not in nodes_dict.keys():
+    elif node_name in nodes_dict.keys():
         nd = nodes_dict[node_name]
         list_of_params = [param for param_list in nd.group_params_dict.values()
                           for param in param_list
@@ -89,7 +90,7 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         description = par.description
         v_c = par.value_compare
         compare = v_c if isinstance(v_c, str) else zero_del(v_c)
-        print(v_c, compare)
+        # print(v_c, compare)
 
         if par.editable:
             color_opacity = 30
@@ -124,9 +125,16 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
     show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
 
+def pass_def():
+    print('изменили комбо-бокс')
+    pass
+
+
 def show_new_vmu_params(params_list, table, has_compare_params=False):
     row = 0
     for par in params_list:
+        value_in_dict = False
+
         if par.value_string:
             v_name = par.value_string
         elif isinstance(par.value, str):
@@ -134,21 +142,31 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
         elif par.value_dict:
             k = int(par.value)
             if k in par.value_dict:
+                value_in_dict = True
                 v_name = par.value_dict[k]
             else:
                 v_name = f'{k} нет в словаре'
         else:
             v_name = zero_del(par.value)
-        value_item = QTableWidgetItem(v_name)
-        if par.editable:
-            flags = (value_item.flags() | Qt.ItemIsEditable)
+
+        if value_in_dict and par.editable:
+            comBox = QComboBox()
+            comBox.addItems(list(par.value_dict.values))
+            table.setCellWidget(row, 2, comBox)
+            comBox.currentIndexChanged.connect(pass_def)
+
         else:
-            flags = value_item.flags() & ~Qt.ItemIsEditable
-        value_item.setFlags(flags)
-        # подкрашиваем в голубой в зависимости от периода опроса
-        color_opacity = int((150 / 1000) * par.period) + 3
-        value_item.setBackground(QColor(0, 255, 255, color_opacity))
-        table.setItem(row, 2, value_item)
+            value_item = QTableWidgetItem(v_name)
+            if par.editable:
+                flags = (value_item.flags() | Qt.ItemIsEditable)
+            else:
+                flags = value_item.flags() & ~Qt.ItemIsEditable
+            value_item.setFlags(flags)
+            # подкрашиваем в голубой в зависимости от периода опроса
+            color_opacity = int((150 / 1000) * par.period) + 3
+            value_item.setBackground(QColor(0, 255, 255, color_opacity))
+            table.setItem(row, 2, value_item)
+
         if has_compare_params:
             compare_name = table.item(row, 3).text()
             if v_name.strip() != compare_name.strip():

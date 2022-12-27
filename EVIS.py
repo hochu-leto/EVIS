@@ -61,12 +61,15 @@
 
 """
 import datetime
+import inspect
 import pickle
 import sys
 import time
+from pprint import pprint
+
 import pandas as pd
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
-from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator
+from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog
 import pathlib
@@ -211,53 +214,53 @@ def want_to_value_change():
     # меняем значение параметра
     if col_name == 'ЗНАЧЕНИЕ':
         is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
+        info_m = ''
         if is_editable:
             dialog = DialogChange(label=current_param.name, value=c_text.strip())
             reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
             dialog.lineEdit.setValidator(QRegExpValidator(reg_ex))
             if dialog.exec_() == QDialog.Accepted:
                 val = dialog.lineEdit.text()
-                val = val if val and val != '-' else '0'
-                if window.thread.isRunning():  # отключаем поток, если он был включен
-                    window.connect_to_node()
-                    # отправляю параметр, полученный из диалогового окна
-                    current_param.set_val(can_adapter, float(val))
-                    # и сразу же проверяю записался ли он в блок
-                    value_data = current_param.get_value(can_adapter)   # ---!!!если параметр строковый, будет None!!---
-                    if isinstance(value_data, str):
-                        new_val = ''
-                    else:
-                        new_val = zero_del(value_data).strip()
-                    # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
-                    if val == new_val:
-                        next_cell.setBackground(QColor(0, 254, 0, 30))
-                        # if window.thread.current_node.save_to_eeprom:
-                        if current_param.node.save_to_eeprom:
-                            current_param.node.param_was_changed = True
-                            # В Избранном кнопку не активируем, может быть несколько блоков. Возможно, я когда-то смогу
-                            if window.thread.current_node.name != TheBestNode:
-                                window.save_eeprom_btn.setEnabled(True)
-                                if window.thread.current_node.name == 'Инвертор_МЭИ':
-                                    QMessageBox.information(window, "Информация", f'Параметр будет работать, \n'
-                                                                                  f'только после сохранения в ЕЕПРОМ',
-                                                            QMessageBox.Ok)
-                    else:
-                        next_cell.setBackground(QColor(254, 0, 0, 30))
-                    # если поток был запущен до изменения, то запускаем его снова
-                    if window.thread.isFinished():
-                        # и запускаю поток
+                try:
+                    float(val)
+                    if window.thread.isRunning():  # отключаем поток, если он был включен
                         window.connect_to_node()
-                else:
-                    QMessageBox.information(window, "Информация", f'Подключение прервано, \n'
-                                                                  f'Для изменения параметра\n'
-                                                                  f'требуется подключение к ВАТС',
-                                            QMessageBox.Ok)
+                        # отправляю параметр, полученный из диалогового окна
+                        current_param.set_val(can_adapter, float(val))
+                        # и сразу же проверяю записался ли он в блок
+                        value_data = current_param.get_value(can_adapter)   # !!!если параметр строковый, будет None!!--
+                        if isinstance(value_data, str):
+                            new_val = ''
+                        else:
+                            new_val = zero_del(value_data).strip()
+                        # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
+                        if val == new_val:
+                            next_cell.setBackground(QColor(0, 254, 0, 30))
+                            # if window.thread.current_node.save_to_eeprom:
+                            if current_param.node.save_to_eeprom:
+                                current_param.node.param_was_changed = True
+                                # В Избранном кнопку не активируем, может быть несколько блоков.
+                                # Возможно, я когда-то смогу
+                                if window.thread.current_node.name != TheBestNode:
+                                    window.save_eeprom_btn.setEnabled(True)
+                                    if window.thread.current_node.name == 'Инвертор_МЭИ':
+                                        info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
+                        else:
+                            next_cell.setBackground(QColor(254, 0, 0, 30))
+                        # если поток был запущен до изменения, то запускаем его снова
+                        if window.thread.isFinished():
+                            # и запускаю поток
+                            window.connect_to_node()
+                    else:
+                        info_m = f'Подключение прервано, \nДля изменения параметра\nтребуется подключение к ВАТС'
+                except ValueError:
+                    info_m = 'Параметр должен быть числом'
         else:
-            QMessageBox.information(window, "Информация", f'Этот параметр нельзя изменить\n'
-                                                          f' Изменяемые параметры подкрашены зелёным',
-                                    QMessageBox.Ok)
-            # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
-            # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
+            info_m = f'Этот параметр нельзя изменить\nИзменяемые параметры подкрашены зелёным',
+        if info_m:
+            QMessageBox.information(window, "Информация", info_m, QMessageBox.Ok)
+        # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
+        # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
         window.vmu_param_table.item(c_row, c_col).setFlags(c_flags & ~Qt.ItemIsEditable)
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
@@ -271,6 +274,9 @@ def want_to_value_change():
         text = f'добавлен в блок {TheBestNode}'
         next_cell.setBackground(QColor(254, 0, 0, 30))
         # если Новый список есть в Избранном
+        rowcount = window.nodes_tree.topLevelItemCount() - 1
+        best_node_item = window.nodes_tree.topLevelItem(rowcount)
+
         if NewParamsList in user_node.group_params_dict.keys():
             # Проверяю есть ли уже новый параметр в Новом списке
             p = None
@@ -297,45 +303,63 @@ def want_to_value_change():
                     window.connect_to_node()
             # если нового параметра нет в Новом списке, добавляю его туда
             else:
+                if not user_node.group_params_dict[NewParamsList]:
+                    item = best_node_item.child(best_node_item.childCount() - 1)
+                    best_node_item.setExpanded(True)
+                    item.setBackground(0, QColor(254, 0, 0, 30))
+                    # window.nodes_tree.show()
+                    index = window.nodes_tree.indexFromItem(item, 0)
+                    window.nodes_tree.scrollTo(index)
+
                 user_node.group_params_dict[NewParamsList].append(new_param)
+
         # если Нового списка нет в Избранном, надо его создать и добавить в него новый параметр
         else:
             user_node.group_params_dict[NewParamsList] = [new_param]
             item = QTreeWidgetItem()
             item.setText(0, NewParamsList)
-            rowcount = window.nodes_tree.topLevelItemCount() - 1
-            window.nodes_tree.topLevelItem(rowcount).addChild(item)
+            best_node_item.addChild(item)
+
             # и немного красоты - раскрываем, спускаем и подкрашиваем
-            window.nodes_tree.topLevelItem(rowcount).setExpanded(True)
+            best_node_item.setExpanded(True)
             item.setBackground(0, QColor(254, 0, 0, 30))
-            window.nodes_tree.show()
+            # window.nodes_tree.show()
             index = window.nodes_tree.indexFromItem(item, 0)
             window.nodes_tree.scrollTo(index)
 
-
         window.log_lbl.setText(f'Параметр {current_param.name} {text}')
+    return
 
 
-def show_error():
+def show_error(item, column):
     current_err_name = ''
     current_err = EvoError()
+    # имя блока - до скобки - какой же это колхоз, пора переходить на MKV
     try:
-        current_node_text = window.errors_tree.currentItem().parent().text(0)
-        current_err_name = window.nodes_tree.currentItem().text(0)
+        current_node_text = item.parent().text(0).split('(')[0]
+        current_err_name = item.text(0)
     except AttributeError:
-        current_node_text = window.nodes_tree.currentItem().text(0)
+        current_node_text = item.text(0).split('(')[0]
+    # нужно определить на какую ошибку щёлкнул юзер
+    # если он щёлкнул на блок, выводить первую ошибку этого блока
     if current_err_name:
         for current_err in window.thread.err_dict[current_node_text]:
             if current_err.name == current_err_name:
                 break
     else:
         current_err = window.thread.err_dict[current_node_text][0]
-    window.errors_browser.setText(current_err.description +
+
+    window.errors_browser.setText(current_err.description + '\n' +
                                   '\n'.join(current_err.check_link))
     if current_err.important_parameters:
-        err_param_list = [find_param(window.thread.current_nodes_list, par, current_err.node.name)[0]
-                          for par in current_err.important_parameters]
-        user_node = window.thread.current_nodes_list[len(window.current_nodes_list) - 1]
+        # err_param_list = set([])
+        err_param_list = set()
+        for par in current_err.important_parameters:
+            er_par = find_param(window.thread.current_nodes_dict, par)
+            if er_par:
+                err_param_list.add(er_par[0])
+        user_node = window.thread.current_nodes_dict[TheBestNode]
+        #  если текущей ошибки ещё нет в блоке Избранное, надо добавить туда новый список параметров
         if current_err.name not in user_node.group_params_dict.keys():
             user_node.group_params_dict[current_err.name] = err_param_list
 
@@ -352,9 +376,13 @@ def show_error():
                 window.nodes_tree.show()
                 index = window.nodes_tree.indexFromItem(item, 0)
                 window.nodes_tree.scrollTo(index)
+        else:
+            c_item = window.nodes_tree.findItems(current_err.name, Qt.MatchContains)[0]
+            window.nodes_tree.setCurrentItem(c_item)
 
 
-def params_list_changed():  # если в левом окошке выбираем разные блоки или группы параметров
+def params_list_changed(item=None, column=None):     # если в левом окошке выбираем разные блоки или группы параметров
+    # pprint(inspect.stack()[1][3])
     is_run = False
     current_group_params = ''
     try:
@@ -525,9 +553,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                     child_item = QTreeWidgetItem()
                     child_item.setText(0, err.name)
                     if err.critical:
-                        child_item.setBackground(0, QColor(254, 0, 0, 30))
+                        child_item.setForeground(0, QBrush(QColor(254, 0, 0)))
                     else:
-                        child_item.setBackground(0, QColor(247, 242, 26, 30))
+                        child_item.setForeground(0, QBrush(QColor(247, 242, 26)))
                     item.addChild(child_item)
                     # если ранее курсор стоял на группе, запоминаю ее
                     if old_item_name == err.name:  # не работает для рулевых - нужно запоминать и имя блока тоже
@@ -539,6 +567,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             item.setText(0, 'Ошибок нет')
             items.append(item)
         self.errors_tree.insertTopLevelItems(0, items)
+        # self.errors_tree.currentItemChanged.connect(show_error)
         # если курсор стоял на блоке, который отсутствует в нынешнем списке, то курсор на самый первый блок...
         if not cur_item:
             cur_item = self.errors_tree.topLevelItem(0)
@@ -951,7 +980,7 @@ if __name__ == '__main__':
     window.main_tab.currentChanged.connect(window.change_tab)
     # подключаю сигналы нажатия на окошки
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
-    window.errors_tree.currentItemChanged.connect(show_error)
+    window.errors_tree.itemPressed.connect(show_error)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
     # и сигналы нажатия на кнопки
@@ -989,8 +1018,8 @@ if __name__ == '__main__':
             pickle.dump(node_dict, f)
     window.thread.current_nodes_dict = node_dict.copy()
     # показываю дерево с блоками и что ошибок нет
-    window.add_new_errors({})
-    window.show_nodes_tree(list(node_dict.values())) # ---------------!!!!!!!!!! проверить, исправить на словарь!!!-----
+    # window.add_new_errors({})
+    window.show_nodes_tree(list(node_dict.values()))    # ---------!!!!!!!!!! проверить, исправить на словарь!!!-----
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if node_dict and params_list_changed():
         if can_adapter.find_adapters():
@@ -1001,3 +1030,10 @@ if __name__ == '__main__':
         splash.finish(window)  # Убираем заставку
         print(time.perf_counter() - start_time)
         app.exec_()  # и запускаем приложение
+
+# комбобоксы там,где можно выбирать текстом
+# наладить выбор из комбобокса и отправка в блок
+# вылетает в функцию ошибок немонятно почему
+# предусмотреть изменение рейки с задней на переднюю
+# перенос строки значения параметра, где слишком она длинная
+# список опроса параметров по ошибке

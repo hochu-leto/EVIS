@@ -1,6 +1,7 @@
 import ctypes
 
 import CANAdater
+from EVOErrors import EvoError
 from Parametr import Parametr
 from helper import int_to_hex_str
 
@@ -291,7 +292,9 @@ class EVONode:
                 if big_error in err_dict.keys():  # космический костыль
                     current_list.add(err_dict[big_error])
                 else:
-                    current_list.add(f'Неизвестная ошибка ({big_error})')
+                    e = EvoError()
+                    e.name = f'Неизвестная ошибка ({big_error})'
+                    current_list.add(e)
             else:
                 for e_num, e_obj in err_dict.items():
                     if big_error & e_num:

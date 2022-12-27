@@ -72,7 +72,7 @@ class Parametr:
         self.min_value = check_value(type_values[self.type]['min'], 'min_value')
         self.max_value = check_value(type_values[self.type]['max'], 'max_value')
         v_table = check_string('values_table')
-        self.value_dict = v_table if isinstance(v_table, dict) \
+        self.value_dict = {int(k): v for k, v in v_table.items()} if isinstance(v_table, dict) \
             else {int(val.split(':')[0]): val.split(':')[1]
                   for val in v_table.split(',')} if v_table else {}
         # из editable и соответствующего списка
