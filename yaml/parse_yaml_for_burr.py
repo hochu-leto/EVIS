@@ -30,7 +30,11 @@ type_dict = dict(
 
 def check_dict(par_dict: dict):
     final_dict = {}
+    # final_dict[' '] = []
+
     old_n = ''
+    final_dict[old_n] = []
+
     for n, l in par_dict.items():
         if len(l) > 3:
             final_dict[n] = l

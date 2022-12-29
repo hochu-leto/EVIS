@@ -4,7 +4,7 @@
 import struct
 import traceback
 
-from PyQt5.QtCore import QTimer, Qt, pyqtSlot
+from PyQt5.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
     QComboBox
@@ -47,6 +47,14 @@ example_par = {'name': 'fghjk',
                'degree': 3}
 
 
+class MyComboBox(QComboBox):
+    clicked = pyqtSignal()          # Create a signal
+
+    def showPopup(self):            #     sPopup function
+        self.clicked.emit()         # Send signal
+        super(MyComboBox, self).showPopup()     #     's showPopup ()
+
+
 def buf_to_string(buf):
     if isinstance(buf, str):
         return buf
@@ -72,7 +80,7 @@ def find_param(nodes_dict: dict, s: str, node_name=None):
 
 
 def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False):
-    # show_table = getattr(w, table)
+    items_list = []
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
     row = 0
@@ -118,11 +126,18 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
+        # if par.value_dict:
+        #     comBox = MyComboBox()
+        #     comBox.addItems(list(par.value_dict.values()))
+        #     show_table.setCellWidget(row, show_table.columnCount() - 1, comBox)
+        #     items_list.append(comBox)
+
         row += 1
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
     show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
     # максимальная ширина у описания, если не хватает длины, то переносится
     show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+    return items_list
 
 
 def pass_def():
@@ -131,6 +146,7 @@ def pass_def():
 
 
 def show_new_vmu_params(params_list, table, has_compare_params=False):
+    items_list = []
     row = 0
     for par in params_list:
         value_in_dict = False
@@ -150,11 +166,13 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
             v_name = zero_del(par.value)
 
         if value_in_dict and par.editable:
-            comBox = QComboBox()
-            comBox.addItems(list(par.value_dict.values))
-            table.setCellWidget(row, 2, comBox)
-            comBox.currentIndexChanged.connect(pass_def)
-
+            # каждый раз создаётся новый объект - это неправильно, засру память
+            if not isinstance(table.item(row, 2), MyComboBox):
+                comBox = MyComboBox()
+                comBox.addItems(list(par.value_dict.values()))
+                table.setCellWidget(row, 2, comBox)
+                items_list.append(comBox)
+            table.item(row, 2).setCurrentText(par.value_dict[par.value])
         else:
             value_item = QTableWidgetItem(v_name)
             if par.editable:
@@ -163,7 +181,7 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
                 flags = value_item.flags() & ~Qt.ItemIsEditable
             value_item.setFlags(flags)
             # подкрашиваем в голубой в зависимости от периода опроса
-            color_opacity = int((150 / 1000) * par.period) + 3
+            color_opacity = int((150 / 1000) * abs(par.period)) + 3
             value_item.setBackground(QColor(0, 255, 255, color_opacity))
             table.setItem(row, 2, value_item)
 
@@ -175,6 +193,7 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
                 color = QColor(255, 255, 255, 0)
             table.item(row, 3).setBackground(color)
         row += 1
+    return items_list
 
 
 class InfoMessage(QDialog, Dialog_params.Ui_Dialog_params):

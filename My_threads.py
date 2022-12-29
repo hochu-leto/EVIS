@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMessageBox
 
 from EVONode import EVONode, invertor_command_dict
 from Parametr import Parametr
-from helper import empty_par, buf_to_string
+from helper import empty_par, buf_to_string, zero_del
 
 
 # поток для сохранения в файл настроек блока
@@ -170,7 +170,7 @@ class MainThread(QThread):
                         return
                 else:
                     self.errors_counter = 0
-                    if param == self.magic_word:    # здесь можно вкорячить проверкуна стринг параметра и
+                    if param == self.magic_word:  # здесь можно вкорячить проверкуна стринг параметра и
                         # на NOne который можно выставлять при ответе блока 80
                         current_param.period = 1001
                         current_param.value = 'Параметр \nотсутствует'
@@ -230,7 +230,6 @@ class MainThread(QThread):
         loop.exec_()
 
     def send_to_mpei(self, command):
-        answer = 'Команда не прошла'
         node = self.current_nodes_dict['Инвертор_МЭИ']
         # передавать надо исключительно в первый кан
         if node.request_id in self.adapter.id_nodes_dict.keys():
@@ -262,6 +261,42 @@ class MainThread(QThread):
                 QMessageBox.information(w, "Успешный успех!", answer, QMessageBox.Ok)
             return answer
         return 'Команда отменена пользователем'
+
+    def set_param(self, param: Parametr, val=0):
+        if self.isRunning():
+            self.quit()
+            self.wait()
+            was_run = True
+        else:
+            was_run = False
+        nd = param.node
+        check = False
+        info_m = ''
+        if nd.request_id in self.adapter.id_nodes_dict.keys():
+            can_adapter = self.adapter.id_nodes_dict[nd.request_id]
+            param.set_val(can_adapter, float(val))
+            # и сразу же проверяю записался ли он в блок
+            value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
+            if isinstance(value_data, str):
+                new_val = ''
+            else:
+                new_val = zero_del(value_data).strip()
+            # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
+            if val == new_val:
+                check = False
+                if param.node.save_to_eeprom:
+                    param.node.param_was_changed = True
+                    if self.current_node.name == 'Инвертор_МЭИ':
+                        info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
+            else:
+                check = False
+            # если поток был запущен до изменения, то запускаем его снова
+        else:
+            check = False
+            info_m = f'Не найден адаптер для блока {nd.name}'
+        if self.isFinished() and was_run:
+            self.start()
+        return check, info_m
 
 
 class WaitCanAnswerThread(QThread):

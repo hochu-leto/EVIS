@@ -191,3 +191,23 @@
   to_eeprom: .nan
   v_errors_erase: .nan
   warnings_req: .nan
+ÈÑÍ:
+  ans_id: '0x000005C2'
+  errors_erase: '0x200201'
+  errors_req: '0x200002'
+  firm_version:
+    - address: '0x5FFF00'
+      name: SOFTWARE_VERSION
+      type: UNSIGNED32
+  from_eeprom: .nan
+  name: ÈÑÍ
+  protocol: CANOpen
+  req_id: '0x00000642'
+  serial_number:
+    - address: '0x002A01'
+      editable: false
+      name: serial
+      type: VISIBLE_STRING
+  to_eeprom: '0x200202'
+  v_errors_erase: .nan
+  warnings_req: .nan

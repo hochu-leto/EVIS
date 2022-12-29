@@ -71,7 +71,7 @@ import pandas as pd
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog
+    QSplashScreen, QFileDialog, QComboBox
 import pathlib
 from pandas import ExcelWriter
 import VMU_monitor_ui
@@ -87,7 +87,6 @@ from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChang
     show_new_vmu_params, find_param, TheBestNode
 
 can_adapter = CANAdapter()
-
 
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
@@ -168,7 +167,7 @@ def save_to_eeprom(node=None):
 
         if node.name == 'Инвертор_МЭИ':
             voltage = find_param(window.thread.current_nodes_dict, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0]
-            err = voltage.get_value(can_adapter.adapters_dict[125])     # ---!!!если параметр строковый, будет None!!---
+            err = voltage.get_value(can_adapter.adapters_dict[125])  # ---!!!если параметр строковый, будет None!!---
             if not isinstance(err, str):
                 # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
                 if err < 30:
@@ -223,12 +222,14 @@ def want_to_value_change():
                 val = dialog.lineEdit.text()
                 try:
                     float(val)
+                    # здесь должна быть функция
                     if window.thread.isRunning():  # отключаем поток, если он был включен
+                        check, info_m = window.thread.set_param(current_param, val)
                         window.connect_to_node()
                         # отправляю параметр, полученный из диалогового окна
                         current_param.set_val(can_adapter, float(val))
                         # и сразу же проверяю записался ли он в блок
-                        value_data = current_param.get_value(can_adapter)   # !!!если параметр строковый, будет None!!--
+                        value_data = current_param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
                         if isinstance(value_data, str):
                             new_val = ''
                         else:
@@ -361,7 +362,7 @@ def show_error(item, column):
         user_node = window.thread.current_nodes_dict[TheBestNode]
         #  если текущей ошибки ещё нет в блоке Избранное, надо добавить туда новый список параметров
         if current_err.name not in user_node.group_params_dict.keys():
-            user_node.group_params_dict[current_err.name] = err_param_list
+            user_node.group_params_dict[current_err.name] = list(err_param_list)
 
             item = QTreeWidgetItem()
             item.setText(0, current_err.name)
@@ -370,18 +371,14 @@ def show_error(item, column):
 
             if window.thread.current_node == user_node:
                 show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
-            else:   # и немного красоты - раскрываем, спускаем и подкрашиваем
-                window.nodes_tree.topLevelItem(rowcount).setExpanded(True)
-                item.setBackground(0, QColor(254, 0, 0, 30))
-                window.nodes_tree.show()
-                index = window.nodes_tree.indexFromItem(item, 0)
-                window.nodes_tree.scrollTo(index)
+            window.nodes_tree.setCurrentItem(item)
         else:
+            # кажется, это не работает, нужно проверить, да ЭТО НЕ РАБОТАЕТ
             c_item = window.nodes_tree.findItems(current_err.name, Qt.MatchContains)[0]
             window.nodes_tree.setCurrentItem(c_item)
 
 
-def params_list_changed(item=None, column=None):     # если в левом окошке выбираем разные блоки или группы параметров
+def params_list_changed(item=None, column=None):  # если в левом окошке выбираем разные блоки или группы параметров
     # pprint(inspect.stack()[1][3])
     is_run = False
     current_group_params = ''
@@ -404,8 +401,10 @@ def params_list_changed(item=None, column=None):     # если в левом о
         window.connect_to_node()
     # отображаем имя блока, ерийник и всё такое и обновляю список параметров в окошке справа
     window.show_node_name(window.thread.current_node)
-    show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
+    show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,  # combo_list =
                            has_compare=window.thread.current_node.has_compare_params)
+    # for com in combo_list:
+    #     com.clicked.connect(some_def)
     # и запускаю поток, если он был запущен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
@@ -440,7 +439,6 @@ def check_node_online(all_node_dict: dict):
             del exit_dict['Инвертор_МЭИ']
             window.invertor_mpei_box.setEnabled(False)
     # на случай если только избранное найдено - значит ни один блок не ответил
-    # if exit_dict[0].cut_firmware() == 'EVOCARGO':
     if not exit_dict:
         return all_node_dict.copy(), False
     exit_dict[TheBestNode] = all_node_dict[TheBestNode]
@@ -465,6 +463,10 @@ def erase_errors():
     # запускаем поток снова, если был остановлен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
+
+
+def some_def():
+    print(f' выбран комбобокс ')
 
 
 def save_to_file_pressed():  # если нужно записать текущий блок в файл
@@ -524,9 +526,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if err == 'Адаптер не подключен':
                 can_adapter.isDefined = False
         else:
-            show_new_vmu_params(params_list=self.thread.current_params_list,
-                                table=self.vmu_param_table,
-                                has_compare_params=self.thread.current_node.has_compare_params)
+            combo_boxes = show_new_vmu_params(params_list=self.thread.current_params_list,
+                                              table=self.vmu_param_table,
+                                              has_compare_params=self.thread.current_node.has_compare_params)
+            for i in combo_boxes:
+                i.clicked.connect(some_def)  # activated
 
     @pyqtSlot(dict)  # добавляем ошибки в окошко
     def add_new_errors(self, nds: dict):
@@ -837,7 +841,8 @@ def mpei_calibrate():
     param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'SPEED_RPM', 'FIELD_CURRENT',
                                 'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']  # 'STATOR_CURRENT', 'TORQUE',
     for p_name in param_list_for_calibrate:
-        wait_thread.imp_par_list.append(find_param(window.thread.current_nodes_dict, p_name, node_name='Инвертор_МЭИ')[0])
+        wait_thread.imp_par_list.append(
+            find_param(window.thread.current_nodes_dict, p_name, node_name='Инвертор_МЭИ')[0])
 
     wait_thread.req_delay = 50
     wait_thread.adapter = can_adapter.adapters_dict[125]
@@ -1019,7 +1024,7 @@ if __name__ == '__main__':
     window.thread.current_nodes_dict = node_dict.copy()
     # показываю дерево с блоками и что ошибок нет
     # window.add_new_errors({})
-    window.show_nodes_tree(list(node_dict.values()))    # ---------!!!!!!!!!! проверить, исправить на словарь!!!-----
+    window.show_nodes_tree(list(node_dict.values()))  # ---------!!!!!!!!!! проверить, исправить на словарь!!!-----
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if node_dict and params_list_changed():
         if can_adapter.find_adapters():

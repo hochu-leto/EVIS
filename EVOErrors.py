@@ -26,8 +26,11 @@ class EvoError:
         if raw_err_dict is None:
             raw_err_dict = empty_error
 
-        def check_string(name: str, s=''):
+        def check_string(name: str, s=None):
+            if s is None:
+                s = ''
             st = raw_err_dict[name] if name in list(raw_err_dict.keys()) \
+                                       and raw_err_dict[name] \
                                        and str(raw_err_dict[name]) != 'nan' else s
             return st
 

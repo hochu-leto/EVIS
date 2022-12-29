@@ -1,0 +1,138 @@
+- check_link: важная ссылка1, важная ссылка2, важная ссылка142
+  critical: true
+  description_error: тут какое-то описание по ошибке  'OVP_IN'
+  important_parametr:
+  name_error: 'OVP_IN'
+  value_error: '0x000001'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка143
+  critical: true
+  description_error: тут какое-то описание по ошибке  'UVP_IN'
+  important_parametr:
+  name_error: 'UVP_IN'
+  value_error: '0x000002'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка144
+  critical: true
+  description_error: тут какое-то описание по ошибке  'OVP_OUT'
+  important_parametr:
+  name_error: 'OVP_OUT'
+  value_error: '0x000004'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка145
+  critical: true
+  description_error: тут какое-то описание по ошибке  'OCP_IN'
+  important_parametr:
+  name_error: 'OCP_IN'
+  value_error: '0x000008'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка146
+  critical: true
+  description_error: тут какое-то описание по ошибке  'DRIVER_FLT'
+  important_parametr:
+  name_error: 'DRIVER_FLT'
+  value_error: '0x000010'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка147
+  critical: true
+  description_error: тут какое-то описание по ошибке  'MODULE_OVERTEMP'
+  important_parametr:
+  name_error: 'MODULE_OVERTEMP'
+  value_error: '0x000020'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка148
+  critical: true
+  description_error: тут какое-то описание по ошибке  'HEATSINK_OVERTEMP'
+  important_parametr:
+  name_error: 'HEATSINK_OVERTEMP'
+  value_error: '0x000040'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка149
+  critical: true
+  description_error: тут какое-то описание по ошибке  'CAN_CONNECTION_LOST'
+  important_parametr:
+  name_error: 'CAN_CONNECTION_LOST'
+  value_error: '0x000080'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка150
+  critical: true
+  description_error: тут какое-то описание по ошибке  'CAN_BUS_ERROR'
+  important_parametr:
+  name_error: 'CAN_BUS_ERROR'
+  value_error: '0x000100'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка151
+  critical: true
+  description_error: тут какое-то описание по ошибке  'RUNTIME_ERROR'
+  important_parametr:
+  name_error: 'RUNTIME_ERROR'
+  value_error: '0x000200'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка152
+  critical: true
+  description_error: тут какое-то описание по ошибке  'EMERGENCY_STOP'
+  important_parametr:
+  name_error: 'EMERGENCY_STOP'
+  value_error: '0x000400'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка153
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_ERROR'
+  important_parametr:
+  name_error: 'FUELCELL_ERROR'
+  value_error: '0x000800'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка154
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_OVERHEAT'
+  important_parametr:
+  name_error: 'FUELCELL_OVERHEAT'
+  value_error: '0x001000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка155
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_BATT_LOWCHARGE'
+  important_parametr:
+  name_error: ' FUELCELL_BATT_LOWCHARGE'
+  value_error: '0x002000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка156
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_NOCONNECTION'
+  important_parametr:
+  name_error: 'FUELCELL_NOCONNECTION'
+  value_error: '0x004000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка157
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_LOWPRESSURE'
+  important_parametr:
+  name_error: 'FUELCELL_LOWPRESSURE'
+  value_error: '0x008000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка158
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_HYDROERROR'
+  important_parametr:
+  name_error: 'FUELCELL_HYDROERROR'
+  value_error: '0x010000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка159
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_STARTUP_FAILED'
+  important_parametr:
+  name_error: 'FUELCELL_STARTUP_FAILED'
+  value_error: '0x020000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка160
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_SHUTDOWN_FAILED'
+  important_parametr:
+  name_error: 'FUELCELL_SHUTDOWN_FAILED'
+  value_error: '0x040000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка161
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_UV'
+  important_parametr:
+  name_error: 'FUELCELL_UV'
+  value_error: '0x080000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка162
+  critical: true
+  description_error: тут какое-то описание по ошибке  'FUELCELL_OV'
+  important_parametr:
+  name_error: 'FUELCELL_OV'
+  value_error: '0x100000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка162
+  critical: true
+  description_error: тут какое-то описание по ошибке  'RS_CONNECTION_LOST'
+  important_parametr:
+  name_error: 'RS_CONNECTION_LOST'
+  value_error: '0x200000'
+- check_link: важная ссылка1, важная ссылка2, важная ссылка162
+  critical: true
+  description_error: тут какое-то описание по ошибке  'BMS_FATAL_ERROR'
+  important_parametr:
+  name_error: 'BMS_FATAL_ERROR'
+  value_error: '0x400000'
