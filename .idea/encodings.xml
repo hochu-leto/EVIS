@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/Data/all_nodes.yaml" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/Data/КВУ_ТТС/Default/errors.yaml" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/Data/КВУ_ТТС/Default/parameters.yaml" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/python_for_help/combobox_ex.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/parse_yaml_from_eds.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/parse_yaml_from_xml.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/store_file.yaml" charset="windows-1251" />

@@ -48,11 +48,17 @@ example_par = {'name': 'fghjk',
 
 
 class MyComboBox(QComboBox):
-    clicked = pyqtSignal()          # Create a signal
+    clicked = pyqtSignal()  # Create a signal
+    isRevealed = False
 
-    def showPopup(self):            #     sPopup function
-        self.clicked.emit()         # Send signal
-        super(MyComboBox, self).showPopup()     #     's showPopup ()
+    def showPopup(self):  # sPopup function
+        self.clicked.emit()  # Send signal
+        self.isRevealed = True
+        super(MyComboBox, self).showPopup()  # 's showPopup ()
+
+    def hidePopup(self):
+        self.isRevealed = False
+        super(MyComboBox, self).hidePopup()
 
 
 def buf_to_string(buf):
@@ -149,6 +155,11 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
     items_list = []
     row = 0
     for par in params_list:
+
+        if isinstance(table.item(row, 2), MyComboBox) \
+                and table.item(row, 2).isRevealed:
+            continue
+
         value_in_dict = False
 
         if par.value_string:
@@ -166,13 +177,13 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
             v_name = zero_del(par.value)
 
         if value_in_dict and par.editable:
-            # каждый раз создаётся новый объект - это неправильно, засру память
             if not isinstance(table.item(row, 2), MyComboBox):
                 comBox = MyComboBox()
                 comBox.addItems(list(par.value_dict.values()))
+
                 table.setCellWidget(row, 2, comBox)
                 items_list.append(comBox)
-            table.item(row, 2).setCurrentText(par.value_dict[par.value])
+            table.item(row, 2).setCurrentText(par.value_dict[int(par.value)])
         else:
             value_item = QTableWidgetItem(v_name)
             if par.editable:

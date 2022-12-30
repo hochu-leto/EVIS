@@ -197,6 +197,9 @@ def save_to_eeprom(node=None):
         QMessageBox.information(window, "Информация", f'В {node.name} параметры сохранять не нужно', QMessageBox.Ok)
         window.save_eeprom_btn.setEnabled(False)
 
+def change_value(index):
+    как определить какой параметр меняется? индекс словаря найти не проблема, но что за параметр???
+    pass
 
 def want_to_value_change():
     #  над разбивать, как минимум, на две функции
@@ -530,7 +533,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                                               table=self.vmu_param_table,
                                               has_compare_params=self.thread.current_node.has_compare_params)
             for i in combo_boxes:
-                i.clicked.connect(some_def)  # activated
+                i.currentIndexChanged.connect(change_value)  # activated
 
     @pyqtSlot(dict)  # добавляем ошибки в окошко
     def add_new_errors(self, nds: dict):
@@ -1036,9 +1039,11 @@ if __name__ == '__main__':
         print(time.perf_counter() - start_time)
         app.exec_()  # и запускаем приложение
 
-# комбобоксы там,где можно выбирать текстом
+# если версия ПО строковая, сравнивать строки(названия папок тоже могут быть строковыми
+# сделать нормальные файлы ошибок, без бестолковых ссылок, с нормальным списком параметров
+# сделать нормальные ошибки и параметры для 014
+# нормальный поиск от 4х символов
 # наладить выбор из комбобокса и отправка в блок
-# вылетает в функцию ошибок немонятно почему
 # предусмотреть изменение рейки с задней на переднюю
 # перенос строки значения параметра, где слишком она длинная
 # список опроса параметров по ошибке
