@@ -48,11 +48,23 @@ example_par = {'name': 'fghjk',
 
 
 class MyComboBox(QComboBox):
-    clicked = pyqtSignal()  # Create a signal
+    ItemSelected = pyqtSignal(list)
     isRevealed = False
+    parametr = None
+
+    def __init__(self, parent=None, parametr=None):
+        super(MyComboBox, self).__init__(parent)
+        self.parametr = parametr
+        self.currentIndexChanged.connect(self.item_selected_handle)
+
+    def item_selected_handle(self, index):
+        lst = []
+        if self.parametr is not None:
+            key = list(self.parametr.value_dict.keys())[index]
+            lst = [self.parametr, key]
+        self.ItemSelected.emit(lst)
 
     def showPopup(self):  # sPopup function
-        self.clicked.emit()  # Send signal
         self.isRevealed = True
         super(MyComboBox, self).showPopup()  # 's showPopup ()
 
@@ -180,7 +192,7 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
             if not isinstance(table.item(row, 2), MyComboBox):
                 comBox = MyComboBox()
                 comBox.addItems(list(par.value_dict.values()))
-
+                comBox.parametr = par
                 table.setCellWidget(row, 2, comBox)
                 items_list.append(comBox)
             table.item(row, 2).setCurrentText(par.value_dict[int(par.value)])

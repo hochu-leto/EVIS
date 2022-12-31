@@ -21,7 +21,18 @@ type_dict = dict(
 
 class MyComboBox(QComboBox):
     clicked = pyqtSignal(bool)  # Create a signal
+    ItemSelected = pyqtSignal(list)
     isRevealed = False
+    parametr = None
+
+    def __init__(self, parent=None):
+        super(MyComboBox, self).__init__(parent)
+        self.currentIndexChanged.connect(self.item_selected_handle)
+
+    def item_selected_handle(self, index):
+        key = list(type_dict.keys())[index]
+        l = [self.isRevealed, key]
+        self.ItemSelected.emit(l)
 
     def showPopup(self):  # sPopup function
         self.isRevealed = True
@@ -67,9 +78,10 @@ class Window(QMainWindow):
         # adding list of items to combo box
         self.combo_box.addItems(geek_list)
         self.combo_box.setCurrentText(type_dict['UNION'])
-        self.combo_box.currentTextChanged.connect(some_def2)
+        # self.combo_box.currentTextChanged.connect(some_def2)
         self.combo_box.currentIndexChanged.connect(some_def)
-        self.combo_box.clicked.connect(some_click)
+        # self.combo_box.clicked.connect(some_click)
+        self.combo_box.ItemSelected.connect(some_select)
         # getting view part of combo box
         view = self.combo_box.view()
 
@@ -99,6 +111,12 @@ def some_def2(text):
 @pyqtSlot(bool)
 def some_click(state):
     print(f'состояние комбо-бокса - открыт? {state}')
+
+
+@pyqtSlot(list)
+def some_select(lst):
+    print(f'выбран элемент комбобокса {type_dict[lst[1]]}')
+    print(f'состояние комбобокса - открыт {lst[0]}')
 
 
 # create pyqt5 app

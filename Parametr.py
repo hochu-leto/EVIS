@@ -4,7 +4,6 @@
 import ctypes
 
 import CANAdater
-# from EVONode import EVONode
 from helper import bytes_to_float, int_to_hex_str, float_to_int, empty_par
 
 type_values = {

@@ -61,7 +61,6 @@
 
 """
 import datetime
-import inspect
 import pickle
 import sys
 import time
@@ -71,7 +70,7 @@ import pandas as pd
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QComboBox
+    QSplashScreen, QFileDialog
 import pathlib
 from pandas import ExcelWriter
 import VMU_monitor_ui
@@ -80,9 +79,8 @@ from EVOErrors import EvoError
 from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
-from work_with_file import full_node_list, fill_sheet_dict, fill_compare_values, save_params_dict_to_file, \
-    fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, vmu_param_file, nodes_pickle_file, nodes_yaml_file, \
-    save_p_dict_to_file
+from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
+    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode
 
@@ -94,7 +92,6 @@ sleep_thread = SleepThread(3)
 
 
 def record_log():
-    # window.thread.is_recording = True if not window.thread.is_recording else False
     state = window.thread.is_recording
     window.nodes_tree.setEnabled(state)
     window.vmu_param_table.setEnabled(state)
@@ -197,9 +194,59 @@ def save_to_eeprom(node=None):
         QMessageBox.information(window, "Информация", f'В {node.name} параметры сохранять не нужно', QMessageBox.Ok)
         window.save_eeprom_btn.setEnabled(False)
 
-def change_value(index):
-    как определить какой параметр меняется? индекс словаря найти не проблема, но что за параметр???
-    pass
+
+@pyqtSlot(list)
+def change_value(lst):
+    next_cell = window.vmu_param_table.item(window.vmu_param_table.currentItem().row(),
+                                            window.vmu_param_table.currentItem().column() + 1)
+    info_m = 'От комбо-бокса пришёл пустой список'
+    if lst:
+        parametr = lst[0]
+        new_value = lst[1]
+        info_m = set_new_value(next_cell, parametr, new_value)
+
+    if info_m:
+        QMessageBox.information(window, "Информация", info_m, QMessageBox.Ok)
+
+
+def set_new_value(next_cell, param:Parametr, val):
+    info_m = ''
+    try:
+        float(val)
+        if window.thread.isRunning():  # отключаем поток, если он был включен
+            # check, info_m = window.thread.set_param(current_param, val)
+            window.connect_to_node()
+            # отправляю параметр, полученный из диалогового окна
+            param.set_val(can_adapter, float(val))
+            # и сразу же проверяю записался ли он в блок
+            value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
+            if isinstance(value_data, str):
+                new_val = ''
+            else:
+                new_val = zero_del(value_data).strip()
+            # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
+            if val == new_val:
+                next_cell.setBackground(QColor(0, 254, 0, 30))
+                if param.node.save_to_eeprom:
+                    param.node.param_was_changed = True
+                    # В Избранном кнопку не активируем, может быть несколько блоков.
+                    # Возможно, я когда-то смогу
+                    if window.thread.current_node.name != TheBestNode:
+                        window.save_eeprom_btn.setEnabled(True)
+                        if window.thread.current_node.name == 'Инвертор_МЭИ':
+                            info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
+            else:
+                next_cell.setBackground(QColor(254, 0, 0, 30))
+            # если поток был запущен до изменения, то запускаем его снова
+            if window.thread.isFinished():
+                # и запускаю поток
+                window.connect_to_node()
+        else:
+            info_m = f'Подключение прервано, \nДля изменения параметра\nтребуется подключение к ВАТС'
+    except ValueError:
+        info_m = 'Параметр должен быть числом'
+    return info_m
+
 
 def want_to_value_change():
     #  над разбивать, как минимум, на две функции
@@ -209,7 +256,7 @@ def want_to_value_change():
     c_text = current_cell.text()
     # возможно, лучше сразу флаги дёрнуть, потом их изменять
     c_flags = current_cell.flags()
-    col_name = window.vmu_param_table.horizontalHeaderItem(current_cell.column()).text().strip().upper()
+    col_name = window.vmu_param_table.horizontalHeaderItem(c_col).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
     next_cell = window.vmu_param_table.item(c_row, c_col + 1)
 
@@ -223,44 +270,11 @@ def want_to_value_change():
             dialog.lineEdit.setValidator(QRegExpValidator(reg_ex))
             if dialog.exec_() == QDialog.Accepted:
                 val = dialog.lineEdit.text()
-                try:
-                    float(val)
-                    # здесь должна быть функция
-                    if window.thread.isRunning():  # отключаем поток, если он был включен
-                        check, info_m = window.thread.set_param(current_param, val)
-                        window.connect_to_node()
-                        # отправляю параметр, полученный из диалогового окна
-                        current_param.set_val(can_adapter, float(val))
-                        # и сразу же проверяю записался ли он в блок
-                        value_data = current_param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
-                        if isinstance(value_data, str):
-                            new_val = ''
-                        else:
-                            new_val = zero_del(value_data).strip()
-                        # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
-                        if val == new_val:
-                            next_cell.setBackground(QColor(0, 254, 0, 30))
-                            # if window.thread.current_node.save_to_eeprom:
-                            if current_param.node.save_to_eeprom:
-                                current_param.node.param_was_changed = True
-                                # В Избранном кнопку не активируем, может быть несколько блоков.
-                                # Возможно, я когда-то смогу
-                                if window.thread.current_node.name != TheBestNode:
-                                    window.save_eeprom_btn.setEnabled(True)
-                                    if window.thread.current_node.name == 'Инвертор_МЭИ':
-                                        info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
-                        else:
-                            next_cell.setBackground(QColor(254, 0, 0, 30))
-                        # если поток был запущен до изменения, то запускаем его снова
-                        if window.thread.isFinished():
-                            # и запускаю поток
-                            window.connect_to_node()
-                    else:
-                        info_m = f'Подключение прервано, \nДля изменения параметра\nтребуется подключение к ВАТС'
-                except ValueError:
-                    info_m = 'Параметр должен быть числом'
+                info_m = set_new_value(next_cell, current_param, val)
         else:
-            info_m = f'Этот параметр нельзя изменить\nИзменяемые параметры подкрашены зелёным',
+            info_m = f'Сейчас этот параметр нельзя изменить\n' \
+                     f'Изменяемые параметры подкрашены зелёным\n' \
+                     f'Также требуется подключение к ВАТС'
         if info_m:
             QMessageBox.information(window, "Информация", info_m, QMessageBox.Ok)
         # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
@@ -533,7 +547,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                                               table=self.vmu_param_table,
                                               has_compare_params=self.thread.current_node.has_compare_params)
             for i in combo_boxes:
-                i.currentIndexChanged.connect(change_value)  # activated
+                i.ItemSelected.connect(change_value)  # activated
 
     @pyqtSlot(dict)  # добавляем ошибки в окошко
     def add_new_errors(self, nds: dict):
