@@ -151,11 +151,10 @@ def fill_node(node: EVONode):
             if not node.group_params_dict or not node.errors_list:
                 return False
             f_v = node.firmware_version
-            if f_v and not isinstance(f_v, str):
-                # версия может быть строкой, типа КВУ 1.2.0
-                version_list = [v for v in get_immediate_subdirectories(node_dir)]
+            if f_v:     # and not isinstance(f_v, str):     # версия может быть строкой, типа КВУ 1.2.0
+                version_list = get_immediate_subdirectories(node_dir)
                 if version_list:
-                    min_vers = get_nearest_lower_value(version_list, f_v)
+                    min_vers = get_nearest_lower_value(version_list, str(f_v))
                     if min_vers:
                         t_dir = pathlib.Path(node_dir, str(min_vers))
                         params_dict = try_load_pickle('params', t_dir)
