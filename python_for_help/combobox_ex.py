@@ -6,7 +6,7 @@ from PyQt5.QtCore import *
 import sys
 
 type_dict = dict(
-    UINT32='UNSIGNED32',
+    UINT32='UNSIGNED32jkgvhlb;kjnlnkdfghjkl.,m sdfghjkl.dghjhkgfhdghjkl;kfdxc vl;',
     UINT16='UNSIGNED16',
     ENUM='UNSIGNED16',
     INT16='SIGNED16',
@@ -83,6 +83,7 @@ class Window(QMainWindow):
         # self.combo_box.clicked.connect(some_click)
         self.combo_box.ItemSelected.connect(some_select)
         # getting view part of combo box
+        self.combo_box.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
         view = self.combo_box.view()
 
         # making view box hidden

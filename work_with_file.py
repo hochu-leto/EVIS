@@ -68,197 +68,6 @@ def fill_sheet_dict(file_name):
     return sheets_dict
 
 
-# ------------------------------------- заполнение основного словаря из файла----------------------------
-# работающая сейчас версия с экселем
-def full_node_list(file_name):
-    file = pd.ExcelFile(file_name)
-
-    def fill_er_list(sheets_name: str):
-        err_sheet = file.parse(sheet_name=sheets_name)
-        err_list = err_sheet.to_dict(orient='records')  # парим лист "errors"
-        error_dict = {}
-        prev_node_name = ''
-        e_list = []
-        for er in err_list:
-            if isinstance(er['value_error'], str) and 'node' in er['value_error']:
-                error_dict[prev_node_name] = e_list.copy()
-                e_list = []
-                prev_node_name = er['value_error'].replace('node ', '')
-            else:
-                e_list.append(er)
-        error_dict[prev_node_name] = e_list.copy()
-        del error_dict['']
-        return error_dict
-
-    bookmark_dict = {}
-    if not {'node', 'errors'}.issubset(file.sheet_names):
-        QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
-        return
-    # sheet "nodes" is founded
-    for sheet_name in file.sheet_names:  # пробегаюсь по всем листам документа
-        sheet = file.parse(sheet_name=sheet_name)
-        headers = list(sheet.columns.values)
-        if set(need_fields).issubset(headers):  # если в заголовках есть все нужные поля
-            sheet_params_list = sheet.to_dict(orient='records')  # то запихиваю весь этот лист со всеми
-            bookmark_dict[sheet_name] = sheet_params_list  # строками в словарь,где ключ - название страницы
-    # здесь я имею словарь ключ - имя блока , значение - словарь с параметрами ( не по группам)
-
-    err_dict = fill_er_list('errors')
-    # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с ошибками
-
-    wr_dict = fill_er_list('warnings')
-    # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с предупреждениями
-
-    node_sheet = file.parse(sheet_name='node')
-    node_list = node_sheet.to_dict(orient='records')  # парсим лист "node"
-    node_dict = {}
-    for node in node_list:
-        er_d = []
-        wr_d = []
-        if node['name'] in err_dict.keys():
-            er_d = err_dict[node['name']].copy()
-
-        if node['name'] in wr_dict.keys():
-            wr_d = wr_dict[node['name']].copy()
-
-        ev_node = EVONode(node, er_d, wr_d)
-        node_dict[node['name']] = ev_node
-    # не совсем вдуплил, но здесь у меня есть словарь, где ключи - названия блоков, а значения - объекты блоков
-
-    # ну и финалочка - раскидываю по блокам словари, где ключи - названия групп параметров,
-    # а значения - списки объектов параметров
-    nodes_list = []
-    for node_name, ev_node in node_dict.items():
-        node_params_dict = {}
-        for params_list in bookmark_dict.keys():  # бегу по словарю со списками параметров
-            prev_group_name = ''
-            p_list = []
-            if node_name in params_list:
-                for param in bookmark_dict[params_list]:
-                    if str(param['name']) != 'nan':
-                        if 'group ' in param['name']:
-                            node_params_dict[prev_group_name] = p_list.copy()
-                            p_list = []
-                            prev_group_name = param['name'].replace('group ', '')
-                        else:
-                            if '#' in param['name']:
-                                # это для Избранного, где названия параметров через # -
-                                # там нужно узнать с какого блока этот параметр возможно, в будущем,
-                                # я перейду на постгрес и там будет ещё одна промежуточная таблица,
-                                # чтоб не заморачиваться с названиями
-                                nod_name = param['name'].split('#')[1]
-                                p = Parametr(param, node_dict[nod_name])
-                            else:
-                                p = Parametr(param, ev_node)
-                            p_list.append(p)
-                node_params_dict[prev_group_name] = p_list.copy()
-                del node_params_dict['']
-
-        ev_node.group_params_dict = node_params_dict.copy() if node_params_dict else {NewParamsList: []}
-        nodes_list.append(ev_node)
-
-    return nodes_list
-
-
-# =========================================версия для ошибок-объектов============================
-# ------------------------------------- заполнение словаря с ошибками----------------------------
-def fill_error_dict(file, sheet_name: str, critical=True):
-    err_sheet = file.parse(sheet_name=sheet_name)
-    err_list = err_sheet.to_dict(orient='records')  # парсим лист "errors"
-    err_dict = {}
-    prev_node_name = ''
-    e_list = []
-    for er in err_list:
-        if isinstance(er['value_error'], str) and 'node' in er['value_error']:
-            err_dict[prev_node_name] = e_list.copy()
-            e_list = []
-            prev_node_name = er['value_error'].replace('node ', '')
-        else:
-            e = EvoError(er)
-            e.critical = critical
-            e_list.append(e)
-    err_dict[prev_node_name] = e_list.copy()
-    del err_dict['']
-    return err_dict
-
-
-# ------------------------------------- заполнения словаря с параметрами -----------------------------
-def fill_par_dict(file):
-    bookmark_dict = {}
-    node_params_dict = {}
-    for sheet_name in file.sheet_names:  # пробегаюсь по всем листам документа
-        sheet = file.parse(sheet_name=sheet_name)
-        headers = list(sheet.columns.values)
-        if set(need_fields).issubset(headers):  # если в заголовках есть все нужные поля
-            sheet_params_list = sheet.to_dict(orient='records')  # то запихиваю весь этот лист со всеми
-            bookmark_dict[sheet_name.split()[0]] = sheet_params_list  # строками в словарь,где ключ - название страницы
-            prev_group_name = ''
-            p_list = []
-            for param in sheet_params_list:
-                if 'group ' in param['name']:
-                    node_params_dict[prev_group_name] = p_list.copy()
-                    p_list = []
-                    prev_group_name = param['name'].replace('group ', '')
-                else:
-                    p = Parametr(param)
-                    p_list.append(p)
-            node_params_dict[prev_group_name] = p_list.copy()
-            del node_params_dict['']
-    return node_params_dict
-
-
-# ------------------------------------- финальное заполнения словаря с блоками -----------------------------
-def make_node_list(file_name):
-    file = pd.ExcelFile(file_name)
-    # начинаю с проверки что есть лист с ошибками и лист с блоками
-    if not {'node', 'errors'}.issubset(file.sheet_names):
-        QMessageBox.critical(None, "Ошибка ", 'Корявый файл с параметрами', QMessageBox.Ok)
-        return
-    # парсим лист "node"
-    node_sheet = file.parse(sheet_name='node')
-    node_list = node_sheet.to_dict(orient='records')
-    ev_node_list = []
-    node_dict = {}
-    for node in node_list:
-        ev_node_list.append(EVONode(node))
-        node_dict[node['name']] = EVONode(node)
-    # здесь я имею словарь ключ - имя блока , значение - словарь с параметрами ( не по группам)
-
-    # with open(r'Data/all_nodes.yaml', 'w', encoding='windows-1251') as file:
-    #     documents = yaml.dump({n['name']: n for n in node_list}, file, allow_unicode=True, encoding="UTF8")
-
-    err_dict = fill_error_dict(file, 'errors')
-    # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с ошибками
-
-    wr_dict = fill_error_dict(file, 'warnings', False)
-    # здесь я имею словарь с ошибками где ключ - имя блока, значение - словарь с предупреждениями
-    par_dict = fill_par_dict(file)
-    # ну и финалочка - раскидываю по блокам словари, где ключи - названия групп параметров,
-    # а значения - списки объектов параметров
-    nodes_list = []
-    for node_name, ev_node in node_dict.items():
-        node_params_dict = {}
-        if node_name in err_dict.keys():
-            ev_node.errors_list = err_dict[node_name]
-
-        if node_name in wr_dict.keys():
-            ev_node.errors_list = wr_dict[node_name]
-
-        if node_name in par_dict.keys():
-            for group in par_dict[node_name].values():
-                for param in group:
-                    if node_name == TheBestNode:  # Избранное надо раскидывать - параметры м/б из разных блоков
-                        param.check_node(node_dict)
-                    else:
-                        param.node = ev_node
-            ev_node.group_params_dict = par_dict[node_name]
-
-    return node_dict
-
-
-# =================================================================================================================
-
-
 # =========================================версия для ошибок-объектов и ямл-файлов============================
 # ------------------------------------- заполнение списка с ошибками----------------------------
 def fill_err_list_from_yaml(file):
@@ -343,18 +152,17 @@ def fill_node(node: EVONode):
                 return False
             f_v = node.firmware_version
             if f_v and not isinstance(f_v, str):
-                version_list = [int(v) for v in get_immediate_subdirectories(node_dir) if v.isdigit()]
+                # версия может быть строкой, типа КВУ 1.2.0
+                version_list = [v for v in get_immediate_subdirectories(node_dir)]
                 if version_list:
                     min_vers = get_nearest_lower_value(version_list, f_v)
                     if min_vers:
                         t_dir = pathlib.Path(node_dir, str(min_vers))
                         params_dict = try_load_pickle('params', t_dir)
-                        print(node.name)
                         if params_dict:
                             param_dir = min_vers
                             node.group_params_dict = params_dict.copy()
                         errors_list = try_load_pickle('errors', t_dir)
-                        print(node.name)
                         if errors_list:
                             err_dir = min_vers
                             node.errors_list = errors_list.copy()

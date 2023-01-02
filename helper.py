@@ -193,6 +193,7 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
                 comBox = MyComboBox()
                 comBox.addItems(list(par.value_dict.values()))
                 comBox.parametr = par
+                comBox.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
                 table.setCellWidget(row, 2, comBox)
                 items_list.append(comBox)
             table.item(row, 2).setCurrentText(par.value_dict[int(par.value)])
