@@ -48,7 +48,7 @@ class EvoError:
             return v
 
         self.name = check_string('name_error')
-        self.description = check_string('description_error')
+        self.description = check_string('description_error', f'Для ошибки {self.name} пока ещё нет полного описания')
         self.value = check_number('value_error')
         self.important_parameters = [par.strip() for par in check_string('important_parametr').split(',')]
         self.check_link = [par for par in check_string('check_link').split(',')]

@@ -71,7 +71,7 @@ def fill_sheet_dict(file_name):
 # =========================================версия для ошибок-объектов и ямл-файлов============================
 # ------------------------------------- заполнение списка с ошибками----------------------------
 def fill_err_list_from_yaml(file):
-    with open(file, "r", encoding="windows-1251") as stream:
+    with open(file, "r", encoding="UTF-8") as stream:
         try:
             canopen_error = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
@@ -84,7 +84,7 @@ def fill_err_list_from_yaml(file):
 
 # ------------------------------------- заполнения словаря с группами параметров -----------------------------
 def fill_par_dict_from_yaml(file):
-    with open(file, "r", encoding="windows-1251") as stream:
+    with open(file, "r", encoding="UTF-8") as stream:
         try:
             canopen_params = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
@@ -98,7 +98,7 @@ def fill_par_dict_from_yaml(file):
 
 # ------------------------------------- заполнения словаря со всеми блоками -----------------------------
 def fill_nodes_dict_from_yaml(file):
-    with open(file, "r", encoding="windows-1251") as stream:
+    with open(file, "r", encoding="UTF-8") as stream:
         try:
             nodes = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
