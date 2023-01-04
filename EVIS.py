@@ -70,7 +70,7 @@ import pandas as pd
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog
+    QSplashScreen, QFileDialog, QDialogButtonBox
 import pathlib
 from pandas import ExcelWriter
 import VMU_monitor_ui
@@ -91,7 +91,40 @@ sleep_thread = SleepThread(3)
 
 
 def search_param():
-    pass
+    def line_edit_change(s):
+        len_s = len(s)
+        if len_s >= 4:
+            dialog.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
+            dialog.lineEdit.setStyleSheet("color: black;")
+        else:
+            dialog.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+            dialog.lineEdit.setStyleSheet("color: red;")
+
+    dialog = DialogChange(label='Не менее 4 букв из имени или описания параметра, которого нужно найти', value='')
+    dialog.lineEdit.setText('')
+    dialog.setWindowTitle('Поиск параметра')
+    dialog.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+    dialog.lineEdit.textChanged.connect(line_edit_change)
+    if dialog.exec_() == QDialog.Accepted:
+        search_text = dialog.lineEdit.text()
+        par_list = find_param(window.thread.current_nodes_dict, search_text).copy()
+        if par_list:
+            p_list = []
+            for par in par_list:
+                if '#' not in par.name:
+                    new_par = Parametr(par.to_dict(), par.node)
+                    new_par.name += '#' + new_par.node.name
+                    p_list.append(new_par)
+            window.thread.current_nodes_dict[TheBestNode].group_params_dict[search_text] = p_list.copy()
+            rowcount = window.nodes_tree.topLevelItemCount() - 1
+            best_node_item = window.nodes_tree.topLevelItem(rowcount)
+            item = QTreeWidgetItem()
+            item.setText(0, search_text)
+            best_node_item.addChild(item)
+            window.nodes_tree.setCurrentItem(item)
+        else:
+            QMessageBox.critical(window, "Проблема", f'Ни одного параметра с "{search_text}"\n'
+                                                     f' в текущих блоках найти не удалось ', QMessageBox.Ok)
 
 
 def record_log():
@@ -612,10 +645,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
             if is_finished:
                 QMessageBox.information(window, "Успешный успех!", 'Файл сохранён ' + '\n' + err, QMessageBox.Ok)
-                self.log_lbl.setText('Сохранён файл с настройками ' + err)
+                self.log_lbl.setText('Сохранён файл с настройками ' + err.replace('\n', ''))
             elif err:
                 QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
-                self.log_lbl.setText('Файл не сохранён, ошибка ' + err)
+                self.log_lbl.setText('Файл не сохранён, ошибка ' + err.replace('\n', ''))
             self.node_nsme_pbar.setValue(0)
 
             self.connect_btn.setEnabled(True)
@@ -670,7 +703,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         else:
             err_mess = 'Список пуст'
         QMessageBox.information(self, "Информация", err_mess, QMessageBox.Ok)
-        self.log_lbl.setText(err_mess)
+        self.log_lbl.setText(err_mess.replace('\n', ''))
         return state
 
     def show_nodes_tree(self, nds: list):
@@ -856,7 +889,7 @@ def mpei_reset_device():
 
 def mpei_reset_params():
     m = window.thread.invertor_command('RESET_PARAMETERS')
-    window.log_lbl.setText(m)
+    window.log_lbl.setText(m.replace('\n', ''))
 
 
 # ---------------------------------------------- кнопки с диалогом ----------------------------------------------------
@@ -986,14 +1019,14 @@ def suspension_to_zero():
 
         else:
             QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{command_zero_suspension}', QMessageBox.Ok)
-            window.log_lbl.setText(command_zero_suspension)
+            window.log_lbl.setText(command_zero_suspension.replace('\n', ''))
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
 
 
 @pyqtSlot(str)
 def set_log_lbl(s: str):
-    window.log_lbl.setText(s)
+    window.log_lbl.setText(s.replace('\n', ''))
 
 
 if __name__ == '__main__':
@@ -1035,6 +1068,7 @@ if __name__ == '__main__':
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.log_record_btn.clicked.connect(record_log)
     window.search_btn.clicked.connect(search_param)
+    # window.search_btn.hide()
     window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:

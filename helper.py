@@ -96,16 +96,17 @@ def buf_to_string(buf):
 
 def find_param(nodes_dict: dict, s: str, node_name=None):
     list_of_params = []
+    s = s.upper().strip()
     if node_name is None:
-        list_of_params = [param for nd in nodes_dict.values()
+        list_of_params = [param for nd in nodes_dict.values() if nd.name != TheBestNode
                           for param_list in nd.group_params_dict.values()
                           for param in param_list
-                          if s in param.name or s in param.description]
+                          if s in param.name.upper() or s in param.description.upper()]
     elif node_name in nodes_dict.keys():
         nd = nodes_dict[node_name]
         list_of_params = [param for param_list in nd.group_params_dict.values()
                           for param in param_list
-                          if s in param.name or s in param.description]
+                          if s in param.name.upper() or s in param.description.upper()]
     return list_of_params
 
 

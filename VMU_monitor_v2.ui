@@ -175,7 +175,7 @@
         <item row="0" column="3">
          <widget class="QGroupBox" name="current_node_box">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Ignored" vsizetype="Maximum">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -190,8 +190,8 @@
            <item>
             <widget class="QLabel" name="node_fm_lab">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>2</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
@@ -208,8 +208,8 @@
            <item>
             <widget class="QLabel" name="node_name_lab">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>1</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
@@ -231,8 +231,8 @@
            <item>
             <widget class="QLabel" name="node_s_n_lab">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>2</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
