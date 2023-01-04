@@ -82,13 +82,16 @@ from Parametr import Parametr
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode
+    show_new_vmu_params, find_param, TheBestNode, easter_egg
 
 can_adapter = CANAdapter()
-
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
 sleep_thread = SleepThread(3)
+
+
+def search_param():
+    pass
 
 
 def record_log():
@@ -209,8 +212,10 @@ def change_value(lst):
         QMessageBox.information(window, "Информация", info_m, QMessageBox.Ok)
 
 
-def set_new_value(next_cell, param:Parametr, val):
+def set_new_value(next_cell, param: Parametr, val):
     info_m = ''
+    if 'WheelTypeSet' in param.name:
+        QMessageBox.information(window, "Пасхалка", easter_egg, QMessageBox.Ok)
     try:
         float(val)
         if window.thread.isRunning():  # отключаем поток, если он был включен
@@ -268,6 +273,7 @@ def want_to_value_change():
             dialog = DialogChange(label=current_param.name, value=c_text.strip())
             reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
             dialog.lineEdit.setValidator(QRegExpValidator(reg_ex))
+
             if dialog.exec_() == QDialog.Accepted:
                 val = dialog.lineEdit.text()
                 info_m = set_new_value(next_cell, current_param, val)
@@ -1014,22 +1020,22 @@ if __name__ == '__main__':
     window.reset_device_btn.clicked.connect(mpei_reset_device)
     window.reset_param_btn.clicked.connect(mpei_reset_params)
     window.invertor_mpei_box.setEnabled(False)
-    window.susp_zero_btn.setEnabled(False)
-    window.load_from_eeprom_btn.setEnabled(False)
-    window.joy_bind_btn.setEnabled(False)
     # ------------------Кнопки вспомогательные----------------
     window.joy_bind_btn.clicked.connect(joystick_bind)
     window.susp_zero_btn.clicked.connect(suspension_to_zero)
     window.load_from_eeprom_btn.clicked.connect(load_from_eeprom)
-
+    window.susp_zero_btn.setEnabled(False)
+    window.load_from_eeprom_btn.setEnabled(False)
+    window.joy_bind_btn.setEnabled(False)
     # ------------------Главные кнопки-------------------------
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
     window.reset_faults.clicked.connect(erase_errors)
     window.compare_btn.clicked.connect(make_compare_params_list)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
-    window.save_to_file_btn.setEnabled(False)
     window.log_record_btn.clicked.connect(record_log)
+    window.search_btn.clicked.connect(search_param)
+    window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:
         with open(nodes_pickle_file, 'rb') as f:
@@ -1053,10 +1059,5 @@ if __name__ == '__main__':
         print(time.perf_counter() - start_time)
         app.exec_()  # и запускаем приложение
 
-# сделать нормальные файлы ошибок, без бестолковых ссылок, с нормальным списком параметров
-# сделать нормальные ошибки и параметры для 014
 # нормальный поиск от 4х символов
-# некорректно считывает серийник на кву ттс
 # некорректно считывает серийник и ПО на ТАБ
-# предусмотреть изменение рейки с задней на переднюю
-# список опроса параметров по ошибке
