@@ -77,7 +77,7 @@
     description: Байты 0..3 серийного номера КВУ
     editable: false
     name: DEVICE_SN_0
-    type: UNSIGNED32
+    type: VISIBLE_STRING
   - address: '0x218001'
     description: Байты 0..3 серийного номера КВУ
     editable: false

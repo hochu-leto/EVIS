@@ -9,6 +9,14 @@ file = "canopen_parameters.yml"
 # file = "C:\\workspace\\PycharmProjects\\VMU_monitor\\Data\\all_nodes.yaml"
 
 if __name__ == '__main__':
+    file_name = 'iolib_errors.yml'
+    with open(file_name, "r", encoding="UTF8") as stream:
+        try:
+            vmu_ttc_ioe = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    iolib_errors_dict = vmu_ttc_ioe['iolib_errors']
+
     file_name = fd.askopenfilename()
 
     with open(file_name, "r", encoding="UTF8") as stream:
@@ -21,11 +29,23 @@ if __name__ == '__main__':
     for group, group_list in canopen_vmu_ttc['canopen_parameters'].items():
         for par in group_list:
             par['address'] = hex(par['index']) + int_to_hex_str(par['subindex'])
+            del par['index']
+            del par['subindex']
             par['type'] = convert_types[par['type']]
+            par['description'] = par['description'].strip().replace('\n', '')
             par['editable'] = True if 'w' in par['access'] else False
-            par['scale'] = (1 / par['mult']) if 'mult' in par.keys() else 1
-            par['scaleB'] = par['offset'] if 'offset' in par.keys() else 0
+            del par['access']
+            if 'units' in par.keys():
+                par['unit'] = par['units']
+                del par['units']
+            if 'mult' in par.keys():
+                par['scale'] = (1 / par['mult'])
+                del par['mult']
+            if 'offset' in par.keys():
+                par['scaleB'] = par['offset']
+                del par['offset']
+            if 'iolib_errors' in par['description']:
+                par['values_table'] = iolib_errors_dict.copy()
         parse_dict[group] = group_list
-
-    with open(r'parameters_ttc.yaml', 'w', encoding='windows-1251') as file:
+    with open(r'parameters.yaml', 'w', encoding='UTF-8') as file:
         documents = yaml.dump(check_dict(parse_dict), file, allow_unicode=True)
