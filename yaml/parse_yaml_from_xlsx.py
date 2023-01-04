@@ -18,7 +18,7 @@ file_name = fd.askopenfilename()
 #     if isinstance(er['value_error'], str):
 #         if 'node' in er['value_error']:
 #             prev_node_name = er['value_error'].replace('node ', '')
-#             with open(f'errors_{prev_node_name}.yaml', 'w', encoding='windows-1251') as file:
+#             with open(f'errors_{prev_node_name}.yaml', 'w', encoding='UTF-8') as file:
 #                 documents = yaml.dump(e_list, file, allow_unicode=True)
 #             e_list = []
 #         else:

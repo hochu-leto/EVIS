@@ -1,30 +1,30 @@
 CAN:
 - address: '0x5b2801'
-  description: Тяговый двигатель № 1
+  description: РўСЏРіРѕРІС‹Р№ РґРІРёРіР°С‚РµР»СЊ в„– 1
   editable: true
   group: 11
-  name: Тяговый двигатель № 1
+  name: РўСЏРіРѕРІС‹Р№ РґРІРёРіР°С‚РµР»СЊ в„– 1
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 298071.0
 - address: '0x253201'
-  description: Авария Волгабус
+  description: РђРІР°СЂРёСЏ Р’РѕР»РіР°Р±СѓСЃ
   editable: false
   group: 12
   name: FaultVolgaBus
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 26.0
 - address: '0x253202'
-  description: Расширение кода аварии
+  description: Р Р°СЃС€РёСЂРµРЅРёРµ РєРѕРґР° Р°РІР°СЂРёРё
   editable: false
   group: 12
   name: Extension of fault ID
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 CAN NODE-ID:
 - address: '0x200100'
@@ -34,7 +34,7 @@ CAN NODE-ID:
   name: CAN Bit Rate
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 3.0
 - address: '0x210001'
   description: Scale Number 0
@@ -90,7 +90,7 @@ Dio:
   name: Dio_In
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5bfd02'
   description: Dio_In
@@ -99,7 +99,7 @@ Dio:
   name: Dio_In
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 144.0
 - address: '0x5bfd03'
   description: Dio_In
@@ -108,7 +108,7 @@ Dio:
   name: Dio_In
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5bfd04'
   description: Dio_Out
@@ -117,7 +117,7 @@ Dio:
   name: Dio_Out
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5bfd05'
   description: Dio_Out
@@ -126,7 +126,7 @@ Dio:
   name: Dio_Out
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 73.0
 - address: '0x5bfd06'
   description: Dio_Out
@@ -135,20 +135,20 @@ Dio:
   name: Dio_Out
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5bfd07'
-  description: Симуляция. дискр. ввода
+  description: РЎРёРјСѓР»СЏС†РёСЏ. РґРёСЃРєСЂ. РІРІРѕРґР°
   editable: true
   group: 63
-  name: Симуляция. дискр. ввода
+  name: РЎРёРјСѓР»СЏС†РёСЏ. РґРёСЃРєСЂ. РІРІРѕРґР°
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 MODBUS:
 - address: '0x5b2901'
-  description: Скор-ть передачи
+  description: РЎРєРѕСЂ-С‚СЊ РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 9
   name: BaudRate
@@ -157,7 +157,7 @@ MODBUS:
   unit: U32
   value: 115200.0
 - address: '0x5b2902'
-  description: Счётчик ошибок SCI
+  description: РЎС‡С‘С‚С‡РёРє РѕС€РёР±РѕРє SCI
   editable: true
   group: 9
   name: SCI_error
@@ -166,43 +166,43 @@ MODBUS:
   unit: U16
   value: 0.0
 - address: '0x5b2903'
-  description: Cчётчик ошибок CRC
+  description: CС‡С‘С‚С‡РёРє РѕС€РёР±РѕРє CRC
   editable: true
   group: 9
-  name: Cчётчик ошибок CRC
+  name: CС‡С‘С‚С‡РёРє РѕС€РёР±РѕРє CRC
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b2904'
-  description: Счётчик прерываний по приему
+  description: РЎС‡С‘С‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёР№ РїРѕ РїСЂРёРµРјСѓ
   editable: true
   group: 9
-  name: Счётчик прерываний по приему
+  name: РЎС‡С‘С‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёР№ РїРѕ РїСЂРёРµРјСѓ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b2905'
-  description: Счётчик ошибок - мастер пропустил отправку не дождавшись ответа слейва
+  description: РЎС‡С‘С‚С‡РёРє РѕС€РёР±РѕРє - РјР°СЃС‚РµСЂ РїСЂРѕРїСѓСЃС‚РёР» РѕС‚РїСЂР°РІРєСѓ РЅРµ РґРѕР¶РґР°РІС€РёСЃСЊ РѕС‚РІРµС‚Р° СЃР»РµР№РІР°
   editable: true
   group: 9
-  name: Счётчик ошибок - мастер пропустил отправку не дождавшись ответа слейва
+  name: РЎС‡С‘С‚С‡РёРє РѕС€РёР±РѕРє - РјР°СЃС‚РµСЂ РїСЂРѕРїСѓСЃС‚РёР» РѕС‚РїСЂР°РІРєСѓ РЅРµ РґРѕР¶РґР°РІС€РёСЃСЊ РѕС‚РІРµС‚Р° СЃР»РµР№РІР°
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b2906'
-  description: Счётчик ошибок - мастер пропустил отправку не дождавшись ответа слейва
+  description: РЎС‡С‘С‚С‡РёРє РѕС€РёР±РѕРє - РјР°СЃС‚РµСЂ РїСЂРѕРїСѓСЃС‚РёР» РѕС‚РїСЂР°РІРєСѓ РЅРµ РґРѕР¶РґР°РІС€РёСЃСЊ РѕС‚РІРµС‚Р° СЃР»РµР№РІР°
   editable: true
   group: 9
-  name: Счётчик ошибок - мастер пропустил отправку не дождавшись ответа слейва
+  name: РЎС‡С‘С‚С‡РёРє РѕС€РёР±РѕРє - РјР°СЃС‚РµСЂ РїСЂРѕРїСѓСЃС‚РёР» РѕС‚РїСЂР°РІРєСѓ РЅРµ РґРѕР¶РґР°РІС€РёСЃСЊ РѕС‚РІРµС‚Р° СЃР»РµР№РІР°
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b2907'
-  description: Для отладки
+  description: Р”Р»СЏ РѕС‚Р»Р°РґРєРё
   editable: true
   group: 9
   name: test
@@ -211,7 +211,7 @@ MODBUS:
   unit: I16vparam
   value: 65535.0
 - address: '0x5b2908'
-  description: Для отладки
+  description: Р”Р»СЏ РѕС‚Р»Р°РґРєРё
   editable: true
   group: 9
   name: test
@@ -247,19 +247,19 @@ MODBUS:
   unit: I16vparam
   value: 0.0
 - address: '0x5b290c'
-  description: Принято посылок
+  description: РџСЂРёРЅСЏС‚Рѕ РїРѕСЃС‹Р»РѕРє
   editable: true
   group: 9
-  name: Принято посылок
+  name: РџСЂРёРЅСЏС‚Рѕ РїРѕСЃС‹Р»РѕРє
   scale: 0
   type: SIGNED16
   unit: I16vparam
   value: 0.0
 - address: '0x5b290d'
-  description: Передано посылок
+  description: РџРµСЂРµРґР°РЅРѕ РїРѕСЃС‹Р»РѕРє
   editable: true
   group: 9
-  name: Передано посылок
+  name: РџРµСЂРµРґР°РЅРѕ РїРѕСЃС‹Р»РѕРє
   scale: 0
   type: SIGNED16
   unit: I16vparam
@@ -275,7 +275,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 384.0
 - address: '0x140002'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -293,7 +293,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 640.0
 - address: '0x140102'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -311,7 +311,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 896.0
 - address: '0x140202'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -329,7 +329,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 1152.0
 - address: '0x140302'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -347,7 +347,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 512.0
 - address: '0x140402'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -365,7 +365,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 768.0
 - address: '0x140502'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -383,7 +383,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 1024.0
 - address: '0x140602'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -401,7 +401,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 1280.0
 - address: '0x140702'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -707,7 +707,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 404.0
 - address: '0x180002'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -752,7 +752,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 660.0
 - address: '0x180102'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -797,7 +797,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 916.0
 - address: '0x180202'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -842,7 +842,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 1172.0
 - address: '0x180302'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -887,7 +887,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 532.0
 - address: '0x180402'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -932,7 +932,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 788.0
 - address: '0x180502'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -977,7 +977,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 1044.0
 - address: '0x180602'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -1022,7 +1022,7 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 1300.0
 - address: '0x180702'
-  description: Тип передачи
+  description: РўРёРї РїРµСЂРµРґР°С‡Рё
   editable: false
   group: 4
   name: Transmission Type
@@ -1490,13 +1490,13 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 0.0
 - address: '0x5af111'
-  description: Работа TDPO
+  description: Р Р°Р±РѕС‚Р° TDPO
   editable: true
   group: 4
-  name: Работа TDPO
+  name: Р Р°Р±РѕС‚Р° TDPO
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 255.0
 - address: '0x5af201'
   description: RPDO 1_1
@@ -1643,13 +1643,13 @@ RPDO1 Communication Parameters:
   unit: U32
   value: 0.0
 - address: '0x5af211'
-  description: Работа RDPO
+  description: Р Р°Р±РѕС‚Р° RDPO
   editable: true
   group: 4
-  name: Работа RDPO
+  name: Р Р°Р±РѕС‚Р° RDPO
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 255.0
 Scale Number Format Q:
 - address: '0x210004'
@@ -1659,7 +1659,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 1.0
 - address: '0x210005'
   description: Scale Number Format Prefix
@@ -1668,7 +1668,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210006'
   description: Scale Number Format Units
@@ -1677,7 +1677,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210101'
   description: Scale Number 1
@@ -1704,7 +1704,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210104'
   description: Scale Number Format NumOfFloat
@@ -1713,7 +1713,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 1.0
 - address: '0x210105'
   description: Scale Number Format Prefix
@@ -1722,7 +1722,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210106'
   description: Scale Number Format Units
@@ -1731,7 +1731,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 4.0
 - address: '0x210201'
   description: Scale Number 2
@@ -1758,7 +1758,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210204'
   description: Scale Number Format NumOfFloat
@@ -1767,7 +1767,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x210205'
   description: Scale Number Format Prefix
@@ -1776,7 +1776,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210206'
   description: Scale Number Format Units
@@ -1785,7 +1785,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 3.0
 - address: '0x210301'
   description: Scale Number 3
@@ -1812,7 +1812,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210304'
   description: Scale Number Format NumOfFloat
@@ -1821,7 +1821,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x210305'
   description: Scale Number Format Prefix
@@ -1830,7 +1830,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210306'
   description: Scale Number Format Units
@@ -1839,7 +1839,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 2.0
 - address: '0x210401'
   description: Scale Number 4
@@ -1866,7 +1866,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210404'
   description: Scale Number Format NumOfFloat
@@ -1875,7 +1875,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 1.0
 - address: '0x210405'
   description: Scale Number Format Prefix
@@ -1884,7 +1884,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210406'
   description: Scale Number Format Units
@@ -1893,7 +1893,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x210501'
   description: Scale Number 5
@@ -1920,7 +1920,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210504'
   description: Scale Number Format NumOfFloat
@@ -1929,7 +1929,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 1.0
 - address: '0x210505'
   description: Scale Number Format Prefix
@@ -1938,7 +1938,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210506'
   description: Scale Number Format Units
@@ -1947,7 +1947,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x210601'
   description: Scale Number 6
@@ -1974,7 +1974,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210604'
   description: Scale Number Format NumOfFloat
@@ -1983,7 +1983,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x210605'
   description: Scale Number Format Prefix
@@ -1992,7 +1992,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210606'
   description: Scale Number Format Units
@@ -2001,7 +2001,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x210701'
   description: Scale Number 7
@@ -2028,7 +2028,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210704'
   description: Scale Number Format NumOfFloat
@@ -2037,7 +2037,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x210705'
   description: Scale Number Format Prefix
@@ -2046,7 +2046,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210706'
   description: Scale Number Format Units
@@ -2055,7 +2055,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 2.0
 - address: '0x210801'
   description: Scale Number 8
@@ -2082,7 +2082,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 6.0
 - address: '0x210804'
   description: Scale Number Format NumOfFloat
@@ -2091,7 +2091,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x210805'
   description: Scale Number Format Prefix
@@ -2100,7 +2100,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x210806'
   description: Scale Number Format Units
@@ -2109,7 +2109,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 9.0
 - address: '0x210901'
   description: Scale Number 9
@@ -2136,7 +2136,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210904'
   description: Scale Number Format NumOfFloat
@@ -2145,7 +2145,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x210905'
   description: Scale Number Format Prefix
@@ -2154,7 +2154,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210906'
   description: Scale Number Format Units
@@ -2163,7 +2163,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 5.0
 - address: '0x210a01'
   description: Scale Number A
@@ -2190,7 +2190,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210a04'
   description: Scale Number Format NumOfFloat
@@ -2199,7 +2199,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 1.0
 - address: '0x210a05'
   description: Scale Number Format Prefix
@@ -2208,7 +2208,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210a06'
   description: Scale Number Format Units
@@ -2217,7 +2217,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 12.0
 - address: '0x210b01'
   description: Scale Number B
@@ -2244,7 +2244,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210b04'
   description: Scale Number Format NumOfFloat
@@ -2253,7 +2253,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210b05'
   description: Scale Number Format Prefix
@@ -2262,7 +2262,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210b06'
   description: Scale Number Format Units
@@ -2271,7 +2271,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 6.0
 - address: '0x210c01'
   description: Scale Number C
@@ -2298,7 +2298,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210c04'
   description: Scale Number Format NumOfFloat
@@ -2307,7 +2307,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210c05'
   description: Scale Number Format Prefix
@@ -2316,7 +2316,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210c06'
   description: Scale Number Format Units
@@ -2325,7 +2325,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 7.0
 - address: '0x210d01'
   description: Scale Number D
@@ -2352,7 +2352,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210d04'
   description: Scale Number Format NumOfFloat
@@ -2361,7 +2361,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 3.0
 - address: '0x210d05'
   description: Scale Number Format Prefix
@@ -2370,7 +2370,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210d06'
   description: Scale Number Format Units
@@ -2379,7 +2379,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 2.0
 - address: '0x210e01'
   description: Scale Number E
@@ -2406,7 +2406,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210e04'
   description: Scale Number Format NumOfFloat
@@ -2415,7 +2415,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x210e05'
   description: Scale Number Format Prefix
@@ -2424,7 +2424,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x210e06'
   description: Scale Number Format Units
@@ -2433,7 +2433,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 29.0
 - address: '0x210f01'
   description: Scale Number F
@@ -2460,7 +2460,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x210f04'
   description: Scale Number Format NumOfFloat
@@ -2469,7 +2469,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 3.0
 - address: '0x210f05'
   description: Scale Number Format Prefix
@@ -2478,7 +2478,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x210f06'
   description: Scale Number Format Units
@@ -2487,7 +2487,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211001'
   description: Scale Number 10
@@ -2514,7 +2514,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211004'
   description: Scale Number Format NumOfFloat
@@ -2523,7 +2523,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x211005'
   description: Scale Number Format Prefix
@@ -2532,7 +2532,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211006'
   description: Scale Number Format Units
@@ -2541,7 +2541,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 3.0
 - address: '0x211101'
   description: Scale Number 11
@@ -2568,7 +2568,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211104'
   description: Scale Number Format NumOfFloat
@@ -2577,7 +2577,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x211105'
   description: Scale Number Format Prefix
@@ -2586,7 +2586,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x211106'
   description: Scale Number Format Units
@@ -2595,7 +2595,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 9.0
 - address: '0x211201'
   description: Scale Number 12
@@ -2622,7 +2622,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 4.0
 - address: '0x211204'
   description: Scale Number Format NumOfFloat
@@ -2631,7 +2631,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x211205'
   description: Scale Number Format Prefix
@@ -2640,7 +2640,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x211206'
   description: Scale Number Format Units
@@ -2649,7 +2649,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 9.0
 - address: '0x211301'
   description: Scale Number 13
@@ -2676,7 +2676,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211304'
   description: Scale Number Format NumOfFloat
@@ -2685,7 +2685,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x211305'
   description: Scale Number Format Prefix
@@ -2694,7 +2694,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211306'
   description: Scale Number Format Units
@@ -2703,7 +2703,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 12.0
 - address: '0x211401'
   description: Scale Number 14
@@ -2730,7 +2730,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211404'
   description: Scale Number Format NumOfFloat
@@ -2739,7 +2739,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 1.0
 - address: '0x211405'
   description: Scale Number Format Prefix
@@ -2748,7 +2748,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211406'
   description: Scale Number Format Units
@@ -2757,7 +2757,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 13.0
 - address: '0x211501'
   description: Scale Number 15
@@ -2784,7 +2784,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211504'
   description: Scale Number Format NumOfFloat
@@ -2793,7 +2793,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211505'
   description: Scale Number Format Prefix
@@ -2802,7 +2802,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211506'
   description: Scale Number Format Units
@@ -2811,7 +2811,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 10.0
 - address: '0x211601'
   description: Scale Number 16
@@ -2838,7 +2838,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211604'
   description: Scale Number Format NumOfFloat
@@ -2847,7 +2847,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x211605'
   description: Scale Number Format Prefix
@@ -2856,7 +2856,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211606'
   description: Scale Number Format Units
@@ -2865,7 +2865,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 14.0
 - address: '0x211701'
   description: Scale Number 17
@@ -2892,7 +2892,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 6.0
 - address: '0x211704'
   description: Scale Number Format NumOfFloat
@@ -2901,7 +2901,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x211705'
   description: Scale Number Format Prefix
@@ -2910,7 +2910,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 2.0
 - address: '0x211706'
   description: Scale Number Format Units
@@ -2919,7 +2919,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 15.0
 - address: '0x211801'
   description: Scale Number 18
@@ -2946,7 +2946,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211804'
   description: Scale Number Format NumOfFloat
@@ -2955,7 +2955,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x211805'
   description: Scale Number Format Prefix
@@ -2964,7 +2964,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211806'
   description: Scale Number Format Units
@@ -2973,7 +2973,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 16.0
 - address: '0x211901'
   description: Scale Number 19
@@ -3000,7 +3000,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211904'
   description: Scale Number Format NumOfFloat
@@ -3009,7 +3009,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 1.0
 - address: '0x211905'
   description: Scale Number Format Prefix
@@ -3018,7 +3018,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x211906'
   description: Scale Number Format Units
@@ -3027,7 +3027,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 29.0
 - address: '0x211a01'
   description: Scale Number 1A
@@ -3054,7 +3054,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211a04'
   description: Scale Number Format NumOfFloat
@@ -3063,7 +3063,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211a05'
   description: Scale Number Format Prefix
@@ -3072,7 +3072,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211a06'
   description: Scale Number Format Units
@@ -3081,7 +3081,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 14.0
 - address: '0x211b01'
   description: Scale Number 1B
@@ -3108,7 +3108,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211b04'
   description: Scale Number Format NumOfFloat
@@ -3117,7 +3117,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 2.0
 - address: '0x211b05'
   description: Scale Number Format Prefix
@@ -3126,7 +3126,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211b06'
   description: Scale Number Format Units
@@ -3135,7 +3135,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 20.0
 - address: '0x211c01'
   description: Scale Number 1C
@@ -3162,7 +3162,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211c04'
   description: Scale Number Format NumOfFloat
@@ -3171,7 +3171,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 1.0
 - address: '0x211c05'
   description: Scale Number Format Prefix
@@ -3180,7 +3180,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x211c06'
   description: Scale Number Format Units
@@ -3189,7 +3189,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 20.0
 - address: '0x211d01'
   description: Scale Number 1D
@@ -3216,7 +3216,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211d04'
   description: Scale Number Format NumOfFloat
@@ -3225,7 +3225,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 3.0
 - address: '0x211d05'
   description: Scale Number Format Prefix
@@ -3234,7 +3234,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211d06'
   description: Scale Number Format Units
@@ -3243,10 +3243,10 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 4.0
 - address: '0x211e01'
-  description: Системный объект
+  description: РЎРёСЃС‚РµРјРЅС‹Р№ РѕР±СЉРµРєС‚
   editable: false
   group: 8
   name: System object
@@ -3255,7 +3255,7 @@ Scale Number Format Q:
   unit: U16
   value: 24.0
 - address: '0x211e02'
-  description: Системный объект
+  description: РЎРёСЃС‚РµРјРЅС‹Р№ РѕР±СЉРµРєС‚
   editable: false
   group: 8
   name: System object
@@ -3270,7 +3270,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211e04'
   description: Scale Number Format NumOfFloat
@@ -3279,7 +3279,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 1.0
 - address: '0x211e05'
   description: Scale Number Format Prefix
@@ -3288,7 +3288,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211e06'
   description: Scale Number Format Units
@@ -3297,10 +3297,10 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 2.0
 - address: '0x211f01'
-  description: Системный объект
+  description: РЎРёСЃС‚РµРјРЅС‹Р№ РѕР±СЉРµРєС‚
   editable: false
   group: 8
   name: System object
@@ -3309,7 +3309,7 @@ Scale Number Format Q:
   unit: U16
   value: 1.0
 - address: '0x211f02'
-  description: Системный объект
+  description: РЎРёСЃС‚РµРјРЅС‹Р№ РѕР±СЉРµРєС‚
   editable: false
   group: 8
   name: System object
@@ -3324,7 +3324,7 @@ Scale Number Format Q:
   name: Scale Number Format Q
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211f04'
   description: Scale Number Format NumOfFloat
@@ -3333,7 +3333,7 @@ Scale Number Format Q:
   name: Scale Number Format NumOfFloat
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x211f05'
   description: Scale Number Format Prefix
@@ -3342,7 +3342,7 @@ Scale Number Format Q:
   name: Scale Number Format Prefix
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x211f06'
   description: Scale Number Format Units
@@ -3351,7 +3351,7 @@ Scale Number Format Q:
   name: Scale Number Format Units
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 12.0
 Trq(V):
 - address: '0x5a4301'
@@ -3361,7 +3361,7 @@ Trq(V):
   name: V1
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
 - address: '0x5a4302'
   description: Trq1
@@ -3379,7 +3379,7 @@ Trq(V):
   name: V2
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 484675.0
 - address: '0x5a4304'
   description: Trq2
@@ -3397,7 +3397,7 @@ Trq(V):
   name: V3
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 1640438.0
 - address: '0x5a4306'
   description: Trq3
@@ -3415,7 +3415,7 @@ Trq(V):
   name: V4
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 3262236.0
 - address: '0x5a4308'
   description: Trq4
@@ -3433,7 +3433,7 @@ Trq(V):
   name: V5
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 4101097.0
 - address: '0x5a430a'
   description: Trq5
@@ -3451,7 +3451,7 @@ Trq(V):
   name: V6
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 4846751.0
 - address: '0x5a430c'
   description: Trq6
@@ -3469,7 +3469,7 @@ Trq(V):
   name: V
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
 - address: '0x5a430e'
   description: Trq(V)
@@ -3542,7 +3542,7 @@ dlog:
   name: StartBitL
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x515008'
   description: StartBitH
@@ -3551,7 +3551,7 @@ dlog:
   name: StartBitH
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x515009'
   description: OneShotOperation
@@ -3560,10 +3560,10 @@ dlog:
   name: OneShotOperation
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x51500a'
-  description: Количество точек предыстории
+  description: РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РїСЂРµРґС‹СЃС‚РѕСЂРёРё
   editable: true
   group: 17
   name: Prehistory Points Number
@@ -3572,10 +3572,10 @@ dlog:
   unit: '%'
   value: 0.0
 - address: '0x51500b'
-  description: Частота
+  description: Р§Р°СЃС‚РѕС‚Р°
   editable: false
   group: 17
-  name: Частота
+  name: Р§Р°СЃС‚РѕС‚Р°
   scale: 0
   type: UNSIGNED32
   unit: U32
@@ -3591,43 +3591,43 @@ dlog:
   value: 85011.0
 sm_prot:
 - address: '0x5b3601'
-  description: Флаги аварий 1
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 1
   editable: true
   group: 39
-  name: Флаги аварий 1
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b3602'
-  description: Флаги аварий 2
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 2
   editable: true
   group: 39
-  name: Флаги аварий 2
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b3603'
-  description: Флаги аварий 3
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 3
   editable: true
   group: 39
-  name: Флаги аварий 3
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 3
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b3604'
-  description: Флаги аварий 4
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 4
   editable: true
   group: 39
-  name: Флаги аварий 4
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 4
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b3701'
-  description: Флаги предупреждений 1
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 1
   editable: true
   group: 39
   name: Alarm flags 1
@@ -3636,7 +3636,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b3702'
-  description: Флаги предупреждений 2
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 2
   editable: true
   group: 39
   name: Alarm flags 2
@@ -3645,7 +3645,7 @@ sm_prot:
   unit: U16
   value: 8192.0
 - address: '0x5b3703'
-  description: Флаги предупреждений 3
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 3
   editable: true
   group: 39
   name: Alarm flags 3
@@ -3654,7 +3654,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b3704'
-  description: Флаги предупреждений 4
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 4
   editable: true
   group: 39
   name: Alarm flags 4
@@ -3662,241 +3662,241 @@ sm_prot:
   type: UNSIGNED16
   unit: U16
   value: 0.0
-АЦП:
+РђР¦Рџ:
 - address: '0x511601'
-  description: Коэф. скорости колеса 1
+  description: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 1
   editable: true
   group: 64
-  name: Коэф. скорости колеса 1
+  name: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 1
   scale: 1048576.0
   type: SIGNED32
   unit: IQ12
   value: 12288.0
 - address: '0x511602'
-  description: Смещ. скорости колеса 1
+  description: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 1
   editable: true
   group: 64
-  name: Смещ. скорости колеса 1
+  name: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 1
   scale: 1048576.0
   type: SIGNED32
   unit: IQ0
   value: 64536.0
 - address: '0x511603'
-  description: Скорость колеса 1
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   editable: false
   group: 64
-  name: Скорость колеса 1
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 2034.0
 - address: '0x511604'
-  description: Скорость колеса 1
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   editable: false
   group: 64
-  name: Скорость колеса 1
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   scale: 0
   type: SIGNED32
   unit: I32
   value: -1017.0
 - address: '0x511605'
-  description: Скорость колеса 1
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   editable: false
   group: 64
-  name: Скорость колеса 1
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   scale: 1048576.0
   type: SIGNED32
   unit: IQ24
   value: -12423168.0
 - address: '0x511606'
-  description: Коэф. скорости колеса 2
+  description: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 2
   editable: true
   group: 64
-  name: Коэф. скорости колеса 2
+  name: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 2
   scale: 1048576.0
   type: SIGNED32
   unit: IQ12
   value: 12288.0
 - address: '0x511607'
-  description: Смещ. скорости колеса 2
+  description: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 2
   editable: true
   group: 64
-  name: Смещ. скорости колеса 2
+  name: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 2
   scale: 1048576.0
   type: SIGNED32
   unit: IQ0
   value: 64536.0
 - address: '0x511608'
-  description: Скорость колеса 2
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   editable: false
   group: 64
-  name: Скорость колеса 2
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 2031.0
 - address: '0x511609'
-  description: Скорость колеса 2
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   editable: false
   group: 64
-  name: Скорость колеса 2
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   scale: 0
   type: SIGNED32
   unit: I32
   value: -1016.0
 - address: '0x51160a'
-  description: Скорость колеса 2
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   editable: false
   group: 64
-  name: Скорость колеса 2
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   scale: 1048576.0
   type: SIGNED32
   unit: IQ24
   value: -12546048.0
 - address: '0x51160b'
-  description: Коэф. скорости колеса 3
+  description: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 3
   editable: true
   group: 64
-  name: Коэф. скорости колеса 3
+  name: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 3
   scale: 1048576.0
   type: SIGNED32
   unit: IQ12
   value: 4096.0
 - address: '0x51160c'
-  description: Смещ. скорости колеса 3
+  description: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 3
   editable: true
   group: 64
-  name: Смещ. скорости колеса 3
+  name: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 3
   scale: 1048576.0
   type: SIGNED32
   unit: IQ0
   value: 0.0
 - address: '0x51160d'
-  description: Скорость колеса 3
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 3
   editable: false
   group: 64
-  name: Скорость колеса 3
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 3
   scale: 43690.666666666664
   type: SIGNED32
-  unit: В
+  unit: Р’
   value: 233472.0
 - address: '0x51160e'
-  description: Коэф. скорости колеса 4
+  description: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 4
   editable: true
   group: 64
-  name: Коэф. скорости колеса 4
+  name: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 4
   scale: 1048576.0
   type: SIGNED32
   unit: IQ12
   value: 4096.0
 - address: '0x51160f'
-  description: Смещ. скорости колеса 4
+  description: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 4
   editable: true
   group: 64
-  name: Смещ. скорости колеса 4
+  name: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 4
   scale: 1048576.0
   type: SIGNED32
   unit: IQ0
   value: 0.0
 - address: '0x511610'
-  description: Скорость колеса 4
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 4
   editable: false
   group: 64
-  name: Скорость колеса 4
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 4
   scale: 43690.666666666664
   type: SIGNED32
-  unit: В
+  unit: Р’
   value: 208896.0
 - address: '0x511701'
-  description: Коэф. скорости колеса 1
+  description: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 1
   editable: true
   group: 64
-  name: Коэф. скорости колеса 1
+  name: РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 1
   scale: 1048576.0
   type: SIGNED32
   unit: IQ12
   value: 4096.0
 - address: '0x511702'
-  description: Смещ. скорости колеса 1
+  description: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 1
   editable: true
   group: 64
-  name: Смещ. скорости колеса 1
+  name: РЎРјРµС‰. СЃРєРѕСЂРѕСЃС‚Рё РєРѕР»РµСЃР° 1
   scale: 1048576.0
   type: SIGNED32
   unit: IQ0
   value: 0.0
 - address: '0x511703'
-  description: Скорость колеса 1
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   editable: false
   group: 64
-  name: Скорость колеса 1
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 2104.0
 - address: '0x511704'
-  description: Скорость колеса 1
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   editable: false
   group: 64
-  name: Скорость колеса 1
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   scale: 1048576.0
   type: SIGNED32
   unit: IQ24
   value: 8609792.0
 - address: '0x511705'
-  description: Скорость колеса 2
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   editable: false
   group: 64
-  name: Скорость колеса 2
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 2101.0
 - address: '0x511706'
-  description: Скорость колеса 2
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   editable: false
   group: 64
-  name: Скорость колеса 2
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   scale: 1048576.0
   type: SIGNED32
   unit: IQ24
   value: 8605696.0
-Авто подогрев:
+РђРІС‚Рѕ РїРѕРґРѕРіСЂРµРІ:
 - address: '0x5b8001'
-  description: Температура
+  description: РўРµРјРїРµСЂР°С‚СѓСЂР°
   editable: false
   group: 53
-  name: Температура
+  name: РўРµРјРїРµСЂР°С‚СѓСЂР°
   scale: 52428.8
   type: SIGNED32
-  unit: град
+  unit: РіСЂР°Рґ
   value: 19702635.0
 - address: '0x5b8002'
-  description: Авто подогрев
+  description: РђРІС‚Рѕ РїРѕРґРѕРіСЂРµРІ
   editable: true
   group: 53
-  name: Авто подогрев
+  name: РђРІС‚Рѕ РїРѕРґРѕРіСЂРµРІ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 1.0
 - address: '0x5b8003'
-  description: Включить принудительно
+  description: Р’РєР»СЋС‡РёС‚СЊ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ
   editable: true
   group: 53
-  name: Включить принудительно
+  name: Р’РєР»СЋС‡РёС‚СЊ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b8004'
-  description: Состояние
+  description: РЎРѕСЃС‚РѕСЏРЅРёРµ
   editable: false
   group: 53
   name: State
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b8005'
   description: Tmin
@@ -3905,7 +3905,7 @@ sm_prot:
   name: Tmin
   scale: 52428.8
   type: SIGNED32
-  unit: град
+  unit: РіСЂР°Рґ
   value: -29360128.0
 - address: '0x5b8006'
   description: Tmax
@@ -3914,18 +3914,18 @@ sm_prot:
   name: Tmax
   scale: 52428.8
   type: SIGNED32
-  unit: град
+  unit: РіСЂР°Рґ
   value: -20971520.0
 - address: '0x5b8007'
-  description: Разр. команды подогрева по сети
+  description: Р Р°Р·СЂ. РєРѕРјР°РЅРґС‹ РїРѕРґРѕРіСЂРµРІР° РїРѕ СЃРµС‚Рё
   editable: true
   group: 53
-  name: Разр. команды подогрева по сети
+  name: Р Р°Р·СЂ. РєРѕРјР°РЅРґС‹ РїРѕРґРѕРіСЂРµРІР° РїРѕ СЃРµС‚Рё
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
-Акселерометр:
+РђРєСЃРµР»РµСЂРѕРјРµС‚СЂ:
 - address: '0x5bf501'
   description: ax
   editable: false
@@ -4008,7 +4008,7 @@ sm_prot:
   unit: ''
   value: -2147483648.0
 - address: '0x5bf50a'
-  description: рыскание
+  description: СЂС‹СЃРєР°РЅРёРµ
   editable: false
   group: 52
   name: yaw
@@ -4017,7 +4017,7 @@ sm_prot:
   unit: ''
   value: 0.0
 - address: '0x5bf50b'
-  description: наклон
+  description: РЅР°РєР»РѕРЅ
   editable: false
   group: 52
   name: pitch
@@ -4026,7 +4026,7 @@ sm_prot:
   unit: ''
   value: -2147483648.0
 - address: '0x5bf50c'
-  description: вращение
+  description: РІСЂР°С‰РµРЅРёРµ
   editable: false
   group: 52
   name: roll
@@ -4034,9 +4034,9 @@ sm_prot:
   type: SIGNED32
   unit: ''
   value: 0.0
-БКУ-В1:
+Р‘РљРЈ-Р’1:
 - address: '0x5b2401'
-  description: Номер в сети J1939
+  description: РќРѕРјРµСЂ РІ СЃРµС‚Рё J1939
   editable: false
   group: 55
   name: J1939 node ID
@@ -4045,13 +4045,13 @@ sm_prot:
   unit: U16
   value: 165.0
 - address: '0x5b2402'
-  description: Работа
+  description: Р Р°Р±РѕС‚Р°
   editable: false
   group: 55
   name: 'Command: Start'
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2403'
   description: ProB_51
@@ -4060,16 +4060,16 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2404'
-  description: Аварийный стоп
+  description: РђРІР°СЂРёР№РЅС‹Р№ СЃС‚РѕРї
   editable: false
   group: 55
-  name: Аварийный стоп
+  name: РђРІР°СЂРёР№РЅС‹Р№ СЃС‚РѕРї
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2405'
   description: ProB_51
@@ -4078,16 +4078,16 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2406'
-  description: Стояночный тормоз
+  description: РЎС‚РѕСЏРЅРѕС‡РЅС‹Р№ С‚РѕСЂРјРѕР·
   editable: false
   group: 55
-  name: Стояночный тормоз
+  name: РЎС‚РѕСЏРЅРѕС‡РЅС‹Р№ С‚РѕСЂРјРѕР·
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b2407'
   description: ProB_51
@@ -4096,16 +4096,16 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b2408'
-  description: Указатели поворота
+  description: РЈРєР°Р·Р°С‚РµР»Рё РїРѕРІРѕСЂРѕС‚Р°
   editable: false
   group: 55
   name: TurnIndicator
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2409'
   description: ProB_51
@@ -4114,16 +4114,16 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b240a'
-  description: Гидроблок
+  description: Р“РёРґСЂРѕР±Р»РѕРє
   editable: false
   group: 55
   name: Hydroblok
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b240b'
   description: ProB_51
@@ -4132,16 +4132,16 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b240c'
-  description: Стоп-сигнал
+  description: РЎС‚РѕРї-СЃРёРіРЅР°Р»
   editable: false
   group: 55
   name: StopSignal
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b240d'
   description: ProB_51
@@ -4150,10 +4150,10 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b240e'
-  description: Зад. электрический момент
+  description: Р—Р°Рґ. СЌР»РµРєС‚СЂРёС‡РµСЃРєРёР№ РјРѕРјРµРЅС‚
   editable: false
   group: 55
   name: torque
@@ -4168,10 +4168,10 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 100.0
 - address: '0x5b2410'
-  description: Задание положения
+  description: Р—Р°РґР°РЅРёРµ РїРѕР»РѕР¶РµРЅРёСЏ
   editable: false
   group: 55
   name: Reference position
@@ -4186,16 +4186,16 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 99.0
 - address: '0x5b2412'
-  description: Уст. нулевого положения
+  description: РЈСЃС‚. РЅСѓР»РµРІРѕРіРѕ РїРѕР»РѕР¶РµРЅРёСЏ
   editable: false
   group: 55
   name: Set zero position
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2413'
   description: ProB_51
@@ -4204,10 +4204,10 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x5b2414'
-  description: Задание положения
+  description: Р—Р°РґР°РЅРёРµ РїРѕР»РѕР¶РµРЅРёСЏ
   editable: false
   group: 55
   name: Reference position
@@ -4222,16 +4222,16 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 100.0
 - address: '0x5b2416'
-  description: Уст. нулевого положения
+  description: РЈСЃС‚. РЅСѓР»РµРІРѕРіРѕ РїРѕР»РѕР¶РµРЅРёСЏ
   editable: false
   group: 55
   name: Set zero position
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2417'
   description: ProB_51
@@ -4240,7 +4240,7 @@ sm_prot:
   name: ProB_51
   scale: 0
   type: SIGNED32
-  unit: десятерич.
+  unit: РґРµСЃСЏС‚РµСЂРёС‡.
   value: 0.0
 - address: '0x5b2418'
   description: CAN-PDO online
@@ -4249,22 +4249,22 @@ sm_prot:
   name: CAN-PDO online
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b2419'
-  description: Принято посылок
+  description: РџСЂРёРЅСЏС‚Рѕ РїРѕСЃС‹Р»РѕРє
   editable: false
   group: 55
-  name: Принято посылок
+  name: РџСЂРёРЅСЏС‚Рѕ РїРѕСЃС‹Р»РѕРє
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 1516.0
 - address: '0x5b241a'
-  description: Передано посылок
+  description: РџРµСЂРµРґР°РЅРѕ РїРѕСЃС‹Р»РѕРє
   editable: false
   group: 55
-  name: Передано посылок
+  name: РџРµСЂРµРґР°РЅРѕ РїРѕСЃС‹Р»РѕРє
   scale: 0
   type: UNSIGNED32
   unit: U32
@@ -4278,9 +4278,9 @@ sm_prot:
   type: UNSIGNED32
   unit: U32
   value: 15.0
-Гидростанция 1:
+Р“РёРґСЂРѕСЃС‚Р°РЅС†РёСЏ 1:
 - address: '0x5bfa01'
-  description: Время блокировки тормозов, мс
+  description: Р’СЂРµРјСЏ Р±Р»РѕРєРёСЂРѕРІРєРё С‚РѕСЂРјРѕР·РѕРІ, РјСЃ
   editable: true
   group: 56
   name: Block braking time, ms
@@ -4289,7 +4289,7 @@ sm_prot:
   unit: U16
   value: 900.0
 - address: '0x5bfa02'
-  description: Тормоз
+  description: РўРѕСЂРјРѕР·
   editable: true
   group: 56
   name: Brake
@@ -4298,25 +4298,25 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5bfa03'
-  description: Счетчик 1
+  description: РЎС‡РµС‚С‡РёРє 1
   editable: true
   group: 56
-  name: Счетчик 1
+  name: РЎС‡РµС‚С‡РёРє 1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 48753.0
 - address: '0x5bfa04'
-  description: Счетчик 2
+  description: РЎС‡РµС‚С‡РёРє 2
   editable: false
   group: 56
-  name: Счетчик 2
+  name: РЎС‡РµС‚С‡РёРє 2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5bfa05'
-  description: Скор-ть передачи
+  description: РЎРєРѕСЂ-С‚СЊ РїРµСЂРµРґР°С‡Рё
   editable: true
   group: 56
   name: BaudRate
@@ -4325,115 +4325,115 @@ sm_prot:
   unit: U32
   value: 115200.0
 - address: '0x5bfa06'
-  description: Время вкл. состояния
+  description: Р’СЂРµРјСЏ РІРєР». СЃРѕСЃС‚РѕСЏРЅРёСЏ
   editable: true
   group: 56
-  name: Время вкл. состояния
+  name: Р’СЂРµРјСЏ РІРєР». СЃРѕСЃС‚РѕСЏРЅРёСЏ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 10.0
 - address: '0x5bfa07'
-  description: Управление
+  description: РЈРїСЂР°РІР»РµРЅРёРµ
   editable: false
   group: 56
-  name: Управление
+  name: РЈРїСЂР°РІР»РµРЅРёРµ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5bfa08'
-  description: Управление клапанами
+  description: РЈРїСЂР°РІР»РµРЅРёРµ РєР»Р°РїР°РЅР°РјРё
   editable: false
   group: 56
-  name: Управление клапанами
+  name: РЈРїСЂР°РІР»РµРЅРёРµ РєР»Р°РїР°РЅР°РјРё
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
-Дискретный ввод-вывод:
+Р”РёСЃРєСЂРµС‚РЅС‹Р№ РІРІРѕРґ-РІС‹РІРѕРґ:
 - address: '0x5b1401'
-  description: Аварийный стоп
+  description: РђРІР°СЂРёР№РЅС‹Р№ СЃС‚РѕРї
   editable: true
   group: 34
-  name: Аварийный стоп
+  name: РђРІР°СЂРёР№РЅС‹Р№ СЃС‚РѕРї
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1402'
-  description: Пульт ДУ
+  description: РџСѓР»СЊС‚ Р”РЈ
   editable: true
   group: 34
-  name: Пульт ДУ
+  name: РџСѓР»СЊС‚ Р”РЈ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1403'
-  description: Тормоз
+  description: РўРѕСЂРјРѕР·
   editable: true
   group: 34
   name: Brake
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1404'
-  description: Стояночный тормоз
+  description: РЎС‚РѕСЏРЅРѕС‡РЅС‹Р№ С‚РѕСЂРјРѕР·
   editable: true
   group: 34
-  name: Стояночный тормоз
+  name: РЎС‚РѕСЏРЅРѕС‡РЅС‹Р№ С‚РѕСЂРјРѕР·
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1405'
-  description: Стоп-фонари
+  description: РЎС‚РѕРї-С„РѕРЅР°СЂРё
   editable: true
   group: 34
-  name: Стоп-фонари
+  name: РЎС‚РѕРї-С„РѕРЅР°СЂРё
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b1406'
-  description: Поворотник право
+  description: РџРѕРІРѕСЂРѕС‚РЅРёРє РїСЂР°РІРѕ
   editable: true
   group: 34
-  name: Поворотник право
+  name: РџРѕРІРѕСЂРѕС‚РЅРёРє РїСЂР°РІРѕ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1407'
-  description: Поворотник лево
+  description: РџРѕРІРѕСЂРѕС‚РЅРёРє Р»РµРІРѕ
   editable: true
   group: 34
-  name: Поворотник лево
+  name: РџРѕРІРѕСЂРѕС‚РЅРёРє Р»РµРІРѕ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1408'
-  description: Стояночный тормоз зажать
+  description: РЎС‚РѕСЏРЅРѕС‡РЅС‹Р№ С‚РѕСЂРјРѕР· Р·Р°Р¶Р°С‚СЊ
   editable: true
   group: 34
-  name: Стояночный тормоз зажать
+  name: РЎС‚РѕСЏРЅРѕС‡РЅС‹Р№ С‚РѕСЂРјРѕР· Р·Р°Р¶Р°С‚СЊ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1409'
-  description: Стояночный тормоз отпустить
+  description: РЎС‚РѕСЏРЅРѕС‡РЅС‹Р№ С‚РѕСЂРјРѕР· РѕС‚РїСѓСЃС‚РёС‚СЊ
   editable: true
   group: 34
-  name: Стояночный тормоз отпустить
+  name: РЎС‚РѕСЏРЅРѕС‡РЅС‹Р№ С‚РѕСЂРјРѕР· РѕС‚РїСѓСЃС‚РёС‚СЊ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
-Для отладки:
+Р”Р»СЏ РѕС‚Р»Р°РґРєРё:
 - address: '0x517401'
   description: ans1
   editable: true
@@ -4525,61 +4525,61 @@ sm_prot:
   unit: I16vparam
   value: 0.0
 - address: '0x51740b'
-  description: T_1кГц
+  description: T_1РєР“С†
   editable: true
   group: 14
-  name: T_1кГц
+  name: T_1РєР“С†
   scale: 0
   type: SIGNED32
   unit: I32
   value: 53416.0
 - address: '0x51740c'
-  description: T_1кГц
+  description: T_1РєР“С†
   editable: true
   group: 14
-  name: T_1кГц
+  name: T_1РєР“С†
   scale: 0
   type: SIGNED32
   unit: I32
   value: 31848.0
 - address: '0x51740d'
-  description: T_10кГц
+  description: T_10РєР“С†
   editable: true
   group: 14
-  name: T_10кГц
+  name: T_10РєР“С†
   scale: 0
   type: SIGNED32
   unit: I32
   value: 6137.0
 - address: '0x51740e'
-  description: T_10кГц
+  description: T_10РєР“С†
   editable: true
   group: 14
-  name: T_10кГц
+  name: T_10РєР“С†
   scale: 0
   type: SIGNED32
   unit: I32
   value: 5239.0
 - address: '0x51740f'
-  description: T_80кГц
+  description: T_80РєР“С†
   editable: true
   group: 14
-  name: T_80кГц
+  name: T_80РєР“С†
   scale: 0
   type: SIGNED32
   unit: I32
   value: 535.0
 - address: '0x517410'
-  description: T_80кГц
+  description: T_80РєР“С†
   editable: true
   group: 14
-  name: T_80кГц
+  name: T_80РєР“С†
   scale: 0
   type: SIGNED32
   unit: I32
   value: 379.0
 - address: '0x517411'
-  description: Счетчик, мс САУ
+  description: РЎС‡РµС‚С‡РёРє, РјСЃ РЎРђРЈ
   editable: true
   group: 14
   name: Counter, ms
@@ -4588,19 +4588,19 @@ sm_prot:
   unit: I32
   value: 334735.0
 - address: '0x517412'
-  description: Счетчик 10кГц
+  description: РЎС‡РµС‚С‡РёРє 10РєР“С†
   editable: true
   group: 14
-  name: Счетчик 10кГц
+  name: РЎС‡РµС‚С‡РёРє 10РєР“С†
   scale: 0
   type: SIGNED32
   unit: I32
   value: 3347417.0
 - address: '0x517413'
-  description: 'Счетчик 80кГц '
+  description: 'РЎС‡РµС‚С‡РёРє 80РєР“С† '
   editable: true
   group: 14
-  name: 'Счетчик 80кГц '
+  name: 'РЎС‡РµС‚С‡РёРє 80РєР“С† '
   scale: 0
   type: SIGNED32
   unit: I32
@@ -4668,9 +4668,9 @@ sm_prot:
   type: SIGNED32
   unit: I32
   value: 1883346971.0
-Интерпретатор устройств АПВ:
+РРЅС‚РµСЂРїСЂРµС‚Р°С‚РѕСЂ СѓСЃС‚СЂРѕР№СЃС‚РІ РђРџР’:
 - address: '0x5b9001'
-  description: Номер устройства
+  description: РќРѕРјРµСЂ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   editable: true
   group: 58
   name: Node ID
@@ -4679,70 +4679,70 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b9002'
-  description: Текущий номер устройства
+  description: РўРµРєСѓС‰РёР№ РЅРѕРјРµСЂ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   editable: false
   group: 58
-  name: Текущий номер устройства
+  name: РўРµРєСѓС‰РёР№ РЅРѕРјРµСЂ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9003'
-  description: Состояние
+  description: РЎРѕСЃС‚РѕСЏРЅРёРµ
   editable: false
   group: 58
-  name: Состояние
+  name: РЎРѕСЃС‚РѕСЏРЅРёРµ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 2.0
 - address: '0x5b9004'
-  description: Предыдущее состояние
+  description: РџСЂРµРґС‹РґСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
   editable: false
   group: 58
-  name: Предыдущее состояние
+  name: РџСЂРµРґС‹РґСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9005'
-  description: Разрешение АВП устройства
+  description: Р Р°Р·СЂРµС€РµРЅРёРµ РђР’Рџ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   editable: true
   group: 58
-  name: Разрешение АВП устройства
+  name: Р Р°Р·СЂРµС€РµРЅРёРµ РђР’Рџ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9006'
-  description: Перезапуск
+  description: РџРµСЂРµР·Р°РїСѓСЃРє
   editable: false
   group: 58
-  name: Перезапуск
+  name: РџРµСЂРµР·Р°РїСѓСЃРє
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9007'
-  description: Флаг игнора аварии
+  description: Р¤Р»Р°Рі РёРіРЅРѕСЂР° Р°РІР°СЂРёРё
   editable: false
   group: 58
-  name: Флаг игнора аварии
+  name: Р¤Р»Р°Рі РёРіРЅРѕСЂР° Р°РІР°СЂРёРё
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9008'
-  description: Счётчик врем.между перезап, сек
+  description: РЎС‡С‘С‚С‡РёРє РІСЂРµРј.РјРµР¶РґСѓ РїРµСЂРµР·Р°Рї, СЃРµРє
   editable: false
   group: 58
-  name: Счётчик врем.между перезап, сек
+  name: РЎС‡С‘С‚С‡РёРє РІСЂРµРј.РјРµР¶РґСѓ РїРµСЂРµР·Р°Рї, СЃРµРє
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9009'
-  description: Счетчик
+  description: РЎС‡РµС‚С‡РёРє
   editable: false
   group: 58
   name: Counter
@@ -4751,7 +4751,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b900a'
-  description: Счетчик
+  description: РЎС‡РµС‚С‡РёРє
   editable: false
   group: 58
   name: Counter
@@ -4760,339 +4760,339 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b900b'
-  description: Флаги аварий 1L
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 1L
   editable: true
   group: 58
-  name: Флаги аварий 1L
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 1L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b900c'
-  description: Флаги аварий 1H
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 1H
   editable: true
   group: 58
-  name: Флаги аварий 1H
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 1H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b900d'
-  description: Флаги аварий 2L
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 2L
   editable: true
   group: 58
-  name: Флаги аварий 2L
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 2L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b900e'
-  description: Флаги аварий 2H
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 2H
   editable: true
   group: 58
-  name: Флаги аварий 2H
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 2H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b900f'
-  description: Флаги аварий mix
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ mix
   editable: false
   group: 58
-  name: Флаги аварий mix
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ mix
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x5b9010'
-  description: Число перезапусков Гр.1
+  description: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1
   editable: false
   group: 58
-  name: Число перезапусков Гр.1
+  name: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9011'
-  description: Счётчик врем. перезап.Гр.1, сек
+  description: РЎС‡С‘С‚С‡РёРє РІСЂРµРј. РїРµСЂРµР·Р°Рї.Р“СЂ.1, СЃРµРє
   editable: false
   group: 58
-  name: Счётчик врем. перезап.Гр.1, сек
+  name: РЎС‡С‘С‚С‡РёРє РІСЂРµРј. РїРµСЂРµР·Р°Рї.Р“СЂ.1, СЃРµРє
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9012'
-  description: Маска аварий 1L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   editable: true
   group: 58
-  name: Маска аварий 1L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9013'
-  description: Маска аварий 1H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   editable: true
   group: 58
-  name: Маска аварий 1H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9014'
-  description: Маска аварий 2L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   editable: true
   group: 58
-  name: Маска аварий 2L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9015'
-  description: Маска аварий 2H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2H
   editable: true
   group: 58
-  name: Маска аварий  2H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№  2H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9016'
-  description: Число перезапусков Гр.2
+  description: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2
   editable: false
   group: 58
-  name: Число перезапусков Гр.2
+  name: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9017'
-  description: Счётчик врем. перезап.Гр.2, сек
+  description: РЎС‡С‘С‚С‡РёРє РІСЂРµРј. РїРµСЂРµР·Р°Рї.Р“СЂ.2, СЃРµРє
   editable: false
   group: 58
-  name: Счётчик врем. перезап.Гр.2, сек
+  name: РЎС‡С‘С‚С‡РёРє РІСЂРµРј. РїРµСЂРµР·Р°Рї.Р“СЂ.2, СЃРµРє
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9018'
-  description: Маска аварий 1L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   editable: true
   group: 58
-  name: Маска аварий 1L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9019'
-  description: Маска аварий 1H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   editable: true
   group: 58
-  name: Маска аварий 1H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b901a'
-  description: Маска аварий 2L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   editable: true
   group: 58
-  name: Маска аварий 2L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b901b'
-  description: Маска аварий 2H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2H
   editable: true
   group: 58
-  name: Маска аварий  2H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№  2H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9101'
-  description: Число перезапусков Гр.1
+  description: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1
   editable: false
   group: 58
-  name: Число перезапусков Гр.1
+  name: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9102'
-  description: Маска аварий 1L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   editable: true
   group: 58
-  name: Маска аварий 1L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9103'
-  description: Маска аварий 1H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   editable: true
   group: 58
-  name: Маска аварий 1H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9104'
-  description: Маска аварий 2L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   editable: true
   group: 58
-  name: Маска аварий 2L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9105'
-  description: Маска аварий 2H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2H
   editable: true
   group: 58
-  name: Маска аварий  2H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№  2H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9106'
-  description: Число перезапусков Гр.2
+  description: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2
   editable: false
   group: 58
-  name: Число перезапусков Гр.2
+  name: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9107'
-  description: Маска аварий 1L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   editable: true
   group: 58
-  name: Маска аварий 1L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9108'
-  description: Маска аварий 1H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   editable: true
   group: 58
-  name: Маска аварий 1H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9109'
-  description: Маска аварий 2L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   editable: true
   group: 58
-  name: Маска аварий 2L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b910a'
-  description: Маска аварий 2H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2H
   editable: true
   group: 58
-  name: Маска аварий  2H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№  2H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9201'
-  description: Число перезапусков Гр.1
+  description: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1
   editable: false
   group: 58
-  name: Число перезапусков Гр.1
+  name: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9202'
-  description: Маска аварий 1L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   editable: true
   group: 58
-  name: Маска аварий 1L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9203'
-  description: Маска аварий 1H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   editable: true
   group: 58
-  name: Маска аварий 1H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9204'
-  description: Маска аварий 2L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   editable: true
   group: 58
-  name: Маска аварий 2L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9205'
-  description: Маска аварий 2H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2H
   editable: true
   group: 58
-  name: Маска аварий  2H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№  2H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9206'
-  description: Число перезапусков Гр.2
+  description: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2
   editable: false
   group: 58
-  name: Число перезапусков Гр.2
+  name: Р§РёСЃР»Рѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b9207'
-  description: Маска аварий 1L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   editable: true
   group: 58
-  name: Маска аварий 1L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9208'
-  description: Маска аварий 1H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   editable: true
   group: 58
-  name: Маска аварий 1H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b9209'
-  description: Маска аварий 2L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   editable: true
   group: 58
-  name: Маска аварий 2L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b920a'
-  description: Маска аварий 2H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2H
   editable: true
   group: 58
-  name: Маска аварий  2H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№  2H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
-Коэф. ограничения скорости по газу:
+РљРѕСЌС„. РѕРіСЂР°РЅРёС‡РµРЅРёСЏ СЃРєРѕСЂРѕСЃС‚Рё РїРѕ РіР°Р·Сѓ:
 - address: '0x5a4401'
   description: V
   editable: false
@@ -5100,13 +5100,13 @@ sm_prot:
   name: V
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x5a4402'
-  description: Коэф.Ограничения Газа
+  description: РљРѕСЌС„.РћРіСЂР°РЅРёС‡РµРЅРёСЏ Р“Р°Р·Р°
   editable: false
   group: 24
-  name: Коэф.Ограничения Газа
+  name: РљРѕСЌС„.РћРіСЂР°РЅРёС‡РµРЅРёСЏ Р“Р°Р·Р°
   scale: 10485.76
   type: SIGNED32
   unit: '%'
@@ -5118,19 +5118,19 @@ sm_prot:
   name: V
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x5a4502'
-  description: Коэф.Добавки Тормоза
+  description: РљРѕСЌС„.Р”РѕР±Р°РІРєРё РўРѕСЂРјРѕР·Р°
   editable: false
   group: 24
-  name: Коэф.Добавки Тормоза
+  name: РљРѕСЌС„.Р”РѕР±Р°РІРєРё РўРѕСЂРјРѕР·Р°
   scale: 10485.76
   type: SIGNED32
   unit: '%'
   value: 16777216.0
 - address: '0x5a4503'
-  description: Ограничение добавки тормоза
+  description: РћРіСЂР°РЅРёС‡РµРЅРёРµ РґРѕР±Р°РІРєРё С‚РѕСЂРјРѕР·Р°
   editable: true
   group: 24
   name: Limit additive braking
@@ -5139,7 +5139,7 @@ sm_prot:
   unit: '%'
   value: 3355443.0
 - address: '0x5a4601'
-  description: Ограничение тяги
+  description: РћРіСЂР°РЅРёС‡РµРЅРёРµ С‚СЏРіРё
   editable: false
   group: 24
   name: Limit track
@@ -5148,7 +5148,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5a4602'
-  description: Ограничение тормоза
+  description: РћРіСЂР°РЅРёС‡РµРЅРёРµ С‚РѕСЂРјРѕР·Р°
   editable: false
   group: 24
   name: Brake limit
@@ -5157,68 +5157,68 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5a4603'
-  description: Ограничение скорости
+  description: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё
   editable: false
   group: 24
-  name: Ограничение скорости
+  name: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 16777216.0
 - address: '0x5a4604'
-  description: Дельта ограничения скорости
+  description: Р”РµР»СЊС‚Р° РѕРіСЂР°РЅРёС‡РµРЅРёСЏ СЃРєРѕСЂРѕСЃС‚Рё
   editable: false
   group: 24
-  name: Дельта ограничения скорости
+  name: Р”РµР»СЊС‚Р° РѕРіСЂР°РЅРёС‡РµРЅРёСЏ СЃРєРѕСЂРѕСЃС‚Рё
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 1677721.0
 - address: '0x5a4605'
-  description: Ограничение скорости ТД
+  description: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё РўР”
   editable: true
   group: 24
-  name: Ограничение скорости ТД
+  name: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё РўР”
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 12582912.0
 - address: '0x5a4606'
-  description: ТД улетевшие выше уст. 5B18.0C
+  description: РўР” СѓР»РµС‚РµРІС€РёРµ РІС‹С€Рµ СѓСЃС‚. 5B18.0C
   editable: false
   group: 24
-  name: ТД улетевшие выше уст. 5B18.0C
+  name: РўР” СѓР»РµС‚РµРІС€РёРµ РІС‹С€Рµ СѓСЃС‚. 5B18.0C
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
-Менеджер сетей:
+РњРµРЅРµРґР¶РµСЂ СЃРµС‚РµР№:
 - address: '0x5b2a01'
-  description: Таймаут соед. Can1
+  description: РўР°Р№РјР°СѓС‚ СЃРѕРµРґ. Can1
   editable: true
   group: 47
-  name: Таймаут соед. Can1
+  name: РўР°Р№РјР°СѓС‚ СЃРѕРµРґ. Can1
   scale: 1048576.0
   type: SIGNED32
-  unit: мс
+  unit: РјСЃ
   value: 1500.0
 - address: '0x5b2a02'
-  description: Таймаут соед. Can2
+  description: РўР°Р№РјР°СѓС‚ СЃРѕРµРґ. Can2
   editable: true
   group: 47
-  name: Таймаут соед. Can2
+  name: РўР°Р№РјР°СѓС‚ СЃРѕРµРґ. Can2
   scale: 1048576.0
   type: SIGNED32
-  unit: мс
+  unit: РјСЃ
   value: 1500.0
 - address: '0x5b2a03'
-  description: Сеть CAN (CANOpen)
+  description: РЎРµС‚СЊ CAN (CANOpen)
   editable: false
   group: 47
-  name: Сеть CAN (CANOpen)
+  name: РЎРµС‚СЊ CAN (CANOpen)
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b2a04'
   description: CAN-PDO online
@@ -5227,7 +5227,7 @@ sm_prot:
   name: CAN-PDO online
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b2a05'
   description: CAN-PDO online
@@ -5236,7 +5236,7 @@ sm_prot:
   name: CAN-PDO online
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2a06'
   description: CAN-PDO online
@@ -5245,7 +5245,7 @@ sm_prot:
   name: CAN-PDO online
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b2a07'
   description: CAN-PDO online
@@ -5254,20 +5254,20 @@ sm_prot:
   name: CAN-PDO online
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2a08'
-  description: Сменить NodeID CAN
+  description: РЎРјРµРЅРёС‚СЊ NodeID CAN
   editable: true
   group: 47
-  name: Сменить NodeID CAN
+  name: РЎРјРµРЅРёС‚СЊ NodeID CAN
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
-Механические параметры:
+РњРµС…Р°РЅРёС‡РµСЃРєРёРµ РїР°СЂР°РјРµС‚СЂС‹:
 - address: '0x5b0301'
-  description: Зад. момент
+  description: Р—Р°Рґ. РјРѕРјРµРЅС‚
   editable: true
   group: 19
   name: torque
@@ -5276,315 +5276,315 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b0302'
-  description: Задание скорости
+  description: Р—Р°РґР°РЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё
   editable: true
   group: 19
   name: Speed reference
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
 - address: '0x5b0303'
-  description: Скорость
+  description: РЎРєРѕСЂРѕСЃС‚СЊ
   editable: true
   group: 19
   name: Speed
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
-Настройка АПВ:
+РќР°СЃС‚СЂРѕР№РєР° РђРџР’:
 - address: '0x5b8a01'
-  description: Количество перезапусков Гр.1
+  description: РљРѕР»РёС‡РµСЃС‚РІРѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1
   editable: true
   group: 57
-  name: Количество перезапусков Гр.1
+  name: РљРѕР»РёС‡РµСЃС‚РІРѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b8a02'
-  description: Время перезапусков Гр.1, мин
+  description: Р’СЂРµРјСЏ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1, РјРёРЅ
   editable: true
   group: 57
-  name: Время перезапусков Гр.1, мин
+  name: Р’СЂРµРјСЏ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.1, РјРёРЅ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b8a03'
-  description: Количество перезапусков Гр.2
+  description: РљРѕР»РёС‡РµСЃС‚РІРѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2
   editable: true
   group: 57
-  name: Количество перезапусков Гр.2
+  name: РљРѕР»РёС‡РµСЃС‚РІРѕ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b8a04'
-  description: Время перезапусков Гр.2, мин
+  description: Р’СЂРµРјСЏ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2, РјРёРЅ
   editable: true
   group: 57
-  name: Время перезапусков Гр.2, мин
+  name: Р’СЂРµРјСЏ РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ Р“СЂ.2, РјРёРЅ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b8a05'
-  description: Время между перезапусками, сек
+  description: Р’СЂРµРјСЏ РјРµР¶РґСѓ РїРµСЂРµР·Р°РїСѓСЃРєР°РјРё, СЃРµРє
   editable: true
   group: 57
-  name: Время между перезапусками, сек
+  name: Р’СЂРµРјСЏ РјРµР¶РґСѓ РїРµСЂРµР·Р°РїСѓСЃРєР°РјРё, СЃРµРє
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b8a06'
-  description: Время сетевого перезапуска, мс
+  description: Р’СЂРµРјСЏ СЃРµС‚РµРІРѕРіРѕ РїРµСЂРµР·Р°РїСѓСЃРєР°, РјСЃ
   editable: true
   group: 57
-  name: Время сетевого перезапуска, мс
+  name: Р’СЂРµРјСЏ СЃРµС‚РµРІРѕРіРѕ РїРµСЂРµР·Р°РїСѓСЃРєР°, РјСЃ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 500.0
 - address: '0x5b8b01'
-  description: Текущий номер устройства
+  description: РўРµРєСѓС‰РёР№ РЅРѕРјРµСЂ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   editable: false
   group: 57
-  name: Текущий номер устройства
+  name: РўРµРєСѓС‰РёР№ РЅРѕРјРµСЂ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 1.0
 - address: '0x5b8b02'
-  description: Текущий номер устройства
+  description: РўРµРєСѓС‰РёР№ РЅРѕРјРµСЂ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   editable: false
   group: 57
-  name: Текущий номер устройства
+  name: РўРµРєСѓС‰РёР№ РЅРѕРјРµСЂ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 1.0
-Настройки:
+РќР°СЃС‚СЂРѕР№РєРё:
 - address: '0x5b1001'
-  description: Источник управления
+  description: РСЃС‚РѕС‡РЅРёРє СѓРїСЂР°РІР»РµРЅРёСЏ
   editable: true
   group: 13
-  name: Источник управления
+  name: РСЃС‚РѕС‡РЅРёРє СѓРїСЂР°РІР»РµРЅРёСЏ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1002'
-  description: Контроль датчиков напряжения ЗПТ
+  description: РљРѕРЅС‚СЂРѕР»СЊ РґР°С‚С‡РёРєРѕРІ РЅР°РїСЂСЏР¶РµРЅРёСЏ Р—РџРў
   editable: true
   group: 13
   name: UdcSensorCtrl
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b1003'
-  description: Настройка приёма задания
+  description: РќР°СЃС‚СЂРѕР№РєР° РїСЂРёС‘РјР° Р·Р°РґР°РЅРёСЏ
   editable: true
   group: 13
-  name: Настройка приёма задания
+  name: РќР°СЃС‚СЂРѕР№РєР° РїСЂРёС‘РјР° Р·Р°РґР°РЅРёСЏ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1004'
-  description: Реагировать на аварийный стоп
+  description: Р РµР°РіРёСЂРѕРІР°С‚СЊ РЅР° Р°РІР°СЂРёР№РЅС‹Р№ СЃС‚РѕРї
   editable: true
   group: 13
-  name: Реагировать на аварийный стоп
+  name: Р РµР°РіРёСЂРѕРІР°С‚СЊ РЅР° Р°РІР°СЂРёР№РЅС‹Р№ СЃС‚РѕРї
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1005'
-  description: Инверсия задания момента
+  description: РРЅРІРµСЂСЃРёСЏ Р·Р°РґР°РЅРёСЏ РјРѕРјРµРЅС‚Р°
   editable: true
   group: 13
   name: InverceTrqRef
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b1006'
-  description: SDO-сервис
+  description: SDO-СЃРµСЂРІРёСЃ
   editable: true
   group: 13
-  name: SDO-сервис
+  name: SDO-СЃРµСЂРІРёСЃ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1007'
-  description: PDO-сервис
+  description: PDO-СЃРµСЂРІРёСЃ
   editable: true
   group: 13
-  name: PDO-сервис
+  name: PDO-СЃРµСЂРІРёСЃ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1008'
-  description: Перезагрузка
+  description: РџРµСЂРµР·Р°РіСЂСѓР·РєР°
   editable: true
   group: 13
-  name: Перезагрузка
+  name: РџРµСЂРµР·Р°РіСЂСѓР·РєР°
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1009'
-  description: Автосброс аварий
+  description: РђРІС‚РѕСЃР±СЂРѕСЃ Р°РІР°СЂРёР№
   editable: true
   group: 13
-  name: Автосброс аварий
+  name: РђРІС‚РѕСЃР±СЂРѕСЃ Р°РІР°СЂРёР№
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b100a'
-  description: Разрешение флага торможения
+  description: Р Р°Р·СЂРµС€РµРЅРёРµ С„Р»Р°РіР° С‚РѕСЂРјРѕР¶РµРЅРёСЏ
   editable: true
   group: 13
-  name: Разрешение флага торможения
+  name: Р Р°Р·СЂРµС€РµРЅРёРµ С„Р»Р°РіР° С‚РѕСЂРјРѕР¶РµРЅРёСЏ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b100b'
-  description: Главный ДА
+  description: Р“Р»Р°РІРЅС‹Р№ Р”Рђ
   editable: true
   group: 13
-  name: Главный ДА
+  name: Р“Р»Р°РІРЅС‹Р№ Р”Рђ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 1.0
 - address: '0x5b100c'
-  description: Управление от ПМУ
+  description: РЈРїСЂР°РІР»РµРЅРёРµ РѕС‚ РџРњРЈ
   editable: true
   group: 13
-  name: Управление от ПМУ
+  name: РЈРїСЂР°РІР»РµРЅРёРµ РѕС‚ РџРњРЈ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b100d'
-  description: Авто подогрев
+  description: РђРІС‚Рѕ РїРѕРґРѕРіСЂРµРІ
   editable: true
   group: 13
-  name: Авто подогрев
+  name: РђРІС‚Рѕ РїРѕРґРѕРіСЂРµРІ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b100e'
-  description: Ограничение скорости машины
+  description: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё РјР°С€РёРЅС‹
   editable: true
   group: 13
-  name: Ограничение скорости машины
+  name: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё РјР°С€РёРЅС‹
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b100f'
-  description: АПВ
+  description: РђРџР’
   editable: true
   group: 13
-  name: АПВ
+  name: РђРџР’
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b1010'
-  description: Пульт ДУ
+  description: РџСѓР»СЊС‚ Р”РЈ
   editable: true
   group: 13
-  name: Пульт ДУ
+  name: РџСѓР»СЊС‚ Р”РЈ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b1011'
-  description: Инверсия задания положения рулевой рейки
+  description: РРЅРІРµСЂСЃРёСЏ Р·Р°РґР°РЅРёСЏ РїРѕР»РѕР¶РµРЅРёСЏ СЂСѓР»РµРІРѕР№ СЂРµР№РєРё
   editable: true
   group: 13
   name: Inverting the steering position setting
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1012'
-  description: Управление стояночным тормозом от ПДУ
+  description: РЈРїСЂР°РІР»РµРЅРёРµ СЃС‚РѕСЏРЅРѕС‡РЅС‹Рј С‚РѕСЂРјРѕР·РѕРј РѕС‚ РџР”РЈ
   editable: true
   group: 13
   name: Ctrl parking brake f rom pult
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1013'
-  description: j1939-сервис
+  description: j1939-СЃРµСЂРІРёСЃ
   editable: true
   group: 13
   name: j1939-service
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1014'
-  description: Разрешить уст.Нул.Пол. от БКУ
+  description: Р Р°Р·СЂРµС€РёС‚СЊ СѓСЃС‚.РќСѓР».РџРѕР». РѕС‚ Р‘РљРЈ
   editable: true
   group: 13
   name: EnaZeroPosActFromBku
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1015'
-  description: Мерцание фонарей Матрёшки
+  description: РњРµСЂС†Р°РЅРёРµ С„РѕРЅР°СЂРµР№ РњР°С‚СЂС‘С€РєРё
   editable: true
   group: 13
-  name: Мерцание фонарей Матрёшки
+  name: РњРµСЂС†Р°РЅРёРµ С„РѕРЅР°СЂРµР№ РњР°С‚СЂС‘С€РєРё
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b1016'
-  description: Тестирование Вкл/Выкл
+  description: РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ Р’РєР»/Р’С‹РєР»
   editable: true
   group: 13
-  name: Тестирование Вкл/Выкл
+  name: РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ Р’РєР»/Р’С‹РєР»
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1017'
-  description: АЦП авто смещ.
+  description: РђР¦Рџ Р°РІС‚Рѕ СЃРјРµС‰.
   editable: true
   group: 13
   name: AutoOffset
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1018'
-  description: Время инициализации
+  description: Р’СЂРµРјСЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
   editable: true
   group: 13
-  name: Время инициализации
+  name: Р’СЂРµРјСЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 2500.0
 - address: '0x5b1019'
-  description: Время выключения
+  description: Р’СЂРµРјСЏ РІС‹РєР»СЋС‡РµРЅРёСЏ
   editable: true
   group: 13
   name: Time switch off
@@ -5592,9 +5592,9 @@ sm_prot:
   type: UNSIGNED32
   unit: U32
   value: 10000.0
-Настройки j1939:
+РќР°СЃС‚СЂРѕР№РєРё j1939:
 - address: '0x530001'
-  description: Номер в сети J1939
+  description: РќРѕРјРµСЂ РІ СЃРµС‚Рё J1939
   editable: true
   group: 10
   name: J1939 node ID
@@ -5609,70 +5609,70 @@ sm_prot:
   name: CAN Bit Rate
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 4.0
 - address: '0x530003'
-  description: Маска аварий всех устройств старш. слова для БИУС
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ РІСЃРµС… СѓСЃС‚СЂРѕР№СЃС‚РІ СЃС‚Р°СЂС€. СЃР»РѕРІР° РґР»СЏ Р‘РРЈРЎ
   editable: true
   group: 10
-  name: Маска аварий всех устройств старш. слова для БИУС
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ РІСЃРµС… СѓСЃС‚СЂРѕР№СЃС‚РІ СЃС‚Р°СЂС€. СЃР»РѕРІР° РґР»СЏ Р‘РРЈРЎ
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: -1.0
 - address: '0x530004'
-  description: Принято посылок
+  description: РџСЂРёРЅСЏС‚Рѕ РїРѕСЃС‹Р»РѕРє
   editable: true
   group: 10
-  name: Принято посылок
+  name: РџСЂРёРЅСЏС‚Рѕ РїРѕСЃС‹Р»РѕРє
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 497471.0
 - address: '0x530005'
-  description: Передано посылок
+  description: РџРµСЂРµРґР°РЅРѕ РїРѕСЃС‹Р»РѕРє
   editable: true
   group: 10
-  name: Передано посылок
+  name: РџРµСЂРµРґР°РЅРѕ РїРѕСЃС‹Р»РѕРє
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 3021305.0
 - address: '0x530006'
-  description: Запрашивать параметры
+  description: Р—Р°РїСЂР°С€РёРІР°С‚СЊ РїР°СЂР°РјРµС‚СЂС‹
   editable: true
   group: 10
-  name: Запрашивать параметры
+  name: Р—Р°РїСЂР°С€РёРІР°С‚СЊ РїР°СЂР°РјРµС‚СЂС‹
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x530007'
-  description: Передавать параметры
+  description: РџРµСЂРµРґР°РІР°С‚СЊ РїР°СЂР°РјРµС‚СЂС‹
   editable: true
   group: 10
-  name: Передавать параметры
+  name: РџРµСЂРµРґР°РІР°С‚СЊ РїР°СЂР°РјРµС‚СЂС‹
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x530008'
-  description: Пакетная передача вкл
+  description: РџР°РєРµС‚РЅР°СЏ РїРµСЂРµРґР°С‡Р° РІРєР»
   editable: true
   group: 10
-  name: Пакетная передача вкл
+  name: РџР°РєРµС‚РЅР°СЏ РїРµСЂРµРґР°С‡Р° РІРєР»
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x530009'
-  description: Для отладки
+  description: Р”Р»СЏ РѕС‚Р»Р°РґРєРё
   editable: true
   group: 10
   name: test
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x530101'
   description: ProB_31
@@ -5890,9 +5890,9 @@ sm_prot:
   type: UNSIGNED32
   unit: U32
   value: 6553699.0
-Органы управления:
+РћСЂРіР°РЅС‹ СѓРїСЂР°РІР»РµРЅРёСЏ:
 - address: '0x5b1301'
-  description: Газ
+  description: Р“Р°Р·
   editable: true
   group: 23
   name: Trac
@@ -5901,7 +5901,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b1302'
-  description: Тормоз
+  description: РўРѕСЂРјРѕР·
   editable: true
   group: 23
   name: Brake
@@ -5910,70 +5910,70 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b1303'
-  description: Селектор (TC1)
+  description: РЎРµР»РµРєС‚РѕСЂ (TC1)
   editable: true
   group: 23
   name: TC1
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b1304'
-  description: Ручной тормоз
+  description: Р СѓС‡РЅРѕР№ С‚РѕСЂРјРѕР·
   editable: true
   group: 23
   name: Hand Brake
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b1305'
-  description: Общее командное слово
+  description: РћР±С‰РµРµ РєРѕРјР°РЅРґРЅРѕРµ СЃР»РѕРІРѕ
   editable: true
   group: 23
-  name: Общее командное слово
+  name: РћР±С‰РµРµ РєРѕРјР°РЅРґРЅРѕРµ СЃР»РѕРІРѕ
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x5b1306'
-  description: Скорость ДВС заданная
+  description: РЎРєРѕСЂРѕСЃС‚СЊ Р”Р’РЎ Р·Р°РґР°РЅРЅР°СЏ
   editable: true
   group: 23
-  name: Скорость ДВС заданная
+  name: РЎРєРѕСЂРѕСЃС‚СЊ Р”Р’РЎ Р·Р°РґР°РЅРЅР°СЏ
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
 - address: '0x5b1307'
-  description: Ключ зажигания
+  description: РљР»СЋС‡ Р·Р°Р¶РёРіР°РЅРёСЏ
   editable: false
   group: 23
   name: Ignition key
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1308'
-  description: Аварийный стоп
+  description: РђРІР°СЂРёР№РЅС‹Р№ СЃС‚РѕРї
   editable: false
   group: 23
-  name: Аварийный стоп
+  name: РђРІР°СЂРёР№РЅС‹Р№ СЃС‚РѕРї
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1309'
-  description: Старт/стоп по уровню
+  description: РЎС‚Р°СЂС‚/СЃС‚РѕРї РїРѕ СѓСЂРѕРІРЅСЋ
   editable: true
   group: 23
   name: cmd_by_level
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b130a'
-  description: Зад. электрический момент
+  description: Р—Р°Рґ. СЌР»РµРєС‚СЂРёС‡РµСЃРєРёР№ РјРѕРјРµРЅС‚
   editable: true
   group: 23
   name: torque
@@ -5982,106 +5982,106 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b130b'
-  description: Маска командного слова
+  description: РњР°СЃРєР° РєРѕРјР°РЅРґРЅРѕРіРѕ СЃР»РѕРІР°
   editable: true
   group: 23
-  name: Маска командного слова
+  name: РњР°СЃРєР° РєРѕРјР°РЅРґРЅРѕРіРѕ СЃР»РѕРІР°
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b130c'
-  description: Маска командного слова
+  description: РњР°СЃРєР° РєРѕРјР°РЅРґРЅРѕРіРѕ СЃР»РѕРІР°
   editable: true
   group: 23
-  name: Маска командного слова
+  name: РњР°СЃРєР° РєРѕРјР°РЅРґРЅРѕРіРѕ СЃР»РѕРІР°
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b130d'
-  description: Маска командного слова
+  description: РњР°СЃРєР° РєРѕРјР°РЅРґРЅРѕРіРѕ СЃР»РѕРІР°
   editable: true
   group: 23
-  name: Маска командного слова
+  name: РњР°СЃРєР° РєРѕРјР°РЅРґРЅРѕРіРѕ СЃР»РѕРІР°
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b130e'
-  description: Маска командного слова
+  description: РњР°СЃРєР° РєРѕРјР°РЅРґРЅРѕРіРѕ СЃР»РѕРІР°
   editable: true
   group: 23
-  name: Маска командного слова
+  name: РњР°СЃРєР° РєРѕРјР°РЅРґРЅРѕРіРѕ СЃР»РѕРІР°
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b130f'
-  description: Ручной тормоз
+  description: Р СѓС‡РЅРѕР№ С‚РѕСЂРјРѕР·
   editable: true
   group: 23
-  name: Ручной тормоз
+  name: Р СѓС‡РЅРѕР№ С‚РѕСЂРјРѕР·
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b1310'
-  description: Останов гл. ДА
+  description: РћСЃС‚Р°РЅРѕРІ РіР». Р”Рђ
   editable: true
   group: 23
-  name: Останов гл. ДА
+  name: РћСЃС‚Р°РЅРѕРІ РіР». Р”Рђ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b1311'
-  description: Настройка АПВ
+  description: РќР°СЃС‚СЂРѕР№РєР° РђРџР’
   editable: false
   group: 23
-  name: Настройка АПВ
+  name: РќР°СЃС‚СЂРѕР№РєР° РђРџР’
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b1312'
-  description: Настройка АПВ
+  description: РќР°СЃС‚СЂРѕР№РєР° РђРџР’
   editable: false
   group: 23
-  name: Настройка АПВ
+  name: РќР°СЃС‚СЂРѕР№РєР° РђРџР’
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b1313'
-  description: Настройка АПВ
+  description: РќР°СЃС‚СЂРѕР№РєР° РђРџР’
   editable: false
   group: 23
-  name: Настройка АПВ
+  name: РќР°СЃС‚СЂРѕР№РєР° РђРџР’
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b1314'
-  description: Настройка АПВ
+  description: РќР°СЃС‚СЂРѕР№РєР° РђРџР’
   editable: false
   group: 23
-  name: Настройка АПВ
+  name: РќР°СЃС‚СЂРѕР№РєР° РђРџР’
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b1315'
-  description: Селектор передач
+  description: РЎРµР»РµРєС‚РѕСЂ РїРµСЂРµРґР°С‡
   editable: false
   group: 23
-  name: Селектор передач
+  name: РЎРµР»РµРєС‚РѕСЂ РїРµСЂРµРґР°С‡
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1316'
-  description: Текущее задание на ТЯГУ
+  description: РўРµРєСѓС‰РµРµ Р·Р°РґР°РЅРёРµ РЅР° РўРЇР“РЈ
   editable: true
   group: 23
   name: Curent refference tracking
@@ -6090,7 +6090,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b1317'
-  description: Текущее задание на ТОРМОЗ
+  description: РўРµРєСѓС‰РµРµ Р·Р°РґР°РЅРёРµ РЅР° РўРћР РњРћР—
   editable: true
   group: 23
   name: Curent refference braking
@@ -6098,45 +6098,45 @@ sm_prot:
   type: SIGNED32
   unit: '%'
   value: 0.0
-Отладка главного ДА:
+РћС‚Р»Р°РґРєР° РіР»Р°РІРЅРѕРіРѕ Р”Рђ:
 - address: '0x5b3501'
-  description: Главный ДА
+  description: Р“Р»Р°РІРЅС‹Р№ Р”Рђ
   editable: true
   group: 38
-  name: Главный ДА
+  name: Р“Р»Р°РІРЅС‹Р№ Р”Рђ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b3502'
-  description: Состояние
+  description: РЎРѕСЃС‚РѕСЏРЅРёРµ
   editable: false
   group: 38
-  name: Состояние
+  name: РЎРѕСЃС‚РѕСЏРЅРёРµ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 13.0
 - address: '0x5b3503'
-  description: Предыдущее состояние
+  description: РџСЂРµРґС‹РґСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
   editable: false
   group: 38
-  name: Предыдущее состояние
+  name: РџСЂРµРґС‹РґСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b3504'
-  description: Останов гл. ДА
+  description: РћСЃС‚Р°РЅРѕРІ РіР». Р”Рђ
   editable: true
   group: 38
-  name: Останов гл. ДА
+  name: РћСЃС‚Р°РЅРѕРІ РіР». Р”Рђ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b3505'
-  description: Счетчик, мс САУ
+  description: РЎС‡РµС‚С‡РёРє, РјСЃ РЎРђРЈ
   editable: true
   group: 38
   name: Counter, ms
@@ -6145,16 +6145,16 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b3506'
-  description: T ЗИ сброса газа
+  description: T Р—Р СЃР±СЂРѕСЃР° РіР°Р·Р°
   editable: true
   group: 38
-  name: T ЗИ сброса газа
+  name: T Р—Р СЃР±СЂРѕСЃР° РіР°Р·Р°
   scale: 1048576.0
   type: SIGNED32
   unit: IQ24
   value: 13421773.0
 - address: '0x5b3507'
-  description: Выход ЗИ
+  description: Р’С‹С…РѕРґ Р—Р
   editable: false
   group: 38
   name: Ramp output
@@ -6163,16 +6163,16 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b3508'
-  description: T ЗИ наброса тормоза
+  description: T Р—Р РЅР°Р±СЂРѕСЃР° С‚РѕСЂРјРѕР·Р°
   editable: true
   group: 38
-  name: T ЗИ наброса тормоза
+  name: T Р—Р РЅР°Р±СЂРѕСЃР° С‚РѕСЂРјРѕР·Р°
   scale: 1048576.0
   type: SIGNED32
   unit: IQ24
   value: 0.0
 - address: '0x5b3509'
-  description: Выход ЗИ
+  description: Р’С‹С…РѕРґ Р—Р
   editable: false
   group: 38
   name: Ramp output
@@ -6181,10 +6181,10 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b350a'
-  description: ПредПредСостояние
+  description: РџСЂРµРґРџСЂРµРґРЎРѕСЃС‚РѕСЏРЅРёРµ
   editable: false
   group: 38
-  name: ПредПредСостояние
+  name: РџСЂРµРґРџСЂРµРґРЎРѕСЃС‚РѕСЏРЅРёРµ
   scale: 0
   type: UNSIGNED16
   unit: U16
@@ -6199,7 +6199,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b350c'
-  description: Датчики Udc исправны
+  description: Р”Р°С‚С‡РёРєРё Udc РёСЃРїСЂР°РІРЅС‹
   editable: false
   group: 38
   name: UdcSensorsServiceable
@@ -6208,7 +6208,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b350d'
-  description: Коэф.Маневрирования
+  description: РљРѕСЌС„.РњР°РЅРµРІСЂРёСЂРѕРІР°РЅРёСЏ
   editable: false
   group: 38
   name: K_Shunting
@@ -6217,56 +6217,56 @@ sm_prot:
   unit: IQ24
   value: 0.0
 - address: '0x5b350e'
-  description: Флаг режим движения
+  description: Р¤Р»Р°Рі СЂРµР¶РёРј РґРІРёР¶РµРЅРёСЏ
   editable: false
   group: 38
-  name: Флаг режим движения
+  name: Р¤Р»Р°Рі СЂРµР¶РёРј РґРІРёР¶РµРЅРёСЏ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b350f'
-  description: Счетчик, мс САУ
+  description: РЎС‡РµС‚С‡РёРє, РјСЃ РЎРђРЈ
   editable: false
   group: 38
   name: Counter, ms
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 8.0
-Отображение групп:
+РћС‚РѕР±СЂР°Р¶РµРЅРёРµ РіСЂСѓРїРї:
 - address: '0x253501'
-  description: группы31_0
+  description: РіСЂСѓРїРїС‹31_0
   editable: true
   group: 2
-  name: группы31_0
+  name: РіСЂСѓРїРїС‹31_0
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x253502'
-  description: группы63_32
+  description: РіСЂСѓРїРїС‹63_32
   editable: true
   group: 2
-  name: группы63_32
+  name: РіСЂСѓРїРїС‹63_32
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x253503'
-  description: группы95_64
+  description: РіСЂСѓРїРїС‹95_64
   editable: true
   group: 2
-  name: группы95_64
+  name: РіСЂСѓРїРїС‹95_64
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x253504'
-  description: группы127_96
+  description: РіСЂСѓРїРїС‹127_96
   editable: true
   group: 2
-  name: группы127_96
+  name: РіСЂСѓРїРїС‹127_96
   scale: 0
   type: UNSIGNED32
   unit: U32
@@ -6398,19 +6398,19 @@ sm_prot:
   unit: U32
   value: 0.0
 - address: '0x27010e'
-  description: Версия
+  description: Р’РµСЂСЃРёСЏ
   editable: true
   group: 2
-  name: Версия
+  name: Р’РµСЂСЃРёСЏ
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x27010f'
-  description: Контрольная сумма
+  description: РљРѕРЅС‚СЂРѕР»СЊРЅР°СЏ СЃСѓРјРјР°
   editable: true
   group: 2
-  name: Контрольная сумма
+  name: РљРѕРЅС‚СЂРѕР»СЊРЅР°СЏ СЃСѓРјРјР°
   scale: 0
   type: UNSIGNED32
   unit: U32
@@ -6424,90 +6424,90 @@ sm_prot:
   type: UNSIGNED16
   unit: U16
   value: 32768.0
-Параметры движения:
+РџР°СЂР°РјРµС‚СЂС‹ РґРІРёР¶РµРЅРёСЏ:
 - address: '0x5b1601'
-  description: Скорость
+  description: РЎРєРѕСЂРѕСЃС‚СЊ
   editable: false
   group: 35
-  name: Скорость
+  name: РЎРєРѕСЂРѕСЃС‚СЊ
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x5b1602'
-  description: Выходная частота
+  description: Р’С‹С…РѕРґРЅР°СЏ С‡Р°СЃС‚РѕС‚Р°
   editable: false
   group: 35
-  name: Выходная частота
+  name: Р’С‹С…РѕРґРЅР°СЏ С‡Р°СЃС‚РѕС‚Р°
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
 - address: '0x5b1603'
-  description: Средний момент ТД
+  description: РЎСЂРµРґРЅРёР№ РјРѕРјРµРЅС‚ РўР”
   editable: false
   group: 35
-  name: Средний момент ТД
+  name: РЎСЂРµРґРЅРёР№ РјРѕРјРµРЅС‚ РўР”
   scale: 10485.76
   type: SIGNED32
   unit: '%'
   value: 0.0
 - address: '0x5b1604'
-  description: Скорость по быстрым колесам
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РїРѕ Р±С‹СЃС‚СЂС‹Рј РєРѕР»РµСЃР°Рј
   editable: false
   group: 35
-  name: Скорость по быстрым колесам
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РїРѕ Р±С‹СЃС‚СЂС‹Рј РєРѕР»РµСЃР°Рј
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
 - address: '0x5b1605'
-  description: Скорость по медленным колесам
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РїРѕ РјРµРґР»РµРЅРЅС‹Рј РєРѕР»РµСЃР°Рј
   editable: false
   group: 35
-  name: Скорость по медленным колесам
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РїРѕ РјРµРґР»РµРЅРЅС‹Рј РєРѕР»РµСЃР°Рј
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
 - address: '0x5b1606'
-  description: Средняя скорость колёс по БУТ
+  description: РЎСЂРµРґРЅСЏСЏ СЃРєРѕСЂРѕСЃС‚СЊ РєРѕР»С‘СЃ РїРѕ Р‘РЈРў
   editable: false
   group: 35
-  name: Средняя скорость колёс по БУТ
+  name: РЎСЂРµРґРЅСЏСЏ СЃРєРѕСЂРѕСЃС‚СЊ РєРѕР»С‘СЃ РїРѕ Р‘РЈРў
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x5b1701'
-  description: Тяговый двигатель
+  description: РўСЏРіРѕРІС‹Р№ РґРІРёРіР°С‚РµР»СЊ
   editable: false
   group: 35
-  name: Тяговый двигатель
+  name: РўСЏРіРѕРІС‹Р№ РґРІРёРіР°С‚РµР»СЊ
   scale: 54.61333333333334
   type: SIGNED32
-  unit: кВт
+  unit: РєР’С‚
   value: 0.0
 - address: '0x5b1801'
-  description: Мин. скорость для тормож.
+  description: РњРёРЅ. СЃРєРѕСЂРѕСЃС‚СЊ РґР»СЏ С‚РѕСЂРјРѕР¶.
   editable: true
   group: 35
-  name: Мин. скорость для тормож.
+  name: РњРёРЅ. СЃРєРѕСЂРѕСЃС‚СЊ РґР»СЏ С‚РѕСЂРјРѕР¶.
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 484675.0
 - address: '0x5b1802'
-  description: Мин.Зад. Педали тормоза
+  description: РњРёРЅ.Р—Р°Рґ. РџРµРґР°Р»Рё С‚РѕСЂРјРѕР·Р°
   editable: true
   group: 35
-  name: Мин.Зад. Педали тормоза
+  name: РњРёРЅ.Р—Р°Рґ. РџРµРґР°Р»Рё С‚РѕСЂРјРѕР·Р°
   scale: 10485.76
   type: SIGNED32
   unit: '%'
   value: 83886.0
 - address: '0x5b1803'
-  description: Тяговый момент при маневровом
+  description: РўСЏРіРѕРІС‹Р№ РјРѕРјРµРЅС‚ РїСЂРё РјР°РЅРµРІСЂРѕРІРѕРј
   editable: true
   group: 35
   name: 'Trq Traction in Shunting '
@@ -6516,7 +6516,7 @@ sm_prot:
   unit: '%'
   value: 3355443.0
 - address: '0x5b1804'
-  description: Тормозной момент при наж. тормоз.
+  description: РўРѕСЂРјРѕР·РЅРѕР№ РјРѕРјРµРЅС‚ РїСЂРё РЅР°Р¶. С‚РѕСЂРјРѕР·.
   editable: true
   group: 35
   name: 'Trq Brake in SwPedBrake '
@@ -6525,7 +6525,7 @@ sm_prot:
   unit: '%'
   value: 1677721.0
 - address: '0x5b1805'
-  description: Тормозной момент для выбега
+  description: РўРѕСЂРјРѕР·РЅРѕР№ РјРѕРјРµРЅС‚ РґР»СЏ РІС‹Р±РµРіР°
   editable: true
   group: 35
   name: Torque ref for overrun
@@ -6534,197 +6534,197 @@ sm_prot:
   unit: '%'
   value: 838860.0
 - address: '0x5b1901'
-  description: Пробег, км
+  description: РџСЂРѕР±РµРі, РєРј
   editable: false
   group: 35
-  name: Пробег, км
+  name: РџСЂРѕР±РµРі, РєРј
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 68.0
 - address: '0x5b1902'
-  description: Пробег, м
+  description: РџСЂРѕР±РµРі, Рј
   editable: false
   group: 35
-  name: Пробег, м
+  name: РџСЂРѕР±РµРі, Рј
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 201.0
 - address: '0x5b1903'
-  description: Интегратор пробега
+  description: РРЅС‚РµРіСЂР°С‚РѕСЂ РїСЂРѕР±РµРіР°
   editable: false
   group: 35
-  name: Интегратор пробега
+  name: РРЅС‚РµРіСЂР°С‚РѕСЂ РїСЂРѕР±РµРіР°
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 4970768.0
 - address: '0x5b1904'
-  description: Время вкл. состояния
+  description: Р’СЂРµРјСЏ РІРєР». СЃРѕСЃС‚РѕСЏРЅРёСЏ
   editable: false
   group: 35
-  name: Время вкл. состояния
+  name: Р’СЂРµРјСЏ РІРєР». СЃРѕСЃС‚РѕСЏРЅРёСЏ
   scale: 0
   type: SIGNED16
-  unit: мин
+  unit: РјРёРЅ
   value: 12229.0
 - address: '0x5b1905'
-  description: Время движения
+  description: Р’СЂРµРјСЏ РґРІРёР¶РµРЅРёСЏ
   editable: false
   group: 35
-  name: Время движения
+  name: Р’СЂРµРјСЏ РґРІРёР¶РµРЅРёСЏ
   scale: 0
   type: SIGNED16
-  unit: мин
+  unit: РјРёРЅ
   value: 792.0
 - address: '0x5b1906'
-  description: Напряжение аккумулятора
+  description: РќР°РїСЂСЏР¶РµРЅРёРµ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂР°
   editable: false
   group: 35
-  name: Напряжение аккумулятора
+  name: РќР°РїСЂСЏР¶РµРЅРёРµ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂР°
   scale: 1941.8074074074075
   type: SIGNED32
-  unit: В
+  unit: Р’
   value: 0.0
 - address: '0x5b1907'
-  description: Tmax инверторов дельта
+  description: Tmax РёРЅРІРµСЂС‚РѕСЂРѕРІ РґРµР»СЊС‚Р°
   editable: false
   group: 35
-  name: Tmax инверторов дельта
+  name: Tmax РёРЅРІРµСЂС‚РѕСЂРѕРІ РґРµР»СЊС‚Р°
   scale: 52428.8
   type: SIGNED32
-  unit: град
+  unit: РіСЂР°Рґ
   value: -33554432.0
 - address: '0x5b1908'
-  description: Tmax генератора дельта
+  description: Tmax РіРµРЅРµСЂР°С‚РѕСЂР° РґРµР»СЊС‚Р°
   editable: false
   group: 35
-  name: Tmax генератора дельта
+  name: Tmax РіРµРЅРµСЂР°С‚РѕСЂР° РґРµР»СЊС‚Р°
   scale: 52428.8
   type: SIGNED32
-  unit: град
+  unit: РіСЂР°Рґ
   value: 0.0
 - address: '0x5b1909'
-  description: Tmax двигателей
+  description: Tmax РґРІРёРіР°С‚РµР»РµР№
   editable: false
   group: 35
-  name: Tmax двигателей
+  name: Tmax РґРІРёРіР°С‚РµР»РµР№
   scale: 52428.8
   type: SIGNED32
-  unit: град
+  unit: РіСЂР°Рґ
   value: 16777216.0
 - address: '0x5b1a01'
-  description: Макс. скорость
+  description: РњР°РєСЃ. СЃРєРѕСЂРѕСЃС‚СЊ
   editable: false
   group: 35
-  name: Макс. скорость
+  name: РњР°РєСЃ. СЃРєРѕСЂРѕСЃС‚СЊ
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 4149760.0
 - address: '0x5b1a02'
-  description: Пробег, км
+  description: РџСЂРѕР±РµРі, РєРј
   editable: false
   group: 35
-  name: Пробег, км
+  name: РџСЂРѕР±РµРі, РєРј
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 2.0
 - address: '0x5b1a03'
-  description: Макс.Мощност ТГ за поездку
+  description: РњР°РєСЃ.РњРѕС‰РЅРѕСЃС‚ РўР“ Р·Р° РїРѕРµР·РґРєСѓ
   editable: false
   group: 35
-  name: Макс.Мощност ТГ за поездку
+  name: РњР°РєСЃ.РњРѕС‰РЅРѕСЃС‚ РўР“ Р·Р° РїРѕРµР·РґРєСѓ
   scale: 54.61333333333334
   type: SIGNED32
-  unit: кВт
+  unit: РєР’С‚
   value: 0.0
 - address: '0x5b1a04'
-  description: Макс.Мощность полная
+  description: РњР°РєСЃ.РњРѕС‰РЅРѕСЃС‚СЊ РїРѕР»РЅР°СЏ
   editable: false
   group: 35
-  name: Макс.Мощность полная
+  name: РњР°РєСЃ.РњРѕС‰РЅРѕСЃС‚СЊ РїРѕР»РЅР°СЏ
   scale: 54.61333333333334
   type: SIGNED32
-  unit: кВт
+  unit: РєР’С‚
   value: 0.0
 - address: '0x5b1c01'
-  description: Радиус колеса
+  description: Р Р°РґРёСѓСЃ РєРѕР»РµСЃР°
   editable: true
   group: 35
-  name: Радиус колеса
+  name: Р Р°РґРёСѓСЃ РєРѕР»РµСЃР°
   scale: 1048576.0
   type: SIGNED32
   unit: IQ24
   value: 5284823.0
 - address: '0x5b1c02'
-  description: Передаточное число редуктора
+  description: РџРµСЂРµРґР°С‚РѕС‡РЅРѕРµ С‡РёСЃР»Рѕ СЂРµРґСѓРєС‚РѕСЂР°
   editable: true
   group: 35
-  name: Передаточное число редуктора
+  name: РџРµСЂРµРґР°С‚РѕС‡РЅРѕРµ С‡РёСЃР»Рѕ СЂРµРґСѓРєС‚РѕСЂР°
   scale: 1048576.0
   type: SIGNED32
   unit: IQ24
   value: 93952408.0
 - address: '0x5b1c03'
-  description: Макс. эл. момент на ТД
+  description: РњР°РєСЃ. СЌР». РјРѕРјРµРЅС‚ РЅР° РўР”
   editable: true
   group: 35
-  name: Макс. эл. момент на ТД
+  name: РњР°РєСЃ. СЌР». РјРѕРјРµРЅС‚ РЅР° РўР”
   scale: 1048576.0
   type: SIGNED32
-  unit: Н*м
+  unit: Рќ*Рј
   value: 1200.0
 - address: '0x5b1d01'
-  description: Радиус колеса
+  description: Р Р°РґРёСѓСЃ РєРѕР»РµСЃР°
   editable: true
   group: 35
-  name: Радиус колеса
+  name: Р Р°РґРёСѓСЃ РєРѕР»РµСЃР°
   scale: 1048576.0
   type: SIGNED32
-  unit: м
+  unit: Рј
   value: 5284823.0
 - address: '0x5b1d02'
-  description: Коэф. колёсного редуктора
+  description: РљРѕСЌС„. РєРѕР»С‘СЃРЅРѕРіРѕ СЂРµРґСѓРєС‚РѕСЂР°
   editable: true
   group: 35
-  name: Коэф. колёсного редуктора
+  name: РљРѕСЌС„. РєРѕР»С‘СЃРЅРѕРіРѕ СЂРµРґСѓРєС‚РѕСЂР°
   scale: 1048576.0
   type: SIGNED32
-  unit: км
+  unit: РєРј
   value: 5469372.0
 - address: '0x5b1d03'
-  description: Кол-во меток на индукторе АБС
+  description: РљРѕР»-РІРѕ РјРµС‚РѕРє РЅР° РёРЅРґСѓРєС‚РѕСЂРµ РђР‘РЎ
   editable: true
   group: 35
-  name: Кол-во меток на индукторе АБС
+  name: РљРѕР»-РІРѕ РјРµС‚РѕРє РЅР° РёРЅРґСѓРєС‚РѕСЂРµ РђР‘РЎ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 29884.0
-Пульт ДУ:
+РџСѓР»СЊС‚ Р”РЈ:
 - address: '0x5bf901'
-  description: Разрешение работы
+  description: Р Р°Р·СЂРµС€РµРЅРёРµ СЂР°Р±РѕС‚С‹
   editable: true
   group: 27
   name: enable
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5bf902'
-  description: Инверсия дискретных входов
+  description: РРЅРІРµСЂСЃРёСЏ РґРёСЃРєСЂРµС‚РЅС‹С… РІС…РѕРґРѕРІ
   editable: true
   group: 27
   name: Inverting mask for discrete inputs
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5bf903'
-  description: Канал 1
+  description: РљР°РЅР°Р» 1
   editable: false
   group: 27
   name: Ch1
@@ -6733,7 +6733,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5bf904'
-  description: Канал 2
+  description: РљР°РЅР°Р» 2
   editable: false
   group: 27
   name: Ch2
@@ -6742,7 +6742,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5bf905'
-  description: Канал 3
+  description: РљР°РЅР°Р» 3
   editable: false
   group: 27
   name: Ch3
@@ -6751,7 +6751,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5bf906'
-  description: Канал 4
+  description: РљР°РЅР°Р» 4
   editable: false
   group: 27
   name: Ch4
@@ -6760,7 +6760,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5bf907'
-  description: Канал 1
+  description: РљР°РЅР°Р» 1
   editable: false
   group: 27
   name: Ch1
@@ -6769,7 +6769,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5bf908'
-  description: Канал 2
+  description: РљР°РЅР°Р» 2
   editable: false
   group: 27
   name: Ch2
@@ -6778,7 +6778,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5bf909'
-  description: Канал 3
+  description: РљР°РЅР°Р» 3
   editable: false
   group: 27
   name: Ch3
@@ -6787,7 +6787,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5bf90a'
-  description: Канал 4
+  description: РљР°РЅР°Р» 4
   editable: false
   group: 27
   name: Ch4
@@ -6796,17 +6796,17 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5bf90b'
-  description: Пульт ДУ
+  description: РџСѓР»СЊС‚ Р”РЈ
   editable: false
   group: 27
-  name: Пульт ДУ
+  name: РџСѓР»СЊС‚ Р”РЈ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
-СервоРуль1:
+РЎРµСЂРІРѕР СѓР»СЊ1:
 - address: '0x5b2101'
-  description: Номер устройства
+  description: РќРѕРјРµСЂ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   editable: true
   group: 22
   name: Node ID
@@ -6815,34 +6815,34 @@ sm_prot:
   unit: U16
   value: 15.0
 - address: '0x5b2102'
-  description: Работа
+  description: Р Р°Р±РѕС‚Р°
   editable: true
   group: 22
   name: 'Command: Start'
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2103'
-  description: Статус
+  description: РЎС‚Р°С‚СѓСЃ
   editable: false
   group: 22
-  name: Статус
+  name: РЎС‚Р°С‚СѓСЃ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b2104'
-  description: Доп. статус
+  description: Р”РѕРї. СЃС‚Р°С‚СѓСЃ
   editable: false
   group: 22
   name: AdditStatus
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b2105'
-  description: Последняя зафиксированная авария
+  description: РџРѕСЃР»РµРґРЅСЏСЏ Р·Р°С„РёРєСЃРёСЂРѕРІР°РЅРЅР°СЏ Р°РІР°СЂРёСЏ
   editable: false
   group: 22
   name: ID of last fault
@@ -6851,16 +6851,16 @@ sm_prot:
   unit: U32
   value: 0.0
 - address: '0x5b2106'
-  description: Предупреждение SRV
+  description: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ SRV
   editable: false
   group: 22
-  name: Предупреждение SRV
+  name: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ SRV
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x5b2107'
-  description: Уст. нулевого положения
+  description: РЈСЃС‚. РЅСѓР»РµРІРѕРіРѕ РїРѕР»РѕР¶РµРЅРёСЏ
   editable: true
   group: 22
   name: Set zero position
@@ -6869,7 +6869,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b2108'
-  description: Задание положения
+  description: Р—Р°РґР°РЅРёРµ РїРѕР»РѕР¶РµРЅРёСЏ
   editable: true
   group: 22
   name: Reference position
@@ -6878,7 +6878,7 @@ sm_prot:
   unit: I16vparam
   value: 0.0
 - address: '0x5b2109'
-  description: Текущее положение
+  description: РўРµРєСѓС‰РµРµ РїРѕР»РѕР¶РµРЅРёРµ
   editable: false
   group: 22
   name: Curent position
@@ -6887,16 +6887,16 @@ sm_prot:
   unit: I16vparam
   value: 23.0
 - address: '0x5b210a'
-  description: Ток статора
+  description: РўРѕРє СЃС‚Р°С‚РѕСЂР°
   editable: false
   group: 22
-  name: Ток статора
+  name: РўРѕРє СЃС‚Р°С‚РѕСЂР°
   scale: 0
   type: SIGNED16
   unit: I16vparam
   value: 31996.0
 - address: '0x5b210b'
-  description: Температура инвертора
+  description: РўРµРјРїРµСЂР°С‚СѓСЂР° РёРЅРІРµСЂС‚РѕСЂР°
   editable: false
   group: 22
   name: Inverter temperature
@@ -6911,31 +6911,31 @@ sm_prot:
   name: CAN-PDO online
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b210d'
-  description: Обязательное устройство
+  description: РћР±СЏР·Р°С‚РµР»СЊРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ
   editable: true
   group: 22
-  name: Обязательное устройство
+  name: РћР±СЏР·Р°С‚РµР»СЊРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b210e'
-  description: Счетчик RPDO1
+  description: РЎС‡РµС‚С‡РёРє RPDO1
   editable: false
   group: 22
-  name: Счетчик RPDO1
+  name: РЎС‡РµС‚С‡РёРє RPDO1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 3391.0
 - address: '0x5b210f'
-  description: Принято посылок
+  description: РџСЂРёРЅСЏС‚Рѕ РїРѕСЃС‹Р»РѕРє
   editable: false
   group: 22
-  name: Принято посылок
+  name: РџСЂРёРЅСЏС‚Рѕ РїРѕСЃС‹Р»РѕРє
   scale: 0
   type: UNSIGNED16
   unit: U16
@@ -6950,34 +6950,34 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b2111'
-  description: Ограничение рулевой рейки "+"
+  description: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЂСѓР»РµРІРѕР№ СЂРµР№РєРё "+"
   editable: true
   group: 22
-  name: Ограничение рулевой рейки "+"
+  name: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЂСѓР»РµРІРѕР№ СЂРµР№РєРё "+"
   scale: 0
   type: SIGNED16
-  unit: град
+  unit: РіСЂР°Рґ
   value: 500.0
 - address: '0x5b2112'
-  description: Ограничение рулевой рейки "-"
+  description: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЂСѓР»РµРІРѕР№ СЂРµР№РєРё "-"
   editable: true
   group: 22
-  name: Ограничение рулевой рейки "-"
+  name: РћРіСЂР°РЅРёС‡РµРЅРёРµ СЂСѓР»РµРІРѕР№ СЂРµР№РєРё "-"
   scale: 0
   type: SIGNED16
-  unit: град
+  unit: РіСЂР°Рґ
   value: 64996.0
 - address: '0x5b2113'
-  description: Нулевое положение рулевой рейки
+  description: РќСѓР»РµРІРѕРµ РїРѕР»РѕР¶РµРЅРёРµ СЂСѓР»РµРІРѕР№ СЂРµР№РєРё
   editable: true
   group: 22
-  name: Нулевое положение рулевой рейки
+  name: РќСѓР»РµРІРѕРµ РїРѕР»РѕР¶РµРЅРёРµ СЂСѓР»РµРІРѕР№ СЂРµР№РєРё
   scale: 0
   type: SIGNED16
-  unit: град
+  unit: РіСЂР°Рґ
   value: 65516.0
 - address: '0x5b2114'
-  description: Т фильтра
+  description: Рў С„РёР»СЊС‚СЂР°
   editable: true
   group: 22
   name: Tfltr
@@ -6992,7 +6992,7 @@ sm_prot:
   name: PDO_pack
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 0.0
 - address: '0x5b2116'
   description: PDO_pack
@@ -7001,7 +7001,7 @@ sm_prot:
   name: PDO_pack
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 0.0
 - address: '0x5b2117'
   description: PDO_pack
@@ -7010,7 +7010,7 @@ sm_prot:
   name: PDO_pack
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 0.0
 - address: '0x5b2118'
   description: PDO_pack
@@ -7019,7 +7019,7 @@ sm_prot:
   name: PDO_pack
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 0.0
 - address: '0x5b2119'
   description: PDO_pack
@@ -7028,7 +7028,7 @@ sm_prot:
   name: PDO_pack
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 0.0
 - address: '0x5b211a'
   description: PDO_pack
@@ -7037,7 +7037,7 @@ sm_prot:
   name: PDO_pack
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 0.0
 - address: '0x5b211b'
   description: PDO_pack
@@ -7046,7 +7046,7 @@ sm_prot:
   name: PDO_pack
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 0.0
 - address: '0x5b211c'
   description: PDO_pack
@@ -7055,9 +7055,9 @@ sm_prot:
   name: PDO_pack
   scale: 0
   type: SIGNED32
-  unit: шест-ричн.
+  unit: С€РµСЃС‚-СЂРёС‡РЅ.
   value: 0.0
-Серийный номер:
+РЎРµСЂРёР№РЅС‹Р№ РЅРѕРјРµСЂ:
 - address: '0x200205'
   description: GIT_VersionShortHash
   editable: false
@@ -7086,7 +7086,7 @@ sm_prot:
   unit: U32
   value: 0.0
 - address: '0x200208'
-  description: Версия железа преобразователя
+  description: Р’РµСЂСЃРёСЏ Р¶РµР»РµР·Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚РµР»СЏ
   editable: false
   group: 0
   name: Convertor Hardware Version
@@ -7094,18 +7094,18 @@ sm_prot:
   type: UNSIGNED16
   unit: U16
   value: 40.0
-Сигнал ppm4:
+РЎРёРіРЅР°Р» ppm4:
 - address: '0x5bfb01'
-  description: Вход
+  description: Р’С…РѕРґ
   editable: false
   group: 59
-  name: Вход
+  name: Р’С…РѕРґ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5bfb02'
-  description: Минимум
+  description: РњРёРЅРёРјСѓРј
   editable: true
   group: 59
   name: min
@@ -7114,7 +7114,7 @@ sm_prot:
   unit: U16
   value: 1000.0
 - address: '0x5bfb03'
-  description: Максимум
+  description: РњР°РєСЃРёРјСѓРј
   editable: true
   group: 59
   name: max
@@ -7132,7 +7132,7 @@ sm_prot:
   unit: U16
   value: 1000.0
 - address: '0x5bfb05'
-  description: Ширина импульса
+  description: РЁРёСЂРёРЅР° РёРјРїСѓР»СЊСЃР°
   editable: false
   group: 59
   name: Pulse width
@@ -7141,28 +7141,28 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5bfb06'
-  description: Период осциллографирования
+  description: РџРµСЂРёРѕРґ РѕСЃС†РёР»Р»РѕРіСЂР°С„РёСЂРѕРІР°РЅРёСЏ
   editable: true
   group: 59
-  name: Период осциллографирования
+  name: РџРµСЂРёРѕРґ РѕСЃС†РёР»Р»РѕРіСЂР°С„РёСЂРѕРІР°РЅРёСЏ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 22000.0
 - address: '0x5bfb07'
-  description: Частота
+  description: Р§Р°СЃС‚РѕС‚Р°
   editable: true
   group: 59
-  name: Частота
+  name: Р§Р°СЃС‚РѕС‚Р°
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 80.0
 - address: '0x5bfb08'
-  description: Выход
+  description: Р’С‹С…РѕРґ
   editable: false
   group: 59
-  name: Выход
+  name: Р’С‹С…РѕРґ
   scale: 10485.76
   type: SIGNED32
   unit: '%'
@@ -7177,7 +7177,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5bfc02'
-  description: Ширина импульса
+  description: РЁРёСЂРёРЅР° РёРјРїСѓР»СЊСЃР°
   editable: false
   group: 59
   name: Pulse width
@@ -7186,7 +7186,7 @@ sm_prot:
   unit: U32
   value: 0.0
 - address: '0x5bfc03'
-  description: Ширина импульса
+  description: РЁРёСЂРёРЅР° РёРјРїСѓР»СЊСЃР°
   editable: false
   group: 59
   name: Pulse width
@@ -7195,7 +7195,7 @@ sm_prot:
   unit: U32
   value: 0.0
 - address: '0x5bfc04'
-  description: Нет ДП
+  description: РќРµС‚ Р”Рџ
   editable: false
   group: 59
   name: NoSensor
@@ -7203,27 +7203,27 @@ sm_prot:
   type: UNSIGNED32
   unit: U32
   value: 0.0
-Системный объект:
+РЎРёСЃС‚РµРјРЅС‹Р№ РѕР±СЉРµРєС‚:
 - address: '0x5b0d01'
-  description: Состояние ДА защит
+  description: РЎРѕСЃС‚РѕСЏРЅРёРµ Р”Рђ Р·Р°С‰РёС‚
   editable: true
   group: 12
-  name: Состояние ДА защит
+  name: РЎРѕСЃС‚РѕСЏРЅРёРµ Р”Рђ Р·Р°С‰РёС‚
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 2.0
 - address: '0x5b0d02'
-  description: ДА защит
+  description: Р”Рђ Р·Р°С‰РёС‚
   editable: true
   group: 12
-  name: ДА защит
+  name: Р”Рђ Р·Р°С‰РёС‚
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b0d03'
-  description: Сбросить состояние Аварии
+  description: РЎР±СЂРѕСЃРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РђРІР°СЂРёРё
   editable: true
   group: 12
   name: 'Command: Reset fault'
@@ -7232,424 +7232,424 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b0d04'
-  description: Флаги аварий 1
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 1
   editable: true
   group: 12
-  name: Флаги аварий 1
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b0d05'
-  description: Флаги аварий 2
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 2
   editable: true
   group: 12
-  name: Флаги аварий 2
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b0d06'
-  description: Флаги аварий 3
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 3
   editable: true
   group: 12
-  name: Флаги аварий 3
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 3
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b0d07'
-  description: Флаги аварий 4
+  description: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 4
   editable: true
   group: 12
-  name: Флаги аварий 4
+  name: Р¤Р»Р°РіРё Р°РІР°СЂРёР№ 4
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b0d08'
-  description: Маска аварий 1L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   editable: true
   group: 12
-  name: Маска аварий 1L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d09'
-  description: Маска аварий 1H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   editable: true
   group: 12
-  name: Маска аварий 1H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 1H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d0a'
-  description: Маска аварий 2L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   editable: true
   group: 12
-  name: Маска аварий 2L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 2L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d0b'
-  description: Маска аварий 2H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 2H
   editable: true
   group: 12
-  name: Маска аварий  2H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№  2H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d0c'
-  description: Маска аварий 3L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 3L
   editable: true
   group: 12
-  name: Маска аварий 3L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 3L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b0d0d'
-  description: Маска аварий 3H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 3H
   editable: true
   group: 12
-  name: Маска аварий 3H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 3H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b0d0e'
-  description: Маска аварий 4L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 4L
   editable: true
   group: 12
-  name: Маска аварий 4L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 4L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b0d0f'
-  description: Маска аварий 4H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ 4H
   editable: true
   group: 12
-  name: Маска аварий 4H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ 4H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b0d10'
-  description: Авария Волгабус
+  description: РђРІР°СЂРёСЏ Р’РѕР»РіР°Р±СѓСЃ
   editable: false
   group: 12
   name: FaultVolgaBus
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 26.0
 - address: '0x5b0d11'
-  description: Флаг сброса аварии
+  description: Р¤Р»Р°Рі СЃР±СЂРѕСЃР° Р°РІР°СЂРёРё
   editable: true
   group: 12
-  name: Флаг сброса аварии
+  name: Р¤Р»Р°Рі СЃР±СЂРѕСЃР° Р°РІР°СЂРёРё
   scale: 0
   type: SIGNED16
   unit: I16vparam
   value: 0.0
 - address: '0x5b0d12'
-  description: Маска аварий на отключение 1L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 1L
   editable: true
   group: 12
-  name: Маска аварий на отключение 1L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 1L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d13'
-  description: Маска аварий на отключение 1H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 1H
   editable: true
   group: 12
-  name: Маска аварий на отключение 1H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 1H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d14'
-  description: Маска аварий на отключение 2L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 2L
   editable: true
   group: 12
-  name: Маска аварий на отключение 2L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 2L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d15'
-  description: Маска аварий на отключение 2H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 2H
   editable: true
   group: 12
-  name: Маска аварий на отключение 2H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 2H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d16'
-  description: Маска аварий на отключение 3L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 3L
   editable: true
   group: 12
-  name: Маска аварий на отключение 3L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 3L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d17'
-  description: Маска аварий на отключение 3H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 3H
   editable: true
   group: 12
-  name: Маска аварий на отключение 3H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 3H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d18'
-  description: Маска аварий на отключение 4L
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 4L
   editable: true
   group: 12
-  name: Маска аварий на отключение 4L
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 4L
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d19'
-  description: Маска аварий на отключение 4H
+  description: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 4H
   editable: true
   group: 12
-  name: Маска аварий на отключение 4H
+  name: РњР°СЃРєР° Р°РІР°СЂРёР№ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ 4H
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 255.0
 - address: '0x5b0d1a'
-  description: Максимальное напряжение ЗПТ
+  description: РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РЅР°РїСЂСЏР¶РµРЅРёРµ Р—РџРў
   editable: true
   group: 12
   name: DC maximum voltage
   scale: 1941.8074074074075
   type: SIGNED32
-  unit: В
+  unit: Р’
   value: 699050.0
 - address: '0x5b0d1b'
-  description: Минимальное напряжение ЗПТ
+  description: РњРёРЅРёРјР°Р»СЊРЅРѕРµ РЅР°РїСЂСЏР¶РµРЅРёРµ Р—РџРў
   editable: true
   group: 12
   name: Minimum DC-bus voltage
   scale: 1941.8074074074075
   type: SIGNED32
-  unit: В
+  unit: Р’
   value: 699050.0
 - address: '0x5b0d1c'
-  description: Максимальное отклонение Udc
+  description: РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РѕС‚РєР»РѕРЅРµРЅРёРµ Udc
   editable: true
   group: 12
   name: UdcDeltaForSensors
   scale: 1941.8074074074075
   type: SIGNED32
-  unit: В
+  unit: Р’
   value: 699050.0
 - address: '0x5b0d1d'
-  description: Аварии КВУ для БИУСа
+  description: РђРІР°СЂРёРё РљР’РЈ РґР»СЏ Р‘РРЈРЎР°
   editable: false
   group: 12
-  name: Аварии КВУ для БИУСа
+  name: РђРІР°СЂРёРё РљР’РЈ РґР»СЏ Р‘РРЈРЎР°
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 33554432.0
 - address: '0x5b0d1e'
-  description: Аварии КВУ для БИУСа
+  description: РђРІР°СЂРёРё РљР’РЈ РґР»СЏ Р‘РРЈРЎР°
   editable: false
   group: 12
-  name: Аварии КВУ для БИУСа
+  name: РђРІР°СЂРёРё РљР’РЈ РґР»СЏ Р‘РРЈРЎР°
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x5b0e01'
-  description: Тек.Ред.Авария общая
+  description: РўРµРє.Р РµРґ.РђРІР°СЂРёСЏ РѕР±С‰Р°СЏ
   editable: true
   group: 12
-  name: Тек.Ред.Авария общая
+  name: РўРµРє.Р РµРґ.РђРІР°СЂРёСЏ РѕР±С‰Р°СЏ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b0e02'
-  description: Статус Тек.Ред.Авар.Общей
+  description: РЎС‚Р°С‚СѓСЃ РўРµРє.Р РµРґ.РђРІР°СЂ.РћР±С‰РµР№
   editable: true
   group: 12
-  name: Статус Тек.Ред.Авар.Общей
+  name: РЎС‚Р°С‚СѓСЃ РўРµРє.Р РµРґ.РђРІР°СЂ.РћР±С‰РµР№
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b0e03'
-  description: Тек.Ред.Авария для останова
+  description: РўРµРє.Р РµРґ.РђРІР°СЂРёСЏ РґР»СЏ РѕСЃС‚Р°РЅРѕРІР°
   editable: true
   group: 12
-  name: Тек.Ред.Авария для останова
+  name: РўРµРє.Р РµРґ.РђРІР°СЂРёСЏ РґР»СЏ РѕСЃС‚Р°РЅРѕРІР°
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b0e04'
-  description: Статус Тек.Ред.Авар.Останов
+  description: РЎС‚Р°С‚СѓСЃ РўРµРє.Р РµРґ.РђРІР°СЂ.РћСЃС‚Р°РЅРѕРІ
   editable: true
   group: 12
-  name: Статус Тек.Ред.Авар.Останов
+  name: РЎС‚Р°С‚СѓСЃ РўРµРє.Р РµРґ.РђРІР°СЂ.РћСЃС‚Р°РЅРѕРІ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
-Скорости колёс АЦП:
+РЎРєРѕСЂРѕСЃС‚Рё РєРѕР»С‘СЃ РђР¦Рџ:
 - address: '0x517801'
-  description: Скорость колеса 1
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   editable: false
   group: 65
-  name: Скорость колеса 1
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   scale: 524288.0
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x517802'
-  description: Скорость колеса 1
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   editable: false
   group: 65
-  name: Скорость колеса 1
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x517803'
-  description: Скорость колеса 1
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   editable: false
   group: 65
-  name: Скорость колеса 1
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 1
   scale: 20971.52
   type: SIGNED32
-  unit: Гц
+  unit: Р“С†
   value: 0.0
 - address: '0x517804'
-  description: Скорость колеса 2
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   editable: false
   group: 65
-  name: Скорость колеса 2
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   scale: 524288.0
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x517805'
-  description: Скорость колеса 2
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   editable: false
   group: 65
-  name: Скорость колеса 2
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x517806'
-  description: Скорость колеса 2
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   editable: false
   group: 65
-  name: Скорость колеса 2
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 2
   scale: 20971.52
   type: SIGNED32
-  unit: Гц
+  unit: Р“С†
   value: 0.0
 - address: '0x517807'
-  description: Скорость колеса 3
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 3
   editable: false
   group: 65
-  name: Скорость колеса 3
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 3
   scale: 524288.0
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x517808'
-  description: Скорость колеса 3
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 3
   editable: false
   group: 65
-  name: Скорость колеса 3
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 3
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x517809'
-  description: Скорость колеса 3
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 3
   editable: false
   group: 65
-  name: Скорость колеса 3
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 3
   scale: 20971.52
   type: SIGNED32
-  unit: Гц
+  unit: Р“С†
   value: 0.0
 - address: '0x51780a'
-  description: Скорость колеса 4
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 4
   editable: false
   group: 65
-  name: Скорость колеса 4
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 4
   scale: 524288.0
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x51780b'
-  description: Скорость колеса 4
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 4
   editable: false
   group: 65
-  name: Скорость колеса 4
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 4
   scale: 6168.094117647059
   type: SIGNED32
-  unit: км/ч
+  unit: РєРј/С‡
   value: 0.0
 - address: '0x51780c'
-  description: Скорость колеса 4
+  description: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 4
   editable: false
   group: 65
-  name: Скорость колеса 4
+  name: РЎРєРѕСЂРѕСЃС‚СЊ РєРѕР»РµСЃР° 4
   scale: 20971.52
   type: SIGNED32
-  unit: Гц
+  unit: Р“С†
   value: 0.0
-Слово управления CAN:
+РЎР»РѕРІРѕ СѓРїСЂР°РІР»РµРЅРёСЏ CAN:
 - address: '0x5b0201'
-  description: Пуск
+  description: РџСѓСЃРє
   editable: true
   group: 3
   name: 'Command: Start'
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b0202'
-  description: Стоп
+  description: РЎС‚РѕРї
   editable: true
   group: 3
   name: 'Command: Stop'
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b0203'
-  description: Сбросить состояние Аварии
+  description: РЎР±СЂРѕСЃРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РђРІР°СЂРёРё
   editable: true
   group: 3
   name: 'Command: Reset fault'
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
-События:
+РЎРѕР±С‹С‚РёСЏ:
 - address: '0x5b0f01'
-  description: Флаги предупреждений 1
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 1
   editable: false
   group: 45
   name: Alarm flags 1
@@ -7658,7 +7658,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b0f02'
-  description: Флаги предупреждений 2
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 2
   editable: false
   group: 45
   name: Alarm flags 2
@@ -7667,7 +7667,7 @@ sm_prot:
   unit: U16
   value: 8192.0
 - address: '0x5b0f03'
-  description: Флаги предупреждений 3
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 3
   editable: false
   group: 45
   name: Alarm flags 3
@@ -7676,7 +7676,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b0f04'
-  description: Флаги предупреждений 4
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 4
   editable: false
   group: 45
   name: Alarm flags 4
@@ -7685,16 +7685,16 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x5b0f05'
-  description: Предупреждения КВУ
+  description: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ РљР’РЈ
   editable: false
   group: 45
-  name: Предупреждения КВУ
+  name: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ РљР’РЈ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 30.0
 - address: '0x5b0f06'
-  description: Флаги предупреждений 1
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 1
   editable: true
   group: 45
   name: Alarm flags 1
@@ -7703,7 +7703,7 @@ sm_prot:
   unit: U16
   value: 65535.0
 - address: '0x5b0f07'
-  description: Флаги предупреждений 2
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 2
   editable: true
   group: 45
   name: Alarm flags 2
@@ -7712,7 +7712,7 @@ sm_prot:
   unit: U16
   value: 65535.0
 - address: '0x5b0f08'
-  description: Флаги предупреждений 3
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 3
   editable: true
   group: 45
   name: Alarm flags 3
@@ -7721,7 +7721,7 @@ sm_prot:
   unit: U16
   value: 65535.0
 - address: '0x5b0f09'
-  description: Флаги предупреждений 4
+  description: Р¤Р»Р°РіРё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёР№ 4
   editable: true
   group: 45
   name: Alarm flags 4
@@ -7729,163 +7729,163 @@ sm_prot:
   type: UNSIGNED16
   unit: U16
   value: 65535.0
-Статистика:
+РЎС‚Р°С‚РёСЃС‚РёРєР°:
 - address: '0x5b1501'
-  description: Статус ТД
+  description: РЎС‚Р°С‚СѓСЃ РўР”
   editable: false
   group: 46
-  name: Статус ТД
+  name: РЎС‚Р°С‚СѓСЃ РўР”
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b1502'
-  description: Статус ТД
+  description: РЎС‚Р°С‚СѓСЃ РўР”
   editable: false
   group: 46
-  name: Статус ТД
+  name: РЎС‚Р°С‚СѓСЃ РўР”
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1503'
-  description: Статус устройств
+  description: РЎС‚Р°С‚СѓСЃ СѓСЃС‚СЂРѕР№СЃС‚РІ
   editable: false
   group: 46
-  name: Статус устройств
+  name: РЎС‚Р°С‚СѓСЃ СѓСЃС‚СЂРѕР№СЃС‚РІ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1504'
-  description: Статус устройств
+  description: РЎС‚Р°С‚СѓСЃ СѓСЃС‚СЂРѕР№СЃС‚РІ
   editable: false
   group: 46
-  name: Статус устройств
+  name: РЎС‚Р°С‚СѓСЃ СѓСЃС‚СЂРѕР№СЃС‚РІ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1505'
-  description: Аварии ТД
+  description: РђРІР°СЂРёРё РўР”
   editable: false
   group: 46
-  name: Аварии ТД
+  name: РђРІР°СЂРёРё РўР”
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1506'
-  description: Аварии ТД
+  description: РђРІР°СЂРёРё РўР”
   editable: false
   group: 46
-  name: Аварии ТД
+  name: РђРІР°СЂРёРё РўР”
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1507'
-  description: Аварии устройств
+  description: РђРІР°СЂРёРё СѓСЃС‚СЂРѕР№СЃС‚РІ
   editable: false
   group: 46
-  name: Аварии устройств
+  name: РђРІР°СЂРёРё СѓСЃС‚СЂРѕР№СЃС‚РІ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1508'
-  description: Аварии устройств
+  description: РђРІР°СЂРёРё СѓСЃС‚СЂРѕР№СЃС‚РІ
   editable: false
   group: 46
-  name: Аварии устройств
+  name: РђРІР°СЂРёРё СѓСЃС‚СЂРѕР№СЃС‚РІ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1509'
-  description: Предупреждения ТД
+  description: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ РўР”
   editable: false
   group: 46
-  name: Предупреждения ТД
+  name: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ РўР”
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b150a'
-  description: Предупреждения ТД
+  description: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ РўР”
   editable: false
   group: 46
-  name: Предупреждения ТД
+  name: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ РўР”
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b150b'
-  description: Предупреждения устройств
+  description: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІ
   editable: false
   group: 46
-  name: Предупреждения устройств
+  name: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b150c'
-  description: Предупреждения устройств
+  description: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІ
   editable: false
   group: 46
-  name: Предупреждения устройств
+  name: РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b150d'
-  description: Перегрев ТД
+  description: РџРµСЂРµРіСЂРµРІ РўР”
   editable: false
   group: 46
-  name: Перегрев ТД
+  name: РџРµСЂРµРіСЂРµРІ РўР”
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b150e'
-  description: Перегрев ТД
+  description: РџРµСЂРµРіСЂРµРІ РўР”
   editable: false
   group: 46
-  name: Перегрев ТД
+  name: РџРµСЂРµРіСЂРµРІ РўР”
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b150f'
-  description: Перегрев устойств
+  description: РџРµСЂРµРіСЂРµРІ СѓСЃС‚РѕР№СЃС‚РІ
   editable: false
   group: 46
-  name: Перегрев устойств
+  name: РџРµСЂРµРіСЂРµРІ СѓСЃС‚РѕР№СЃС‚РІ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1510'
-  description: Перегрев устойств
+  description: РџРµСЂРµРіСЂРµРІ СѓСЃС‚РѕР№СЃС‚РІ
   editable: false
   group: 46
-  name: Перегрев устойств
+  name: РџРµСЂРµРіСЂРµРІ СѓСЃС‚РѕР№СЃС‚РІ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
-Статус:
+РЎС‚Р°С‚СѓСЃ:
 - address: '0x5b0100'
-  description: Авария
+  description: РђРІР°СЂРёСЏ
   editable: false
   group: 1
-  name: Авария
+  name: РђРІР°СЂРёСЏ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x250f00'
-  description: Часы реального времени
+  description: Р§Р°СЃС‹ СЂРµР°Р»СЊРЅРѕРіРѕ РІСЂРµРјРµРЅРё
   editable: false
   group: 2
   name: Real time clock
@@ -7894,17 +7894,17 @@ sm_prot:
   unit: U32
   value: 1976362389.0
 - address: '0x253401'
-  description: Номер груп для пульта управления
+  description: РќРѕРјРµСЂ РіСЂСѓРї РґР»СЏ РїСѓР»СЊС‚Р° СѓРїСЂР°РІР»РµРЅРёСЏ
   editable: true
   group: 2
-  name: Номер груп для пульта управления
+  name: РќРѕРјРµСЂ РіСЂСѓРї РґР»СЏ РїСѓР»СЊС‚Р° СѓРїСЂР°РІР»РµРЅРёСЏ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 374.0
-Тип устройства:
+РўРёРї СѓСЃС‚СЂРѕР№СЃС‚РІР°:
 - address: '0x100100'
-  description: Регистр ошибок
+  description: Р РµРіРёСЃС‚СЂ РѕС€РёР±РѕРє
   editable: false
   group: 6
   name: Error Register
@@ -7931,7 +7931,7 @@ sm_prot:
   unit: U32
   value: -1584819748.0
 - address: '0x101601'
-  description: Время ожидания сообщения Heartbeat
+  description: Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ СЃРѕРѕР±С‰РµРЅРёСЏ Heartbeat
   editable: false
   group: 6
   name: Consumer Heartbeat Time
@@ -7940,7 +7940,7 @@ sm_prot:
   unit: U32
   value: 2000.0
 - address: '0x101700'
-  description: Период генерации сообщения Heartbeat
+  description: РџРµСЂРёРѕРґ РіРµРЅРµСЂР°С†РёРё СЃРѕРѕР±С‰РµРЅРёСЏ Heartbeat
   editable: false
   group: 6
   name: Producer Heartbeat Time
@@ -7949,7 +7949,7 @@ sm_prot:
   unit: U16
   value: 1000.0
 - address: '0x101801'
-  description: Код производителя
+  description: РљРѕРґ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ
   editable: false
   group: 6
   name: Vendor ID
@@ -7958,7 +7958,7 @@ sm_prot:
   unit: U32
   value: 1448243212.0
 - address: '0x101802'
-  description: Код продукта
+  description: РљРѕРґ РїСЂРѕРґСѓРєС‚Р°
   editable: false
   group: 6
   name: Product Code
@@ -7967,7 +7967,7 @@ sm_prot:
   unit: U32
   value: -1146027946.0
 - address: '0x101803'
-  description: Номер ревизии
+  description: РќРѕРјРµСЂ СЂРµРІРёР·РёРё
   editable: false
   group: 6
   name: Revision Number
@@ -7976,7 +7976,7 @@ sm_prot:
   unit: U32
   value: 692431182.0
 - address: '0x101804'
-  description: Серийный номер
+  description: РЎРµСЂРёР№РЅС‹Р№ РЅРѕРјРµСЂ
   editable: false
   group: 6
   name: Serial Number
@@ -8054,7 +8054,7 @@ sm_prot:
   name: Protect Bit
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x200701'
   description: md5_hash_0
@@ -8171,7 +8171,7 @@ sm_prot:
   name: Heartbeat Autostart
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x201400'
   description: Heartbeat Autorecovery
@@ -8180,13 +8180,13 @@ sm_prot:
   name: Heartbeat Autorecovery
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x201500'
-  description: Состояние драйвера CAN-Open
+  description: РЎРѕСЃС‚РѕСЏРЅРёРµ РґСЂР°Р№РІРµСЂР° CAN-Open
   editable: false
   group: 6
-  name: Состояние драйвера CAN-Open
+  name: РЎРѕСЃС‚РѕСЏРЅРёРµ РґСЂР°Р№РІРµСЂР° CAN-Open
   scale: 0
   type: UNSIGNED8
   unit: U8
@@ -8327,7 +8327,7 @@ sm_prot:
   unit: U16
   value: 0.0
 - address: '0x20800e'
-  description: Группа параметров
+  description: Р“СЂСѓРїРїР° РїР°СЂР°РјРµС‚СЂРѕРІ
   editable: false
   group: 6
   name: Parameter Group
@@ -8336,7 +8336,7 @@ sm_prot:
   unit: U16
   value: 33.0
 - address: '0x208100'
-  description: Количество индексов
+  description: РљРѕР»РёС‡РµСЃС‚РІРѕ РёРЅРґРµРєСЃРѕРІ
   editable: false
   group: 6
   name: Number of Indexes
@@ -8369,7 +8369,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x208302'
   description: Mask Element
@@ -8378,7 +8378,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x208303'
   description: Mask Element
@@ -8387,7 +8387,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 2.0
 - address: '0x208304'
   description: Mask Element
@@ -8396,7 +8396,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 3.0
 - address: '0x208305'
   description: Mask Element
@@ -8405,7 +8405,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 4.0
 - address: '0x208306'
   description: Mask Element
@@ -8414,7 +8414,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 5.0
 - address: '0x208307'
   description: Mask Element
@@ -8423,7 +8423,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 6.0
 - address: '0x208308'
   description: Mask Element
@@ -8432,7 +8432,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 7.0
 - address: '0x208309'
   description: Mask Element
@@ -8441,7 +8441,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 8.0
 - address: '0x20830a'
   description: Mask Element
@@ -8450,7 +8450,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 9.0
 - address: '0x20830b'
   description: Mask Element
@@ -8459,7 +8459,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x20830c'
   description: Mask Element
@@ -8468,7 +8468,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x20830d'
   description: Mask Element
@@ -8477,7 +8477,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x20830e'
   description: Mask Element
@@ -8486,7 +8486,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x20830f'
   description: Mask Element
@@ -8495,7 +8495,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x208310'
   description: Mask Element
@@ -8504,7 +8504,7 @@ sm_prot:
   name: Mask Element
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x250601'
   description: req_data
@@ -8543,73 +8543,73 @@ sm_prot:
   unit: U32
   value: 0.0
 - address: '0x271101'
-  description: Длина CAN-пакета
+  description: Р”Р»РёРЅР° CAN-РїР°РєРµС‚Р°
   editable: true
   group: 6
-  name: Длина CAN-пакета
+  name: Р”Р»РёРЅР° CAN-РїР°РєРµС‚Р°
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 256.0
 - address: '0x271102'
-  description: Текущий байт
+  description: РўРµРєСѓС‰РёР№ Р±Р°Р№С‚
   editable: true
   group: 6
-  name: Текущий байт
+  name: РўРµРєСѓС‰РёР№ Р±Р°Р№С‚
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x271103'
-  description: Количество читаемых данных
+  description: РљРѕР»РёС‡РµСЃС‚РІРѕ С‡РёС‚Р°РµРјС‹С… РґР°РЅРЅС‹С…
   editable: true
   group: 6
-  name: Количество читаемых данных
+  name: РљРѕР»РёС‡РµСЃС‚РІРѕ С‡РёС‚Р°РµРјС‹С… РґР°РЅРЅС‹С…
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 512.0
 - address: '0x271104'
-  description: Имя1 (младшее)
+  description: РРјСЏ1 (РјР»Р°РґС€РµРµ)
   editable: true
   group: 6
-  name: Имя1 (младшее)
+  name: РРјСЏ1 (РјР»Р°РґС€РµРµ)
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x271105'
-  description: Имя2 (среднее)
+  description: РРјСЏ2 (СЃСЂРµРґРЅРµРµ)
   editable: true
   group: 6
-  name: Имя2 (среднее)
+  name: РРјСЏ2 (СЃСЂРµРґРЅРµРµ)
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x271106'
-  description: Имя3 (старшее)
+  description: РРјСЏ3 (СЃС‚Р°СЂС€РµРµ)
   editable: true
   group: 6
-  name: Имя3 (старшее)
+  name: РРјСЏ3 (СЃС‚Р°СЂС€РµРµ)
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x271107'
-  description: Вложенность
+  description: Р’Р»РѕР¶РµРЅРЅРѕСЃС‚СЊ
   editable: true
   group: 6
-  name: Вложенность
+  name: Р’Р»РѕР¶РµРЅРЅРѕСЃС‚СЊ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x271108'
-  description: Кол-во прочит. элем.
+  description: РљРѕР»-РІРѕ РїСЂРѕС‡РёС‚. СЌР»РµРј.
   editable: true
   group: 6
-  name: Кол-во прочит. элем.
+  name: РљРѕР»-РІРѕ РїСЂРѕС‡РёС‚. СЌР»РµРј.
   scale: 0
   type: UNSIGNED16
   unit: U16
@@ -8633,134 +8633,134 @@ sm_prot:
   unit: U32
   value: 0.0
 - address: '0x27110b'
-  description: Разрешение работы SD
+  description: Р Р°Р·СЂРµС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ SD
   editable: true
   group: 6
-  name: Разрешение работы SD
+  name: Р Р°Р·СЂРµС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ SD
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 1.0
 - address: '0x27110c'
-  description: Статус SD
+  description: РЎС‚Р°С‚СѓСЃ SD
   editable: false
   group: 6
-  name: Статус SD
+  name: РЎС‚Р°С‚СѓСЃ SD
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 2.0
 - address: '0x27110d'
-  description: Версия SD
+  description: Р’РµСЂСЃРёСЏ SD
   editable: false
   group: 6
-  name: Версия SD
+  name: Р’РµСЂСЃРёСЏ SD
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x27110e'
-  description: Счётчик перезапусков SD-карты
+  description: РЎС‡С‘С‚С‡РёРє РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ SD-РєР°СЂС‚С‹
   editable: false
   group: 6
-  name: Счётчик перезапусков SD-карты
+  name: РЎС‡С‘С‚С‡РёРє РїРµСЂРµР·Р°РїСѓСЃРєРѕРІ SD-РєР°СЂС‚С‹
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 110.0
 - address: '0x27110f'
-  description: Кол-во удалений "старого"
+  description: РљРѕР»-РІРѕ СѓРґР°Р»РµРЅРёР№ "СЃС‚Р°СЂРѕРіРѕ"
   editable: false
   group: 6
-  name: Кол-во удалений "старого"
+  name: РљРѕР»-РІРѕ СѓРґР°Р»РµРЅРёР№ "СЃС‚Р°СЂРѕРіРѕ"
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x271110'
-  description: FIFO событий заполнено
+  description: FIFO СЃРѕР±С‹С‚РёР№ Р·Р°РїРѕР»РЅРµРЅРѕ
   editable: true
   group: 6
-  name: FIFO событий заполнено
+  name: FIFO СЃРѕР±С‹С‚РёР№ Р·Р°РїРѕР»РЅРµРЅРѕ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 1.0
 - address: '0x271111'
-  description: FIFO логов заполнено
+  description: FIFO Р»РѕРіРѕРІ Р·Р°РїРѕР»РЅРµРЅРѕ
   editable: true
   group: 6
-  name: FIFO логов заполнено
+  name: FIFO Р»РѕРіРѕРІ Р·Р°РїРѕР»РЅРµРЅРѕ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x271112'
-  description: Время между переполнениями FIFO событий
+  description: Р’СЂРµРјСЏ РјРµР¶РґСѓ РїРµСЂРµРїРѕР»РЅРµРЅРёСЏРјРё FIFO СЃРѕР±С‹С‚РёР№
   editable: true
   group: 6
-  name: Время между переполнениями FIFO событий
+  name: Р’СЂРµРјСЏ РјРµР¶РґСѓ РїРµСЂРµРїРѕР»РЅРµРЅРёСЏРјРё FIFO СЃРѕР±С‹С‚РёР№
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 3.0
 - address: '0x271113'
-  description: Время между переполнениями FIFO логов
+  description: Р’СЂРµРјСЏ РјРµР¶РґСѓ РїРµСЂРµРїРѕР»РЅРµРЅРёСЏРјРё FIFO Р»РѕРіРѕРІ
   editable: true
   group: 6
-  name: Время между переполнениями FIFO логов
+  name: Р’СЂРµРјСЏ РјРµР¶РґСѓ РїРµСЂРµРїРѕР»РЅРµРЅРёСЏРјРё FIFO Р»РѕРіРѕРІ
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 30037.0
 - address: '0x271114'
-  description: Макс. кол-во сообщений FIFO событий
+  description: РњР°РєСЃ. РєРѕР»-РІРѕ СЃРѕРѕР±С‰РµРЅРёР№ FIFO СЃРѕР±С‹С‚РёР№
   editable: true
   group: 6
-  name: Макс. кол-во сообщений FIFO событий
+  name: РњР°РєСЃ. РєРѕР»-РІРѕ СЃРѕРѕР±С‰РµРЅРёР№ FIFO СЃРѕР±С‹С‚РёР№
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 100.0
 - address: '0x271115'
-  description: Макс. кол-во сообщений FIFO логов
+  description: РњР°РєСЃ. РєРѕР»-РІРѕ СЃРѕРѕР±С‰РµРЅРёР№ FIFO Р»РѕРіРѕРІ
   editable: true
   group: 6
-  name: Макс. кол-во сообщений FIFO логов
+  name: РњР°РєСЃ. РєРѕР»-РІРѕ СЃРѕРѕР±С‰РµРЅРёР№ FIFO Р»РѕРіРѕРІ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x271116'
-  description: Среднее кол-во сообщений FIFO событий
+  description: РЎСЂРµРґРЅРµРµ РєРѕР»-РІРѕ СЃРѕРѕР±С‰РµРЅРёР№ FIFO СЃРѕР±С‹С‚РёР№
   editable: true
   group: 6
-  name: Среднее кол-во сообщений FIFO событий
+  name: РЎСЂРµРґРЅРµРµ РєРѕР»-РІРѕ СЃРѕРѕР±С‰РµРЅРёР№ FIFO СЃРѕР±С‹С‚РёР№
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 100.0
 - address: '0x271117'
-  description: Среднее кол-во сообщений FIFO логов
+  description: РЎСЂРµРґРЅРµРµ РєРѕР»-РІРѕ СЃРѕРѕР±С‰РµРЅРёР№ FIFO Р»РѕРіРѕРІ
   editable: true
   group: 6
-  name: Среднее кол-во сообщений FIFO логов
+  name: РЎСЂРµРґРЅРµРµ РєРѕР»-РІРѕ СЃРѕРѕР±С‰РµРЅРёР№ FIFO Р»РѕРіРѕРІ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x271118'
-  description: Принудительное форматирование
+  description: РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
   editable: true
   group: 6
-  name: Принудительное форматирование
+  name: РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
-Тяговый двигатель:
+РўСЏРіРѕРІС‹Р№ РґРІРёРіР°С‚РµР»СЊ:
 - address: '0x5b1101'
-  description: Номер устройства
+  description: РќРѕРјРµСЂ СѓСЃС‚СЂРѕР№СЃС‚РІР°
   editable: true
   group: 21
   name: Node ID
@@ -8769,52 +8769,52 @@ sm_prot:
   unit: U16
   value: 1.0
 - address: '0x5b1102'
-  description: Работа
+  description: Р Р°Р±РѕС‚Р°
   editable: true
   group: 21
   name: 'Command: Start'
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1103'
-  description: Статус
+  description: РЎС‚Р°С‚СѓСЃ
   editable: false
   group: 21
-  name: Статус
+  name: РЎС‚Р°С‚СѓСЃ
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 1.0
 - address: '0x5b1104'
-  description: Доп. статус
+  description: Р”РѕРї. СЃС‚Р°С‚СѓСЃ
   editable: false
   group: 21
   name: AdditStatus
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1105'
-  description: Включение АВДУ
+  description: Р’РєР»СЋС‡РµРЅРёРµ РђР’Р”РЈ
   editable: false
   group: 21
   name: DO2_OffPowerSW
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1106'
-  description: Код аварии ETV_TD
+  description: РљРѕРґ Р°РІР°СЂРёРё ETV_TD
   editable: false
   group: 21
-  name: Код аварии SRD_TD
+  name: РљРѕРґ Р°РІР°СЂРёРё SRD_TD
   scale: 0
   type: UNSIGNED32
   unit: U32
   value: 0.0
 - address: '0x5b1107'
-  description: Код пред ETV_TD
+  description: РљРѕРґ РїСЂРµРґ ETV_TD
   editable: false
   group: 21
   name: Alarm_ETV_TD
@@ -8823,7 +8823,7 @@ sm_prot:
   unit: U32
   value: 0.0
 - address: '0x5b1108'
-  description: Зад. электрический момент
+  description: Р—Р°Рґ. СЌР»РµРєС‚СЂРёС‡РµСЃРєРёР№ РјРѕРјРµРЅС‚
   editable: true
   group: 21
   name: torque
@@ -8832,7 +8832,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b1109'
-  description: Реализованный электрический момент
+  description: Р РµР°Р»РёР·РѕРІР°РЅРЅС‹Р№ СЌР»РµРєС‚СЂРёС‡РµСЃРєРёР№ РјРѕРјРµРЅС‚
   editable: false
   group: 21
   name: torque
@@ -8841,121 +8841,121 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b110a'
-  description: Скорость
+  description: РЎРєРѕСЂРѕСЃС‚СЊ
   editable: false
   group: 21
   name: Speed
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
 - address: '0x5b110b'
-  description: Акт. мощность
+  description: РђРєС‚. РјРѕС‰РЅРѕСЃС‚СЊ
   editable: false
   group: 21
   name: main_pInd
   scale: 54.61333333333334
   type: SIGNED32
-  unit: кВт
+  unit: РєР’С‚
   value: 0.0
 - address: '0x5b110c'
-  description: Ток секции
+  description: РўРѕРє СЃРµРєС†РёРё
   editable: false
   group: 21
-  name: Ток секции
+  name: РўРѕРє СЃРµРєС†РёРё
   scale: 1613.1938461538462
   type: SIGNED32
-  unit: А
+  unit: Рђ
   value: 0.0
 - address: '0x5b110d'
-  description: Напряжение ЗПТ
+  description: РќР°РїСЂСЏР¶РµРЅРёРµ Р—РџРў
   editable: false
   group: 21
-  name: Напряжение ЗПТ
+  name: РќР°РїСЂСЏР¶РµРЅРёРµ Р—РџРў
   scale: 1941.8074074074075
   type: SIGNED32
-  unit: В
+  unit: Р’
   value: 11010048.0
 - address: '0x5b110e'
-  description: Ток ЗПТ
+  description: РўРѕРє Р—РџРў
   editable: false
   group: 21
   name: DC bus current
   scale: 5242.88
   type: SIGNED32
-  unit: А
+  unit: Рђ
   value: 0.0
 - address: '0x5b110f'
-  description: Температура двигателя
+  description: РўРµРјРїРµСЂР°С‚СѓСЂР° РґРІРёРіР°С‚РµР»СЏ
   editable: false
   group: 21
   name: Motor temperature
   scale: 52428.8
   type: SIGNED32
-  unit: град
+  unit: РіСЂР°Рґ
   value: 16777216.0
 - address: '0x5b1110'
-  description: Температура инвертора
+  description: РўРµРјРїРµСЂР°С‚СѓСЂР° РёРЅРІРµСЂС‚РѕСЂР°
   editable: false
   group: 21
   name: Inverter temperature
   scale: 52428.8
   type: SIGNED32
-  unit: град
+  unit: РіСЂР°Рґ
   value: -34603008.0
 - address: '0x5b1111'
-  description: Uiso "+" отн. корпуса
+  description: Uiso "+" РѕС‚РЅ. РєРѕСЂРїСѓСЃР°
   editable: false
   group: 21
   name: Uiso "+"
   scale: 1941.8074074074075
   type: SIGNED32
-  unit: В
+  unit: Р’
   value: 5505024.0
 - address: '0x5b1112'
-  description: Uiso "-" отн. корпуса
+  description: Uiso "-" РѕС‚РЅ. РєРѕСЂРїСѓСЃР°
   editable: false
   group: 21
   name: Uiso "-"
   scale: 1941.8074074074075
   type: SIGNED32
-  unit: В
+  unit: Р’
   value: 5505024.0
 - address: '0x5b1113'
-  description: Riso "+" отн. корпуса
+  description: Riso "+" РѕС‚РЅ. РєРѕСЂРїСѓСЃР°
   editable: false
   group: 21
   name: Riso "+"
   scale: 655.36
   type: SIGNED32
-  unit: МОм
+  unit: РњРћРј
   value: 0.0
 - address: '0x5b1114'
-  description: Riso "-" отн. корпуса
+  description: Riso "-" РѕС‚РЅ. РєРѕСЂРїСѓСЃР°
   editable: false
   group: 21
   name: Riso "-"
   scale: 655.36
   type: SIGNED32
-  unit: МОм
+  unit: РњРћРј
   value: 268288.0
 - address: '0x5b1115'
-  description: Максимальный ток разряда
+  description: РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ С‚РѕРє СЂР°Р·СЂСЏРґР°
   editable: false
   group: 21
   name: ImaxUnCharge
   scale: 5242.88
   type: SIGNED32
-  unit: А
+  unit: Рђ
   value: 0.0
 - address: '0x5b1116'
-  description: Максимальный ток заряда
+  description: РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ С‚РѕРє Р·Р°СЂСЏРґР°
   editable: false
   group: 21
   name: ImaxCharge
   scale: 5242.88
   type: SIGNED32
-  unit: А
+  unit: Рђ
   value: 0.0
 - address: '0x5b1117'
   description: CAN-PDO online
@@ -8964,37 +8964,37 @@ sm_prot:
   name: CAN-PDO online
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 1.0
 - address: '0x5b1118'
-  description: Датчик Напряжения ЗПТ
+  description: Р”Р°С‚С‡РёРє РќР°РїСЂСЏР¶РµРЅРёСЏ Р—РџРў
   editable: false
   group: 21
-  name: Датчик Напряжения ЗПТ
+  name: Р”Р°С‚С‡РёРє РќР°РїСЂСЏР¶РµРЅРёСЏ Р—РџРў
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b1119'
-  description: Обязательное устройство
+  description: РћР±СЏР·Р°С‚РµР»СЊРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ
   editable: true
   group: 21
-  name: Обязательное устройство
+  name: РћР±СЏР·Р°С‚РµР»СЊРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ
   scale: 0
   type: SIGNED32
-  unit: двоич.
+  unit: РґРІРѕРёС‡.
   value: 0.0
 - address: '0x5b111a'
-  description: Отфильтрованная скорость
+  description: РћС‚С„РёР»СЊС‚СЂРѕРІР°РЅРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ
   editable: false
   group: 21
   name: Filtered Speed
   scale: 131.072
   type: SIGNED32
-  unit: об/м
+  unit: РѕР±/Рј
   value: 0.0
 - address: '0x5b111b'
-  description: Ускорение о.е.
+  description: РЈСЃРєРѕСЂРµРЅРёРµ Рѕ.Рµ.
   editable: false
   group: 21
   name: Accel
@@ -9003,7 +9003,7 @@ sm_prot:
   unit: IQ24
   value: 0.0
 - address: '0x5b111c'
-  description: Мощность двигателя
+  description: РњРѕС‰РЅРѕСЃС‚СЊ РґРІРёРіР°С‚РµР»СЏ
   editable: false
   group: 21
   name: Power Drive
@@ -9012,34 +9012,34 @@ sm_prot:
   unit: IQ24
   value: 0.0
 - address: '0x5b111d'
-  description: Счетчик RPDO1
+  description: РЎС‡РµС‚С‡РёРє RPDO1
   editable: false
   group: 21
-  name: Счетчик RPDO1
+  name: РЎС‡РµС‚С‡РёРє RPDO1
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 2094.0
 - address: '0x5b111e'
-  description: Счетчик RPDO2
+  description: РЎС‡РµС‚С‡РёРє RPDO2
   editable: false
   group: 21
-  name: Счетчик RPDO2
+  name: РЎС‡РµС‚С‡РёРє RPDO2
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 209.0
 - address: '0x5b111f'
-  description: Счетчик RPDO3
+  description: РЎС‡РµС‚С‡РёРє RPDO3
   editable: false
   group: 21
-  name: Счетчик RPDO3
+  name: РЎС‡РµС‚С‡РёРє RPDO3
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 2095.0
 - address: '0x5b1120'
-  description: Задатчик интенсивности
+  description: Р—Р°РґР°С‚С‡РёРє РёРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚Рё
   editable: true
   group: 21
   name: Ramp
@@ -9047,45 +9047,45 @@ sm_prot:
   type: SIGNED32
   unit: IQ24
   value: 16777216.0
-Управление от ПМУ:
+РЈРїСЂР°РІР»РµРЅРёРµ РѕС‚ РџРњРЈ:
 - address: '0x5b5001'
-  description: Задание газа
+  description: Р—Р°РґР°РЅРёРµ РіР°Р·Р°
   editable: true
   group: 51
-  name: Задание газа
+  name: Р—Р°РґР°РЅРёРµ РіР°Р·Р°
   scale: 10485.76
   type: SIGNED32
   unit: '%'
   value: 0.0
 - address: '0x5b5002'
-  description: Задание тормоза
+  description: Р—Р°РґР°РЅРёРµ С‚РѕСЂРјРѕР·Р°
   editable: true
   group: 51
-  name: Задание тормоза
+  name: Р—Р°РґР°РЅРёРµ С‚РѕСЂРјРѕР·Р°
   scale: 10485.76
   type: SIGNED32
   unit: '%'
   value: 0.0
 - address: '0x5b5003'
-  description: Селектор Камаз
+  description: РЎРµР»РµРєС‚РѕСЂ РљР°РјР°Р·
   editable: true
   group: 51
-  name: Селектор Камаз
+  name: РЎРµР»РµРєС‚РѕСЂ РљР°РјР°Р·
   scale: 0
   type: UNSIGNED8
-  unit: перечисление
+  unit: РїРµСЂРµС‡РёСЃР»РµРЅРёРµ
   value: 0.0
 - address: '0x5b5004'
-  description: Разрешение работы КТЭО
+  description: Р Р°Р·СЂРµС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ РљРўР­Рћ
   editable: true
   group: 51
-  name: Разрешение работы КТЭО
+  name: Р Р°Р·СЂРµС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ РљРўР­Рћ
   scale: 0
   type: UNSIGNED16
   unit: U16
   value: 0.0
 - address: '0x5b5005'
-  description: Канал 1
+  description: РљР°РЅР°Р» 1
   editable: true
   group: 51
   name: Ch1
@@ -9094,7 +9094,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b5006'
-  description: Канал 2
+  description: РљР°РЅР°Р» 2
   editable: true
   group: 51
   name: Ch2
@@ -9103,7 +9103,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b5007'
-  description: Канал 3
+  description: РљР°РЅР°Р» 3
   editable: true
   group: 51
   name: Ch3
@@ -9112,7 +9112,7 @@ sm_prot:
   unit: '%'
   value: 0.0
 - address: '0x5b5008'
-  description: Канал 4
+  description: РљР°РЅР°Р» 4
   editable: true
   group: 51
   name: Ch4

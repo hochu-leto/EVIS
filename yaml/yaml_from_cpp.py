@@ -58,5 +58,5 @@ if __name__ == '__main__':
         f_list.append(par)
     final_dict[old_group] = f_list.copy()
     del final_dict['']
-    with open(r'parameters_isn.yaml', 'w', encoding='windows-1251') as file:
+    with open(r'parameters_isn.yaml', 'w', encoding='UTF-8') as file:
         documents = yaml.dump(check_dict(final_dict), file, allow_unicode=True)

@@ -69,5 +69,5 @@ if __name__ == '__main__':
                 final_dict[group_name] = par_list
     final_dict['watch'] = watch_list
 
-    with open(r'parameters_tab.yaml', 'w', encoding='windows-1251') as file:
+    with open(r'parameters_tab.yaml', 'w', encoding='UTF-8') as file:
         documents = yaml.dump(check_dict(final_dict), file, allow_unicode=True)

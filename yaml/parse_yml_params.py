@@ -37,6 +37,9 @@ if __name__ == '__main__':
             del par['access']
             if 'units' in par.keys():
                 par['unit'] = par['units']
+                if '[' in par['units']:
+                    par['min_value'] = float(par['units'].split('..')[0].replace('[', ''))
+                    par['max_value'] = float(par['units'].split('..')[1].replace(']', ''))
                 del par['units']
             if 'mult' in par.keys():
                 par['scale'] = (1 / par['mult'])

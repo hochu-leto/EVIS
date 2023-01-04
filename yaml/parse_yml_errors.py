@@ -27,5 +27,5 @@ df = pd.DataFrame(parse_list, columns=err.keys())
 
 df.to_excel(file.split('.')[0] + '_parse.xlsx', index=False)
 #
-# with open(r'errors.yaml', 'w', encoding='windows-1251') as file:
+# with open(r'errors.yaml', 'w', encoding='UTF-8') as file:
 #     documents = yaml.dump(parse_list, file, allow_unicode=True)

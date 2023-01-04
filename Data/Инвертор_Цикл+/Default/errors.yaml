@@ -1,192 +1,96 @@
-- check_link: важная ссылка1, важная ссылка2, важная ссылка164
-  critical: true
-  description_error: тут какое-то описание по ошибке  '01 Авария от КВУ'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 01 Авария от КВУ'
+- critical: true
+  name_error: 01 РђРІР°СЂРёСЏ РѕС‚ РљР’РЈ
   value_error: '0x1'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка165
-  critical: true
-  description_error: тут какое-то описание по ошибке  '02 Повышение Udc'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 02 Повышение Udc'
+- critical: true
+  name_error: 02 РџРѕРІС‹С€РµРЅРёРµ Udc
   value_error: '0x2'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка166
-  critical: true
-  description_error: тут какое-то описание по ошибке  '03 Сбой прогр-ы 1кГц'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 03 Сбой прогр-ы 1кГц'
+- critical: true
+  name_error: 03 РЎР±РѕР№ РїСЂРѕРіСЂ-С‹ 1РєР“С†
   value_error: '0x4'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка167
-  critical: true
-  description_error: тут какое-то описание по ошибке  '04 Сбой прогр-ы 10кГц'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 04 Сбой прогр-ы 10кГц'
+- critical: true
+  name_error: 04 РЎР±РѕР№ РїСЂРѕРіСЂ-С‹ 10РєР“С†
   value_error: '0x8'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка168
-  critical: true
-  description_error: тут какое-то описание по ошибке  '05 Сбой прогр-ы 80кГц'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 05 Сбой прогр-ы 80кГц'
+- critical: true
+  name_error: 05 РЎР±РѕР№ РїСЂРѕРіСЂ-С‹ 80РєР“С†
   value_error: '0x10'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка169
-  critical: true
-  description_error: тут какое-то описание по ошибке  '06 Нет связи с UniCON'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 06 Нет связи с UniCON'
+- critical: true
+  name_error: 06 РќРµС‚ СЃРІСЏР·Рё СЃ UniCON
   value_error: '0x20'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка170
-  critical: true
-  description_error: тут какое-то описание по ошибке  '07 Сбой настроек'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 07 Сбой настроек'
+- critical: true
+  name_error: 07 РЎР±РѕР№ РЅР°СЃС‚СЂРѕРµРє
   value_error: '0x40'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка171
-  critical: true
-  description_error: тут какое-то описание по ошибке  '08 Неверные настройки'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 08 Неверные настройки'
+- critical: true
+  name_error: 08 РќРµРІРµСЂРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё
   value_error: '0x80'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка172
-  critical: true
-  description_error: тут какое-то описание по ошибке  '09 Отказ АЦП'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 09 Отказ АЦП'
+- critical: true
+  name_error: 09 РћС‚РєР°Р· РђР¦Рџ
   value_error: '0x100'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка173
-  critical: true
-  description_error: тут какое-то описание по ошибке  '10 Низкая изоляция'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 10 Низкая изоляция'
+- critical: true
+  name_error: 10 РќРёР·РєР°СЏ РёР·РѕР»СЏС†РёСЏ
   value_error: '0x200'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка174
-  critical: true
-  description_error: тут какое-то описание по ошибке  '11 Понижение ЗПТ'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 11 Понижение ЗПТ'
+- critical: true
+  name_error: 11 РџРѕРЅРёР¶РµРЅРёРµ Р—РџРў
   value_error: '0x400'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка175
-  critical: true
-  description_error: тут какое-то описание по ошибке  '12 Авария датчиков ЗПТ'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 12 Авария датчиков ЗПТ'
+- critical: true
+  name_error: 12 РђРІР°СЂРёСЏ РґР°С‚С‡РёРєРѕРІ Р—РџРў
   value_error: '0x800'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка176
-  critical: true
-  description_error: тут какое-то описание по ошибке  '13 Нет заряда ЗПТ'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 13 Нет заряда ЗПТ'
+- critical: true
+  name_error: 13 РќРµС‚ Р·Р°СЂСЏРґР° Р—РџРў
   value_error: '0x1000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка177
-  critical: true
-  description_error: тут какое-то описание по ошибке  '14 Авария 14'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 14 Авария 14'
+- critical: true
+  name_error: 14 РђРІР°СЂРёСЏ 14
   value_error: '0x2000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка178
-  critical: true
-  description_error: тут какое-то описание по ошибке  '15 Авария 15'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 15 Авария 15'
+- critical: true
+  name_error: 15 РђРІР°СЂРёСЏ 15
   value_error: '0x4000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка179
-  critical: true
-  description_error: тут какое-то описание по ошибке  '16 Авария БМС общая'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 16 Авария БМС общая'
+- critical: true
+  name_error: 16 РђРІР°СЂРёСЏ Р‘РњРЎ РѕР±С‰Р°СЏ
   value_error: '0x8000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка180
-  critical: true
-  description_error: тут какое-то описание по ошибке  '17 Обрыв фазы'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 17 Обрыв фазы'
+- critical: true
+  name_error: 17 РћР±СЂС‹РІ С„Р°Р·С‹
   value_error: '0x10000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка181
-  critical: true
-  description_error: тут какое-то описание по ошибке  '18 Обрыв ОВ'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 18 Обрыв ОВ'
+- critical: true
+  name_error: 18 РћР±СЂС‹РІ РћР’
   value_error: '0x20000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка182
-  critical: true
-  description_error: тут какое-то описание по ошибке  '19 Перегрев преобразователя'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 19 Перегрев преобразователя'
+- critical: true
+  name_error: 19 РџРµСЂРµРіСЂРµРІ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚РµР»СЏ
   value_error: '0x40000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка183
-  critical: true
-  description_error: тут какое-то описание по ошибке  '20 Перегрев двигателя'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 20 Перегрев двигателя'
+- critical: true
+  name_error: 20 РџРµСЂРµРіСЂРµРІ РґРІРёРіР°С‚РµР»СЏ
   value_error: '0x80000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка184
-  critical: true
-  description_error: тут какое-то описание по ошибке  '21 Аппаратная инвертора'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 21 Аппаратная инвертора'
+- critical: true
+  name_error: 21 РђРїРїР°СЂР°С‚РЅР°СЏ РёРЅРІРµСЂС‚РѕСЂР°
   value_error: '0x100000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка185
-  critical: true
-  description_error: тут какое-то описание по ошибке  '22 Аппаратная возб.'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 22 Аппаратная возб.'
+- critical: true
+  name_error: 22 РђРїРїР°СЂР°С‚РЅР°СЏ РІРѕР·Р±.
   value_error: '0x200000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка186
-  critical: true
-  description_error: тут какое-то описание по ошибке  '23 Перегрев по модели'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 23 Перегрев по модели'
+- critical: true
+  name_error: 23 РџРµСЂРµРіСЂРµРІ РїРѕ РјРѕРґРµР»Рё
   value_error: '0x400000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка187
-  critical: true
-  description_error: тут какое-то описание по ошибке  '24 Макс. ток фазы A'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 24 Макс. ток фазы A'
+- critical: true
+  name_error: 24 РњР°РєСЃ. С‚РѕРє С„Р°Р·С‹ A
   value_error: '0x800000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка188
-  critical: true
-  description_error: тут какое-то описание по ошибке  '25 Макс. ток фазы B'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 25 Макс. ток фазы B'
+- critical: true
+  name_error: 25 РњР°РєСЃ. С‚РѕРє С„Р°Р·С‹ B
   value_error: '0x1000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка189
-  critical: true
-  description_error: тут какое-то описание по ошибке  '26 Макс. ток фазы C'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 26 Макс. ток фазы C'
+- critical: true
+  name_error: 26 РњР°РєСЃ. С‚РѕРє С„Р°Р·С‹ C
   value_error: '0x2000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка190
-  critical: true
-  description_error: тут какое-то описание по ошибке  '27 Превышение скорости'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 27 Превышение скорости'
+- critical: true
+  name_error: 27 РџСЂРµРІС‹С€РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё
   value_error: '0x4000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка191
-  critical: true
-  description_error: тут какое-то описание по ошибке  '28 Макс. ток ОВ'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 28 Макс. ток ОВ'
+- critical: true
+  name_error: 28 РњР°РєСЃ. С‚РѕРє РћР’
   value_error: '0x8000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка192
-  critical: true
-  description_error: тут какое-то описание по ошибке  '29 Отказ датчиков тока'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 29 Отказ датчиков тока'
+- critical: true
+  name_error: 29 РћС‚РєР°Р· РґР°С‚С‡РёРєРѕРІ С‚РѕРєР°
   value_error: '0x10000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка193
-  critical: true
-  description_error: тут какое-то описание по ошибке  '30 Отказ ДПР'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 30 Отказ ДПР'
+- critical: true
+  name_error: 30 РћС‚РєР°Р· Р”РџР 
   value_error: '0x20000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка194
-  critical: true
-  description_error: тут какое-то описание по ошибке  '31 Запуск инв. при акт. ЗУ'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 31 Запуск инв. при акт. ЗУ'
+- critical: true
+  name_error: 31 Р—Р°РїСѓСЃРє РёРЅРІ. РїСЂРё Р°РєС‚. Р—РЈ
   value_error: '0x40000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка195
-  critical: true
-  description_error: тут какое-то описание по ошибке  '32 Авария БМС инвертора'
-  important_parametr: Момент, Напряжение ЗПТ, Серийный номер
-  name_error: ' 32 Авария БМС инвертора'
+- critical: true
+  name_error: 32 РђРІР°СЂРёСЏ Р‘РњРЎ РёРЅРІРµСЂС‚РѕСЂР°
   value_error: '0x80000000'

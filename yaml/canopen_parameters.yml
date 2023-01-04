@@ -2088,6 +2088,7 @@ canopen_parameters:
       description: Коэффициент фильтрации значений датичков давления
       mult: !!float 0.0039
       eeprom:
+      units: "[0..1]"
       value: "[0..1]"
 
     - 
@@ -2099,6 +2100,7 @@ canopen_parameters:
       description: Коэффициент фильтрации значений датичков высоты
       mult: !!float 0.0039
       eeprom:
+      units: "[0..1]"
       value: "[0..1]"
 
     - 

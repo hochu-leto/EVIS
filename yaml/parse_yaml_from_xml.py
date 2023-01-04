@@ -83,5 +83,5 @@ for par in final_list:
             f_list.append(par)
 del final_dict['']
 
-with open(r'parameters_vector_psted.yaml', 'w', encoding='windows-1251') as file:
+with open(r'parameters_vector_psted.yaml', 'w', encoding='UTF-8') as file:
     documents = yaml.dump(final_dict, file, allow_unicode=True)

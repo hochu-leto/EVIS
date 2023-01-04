@@ -1,234 +1,140 @@
-- check_link: важная ссылка1, важная ссылка2, важная ссылка213
-  critical: true
-  description_error: тут какое-то описание по ошибке  “Overcurrent”
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Overcurrent”'
+- critical: true
+  name_error: вЂњOvercurrentвЂќ
   value_error: '0x1'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка214
-  critical: true
-  description_error: тут какое-то описание по ошибке  “Undervoltage”
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Undervoltage”'
+- critical: true
+  name_error: вЂњUndervoltageвЂќ
   value_error: '0x2'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка215
-  critical: true
-  description_error: тут какое-то описание по ошибке  “Overvoltage”
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Overvoltage”'
+- critical: true
+  name_error: вЂњOvervoltageвЂќ
   value_error: '0x4'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка216
-  critical: true
+- critical: true
   description_error: ' temperature is too low for discharging'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Low DCH temperature”'
+  name_error: вЂњLow DCH temperatureвЂќ
   value_error: '0x8'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка217
-  critical: true
+- critical: true
   description_error: ' temperature is too high for discharging'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “High DCH temperature”'
+  name_error: вЂњHigh DCH temperatureвЂќ
   value_error: '0x10'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка218
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Battery cover”'
+- critical: true
+  name_error: вЂњBattery coverвЂќ
   value_error: '0x20'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка219
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “High humidity”'
+- critical: true
+  name_error: вЂњHigh humidityвЂќ
   value_error: '0x40'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка220
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Water”'
+- critical: true
+  name_error: вЂњWaterвЂќ
   value_error: '0x80'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка221
-  critical: true
+- critical: true
   description_error: ' some BMS Logic board is overheated'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “High logic temperature”'
+  name_error: вЂњHigh logic temperatureвЂќ
   value_error: '0x100'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка222
-  critical: true
+- critical: true
   description_error: ' connection with some BMS Logic board is lost'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Logic offline”'
+  name_error: вЂњLogic offlineвЂќ
   value_error: '0x200'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка223
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Critical error”'
+- critical: true
+  name_error: вЂњCritical errorвЂќ
   value_error: '0x400'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка224
-  critical: true
+- critical: true
   description_error: ' connection with the Crown forklift is lost'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Crown error”'
+  name_error: вЂњCrown errorвЂќ
   value_error: '0x800'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка225
-  critical: true
+- critical: true
   description_error: ' number of cells in incorrect'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Cell count error”'
+  name_error: вЂњCell count errorвЂќ
   value_error: '0x1000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка226
-  critical: true
+- critical: true
   description_error: ' connection with the HYG forklift is lost'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “HYG offline”'
+  name_error: вЂњHYG offlineвЂќ
   value_error: '0x2000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка227
-  critical: true
+- critical: true
   description_error: ' errors were detected in the past and should be acknowledged'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Need acknowledgement”'
+  name_error: вЂњNeed acknowledgementвЂќ
   value_error: '0x4000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка228
-  critical: true
+- critical: true
   description_error: ' connection with the Combilift forklift is lost'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Combilift offline”'
+  name_error: вЂњCombilift offlineвЂќ
   value_error: '0x8000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка229
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Short circuit”'
+- critical: true
+  name_error: вЂњShort circuitвЂќ
   value_error: '0x10000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка230
-  critical: true
+- critical: true
   description_error: ' the discharging contactor is overheated'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “High contactor temperature”'
+  name_error: вЂњHigh contactor temperatureвЂќ
   value_error: '0x20000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка231
-  critical: true
+- critical: true
   description_error: ' number of BMS Logic boards is incorrect'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Logic count error”'
+  name_error: вЂњLogic count errorвЂќ
   value_error: '0x40000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка232
-  critical: true
+- critical: true
   description_error: ' battery current cannot be measured by ADC'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “ADC error”'
+  name_error: вЂњADC errorвЂќ
   value_error: '0x80000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка233
-  critical: true
+- critical: true
   description_error: ' wires which connect the current sensor with the BMS are damaged'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Current sensor error”'
+  name_error: вЂњCurrent sensor errorвЂќ
   value_error: '0x100000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка234
-  critical: true
+- critical: true
   description_error: ' the charging contactor switches very often'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “CH contactor cycles error”'
+  name_error: вЂњCH contactor cycles errorвЂќ
   value_error: '0x200000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка235
-  critical: true
+- critical: true
   description_error: ' the discharging contactor switches very often'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “DCH contactor cycles error”'
+  name_error: вЂњDCH contactor cycles errorвЂќ
   value_error: '0x400000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка236
-  critical: true
+- critical: true
   description_error: ' connection with the BMS Current sensor is lost'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Shunt offline”'
+  name_error: вЂњShunt offlineвЂќ
   value_error: '0x800000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка237
-  critical: true
+- critical: true
   description_error: ' internal error of the BMS Current sensor'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Shunt error”'
+  name_error: вЂњShunt errorвЂќ
   value_error: '0x1000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка238
-  critical: true
+- critical: true
   description_error: ' checksum of the setting is incorrect'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Settings error”'
+  name_error: вЂњSettings errorвЂќ
   value_error: '0x2000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка239
-  critical: true
+- critical: true
   description_error: ' boards is reset by the watchdog timer'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “WDT reset”'
+  name_error: вЂњWDT resetвЂќ
   value_error: '0x4000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка240
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “No temperature sensors”'
+- critical: true
+  name_error: вЂњNo temperature sensorsвЂќ
   value_error: '0x8000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка241
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Temperature sensor is shorted”'
+- critical: true
+  name_error: вЂњTemperature sensor is shortedвЂќ
   value_error: '0x10000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка242
-  critical: true
+- critical: true
   description_error: ' connection with the Spirit truck is lost'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Spirit offline”'
+  name_error: вЂњSpirit offlineвЂќ
   value_error: '0x20000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка243
-  critical: true
+- critical: true
   description_error: ' temperature is too low for charging'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Low CH temperature”'
+  name_error: вЂњLow CH temperatureвЂќ
   value_error: '0x100000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка244
-  critical: true
+- critical: true
   description_error: ' temperature is too high for charging'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “High CH temperature”'
+  name_error: вЂњHigh CH temperatureвЂќ
   value_error: '0x200000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка245
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “SD mount error”'
+- critical: true
+  name_error: вЂњSD mount errorвЂќ
   value_error: '0x400000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка246
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “SD read/write error”'
+- critical: true
+  name_error: вЂњSD read/write errorвЂќ
   value_error: '0x800000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка247
-  critical: true
+- critical: true
   description_error: ' charging the battery through the discharging contactor'
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Unallowable charging”'
+  name_error: вЂњUnallowable chargingвЂќ
   value_error: '0x1000000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка248
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Stuck contactor”'
+- critical: true
+  name_error: вЂњStuck contactorвЂќ
   value_error: '0x2000000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка249
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “CH contactor feedback error”'
+- critical: true
+  name_error: вЂњCH contactor feedback errorвЂќ
   value_error: '0x4000000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка250
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “DCH contactor feedback error”'
+- critical: true
+  name_error: вЂњDCH contactor feedback errorвЂќ
   value_error: '0x8000000000'
-- check_link: важная ссылка1, важная ссылка2, важная ссылка251
-  critical: true
-  description_error: .nan
-  important_parametr: Soc, Soh, Voltage
-  name_error: ' “Insulation fault”'
+- critical: true
+  name_error: вЂњInsulation faultвЂќ
   value_error: '0x10000000000'

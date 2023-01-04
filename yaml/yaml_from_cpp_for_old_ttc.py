@@ -163,18 +163,16 @@ for tag in nodes:
         prev_name = tag.strip()[3:].replace('-', '')
     elif 'static_cast' in tag:
         t = tag.split(',')
-        tg['address'] = t[0].strip()[8:] + hex(int(t[1].strip()))[2:].zfill(2)
+        tg['address'] = t[0].strip()[8:] + (hex(int(t[1].strip()))[2:].zfill(2)).upper()
         tg['type'] = t[2].strip()[3:-16].strip()
-        if 'RW' in t[2]:
-            tg['editable'] = 1
+        tg['editable'] = True if 'RW' in t[2] else False
         tg['name'] = t[4].strip()[30:-1]
         name_par = tg['name'].upper().strip()
         if name_par in parse_dict.keys():
             coun += 1
             print('Совпадение', name_par, coun)
-
             parametr = parse_dict[name_par]
-            tg['description'] = parametr['description']
+            tg['description'] = parametr['description'].strip().replace('\n', '')
             if 'units' in parametr.keys():
                 tg['unit'] = parametr['units']
             if 'value' in parametr.keys():

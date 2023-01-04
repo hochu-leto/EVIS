@@ -2,7 +2,7 @@ A0.Process state:
 - address: '0x0000'
   code: 0.0.0
   degree: .nan
-  description: АВАРИИ
+  description: РђР’РђР РР
   editable: false
   max_value: 65535.0
   min_value: 0.0
@@ -31,7 +31,7 @@ A0.Process state:
 - address: '0x0001'
   code: 0.0.1
   degree: .nan
-  description: СТАТУС РАБОТЫ
+  description: РЎРўРђРўРЈРЎ Р РђР‘РћРўР«
   editable: false
   max_value: 65535.0
   min_value: 0.0
@@ -43,7 +43,7 @@ A0.Process state:
 - address: '0x0002'
   code: 0.0.2
   degree: 2.0
-  description: ПОЛОЖЕНИЕ % * 100
+  description: РџРћР›РћР–Р•РќРР• % * 100
   editable: false
   max_value: 655.35
   min_value: 0.0
@@ -55,7 +55,7 @@ A0.Process state:
 - address: '0x0004'
   code: 0.0.4
   degree: .nan
-  description: ТЕКУЩЕЕ ПОЛОЖЕНИЕ В МЕТКАХ LO
+  description: РўР•РљРЈР©Р•Р• РџРћР›РћР–Р•РќРР• Р’ РњР•РўРљРђРҐ LO
   editable: false
   max_value: 2147483648.0
   min_value: -2147483648.0
@@ -67,7 +67,7 @@ A0.Process state:
 - address: '0x0006'
   code: 0.0.5
   degree: .nan
-  description: ЗАДАННОЕ ПОЛОЖЕНИЕ В МЕТКАХ LO
+  description: Р—РђР”РђРќРќРћР• РџРћР›РћР–Р•РќРР• Р’ РњР•РўРљРђРҐ LO
   editable: true
   max_value: 2147483648.0
   min_value: -2147483648.0
@@ -79,7 +79,7 @@ A0.Process state:
 - address: '0x0008'
   code: 0.0.6
   degree: .nan
-  description: ОШИБКА ПО ПОЛОЖЕНИЮ LO
+  description: РћРЁРР‘РљРђ РџРћ РџРћР›РћР–Р•РќРР® LO
   editable: false
   max_value: 2147483648.0
   min_value: -2147483648.0
@@ -92,7 +92,7 @@ A1.Position, Load:
 - address: '0x000b'
   code: 0.1.0
   degree: .nan
-  description: Источник для сигнала положения
+  description: РСЃС‚РѕС‡РЅРёРє РґР»СЏ СЃРёРіРЅР°Р»Р° РїРѕР»РѕР¶РµРЅРёСЏ
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -112,7 +112,7 @@ A1.Position, Load:
 - address: '0x000c'
   code: 0.1.1
   degree: .nan
-  description: Положение SSI LO
+  description: РџРѕР»РѕР¶РµРЅРёРµ SSI LO
   editable: false
   max_value: 2147483648.0
   min_value: -2147483648.0
@@ -124,7 +124,7 @@ A1.Position, Load:
 - address: '0x000e'
   code: 0.1.2
   degree: .nan
-  description: Положение Инкрементное LO
+  description: РџРѕР»РѕР¶РµРЅРёРµ РРЅРєСЂРµРјРµРЅС‚РЅРѕРµ LO
   editable: false
   max_value: 2147483648.0
   min_value: -2147483648.0
@@ -136,7 +136,7 @@ A1.Position, Load:
 - address: '0x0011'
   code: 0.1.3
   degree: 1.0
-  description: СКОРОСТЬ ОБ/МИН * 10
+  description: РЎРљРћР РћРЎРўР¬ РћР‘/РњРРќ * 10
   editable: false
   max_value: 3275.0
   min_value: -3275.0
@@ -148,7 +148,7 @@ A1.Position, Load:
 - address: '0x0012'
   code: 0.1.4
   degree: 1.0
-  description: ТОК А * 100
+  description: РўРћРљ Рђ * 100
   editable: false
   max_value: 6553.5
   min_value: 0.0
@@ -160,7 +160,7 @@ A1.Position, Load:
 - address: '0x0013'
   code: 0.1.5
   degree: 2.0
-  description: МОМЕНТ Нм * 100
+  description: РњРћРњР•РќРў РќРј * 100
   editable: false
   max_value: 327.5
   min_value: -327.5
@@ -172,7 +172,7 @@ A1.Position, Load:
 - address: '0x0014'
   code: 0.1.6
   degree: 3.0
-  description: НАПРЯЖЕНИЕ В 100
+  description: РќРђРџР РЇР–Р•РќРР• Р’ 100
   editable: false
   max_value: 65.535
   min_value: 0.0
@@ -185,7 +185,7 @@ A2.Device:
 - address: '0x0015'
   code: 0.2.0
   degree: 1.0
-  description: Входное напряжение
+  description: Р’С…РѕРґРЅРѕРµ РЅР°РїСЂСЏР¶РµРЅРёРµ
   editable: false
   max_value: 6553.5
   min_value: 0.0
@@ -197,7 +197,7 @@ A2.Device:
 - address: '0x0016'
   code: 0.2.1
   degree: .nan
-  description: Температура радиатора
+  description: РўРµРјРїРµСЂР°С‚СѓСЂР° СЂР°РґРёР°С‚РѕСЂР°
   editable: false
   max_value: 65535.0
   min_value: 0.0
@@ -209,7 +209,7 @@ A2.Device:
 - address: '0x0017'
   code: 0.2.2
   degree: .nan
-  description: Температура платы управления
+  description: РўРµРјРїРµСЂР°С‚СѓСЂР° РїР»Р°С‚С‹ СѓРїСЂР°РІР»РµРЅРёСЏ
   editable: false
   max_value: 65535.0
   min_value: 0.0
@@ -221,7 +221,7 @@ A2.Device:
 - address: '0x0018'
   code: 0.2.3
   degree: .nan
-  description: Температура STM
+  description: РўРµРјРїРµСЂР°С‚СѓСЂР° STM
   editable: false
   max_value: 65535.0
   min_value: 0.0
@@ -233,7 +233,7 @@ A2.Device:
 - address: '0x0019'
   code: 0.2.4
   degree: .nan
-  description: Цифровые входа
+  description: Р¦РёС„СЂРѕРІС‹Рµ РІС…РѕРґР°
   editable: false
   max_value: 15.0
   min_value: 0.0
@@ -245,7 +245,7 @@ A2.Device:
 - address: '0x001a'
   code: 0.2.5
   degree: .nan
-  description: Цифровые входа (вкл инверс)
+  description: Р¦РёС„СЂРѕРІС‹Рµ РІС…РѕРґР° (РІРєР» РёРЅРІРµСЂСЃ)
   editable: true
   max_value: 15.0
   min_value: 0.0
@@ -257,7 +257,7 @@ A2.Device:
 - address: '0x001b'
   code: 0.2.6
   degree: .nan
-  description: Удержание
+  description: РЈРґРµСЂР¶Р°РЅРёРµ
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -269,7 +269,7 @@ A2.Device:
 - address: '0x001d'
   code: 0.2.7
   degree: 2.0
-  description: Максимальный ток в скаляре (для подъема)
+  description: РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ С‚РѕРє РІ СЃРєР°Р»СЏСЂРµ (РґР»СЏ РїРѕРґСЉРµРјР°)
   editable: false
   max_value: 327.5
   min_value: 0.0
@@ -281,7 +281,7 @@ A2.Device:
 - address: '0x001e'
   code: 0.2.8
   degree: .nan
-  description: Дискретные выходы
+  description: Р”РёСЃРєСЂРµС‚РЅС‹Рµ РІС‹С…РѕРґС‹
   editable: false
   max_value: 15.0
   min_value: 0.0
@@ -306,7 +306,7 @@ A3.Ver PO / ADC:
 - address: '0x0020'
   code: 0.3.1
   degree: .nan
-  description: Текущая ось по итогам А3.4
+  description: РўРµРєСѓС‰Р°СЏ РѕСЃСЊ РїРѕ РёС‚РѕРіР°Рј Рђ3.4
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -345,8 +345,8 @@ A3.Ver PO / ADC:
 - address: '0x0023'
   code: 0.3.4
   degree: .nan
-  description: 'Выбор типа оси ТС: 0-по SN (чёт/нечёт), 1-по DIP_SW1, 2-передний,
-    3-задний'
+  description: 'Р’С‹Р±РѕСЂ С‚РёРїР° РѕСЃРё РўРЎ: 0-РїРѕ SN (С‡С‘С‚/РЅРµС‡С‘С‚), 1-РїРѕ DIP_SW1, 2-РїРµСЂРµРґРЅРёР№,
+    3-Р·Р°РґРЅРёР№'
   editable: true
   max_value: 3.0
   min_value: 0.0
@@ -425,7 +425,7 @@ A3.Ver PO / ADC:
 - address: '0x002c'
   code: 0.3.10
   degree: .nan
-  description: АЦП I1
+  description: РђР¦Рџ I1
   editable: false
   max_value: 32750.0
   min_value: -32750.0
@@ -437,7 +437,7 @@ A3.Ver PO / ADC:
 - address: '0x002d'
   code: 0.3.11
   degree: .nan
-  description: АЦП I2
+  description: РђР¦Рџ I2
   editable: false
   max_value: 32750.0
   min_value: -32750.0
@@ -449,7 +449,7 @@ A3.Ver PO / ADC:
 - address: '0x002e'
   code: 0.3.12
   degree: .nan
-  description: АЦП H1
+  description: РђР¦Рџ H1
   editable: false
   max_value: 32750.0
   min_value: -32750.0
@@ -461,7 +461,7 @@ A3.Ver PO / ADC:
 - address: '0x002f'
   code: 0.3.13
   degree: .nan
-  description: АЦП H2
+  description: РђР¦Рџ H2
   editable: false
   max_value: 32750.0
   min_value: -32750.0
@@ -473,11 +473,11 @@ A3.Ver PO / ADC:
 - address: '0x0030'
   code: 0.3.14
   degree: .nan
-  description: АЦП для 10 В
+  description: РђР¦Рџ РґР»СЏ 10 Р’
   editable: true
   max_value: 32750.0
   min_value: -32750.0
-  name: A3.17 АЦП для 10 В
+  name: A3.17 РђР¦Рџ РґР»СЏ 10 Р’
   period: 1
   size: 2.0
   type: UNSIGNED16
@@ -485,11 +485,11 @@ A3.Ver PO / ADC:
 - address: '0x0031'
   code: 0.3.15
   degree: .nan
-  description: АЦП для 0 В
+  description: РђР¦Рџ РґР»СЏ 0 Р’
   editable: true
   max_value: 65535.0
   min_value: 0.0
-  name: A3.18 АЦП для 0 В
+  name: A3.18 РђР¦Рџ РґР»СЏ 0 Р’
   period: 1
   size: 2.0
   type: UNSIGNED16
@@ -497,7 +497,7 @@ A3.Ver PO / ADC:
 - address: '0x0032'
   code: 0.3.16
   degree: .nan
-  description: РЕЗЕРВ
+  description: Р Р•Р—Р•Р Р’
   editable: false
   max_value: 65535.0
   min_value: 0.0
@@ -509,7 +509,7 @@ A3.Ver PO / ADC:
 - address: '0x0034'
   code: 0.3.17
   degree: .nan
-  description: РЕЗЕРВ
+  description: Р Р•Р—Р•Р Р’
   editable: false
   max_value: 65535.0
   min_value: 0.0
@@ -521,7 +521,7 @@ A3.Ver PO / ADC:
 - address: '0x0036'
   code: 0.3.18
   degree: .nan
-  description: РЕЗЕРВ
+  description: Р Р•Р—Р•Р Р’
   editable: false
   max_value: 65535.0
   min_value: 0.0
@@ -533,7 +533,7 @@ A3.Ver PO / ADC:
 - address: '0x0038'
   code: 0.3.19
   degree: .nan
-  description: РЕЗЕРВ
+  description: Р Р•Р—Р•Р Р’
   editable: false
   max_value: 65535.0
   min_value: 0.0
@@ -546,7 +546,7 @@ B0.Global configuration&B1.Rezerv Group:
 - address: '0x003c'
   code: 1.0.0
   degree: .nan
-  description: КОЭФФИЦИЕНТ МАСШТАБИРОВАНИЯ ПЕРИОДА ШИМ
+  description: РљРћР­Р¤Р¤РР¦РР•РќРў РњРђРЎРЁРўРђР‘РР РћР’РђРќРРЇ РџР•Р РРћР”Рђ РЁРРњ
   editable: true
   max_value: 10.0
   min_value: 1.0
@@ -570,7 +570,7 @@ B0.Global configuration&B1.Rezerv Group:
 - address: '0x003d'
   code: 1.0.1
   degree: .nan
-  description: ТИП ЭНКОДЕРА SSI
+  description: РўРРџ Р­РќРљРћР”Р•Р Рђ SSI
   editable: true
   max_value: 3.0
   min_value: 0.0
@@ -587,7 +587,7 @@ B0.Global configuration&B1.Rezerv Group:
 - address: '0x003f'
   code: 1.0.3
   degree: .nan
-  description: номинальная скорость об/мин
+  description: РЅРѕРјРёРЅР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РѕР±/РјРёРЅ
   editable: true
   max_value: 10000.0
   min_value: 0.0
@@ -599,7 +599,7 @@ B0.Global configuration&B1.Rezerv Group:
 - address: '0x0040'
   code: 1.0.4
   degree: .nan
-  description: ZP - Число пар полюсов
+  description: ZP - Р§РёСЃР»Рѕ РїР°СЂ РїРѕР»СЋСЃРѕРІ
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -611,7 +611,7 @@ B0.Global configuration&B1.Rezerv Group:
 - address: '0x0041'
   code: 1.0.5
   degree: .nan
-  description: 'Тип применяемой ШИМ: 0- ДПТ; 1 - переменка 3 фазы'
+  description: 'РўРёРї РїСЂРёРјРµРЅСЏРµРјРѕР№ РЁРРњ: 0- Р”РџРў; 1 - РїРµСЂРµРјРµРЅРєР° 3 С„Р°Р·С‹'
   editable: true
   max_value: 2.0
   min_value: 0.0
@@ -627,7 +627,7 @@ B0.Global configuration&B1.Rezerv Group:
 - address: '0x0042'
   code: 1.0.6
   degree: .nan
-  description: Проект
+  description: РџСЂРѕРµРєС‚
   editable: true
   max_value: 2.0
   min_value: 0.0
@@ -719,7 +719,7 @@ B0.Global configuration&B1.Rezerv Group:
 - address: '0x004a'
   code: 1.0.13
   degree: 2.0
-  description: Постоянная времени датчиков температуры
+  description: РџРѕСЃС‚РѕСЏРЅРЅР°СЏ РІСЂРµРјРµРЅРё РґР°С‚С‡РёРєРѕРІ С‚РµРјРїРµСЂР°С‚СѓСЂС‹
   editable: true
   max_value: 100.0
   min_value: 0.0
@@ -1063,11 +1063,11 @@ B2.CAN_Poppel:
   period: 1
   size: 2.0
   type: UNSIGNED16
-  unit: с
+  unit: СЃ
 - address: '0x006d'
   code: 1.2.23
   degree: .nan
-  description: '// Порядок следования байт при передаче по CAN: 0 - прямой, 1 - обратный'
+  description: '// РџРѕСЂСЏРґРѕРє СЃР»РµРґРѕРІР°РЅРёСЏ Р±Р°Р№С‚ РїСЂРё РїРµСЂРµРґР°С‡Рµ РїРѕ CAN: 0 - РїСЂСЏРјРѕР№, 1 - РѕР±СЂР°С‚РЅС‹Р№'
   editable: true
   max_value: 1.0
   min_value: 0.0
@@ -1154,7 +1154,7 @@ B2.CAN_Poppel:
 - address: '0x0078'
   code: 1.2.30
   degree: 2.0
-  description: Коэффициент коррекции упругих связей (УС)
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ РєРѕСЂСЂРµРєС†РёРё СѓРїСЂСѓРіРёС… СЃРІСЏР·РµР№ (РЈРЎ)
   editable: true
   max_value: 655.35
   min_value: 0.0
@@ -1166,7 +1166,7 @@ B2.CAN_Poppel:
 - address: '0x0079'
   code: 1.2.31
   degree: 2.0
-  description: Задание с учётом коррекции упругих связей (УС)
+  description: Р—Р°РґР°РЅРёРµ СЃ СѓС‡С‘С‚РѕРј РєРѕСЂСЂРµРєС†РёРё СѓРїСЂСѓРіРёС… СЃРІСЏР·РµР№ (РЈРЎ)
   editable: false
   max_value: 655.35
   min_value: 0.0
@@ -1178,7 +1178,7 @@ B2.CAN_Poppel:
 - address: '0x007a'
   code: 1.2.32
   degree: 2.0
-  description: Условие ошибки для запуска коррекции УС
+  description: РЈСЃР»РѕРІРёРµ РѕС€РёР±РєРё РґР»СЏ Р·Р°РїСѓСЃРєР° РєРѕСЂСЂРµРєС†РёРё РЈРЎ
   editable: true
   max_value: 655.35
   min_value: 0.0
@@ -1190,7 +1190,7 @@ B2.CAN_Poppel:
 - address: '0x007b'
   code: 1.2.33
   degree: 2.0
-  description: Условие ошибки для выхода из коррекции УС
+  description: РЈСЃР»РѕРІРёРµ РѕС€РёР±РєРё РґР»СЏ РІС‹С…РѕРґР° РёР· РєРѕСЂСЂРµРєС†РёРё РЈРЎ
   editable: true
   max_value: 655.35
   min_value: 0.0
@@ -1203,7 +1203,7 @@ C0.Connection:
 - address: '0x0096'
   code: 2.0.0
   degree: .nan
-  description: Переключение MB master/slave
+  description: РџРµСЂРµРєР»СЋС‡РµРЅРёРµ MB master/slave
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -1215,7 +1215,7 @@ C0.Connection:
 - address: '0x0097'
   code: 2.0.1
   degree: .nan
-  description: Адрес MB
+  description: РђРґСЂРµСЃ MB
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -1227,7 +1227,7 @@ C0.Connection:
 - address: '0x0098'
   code: 2.0.2
   degree: .nan
-  description: Скорость MB
+  description: РЎРєРѕСЂРѕСЃС‚СЊ MB
   editable: true
   max_value: 9.0
   min_value: 0.0
@@ -1250,7 +1250,7 @@ C0.Connection:
 - address: '0x0099'
   code: 2.0.3
   degree: .nan
-  description: Команда сброс связи
+  description: РљРѕРјР°РЅРґР° СЃР±СЂРѕСЃ СЃРІСЏР·Рё
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -1262,7 +1262,7 @@ C0.Connection:
 - address: '0x009a'
   code: 2.0.4
   degree: 1.0
-  description: Таймаут соединения по последовательному интерфейсу
+  description: РўР°Р№РјР°СѓС‚ СЃРѕРµРґРёРЅРµРЅРёСЏ РїРѕ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРјСѓ РёРЅС‚РµСЂС„РµР№СЃСѓ
   editable: true
   max_value: 6553.5
   min_value: 0.0
@@ -1395,7 +1395,7 @@ C1.PositionSens:
 - address: '0x00c9'
   code: 2.1.0
   degree: 4.0
-  description: Механический абсолютный угол поворота 0...1 в Q24 на оборот
+  description: РњРµС…Р°РЅРёС‡РµСЃРєРёР№ Р°Р±СЃРѕР»СЋС‚РЅС‹Р№ СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р° 0...1 РІ Q24 РЅР° РѕР±РѕСЂРѕС‚
   editable: false
   max_value: 0.9999
   min_value: 0.0
@@ -1407,7 +1407,7 @@ C1.PositionSens:
 - address: '0x00ca'
   code: 2.1.1
   degree: 4.0
-  description: Электрический угол поворота 0...1 в Q24 на оборот (ZP = 4)
+  description: Р­Р»РµРєС‚СЂРёС‡РµСЃРєРёР№ СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р° 0...1 РІ Q24 РЅР° РѕР±РѕСЂРѕС‚ (ZP = 4)
   editable: false
   max_value: 0.9999
   min_value: 0.0
@@ -1419,7 +1419,7 @@ C1.PositionSens:
 - address: '0x00cb'
   code: 2.1.2
   degree: 4.0
-  description: Коррекция абсолютного угла поворота
+  description: РљРѕСЂСЂРµРєС†РёСЏ Р°Р±СЃРѕР»СЋС‚РЅРѕРіРѕ СѓРіР»Р° РїРѕРІРѕСЂРѕС‚Р°
   editable: true
   max_value: 0.9999
   min_value: 0.0
@@ -1431,7 +1431,7 @@ C1.PositionSens:
 - address: '0x00cc'
   code: 2.1.3
   degree: .nan
-  description: Направление питы с датчика положения 0, 1
+  description: РќР°РїСЂР°РІР»РµРЅРёРµ РїРёС‚С‹ СЃ РґР°С‚С‡РёРєР° РїРѕР»РѕР¶РµРЅРёСЏ 0, 1
   editable: true
   max_value: 1.0
   min_value: 0.0
@@ -1446,7 +1446,7 @@ C1.PositionSens:
 - address: '0x00cd'
   code: 2.1.4
   degree: .nan
-  description: Направление для расчёта скорости 0, 1
+  description: РќР°РїСЂР°РІР»РµРЅРёРµ РґР»СЏ СЂР°СЃС‡С‘С‚Р° СЃРєРѕСЂРѕСЃС‚Рё 0, 1
   editable: true
   max_value: 1.0
   min_value: 0.0
@@ -1461,7 +1461,7 @@ C1.PositionSens:
 - address: '0x00ce'
   code: 2.1.5
   degree: .nan
-  description: Направление для задания скорости 0, 1
+  description: РќР°РїСЂР°РІР»РµРЅРёРµ РґР»СЏ Р·Р°РґР°РЅРёСЏ СЃРєРѕСЂРѕСЃС‚Рё 0, 1
   editable: true
   max_value: 1.0
   min_value: 0.0
@@ -1476,7 +1476,7 @@ C1.PositionSens:
 - address: '0x00cf'
   code: 2.1.6
   degree: .nan
-  description: Сброс инкрементного положения
+  description: РЎР±СЂРѕСЃ РёРЅРєСЂРµРјРµРЅС‚РЅРѕРіРѕ РїРѕР»РѕР¶РµРЅРёСЏ
   editable: true
   max_value: 1.0
   min_value: 0.0
@@ -1491,7 +1491,7 @@ C1.PositionSens:
 - address: '0x00d0'
   code: 2.1.7
   degree: 4.0
-  description: Постоянная времени фильтра ЗИ по положению
+  description: РџРѕСЃС‚РѕСЏРЅРЅР°СЏ РІСЂРµРјРµРЅРё С„РёР»СЊС‚СЂР° Р—Р РїРѕ РїРѕР»РѕР¶РµРЅРёСЋ
   editable: true
   max_value: 6.5535
   min_value: 0.0
@@ -1503,7 +1503,7 @@ C1.PositionSens:
 - address: '0x00d1'
   code: 2.1.8
   degree: 4.0
-  description: Коррекция абсолютного угла поворота (смещение для + и - вращения)
+  description: РљРѕСЂСЂРµРєС†РёСЏ Р°Р±СЃРѕР»СЋС‚РЅРѕРіРѕ СѓРіР»Р° РїРѕРІРѕСЂРѕС‚Р° (СЃРјРµС‰РµРЅРёРµ РґР»СЏ + Рё - РІСЂР°С‰РµРЅРёСЏ)
   editable: true
   max_value: 0.9999
   min_value: -0.9999
@@ -1515,7 +1515,7 @@ C1.PositionSens:
 - address: '0x00dc'
   code: 2.1.9
   degree: .nan
-  description: Реверсирование работы ШИМ 0, 1
+  description: Р РµРІРµСЂСЃРёСЂРѕРІР°РЅРёРµ СЂР°Р±РѕС‚С‹ РЁРРњ 0, 1
   editable: true
   max_value: 1.0
   min_value: 0.0
@@ -1531,7 +1531,7 @@ C2.Regulators:
 - address: '0x00fa'
   code: 2.2.0
   degree: 4.0
-  description: Постоянная времени в ОС по скорости от магнитного датчика
+  description: РџРѕСЃС‚РѕСЏРЅРЅР°СЏ РІСЂРµРјРµРЅРё РІ РћРЎ РїРѕ СЃРєРѕСЂРѕСЃС‚Рё РѕС‚ РјР°РіРЅРёС‚РЅРѕРіРѕ РґР°С‚С‡РёРєР°
   editable: true
   max_value: 0.9999
   min_value: 0.0
@@ -1687,7 +1687,7 @@ C2.Regulators:
 - address: '0x0107'
   code: 2.2.13
   degree: 2.0
-  description: Коэфф. усиления РП
+  description: РљРѕСЌС„С„. СѓСЃРёР»РµРЅРёСЏ Р Рџ
   editable: true
   max_value: 127.0
   min_value: 0.0
@@ -1699,7 +1699,7 @@ C2.Regulators:
 - address: '0x0108'
   code: 2.2.14
   degree: 4.0
-  description: Ограничение ошибки РП
+  description: РћРіСЂР°РЅРёС‡РµРЅРёРµ РѕС€РёР±РєРё Р Рџ
   editable: true
   max_value: 1.27
   min_value: 0.0
@@ -1711,7 +1711,7 @@ C2.Regulators:
 - address: '0x0109'
   code: 2.2.15
   degree: 3.0
-  description: Макс. выход РП
+  description: РњР°РєСЃ. РІС‹С…РѕРґ Р Рџ
   editable: true
   max_value: 9.999
   min_value: 0.0
@@ -1723,7 +1723,7 @@ C2.Regulators:
 - address: '0x010a'
   code: 2.2.16
   degree: 3.0
-  description: Мин. выход РП
+  description: РњРёРЅ. РІС‹С…РѕРґ Р Рџ
   editable: true
   max_value: 0.0
   min_value: -9.999
@@ -1735,7 +1735,7 @@ C2.Regulators:
 - address: '0x010b'
   code: 2.2.17
   degree: .nan
-  description: разгон delta V
+  description: СЂР°Р·РіРѕРЅ delta V
   editable: true
   max_value: 5000.0
   min_value: 0.0
@@ -1747,7 +1747,7 @@ C2.Regulators:
 - address: '0x010c'
   code: 2.2.18
   degree: 2.0
-  description: разгон delta t
+  description: СЂР°Р·РіРѕРЅ delta t
   editable: true
   max_value: 655.35
   min_value: 0.01
@@ -1759,7 +1759,7 @@ C2.Regulators:
 - address: '0x010d'
   code: 2.2.19
   degree: .nan
-  description: торм. delta V
+  description: С‚РѕСЂРј. delta V
   editable: true
   max_value: 5000.0
   min_value: 0.0
@@ -1771,7 +1771,7 @@ C2.Regulators:
 - address: '0x010e'
   code: 2.2.20
   degree: 2.0
-  description: торм. delta t
+  description: С‚РѕСЂРј. delta t
   editable: true
   max_value: 655.35
   min_value: 0.01
@@ -1783,7 +1783,7 @@ C2.Regulators:
 - address: '0x010f'
   code: 2.2.21
   degree: .nan
-  description: торм. delta V Quick-Stop
+  description: С‚РѕСЂРј. delta V Quick-Stop
   editable: true
   max_value: 5000.0
   min_value: 0.0
@@ -1795,7 +1795,7 @@ C2.Regulators:
 - address: '0x0110'
   code: 2.2.22
   degree: 2.0
-  description: "торм. delta t\tQuick-Stop"
+  description: "С‚РѕСЂРј. delta t\tQuick-Stop"
   editable: true
   max_value: 655.35
   min_value: 0.01
@@ -1835,7 +1835,7 @@ C2.Regulators:
 - address: '0x0113'
   code: 2.2.25
   degree: .nan
-  description: скоростная компенсация (velosity compensation)
+  description: СЃРєРѕСЂРѕСЃС‚РЅР°СЏ РєРѕРјРїРµРЅСЃР°С†РёСЏ (velosity compensation)
   editable: true
   max_value: 200.0
   min_value: 0.0
@@ -1847,7 +1847,7 @@ C2.Regulators:
 - address: '0x0114'
   code: 2.2.26
   degree: .nan
-  description: торм. delta V Speed Down
+  description: С‚РѕСЂРј. delta V Speed Down
   editable: true
   max_value: 5000.0
   min_value: 0.0
@@ -1859,7 +1859,7 @@ C2.Regulators:
 - address: '0x0115'
   code: 2.2.27
   degree: 2.0
-  description: Кп регулятора
+  description: РљРї СЂРµРіСѓР»СЏС‚РѕСЂР°
   editable: true
   max_value: 100.0
   min_value: 0.0
@@ -1871,7 +1871,7 @@ C2.Regulators:
 - address: '0x0116'
   code: 2.2.28
   degree: 4.0
-  description: Ти регулятора
+  description: РўРё СЂРµРіСѓР»СЏС‚РѕСЂР°
   editable: true
   max_value: 0.9999
   min_value: 0.0
@@ -1956,7 +1956,7 @@ C3.FBSensors:
 - address: '0x012c'
   code: 2.3.0
   degree: 4.0
-  description: Коэффициент усиления сигнала АЦП ко каналу I1
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СѓСЃРёР»РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РєРѕ РєР°РЅР°Р»Сѓ I1
   editable: true
   max_value: 3.275
   min_value: -3.275
@@ -1968,7 +1968,7 @@ C3.FBSensors:
 - address: '0x012d'
   code: 2.3.1
   degree: .nan
-  description: Коэффициент смещения сигнала АЦП ко каналу I1
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СЃРјРµС‰РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РєРѕ РєР°РЅР°Р»Сѓ I1
   editable: true
   max_value: 32750.0
   min_value: -32750.0
@@ -1980,7 +1980,7 @@ C3.FBSensors:
 - address: '0x012e'
   code: 2.3.2
   degree: 4.0
-  description: Коэффициент усиления сигнала АЦП ко каналу I2
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СѓСЃРёР»РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РєРѕ РєР°РЅР°Р»Сѓ I2
   editable: true
   max_value: 3.275
   min_value: -3.275
@@ -1992,7 +1992,7 @@ C3.FBSensors:
 - address: '0x012f'
   code: 2.3.3
   degree: .nan
-  description: Коэффициент смещения сигнала АЦП ко каналу I2
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СЃРјРµС‰РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РєРѕ РєР°РЅР°Р»Сѓ I2
   editable: true
   max_value: 32750.0
   min_value: -32750.0
@@ -2004,7 +2004,7 @@ C3.FBSensors:
 - address: '0x0130'
   code: 2.3.4
   degree: 5.0
-  description: Постоянная времени входного фильтра токов
+  description: РџРѕСЃС‚РѕСЏРЅРЅР°СЏ РІСЂРµРјРµРЅРё РІС…РѕРґРЅРѕРіРѕ С„РёР»СЊС‚СЂР° С‚РѕРєРѕРІ
   editable: true
   max_value: 0.09999
   min_value: 0.0
@@ -2016,7 +2016,7 @@ C3.FBSensors:
 - address: '0x0131'
   code: 2.3.5
   degree: 4.0
-  description: Коэффициент усиления сигнала АЦП ко каналу H1
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СѓСЃРёР»РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РєРѕ РєР°РЅР°Р»Сѓ H1
   editable: true
   max_value: 3.275
   min_value: -3.275
@@ -2028,7 +2028,7 @@ C3.FBSensors:
 - address: '0x0132'
   code: 2.3.6
   degree: .nan
-  description: Коэффициент смещения сигнала АЦП ко каналу H1
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СЃРјРµС‰РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РєРѕ РєР°РЅР°Р»Сѓ H1
   editable: true
   max_value: 32750.0
   min_value: -32750.0
@@ -2040,7 +2040,7 @@ C3.FBSensors:
 - address: '0x0133'
   code: 2.3.7
   degree: 4.0
-  description: Коэффициент усиления сигнала АЦП ко каналу H2
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СѓСЃРёР»РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РєРѕ РєР°РЅР°Р»Сѓ H2
   editable: true
   max_value: 3.275
   min_value: -3.275
@@ -2052,7 +2052,7 @@ C3.FBSensors:
 - address: '0x0134'
   code: 2.3.8
   degree: .nan
-  description: Коэффициент смещения сигнала АЦП ко каналу H2
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СЃРјРµС‰РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РєРѕ РєР°РЅР°Р»Сѓ H2
   editable: true
   max_value: 32750.0
   min_value: -32750.0
@@ -2064,7 +2064,7 @@ C3.FBSensors:
 - address: '0x0135'
   code: 2.3.9
   degree: 5.0
-  description: Постоянная времени входного фильтра магнитного датчика положения
+  description: РџРѕСЃС‚РѕСЏРЅРЅР°СЏ РІСЂРµРјРµРЅРё РІС…РѕРґРЅРѕРіРѕ С„РёР»СЊС‚СЂР° РјР°РіРЅРёС‚РЅРѕРіРѕ РґР°С‚С‡РёРєР° РїРѕР»РѕР¶РµРЅРёСЏ
   editable: true
   max_value: 0.09999
   min_value: 0.0
@@ -2076,7 +2076,7 @@ C3.FBSensors:
 - address: '0x0136'
   code: 2.3.10
   degree: 5.0
-  description: Коэффициент пересчёта токов в момент
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµСЃС‡С‘С‚Р° С‚РѕРєРѕРІ РІ РјРѕРјРµРЅС‚
   editable: true
   max_value: 0.12799
   min_value: 0.0
@@ -2088,7 +2088,7 @@ C3.FBSensors:
 - address: '0x0137'
   code: 2.3.11
   degree: .nan
-  description: Постоянная времени фильтров индикации
+  description: РџРѕСЃС‚РѕСЏРЅРЅР°СЏ РІСЂРµРјРµРЅРё С„РёР»СЊС‚СЂРѕРІ РёРЅРґРёРєР°С†РёРё
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -2100,7 +2100,7 @@ C3.FBSensors:
 - address: '0x0138'
   code: 2.3.12
   degree: 4.0
-  description: Коэффициент усиления сигнала АЦП по каналу Uin
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СѓСЃРёР»РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РїРѕ РєР°РЅР°Р»Сѓ Uin
   editable: true
   max_value: 3.275
   min_value: -3.275
@@ -2112,7 +2112,7 @@ C3.FBSensors:
 - address: '0x0139'
   code: 2.3.13
   degree: .nan
-  description: Коэффициент смещения сигнала АЦП по каналу Uin
+  description: РљРѕСЌС„С„РёС†РёРµРЅС‚ СЃРјРµС‰РµРЅРёСЏ СЃРёРіРЅР°Р»Р° РђР¦Рџ РїРѕ РєР°РЅР°Р»Сѓ Uin
   editable: true
   max_value: 32750.0
   min_value: -32750.0
@@ -2124,7 +2124,7 @@ C3.FBSensors:
 - address: '0x013a'
   code: 2.3.14
   degree: 2.0
-  description: ток первой стойки
+  description: С‚РѕРє РїРµСЂРІРѕР№ СЃС‚РѕР№РєРё
   editable: false
   max_value: 327.5
   min_value: -327.5
@@ -2136,7 +2136,7 @@ C3.FBSensors:
 - address: '0x013b'
   code: 2.3.15
   degree: 2.0
-  description: ток второй стойки
+  description: С‚РѕРє РІС‚РѕСЂРѕР№ СЃС‚РѕР№РєРё
   editable: false
   max_value: 327.5
   min_value: -327.5
@@ -2232,7 +2232,7 @@ C3.FBSensors:
 - address: '0x0159'
   code: 2.3.23
   degree: .nan
-  description: Задание серийного номера БУСЭТ
+  description: Р—Р°РґР°РЅРёРµ СЃРµСЂРёР№РЅРѕРіРѕ РЅРѕРјРµСЂР° Р‘РЈРЎР­Рў
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -2256,7 +2256,7 @@ C3.FBSensors:
 - address: '0x015c'
   code: 2.3.25
   degree: .nan
-  description: Задание серийного номера платы CPU
+  description: Р—Р°РґР°РЅРёРµ СЃРµСЂРёР№РЅРѕРіРѕ РЅРѕРјРµСЂР° РїР»Р°С‚С‹ CPU
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -2268,7 +2268,7 @@ C3.FBSensors:
 - address: '0x015d'
   code: 2.3.26
   degree: .nan
-  description: Задание серийного номера платы POWER
+  description: Р—Р°РґР°РЅРёРµ СЃРµСЂРёР№РЅРѕРіРѕ РЅРѕРјРµСЂР° РїР»Р°С‚С‹ POWER
   editable: true
   max_value: 65535.0
   min_value: 0.0
@@ -3291,7 +3291,7 @@ D0.Device control:
 - address: '0x01f4'
   code: 3.0.0
   degree: .nan
-  description: КОМАНДЫ
+  description: РљРћРњРђРќР”Р«
   editable: true
   max_value: 6.0
   min_value: 0.0
@@ -3310,7 +3310,7 @@ D0.Device control:
 - address: '0x01f5'
   code: 3.0.1
   degree: .nan
-  description: РЕЖИМ
+  description: Р Р•Р–РРњ
   editable: true
   max_value: 7.0
   min_value: 0.0
@@ -3330,7 +3330,7 @@ D0.Device control:
 - address: '0x01f6'
   code: 3.0.2
   degree: 2.0
-  description: ЗАДАНИЕ ЧАСТОТЫ
+  description: Р—РђР”РђРќРР• Р§РђРЎРўРћРўР«
   editable: true
   max_value: 300.0
   min_value: -300.0
@@ -3342,7 +3342,7 @@ D0.Device control:
 - address: '0x01f7'
   code: 3.0.3
   degree: 1.0
-  description: ЗАДАНИЕ НАПРЯЖЕНИЯ
+  description: Р—РђР”РђРќРР• РќРђРџР РЇР–Р•РќРРЇ
   editable: true
   max_value: 100.0
   min_value: -100.0
@@ -3354,7 +3354,7 @@ D0.Device control:
 - address: '0x01f8'
   code: 3.0.4
   degree: 1.0
-  description: ЗАДАНИЕ ТОКА ID
+  description: Р—РђР”РђРќРР• РўРћРљРђ ID
   editable: true
   max_value: 2000.0
   min_value: -2000.0
@@ -3366,7 +3366,7 @@ D0.Device control:
 - address: '0x01f9'
   code: 3.0.5
   degree: 1.0
-  description: ЗАДАНИЕ ТОКА IQ
+  description: Р—РђР”РђРќРР• РўРћРљРђ IQ
   editable: true
   max_value: 2000.0
   min_value: -2000.0
@@ -3378,7 +3378,7 @@ D0.Device control:
 - address: '0x01fa'
   code: 3.0.6
   degree: .nan
-  description: Режим управления 0-Модбас, 1-CAN
+  description: Р РµР¶РёРј СѓРїСЂР°РІР»РµРЅРёСЏ 0-РњРѕРґР±Р°СЃ, 1-CAN
   editable: true
   max_value: 2.0
   min_value: 0.0

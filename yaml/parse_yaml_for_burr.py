@@ -161,5 +161,5 @@ if __name__ == '__main__':
             pass
     del param_dict['']
 
-    with open(r'parameters_burr.yaml', 'w', encoding='windows-1251') as file:
+    with open(r'parameters_burr.yaml', 'w', encoding='UTF-8') as file:
         documents = yaml.dump(check_dict(param_dict), file, allow_unicode=True)

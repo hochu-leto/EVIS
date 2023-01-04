@@ -3105,17 +3105,23 @@ pneumatic_suspension:
   description: Коэффициент фильтрации значений датичков давления
   editable: true
   eeprom: null
+  max_value: 1.0
+  min_value: 0.0
   name: SUSPENSION_PRESSURE_SENSOR_FILTER
   scale: 256.4102564102564
   type: UNSIGNED8
+  unit: '[0..1]'
   value: '[0..1]'
 - address: '0x213105'
   description: Коэффициент фильтрации значений датичков высоты
   editable: true
   eeprom: null
+  max_value: 1.0
+  min_value: 0.0
   name: SUSPENSION_HEIGHT_SENSOR_FILTER
   scale: 256.4102564102564
   type: UNSIGNED8
+  unit: '[0..1]'
   value: '[0..1]'
 - address: '0x213106'
   description: Инвертировать значение датчика высоты FL
@@ -3397,12 +3403,16 @@ steering_control:
 - address: '0x211001'
   description: Желаемое положение передней рулевой рейки в ручном режиме управления,
   editable: true
+  max_value: 30000.0
+  min_value: -30000.0
   name: STEERING_FRONT_MANUAL_CONTROL_CMD
   type: SIGNED16
   unit: '[-30000..30000]'
 - address: '0x211002'
   description: Желаемое положение задней рулевой рейки в ручном режиме управления,
   editable: true
+  max_value: 30000.0
+  min_value: -30000.0
   name: STEERING_REAR_MANUAL_CONTROL_CMD
   type: SIGNED16
   unit: '[-30000..30000]'
@@ -3416,6 +3426,8 @@ steering_control:
 - address: '0x211102'
   description: Текущее положение передней рулевой рейки, отправляемое на БКУ
   editable: false
+  max_value: 30000.0
+  min_value: -30000.0
   name: TO_BKU_STEERING_FRONT_POSITION
   scale: 1.0
   scaleB: 30000.0
@@ -3425,6 +3437,8 @@ steering_control:
 - address: '0x211103'
   description: Желаемое положение, отправляемое на переднюю рулевую рейку
   editable: false
+  max_value: 1000.0
+  min_value: -1000.0
   name: TO_STEERING_FRONT_CMD
   type: SIGNED16
   unit: '[-1000..1000]'
@@ -3432,6 +3446,8 @@ steering_control:
 - address: '0x211104'
   description: Текущее положение передней рулевой рейки, получаемое с рейки
   editable: false
+  max_value: 1000.0
+  min_value: -1000.0
   name: FROM_STEERING_FRONT_POSITION
   type: SIGNED16
   unit: '[-1000..1000]'
@@ -3456,6 +3472,8 @@ steering_control:
   description: Нулевое положение передней рулевой рейки
   editable: true
   eeprom: null
+  max_value: 30000.0
+  min_value: -30000.0
   name: STEERING_FRONT_ZERO
   type: SIGNED16
   unit: '[-30000..30000]'
@@ -3464,6 +3482,8 @@ steering_control:
   description: Максимальное отклонение в положительную сторону передней рулевой рейки
   editable: true
   eeprom: null
+  max_value: 30000.0
+  min_value: -30000.0
   name: STEERING_FRONT_MAX
   type: SIGNED16
   unit: '[-30000..30000]'
@@ -3472,6 +3492,8 @@ steering_control:
   description: Максимальное отклонение в отрицательную сторону передней рулевой рейки
   editable: true
   eeprom: null
+  max_value: 30000.0
+  min_value: -30000.0
   name: STEERING_FRONT_MIN
   type: SIGNED16
   unit: '[-30000..30000]'
@@ -3516,6 +3538,8 @@ steering_control:
 - address: '0x211202'
   description: Текущее положение задней рулевой рейки, отправляемое на БКУ
   editable: false
+  max_value: 30000.0
+  min_value: -30000.0
   name: TO_BKU_STEERING_REAR_POSITION
   scale: 1.0
   scaleB: 30000.0
@@ -3525,6 +3549,8 @@ steering_control:
 - address: '0x211203'
   description: Желаемое положение, отправляемое на заднюю рулевую рейку
   editable: false
+  max_value: 1000.0
+  min_value: -1000.0
   name: TO_STEERING_REAR_CMD
   type: SIGNED16
   unit: '[-1000..1000]'
@@ -3532,6 +3558,8 @@ steering_control:
 - address: '0x211204'
   description: Текущее положение задней рулевой рейки, получаемое с рейки
   editable: false
+  max_value: 1000.0
+  min_value: -1000.0
   name: FROM_STEERING_REAR_POSITION
   type: SIGNED16
   unit: '[-1000..1000]'
@@ -3556,6 +3584,8 @@ steering_control:
   description: Нулевое положение задней рулевой рейки
   editable: true
   eeprom: null
+  max_value: 30000.0
+  min_value: -30000.0
   name: STEERING_REAR_ZERO
   type: SIGNED16
   unit: '[-30000..30000]'
@@ -3564,6 +3594,8 @@ steering_control:
   description: Максимальное отклонение в положительную сторону задней рулевой рейки
   editable: true
   eeprom: null
+  max_value: 30000.0
+  min_value: -30000.0
   name: STEERING_REAR_MAX
   type: SIGNED16
   unit: '[-30000..30000]'
@@ -3572,6 +3604,8 @@ steering_control:
   description: Максимальное отклонение в отрицательную сторону задней рулевой рейки
   editable: true
   eeprom: null
+  max_value: 30000.0
+  min_value: -30000.0
   name: STEERING_REAR_MIN
   type: SIGNED16
   unit: '[-30000..30000]'
