@@ -2,9 +2,9 @@
 readme: > 
  Расшифровка кодов ошибок КВУ.
  Код является 16-битным полем со следующей структурой:
-  биты [0..7] - ID ошибки внутри подсистемы
-  биты [8..10] - маска критичности. В настоящий момент КВУ работает с двумя типами: 0 - некритическая и 1 - критическая
-  биты [11..15] - ID подсистемы
+  биты [0..4] - ID ошибки внутри подсистемы
+  биты [5..7] - маска критичности. В настоящий момент КВУ работает с двумя типами: 0 - некритическая и 1 - критическая
+  биты [8..15] - ID подсистемы
 
  В сервисном ПО можно парсить код ошибки для группировки по подсистемам или индикации критических ошибок
 
@@ -24,29 +24,863 @@ readme: >
    Если ошибка не критическая, то решение будет принимать БКУ на основании значения поля "level".
    Синхронизация значений этих полей является зоной ответственности составителя данного описания (скрипты валидации)
 
+separator:
+  code: !!int 256
+
 vmu_errors:
-  - 
-    code: !!int 10496 # критическая ошибка для КВУ
+  -
+    code: !!int 1536
+    name: lights_iolib
+    level: 0
+    hardware_id:
+    name_ru: Пин светового оборудования
+    description: > 
+     Ошибка на одном из пинов, относящихся к управлению световым оборудованием
+
+  -
+    code: !!int 1792
+    name: eeprom_crc
+    level: 0
+    hardware_id:
+    name_ru: EEPROM CRC
+    description: > 
+     Ошибка CRC при чтении параметра из EEPROM
+
+  -
+    code: !!int 1793
+    name: eeprom_iolib
+    level: 0
+    hardware_id:
+    name_ru: EEPROM iolib
+    description: > 
+     Ошибка io_library при взаимодействии с EEPROM
+
+  -
+    code: !!int 1794
+    name: eeprom_nullptr
+    level: 0
+    hardware_id:
+    name_ru: EEPROM nullptr
+    description: > 
+     Обнаружен nullptr при взаимодействии с EEPROM
+
+  -
+    code: !!int 1827
+    name: eeprom_init_timeout
+    level: 2
+    hardware_id:
+    name_ru: EEPROM таймаут
+    description: > 
+     Сразу после включения КВУ происходит чтение всех параметров из EEPROM. Данная ошибка возникает, если этот процесс 
+     продолжается более 500мс, что трактуется как зависание.
+
+  -
+    code: !!int 1796
+    name: eeprom_verification
+    level: 0
+    hardware_id:
+    name_ru: EEPROM ошибка верификации
+    description: > 
+     После записи каждого параметра производится проверка записанного значения (верификации)
+
+  -
+    code: !!int 2336
     name: steering_front_offline
     level: 2
     hardware_id:
-    name_ru: Передняя рулевая рейка не в сети
-    description: КВУ не детектирует на шине CAN1 сообщения от передней рулевой рейки (CAN ID с SA 0x8F)
+    name_ru: Передняя рулевая рейка оффлайн
+    description: > 
+     КВУ не детектирует на шине CAN1 сообщения от передней рулевой рейки (CAN ID с SA 0x8F)
 
-  - 
-    code: !!int 12291 # не критическая ошибка для КВУ
+  -
+    code: !!int 2337
+    name: steering_front_fault
+    level: 2
+    hardware_id:
+    name_ru: Критическая ошибка на передней рулевой рейке
+    description: > 
+     В сообщении STEERING_FRONT_FEEDBACK (CAN ID 0x18F) получен соответствующий флаг
+
+  -
+    code: !!int 2306
+    name: steering_front_warning
+    level: 0
+    hardware_id:
+    name_ru: Некритическая ошибка на передней рулевой рейке
+    description: > 
+     В сообщении STEERING_FRONT_FEEDBACK (CAN ID 0x18F) получен соответствующий флаг
+
+  -
+    code: !!int 2307
+    name: steering_front_overheat
+    level: 0
+    hardware_id:
+    name_ru: Перегрев передней рулевой рейки
+    description: > 
+     В сообщении STEERING_FRONT_FEEDBACK (CAN ID 0x18F) получен соответствующий флаг
+
+  -
+    code: !!int 2592
+    name: steering_rear_offline
+    level: 2
+    hardware_id:
+    name_ru: Задняя рулевая рейка оффлайн
+    description: > 
+     КВУ не детектирует на шине CAN1 сообщения от задней рулевой рейки (CAN ID с SA 0x90)
+
+  -
+    code: !!int 2593
+    name: steering_rear_fault
+    level: 2
+    hardware_id:
+    name_ru: Критическая ошибка на задней рулевой рейке
+    description: > 
+     В сообщении STEERING_REAR_FEEDBACK (CAN ID 0x190) получен соответствующий флаг
+
+  -
+    code: !!int 2562
+    name: steering_rear_warning
+    level: 0
+    hardware_id:
+    name_ru: Некритическая ошибка на задней рулевой рейке
+    description: > 
+     В сообщении STEERING_REAR_FEEDBACK (CAN ID 0x190) получен соответствующий флаг
+
+  -
+    code: !!int 2563
     name: steering_rear_overheat
-    level: 1
+    level: 0
     hardware_id:
     name_ru: Перегрев задней рулевой рейки
-    description: В сообщении STEERING_REAR_FEEDBACK (CAN ID 0x190) получен флаг перегрева
+    description: > 
+     В сообщении STEERING_REAR_FEEDBACK (CAN ID 0x190) получен соответствующий флаг
 
-  - 
-    code: !!int 20481 # не критическая ошибка для КВУ
-    name: antifreeze_low_level
+  -
+    code: !!int 3328
+    name: abs_fl_iolib
+    level: 0
+    hardware_id:
+    name_ru: ABS FL iolib
+    description: > 
+     Ошибка io_library при чтении данных с датчика ABS
+
+  -
+    code: !!int 3329
+    name: abs_fl_wiring
+    level: 0
+    hardware_id:
+    name_ru: ABS FL подключение
+    description: > 
+     Задетектирован обрыв датчика ABS
+
+  -
+    code: !!int 3330
+    name: abs_fl_warning
+    level: 0
+    hardware_id:
+    name_ru: ABS FL некритические невалидные данные
+    description: > 
+     В течение одной минуты превышен некритический порог ошибочных данных с датчика ABS
+
+  -
+    code: !!int 3331
+    name: abs_fl_fault
+    level: 0
+    hardware_id:
+    name_ru: ABS FL критические невалидные данные
+    description: > 
+     В течение одной минуты превышен критический порог ошибочных данных с датчика ABS
+
+  -
+    code: !!int 3332
+    name: abs_fr_iolib
+    level: 0
+    hardware_id:
+    name_ru: ABS FR iolib
+    description: > 
+     Ошибка io_library при чтении данных с датчика ABS
+
+  -
+    code: !!int 3333
+    name: abs_fr_wiring
+    level: 0
+    hardware_id:
+    name_ru: ABS FR подключение
+    description: > 
+     Задетектирован обрыв датчика ABS
+
+  -
+    code: !!int 3334
+    name: abs_fr_warning
+    level: 0
+    hardware_id:
+    name_ru: ABS FR некритические невалидные данные
+    description: > 
+     В течение одной минуты превышен некритический порог ошибочных данных с датчика ABS
+
+  -
+    code: !!int 3335
+    name: abs_fr_fault
+    level: 0
+    hardware_id:
+    name_ru: ABS FR критические невалидные данные
+    description: > 
+     В течение одной минуты превышен критический порог ошибочных данных с датчика ABS
+
+  -
+    code: !!int 3336
+    name: abs_rl_iolib
+    level: 0
+    hardware_id:
+    name_ru: ABS RL iolib
+    description: > 
+     Ошибка io_library при чтении данных с датчика ABS
+
+  -
+    code: !!int 3337
+    name: abs_rl_wiring
+    level: 0
+    hardware_id:
+    name_ru: ABS RL подключение
+    description: > 
+     Задетектирован обрыв датчика ABS
+
+  -
+    code: !!int 3338
+    name: abs_rl_warning
+    level: 0
+    hardware_id:
+    name_ru: ABS RL некритические невалидные данные
+    description: > 
+     В течение одной минуты превышен некритический порог ошибочных данных с датчика ABS
+
+  -
+    code: !!int 3339
+    name: abs_rl_fault
+    level: 0
+    hardware_id:
+    name_ru: ABS RL критические невалидные данные
+    description: > 
+     В течение одной минуты превышен критический порог ошибочных данных с датчика ABS
+
+  -
+    code: !!int 3340
+    name: abs_rr_iolib
+    level: 0
+    hardware_id:
+    name_ru: ABS RR iolib
+    description: > 
+     Ошибка io_library при чтении данных с датчика ABS
+
+  -
+    code: !!int 3341
+    name: abs_rr_wiring
+    level: 0
+    hardware_id:
+    name_ru: ABS RR подключение
+    description: > 
+     Задетектирован обрыв датчика ABS
+
+  -
+    code: !!int 3342
+    name: abs_rr_warning
+    level: 0
+    hardware_id:
+    name_ru: ABS RR некритические невалидные данные
+    description: > 
+     В течение одной минуты превышен некритический порог ошибочных данных с датчика ABS
+
+  -
+    code: !!int 3343
+    name: abs_rr_fault
+    level: 0
+    hardware_id:
+    name_ru: ABS RR критические невалидные данные
+    description: > 
+     В течение одной минуты превышен критический порог ошибочных данных с датчика ABS
+
+  -
+    code: !!int 3616
+    name: di_red_button
+    level: 2
+    hardware_id:
+    name_ru: Кнопка "Стоп КВУ"
+    description: > 
+     Кнопка нажата, либо задетектирован обрыв
+
+  -
+    code: !!int 3585
+    name: di_antifreeze_sensor
     level: 0
     hardware_id:
     name_ru: Низкий уровень охлаждающей жидкости
-    description: 
+    description:
+
+  -
+    code: !!int 3618
+    name: di_brake_fluid_sensor
+    level: 2
+    hardware_id:
+    name_ru: Низкий уровень тормозной жидкости
+    description:
+
+  -
+    code: !!int 3872
+    name: iolib_fatal
+    level: 2
+    hardware_id:
+    name_ru: IOLIB ошибка
+    description: > 
+     Внутренняя критическая ошибка io_library
+
+  -
+    code: !!int 3841
+    name: iolib_non_fatal
+    level: 0
+    hardware_id:
+    name_ru: IOLIB предупреждение
+    description: > 
+     Внутренняя некритическая ошибка io_library
+
+  -
+    code: !!int 3874
+    name: iolib_fpu
+    level: 2
+    hardware_id:
+    name_ru: IOLIB FPU
+    description: > 
+     Ошибка FPU в io_library
+
+  -
+    code: !!int 3843
+    name: iolib_cfg_flash
+    level: 0
+    hardware_id:
+    name_ru: IOLIB CFG FLASH
+    description: > 
+     Ошибка CFG FLASH в io_library
+
+  -
+    code: !!int 3844
+    name: iolib_flash
+    level: 0
+    hardware_id:
+    name_ru: IOLIB FLASH
+    description: > 
+     Ошибка FLASH в io_library
+
+  -
+    code: !!int 3845
+    name: iolib_ram
+    level: 0
+    hardware_id:
+    name_ru: IOLIB RAM
+    description: > 
+     Ошибка RAM в io_library
+
+  -
+    code: !!int 4128
+    name: charger_offline
+    level: 2
+    hardware_id:
+    name_ru: ЗУ не в сети
+    description: > 
+     КВУ не детектирует на шине CAN2 сообщения от зарядного устройства (CAN ID с SA 0xE5) при подключенной зарядной 
+     вилке
+
+  -
+    code: !!int 4099
+    name: bms_offline
+    level: 0
+    hardware_id:
+    name_ru: BMS не в сети
+    description: > 
+     КВУ не детектирует на шине CAN2 сообщения от BMS (CAN ID с SA 0xF4)
+
+  -
+    code: !!int 4100
+    name: charger_hardware
+    level: 0
+    hardware_id:
+    name_ru: Ошибка Hardware на ЗУ
+    description: > 
+     В сообщении от зарядного устройства (CAN ID 0x18FF50E5) получен соответствующий флаг
+
+  -
+    code: !!int 4101
+    name: charger_overheat
+    level: 0
+    hardware_id:
+    name_ru: Перегрев на зарядном устройстве
+    description: > 
+     В сообщении от ЗУ (CAN ID 0x18FF50E5) получен соответствующий флаг
+
+  -
+    code: !!int 4102
+    name: charger_input_voltage
+    level: 0
+    hardware_id:
+    name_ru: Ошибка по входному напряжению на зарядном устройстве
+    description: > 
+     В сообщении от ЗУ (CAN ID 0x18FF50E5) получен соответствующий флаг
+
+  -
+    code: !!int 4103
+    name: charger_communication
+    level: 0
+    hardware_id:
+    name_ru: Потеря связи на зарядном устройстве
+    description: > 
+     В сообщении от ЗУ (CAN ID 0x18FF50E5) получен соответствующий флаг
+
+  -
+    code: !!int 4136
+    name: bms_fault
+    level: 2
+    hardware_id:
+    name_ru: Критическая ошибка BMS
+    description: > 
+     В сообщении от BMS (CAN ID 0x2A0) получен один из флагов:
+      - критическая ошибка
+      - короткое замыкание
+      - ошибка шунта
+      - шунт оффлайн
+
+  -
+    code: !!int 4352
+    name: suspension_iolib_or_wiring
+    level: 0
+    hardware_id:
+    name_ru: Подключение пневмоподвески
+    description: > 
+     Ошибка io_library либо задетектированы ошибки подключения пинов управления
+
+  -
+    code: !!int 4353
+    name: suspension_pressure_limit
+    level: 0
+    hardware_id:
+    name_ru: Давление в пневмоподвеске
+    description: > 
+     Давление в одной из подушек вышло за установленные пределы
+
+  -
+    code: !!int 4354
+    name: suspension_timeout
+    level: 0
+    hardware_id:
+    name_ru: Таймаут исполнения пневмоподвески
+    description: > 
+     Задетектировано неисполнение изменения высоты на одной из подушек
+
+  -
+    code: !!int 4608
+    name: voltage_mon_24_iolib_or_wiring
+    level: 0
+    hardware_id:
+    name_ru: Мониторинг напряжения 24В - IOLIB
+    description: > 
+     Ошибка io_library либо подключения пина измерения напряжения на шине 24В
+
+  -
+    code: !!int 4609
+    name: voltage_mon_24_undervoltage
+    level: 0
+    hardware_id:
+    name_ru: Мониторинг напряжения 24В - пониженное напряжение
+    description: > 
+     Реальное напряжение ниже минимального порогового
+
+  -
+    code: !!int 4610
+    name: voltage_mon_24_overvoltage
+    level: 0
+    hardware_id:
+    name_ru: Мониторинг напряжения 24В - превышенное напряжение
+    description: > 
+     Реальное напряжение выше максимального порогового
+
+  -
+    code: !!int 4612
+    name: voltage_mon_12_iolib_or_wiring
+    level: 0
+    hardware_id:
+    name_ru: Мониторинг напряжения 12В - IOLIB
+    description: > 
+     Ошибка io_library либо подключения пина измерения напряжения на шине 12В
+
+  -
+    code: !!int 4613
+    name: voltage_mon_12_undervoltage
+    level: 0
+    hardware_id:
+    name_ru: Мониторинг напряжения 12В - пониженное напряжение
+    description: > 
+     Реальное напряжение ниже минимального порогового
+
+  -
+    code: !!int 4614
+    name: voltage_mon_12_overvoltage
+    level: 0
+    hardware_id:
+    name_ru: Мониторинг напряжения 12В - превышенное напряжение
+    description: > 
+     Реальное напряжение выше максимального порогового
+
+  -
+    code: !!int 4896
+    name: psted_offline
+    level: 2
+    hardware_id:
+    name_ru: ПСТЭД не в сети
+    description: > 
+     КВУ не детектирует на шине CAN1 сообщения от ПСТЭД (CAN ID с SA 0x81)
+
+  -
+    code: !!int 4897
+    name: psted_hardware_fault
+    level: 2
+    hardware_id:
+    name_ru: Hardware ошибка ПСТЭД
+    description: > 
+     Выставляется на основании флагов HW_DRIVER_PHASE, HW_FLUX, CUR_SENSOR_PHASE, CUR_SENSOR_VOZB и CUR_SENSOR_HV,
+     полученных в сообщении от ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4898
+    name: psted_emergency_stop
+    level: 2
+    hardware_id:
+    name_ru: Аварийная остановка ПСТЭД
+    description: > 
+     Выставляется на основании соответствующего флага, полученного в сообщении от ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4899
+    name: psted_overheat_critical
+    level: 2
+    hardware_id:
+    name_ru: Критический перегрев ПСТЭД
+    description: > 
+     Выставляется на основании флагов TEMP_MOSFET, TEMP_INVERTOR, TEMP_MOTOR и TEMP_FLUXCOIL, полученных в сообщении от 
+     ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4900
+    name: psted_phys_limits
+    level: 2
+    hardware_id:
+    name_ru: Превышение физических параметров на ПСТЭД
+    description: > 
+     Выставляется на основании флагов LOW_HV, HIGH_HV, OVERCURRENT_HV. OVERCURRENT_PHASE, OVERCURRENT_VOZB и LOW_24V,
+     полученных в сообщении от ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4901
+    name: psted_contactor_fault
+    level: 2
+    hardware_id:
+    name_ru: Ошибка контактора ПСТЭД
+    description: > 
+     Выставляется на основании соответствующего флага, полученного в сообщении от ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4902
+    name: psted_software_and_config
+    level: 2
+    hardware_id:
+    name_ru: Ошибка конфигурации ПСТЭД
+    description: > 
+     Выставляется на основании флагов SOFTWARE, PARAM_READ и INCORRECT_CONFIG, полученных в сообщении от ПСТЭД 
+     (CAN ID 0x481)
+
+  -
+    code: !!int 4903
+    name: psted_precharge_fault
+    level: 2
+    hardware_id:
+    name_ru: Ошибка предзаряда ПСТЭД
+    description: > 
+     Выставляется на основании соответствующего флага, полученного в сообщении от ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4906
+    name: psted_other_errors
+    level: 2
+    hardware_id:
+    name_ru: Другая ошибка ПСТЭД
+    description: > 
+     Выставляется на основании флагов POS_SENSOR, CAN_RX и CAN_TX, полученных в сообщении от ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4880
+    name: psted_contactor_warning
+    level: 0
+    hardware_id:
+    name_ru: Предупреждение контактора ПСТЭД
+    description: > 
+     Выставляется на основании соответствующего флага, полученного в сообщении от ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4881
+    name: psted_overheat_non_critical
+    level: 0
+    hardware_id:
+    name_ru: Некритический перегрев ПСТЭД
+    description: > 
+     Выставляется на основании флагов MOTOR_OVERHEAT, FLUX_COIL_OVERHEAT и INVERTOR_OVERHEAT, полученных в сообщении от 
+     ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4882
+    name: psted_sensor_warning
+    level: 0
+    hardware_id:
+    name_ru: Предупреждение сенсора ПСТЭД
+    description: > 
+     Выставляется на основании флага POS_SENSOR_NOISE, полученного в сообщении от ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4883
+    name: psted_high_voltage
+    level: 0
+    hardware_id:
+    name_ru: Предупреждение высокого напряжения ПСТЭД
+    description: > 
+     Выставляется на основании флагов LOW_HV и HIGH_HV, полученных в сообщении от ПСТЭД (CAN ID 0x481)
+
+  -
+    code: !!int 4884
+    name: psted_other_warnings
+    level: 0
+    hardware_id:
+    name_ru: Другое предупреждение ПСТЭД
+    description: > 
+     Выставляется на основании флага INITIALISATION, полученного в сообщении от ПСТЭД (CAN ID 0x481), либо любого из 
+     битов последнего байта этого сообщения
+
+  -
+    code: !!int 4885
+    name: psted_bms_undervoltage
+    level: 0
+    hardware_id:
+    name_ru: Низкое напряжение ПСТЭД
+    description: > 
+     Выставляется по флагу в сообщении от BMS (CAN ID 0x2A0). При детекции этой ошибки снимается момент на ПСТЭД.
+
+  -
+    code: !!int 4886
+    name: psted_isolation_fault
+    level: 0
+    hardware_id:
+    name_ru: Ошибка изоляции ПСТЭД
+    description: > 
+     Выставляется на основании соответствующего флага, полученного в сообщении от ПСТЭД (CAN ID 0x381)
+
+  -
+    code: !!int 5120
+    name: mass_relay_iolib
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "реле массы"
+    description: > 
+     Ошибка io_library либо подключения пина "реле массы"
+
+  -
+    code: !!int 5121
+    name: bku_turnoff_iolib
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "выключение БКУ"
+    description: > 
+     Ошибка io_library либо подключения пина "выключение БКУ"
+
+  -
+    code: !!int 5408
+    name: autopilot_offline
+    level: 2
+    hardware_id:
+    name_ru: БКУ и джойстик не шлют управляющее сообщение в Armed
+    description: > 
+     КВУ находится в состоянии Armed и при этом не детектирует на шине CAN2 сообщение BKU_MAIN_CMD (PGN 0xFF81) ни от 
+     БКУ (CAN ID с SA 0xA5), ни от джойстика (CAN ID с SA 0xA4)
+
+  -
+    code: !!int 6144
+    name: cool_fan_iolib
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "вентилятор охлаждения"
+    description: > 
+     Ошибка io_library либо подключения пина "вентилятор охлаждения"
+
+  -
+    code: !!int 6145
+    name: cool_fan_settings
+    level: 0
+    hardware_id:
+    name_ru: Неправильные настройки вентилятора
+    description: > 
+     Возникает при настройке пороговой температуры включения вентилятора ниже его выключения
+
+  -
+    code: !!int 6688
+    name: t15_terminal_iolib
+    level: 2
+    hardware_id:
+    name_ru: Ошибка пина "терминал 15"
+    description: > 
+     Ошибка io_library либо подключения пина "терминал 15"
+
+  -
+    code: !!int 6944
+    name: do_parking_brake
+    level: 2
+    hardware_id:
+    name_ru: Ошибка пина "парковочный тормоз"
+    description: > 
+     Ошибка io_library либо подключения пина 
+
+  -
+    code: !!int 6945
+    name: do_cp_signal
+    level: 2
+    hardware_id:
+    name_ru: Ошибка пина "разрешение зарядки"
+    description: > 
+     Ошибка io_library либо подключения пина "разрешение зарядки"
+
+  -
+    code: !!int 6946
+    name: do_start_psted_signal
+    level: 2
+    hardware_id:
+    name_ru: Ошибка пина "старт ПСТЭД"
+    description: > 
+     Ошибка io_library либо подключения пина "старт ПСТЭД"
+
+  -
+    code: !!int 6915
+    name: do_susp_valve_up_fl
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "клапан нагнетания пневмо FL"
+    description: > 
+     Ошибка io_library либо подключения пина "клапан нагнетания пневмо FL". 
+     Также из-за особенностей подключения эта ошибка детектируется в процессе 
+     управления пневмопдвеской тумблерами в 4м блоке.
+
+  -
+    code: !!int 6916
+    name: do_susp_valve_up_fr
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "клапан нагнетания пневмо FR"
+    description: > 
+     Ошибка io_library либо подключения пина "клапан нагнетания пневмо FR"
+     Также из-за особенностей подключения эта ошибка детектируется в процессе 
+     управления пневмопдвеской тумблерами в 4м блоке.
+
+  -
+    code: !!int 6917
+    name: do_susp_valve_up_rl
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "клапан нагнетания пневмо RL"
+    description: > 
+     Ошибка io_library либо подключения пина "клапан нагнетания пневмо RL"
+     Также из-за особенностей подключения эта ошибка детектируется в процессе 
+     управления пневмопдвеской тумблерами в 4м блоке.
+
+  -
+    code: !!int 6918
+    name: do_susp_valve_up_rr
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "клапан нагнетания пневмо RR"
+    description: > 
+     Ошибка io_library либо подключения пина "клапан нагнетания пневмо RR"
+     Также из-за особенностей подключения эта ошибка детектируется в процессе 
+     управления пневмопдвеской тумблерами в 4м блоке.
+
+  -
+    code: !!int 6919
+    name: do_susp_valve_down_fl
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "клапан стравливания пневмо FL"
+    description: > 
+     Ошибка io_library либо подключения пина "клапан стравливания пневмо FL"
+     Также из-за особенностей подключения эта ошибка детектируется в процессе 
+     управления пневмопдвеской тумблерами в 4м блоке.
+
+  -
+    code: !!int 6920
+    name: do_susp_valve_down_fr
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "клапан стравливания пневмо FR"
+    description: > 
+     Ошибка io_library либо подключения пина "клапан стравливания пневмо FR"
+     Также из-за особенностей подключения эта ошибка детектируется в процессе 
+     управления пневмопдвеской тумблерами в 4м блоке.
+
+  -
+    code: !!int 6921
+    name: do_susp_valve_down_rl
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "клапан стравливания пневмо RL"
+    description: > 
+     Ошибка io_library либо подключения пина "клапан стравливания пневмо RL"
+     Также из-за особенностей подключения эта ошибка детектируется в процессе 
+     управления пневмопдвеской тумблерами в 4м блоке.
+
+  -
+    code: !!int 6922
+    name: do_susp_valve_down_rr
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "клапан стравливания пневмо RR"
+    description: > 
+     Ошибка io_library либо подключения пина "клапан стравливания пневмо RR"
+     Также из-за особенностей подключения эта ошибка детектируется в процессе 
+     управления пневмопдвеской тумблерами в 4м блоке.
+
+  -
+    code: !!int 6955
+    name: do_brake_pump
+    level: 2
+    hardware_id:
+    name_ru: Ошибка пина "помпа тормоза"
+    description: > 
+     Ошибка io_library либо подключения пина "помпа тормоза"
+
+  -
+    code: !!int 6956
+    name: do_brake_valve_1_8
+    level: 2
+    hardware_id:
+    name_ru: Ошибка пина "клапаны 1 и 8 тормоза"
+    description: > 
+     Ошибка io_library либо подключения пина "клапаны 1 и 8 тормоза"
+
+  -
+    code: !!int 6957
+    name: do_brake_valve_2_9
+    level: 2
+    hardware_id:
+    name_ru: Ошибка пина "клапаны 2 и 9 тормоза"
+    description: > 
+     Ошибка io_library либо подключения пина "клапаны 2 и 9 тормоза"
+
+  -
+    code: !!int 6926
+    name: do_charge_state_led
+    level: 0
+    hardware_id:
+    name_ru: Ошибка пина "светодиод статуса зарядки"
+    description: > 
+     Ошибка io_library либо подключения пина "светодиод статуса зарядки"
 
 ...

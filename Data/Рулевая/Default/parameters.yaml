@@ -1,0 +1,2330 @@
+A0.Process state:
+- address: '0x0000'
+  code: 0.0.0
+  degree: .nan
+  description: АВАРИИ
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: 'A0.0 Alarms '
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'ModFlt '
+    '1': 'SC1Flt '
+    '10': 'UnVoltFlt '
+    '11': 'NoCAN '
+    '12': 'NoMB '
+    '13': 'OverCurrFlt '
+    '14': 'RevErrFlt '
+    '15': 'REZERV_15 '
+    '2': 'HellaFlt '
+    '3': 'DINstopFlt '
+    '4': 'PosMAGFlt '
+    '5': 'NoMoveFlt '
+    '6': 'I2tFlt '
+    '7': 'TempFlt '
+    '8': 'OpenMotor '
+    '9': 'OvVoltFlt '
+- address: '0x0001'
+  code: 0.0.1
+  degree: .nan
+  description: СТАТУС РАБОТЫ
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: 'A0.1 Status '
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0002'
+  code: 0.0.2
+  degree: .nan
+  description: Задание реечной позиции -1000...+1000
+  editable: true
+  max_value: 32767.0
+  min_value: -32767.0
+  name: A0.2 SetSteerPos
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0003'
+  code: 0.0.3
+  degree: .nan
+  description: Актуальная реечная позиция -1000...+1000
+  editable: true
+  max_value: 32767.0
+  min_value: -32767.0
+  name: A0.3 ActSteerPos
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0004'
+  code: 0.0.4
+  degree: .nan
+  description: ТЕКУЩЕЕ ПОЛОЖЕНИЕ В МЕТКАХ ДАТЧИКА РУЛЕВОЙ РЕЙКИ
+  editable: false
+  max_value: 2147483648.0
+  min_value: -2147483648.0
+  name: A0.4 PositionAbs
+  period: 1
+  size: 4.0
+  type: SIGNED32
+  unit: .nan
+- address: '0x0006'
+  code: 0.0.5
+  degree: .nan
+  description: ЗАДАННОЕ ПОЛОЖЕНИЕ В МЕТКАХ ДАТЧИКА РУЛЕВОЙ РЕЙКИ
+  editable: true
+  max_value: 2147483648.0
+  min_value: -2147483648.0
+  name: A0.6 SetPositAbs
+  period: 1
+  size: 4.0
+  type: SIGNED32
+  unit: .nan
+- address: '0x0008'
+  code: 0.0.6
+  degree: .nan
+  description: ОШИБКА ПО ПОЛОЖЕНИЮ В МЕТКАХ ДАТЧИКА РУЛЕВОЙ РЕЙКИ
+  editable: false
+  max_value: 2147483648.0
+  min_value: -2147483648.0
+  name: A0.8 ErrPositAbs
+  period: 1
+  size: 4.0
+  type: SIGNED32
+  unit: .nan
+A1.Position, Load:
+- address: '0x0011'
+  code: 0.1.0
+  degree: 1.0
+  description: СКОРОСТЬ ОБ/МИН * 10
+  editable: false
+  max_value: 3275.0
+  min_value: -3275.0
+  name: A1.6 SpeedRPM
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: r/m
+- address: '0x0012'
+  code: 0.1.1
+  degree: 1.0
+  description: ТОК А * 100
+  editable: false
+  max_value: 6553.5
+  min_value: 0.0
+  name: A1.7 CurrentRMS
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: A
+- address: '0x0013'
+  code: 0.1.2
+  degree: 2.0
+  description: МОМЕНТ Нм * 100
+  editable: false
+  max_value: 327.5
+  min_value: -327.5
+  name: A1.8 Torque
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: kNm
+- address: '0x0014'
+  code: 0.1.3
+  degree: 3.0
+  description: НАПРЯЖЕНИЕ В 100
+  editable: false
+  max_value: 65.535
+  min_value: 0.0
+  name: A1.9 OutVoltage
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: V
+A2.Device:
+- address: '0x0015'
+  code: 0.2.0
+  degree: 1.0
+  description: Входное напряжение
+  editable: false
+  max_value: 6553.5
+  min_value: 0.0
+  name: A2.0 Uin
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: V
+- address: '0x0016'
+  code: 0.2.1
+  degree: .nan
+  description: Температура радиатора
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: A2.1 Temp rad
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: deg
+- address: '0x0018'
+  code: 0.2.2
+  degree: .nan
+  description: Температура STM
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: A2.3 Temp STM
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: deg
+- address: '0x0019'
+  code: 0.2.3
+  degree: .nan
+  description: Цифровые входа
+  editable: false
+  max_value: 15.0
+  min_value: 0.0
+  name: A2.4 Inputs
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x001a'
+  code: 0.2.4
+  degree: .nan
+  description: Цифровые входа (вкл инверс)
+  editable: true
+  max_value: 15.0
+  min_value: 0.0
+  name: A2.5 Inputs_invert
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x001e'
+  code: 0.2.5
+  degree: .nan
+  description: Дискретные выходы
+  editable: false
+  max_value: 15.0
+  min_value: 0.0
+  name: A2.8 Outputs
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+A3.Ver PO / ADC:
+- address: '0x001f'
+  code: 0.3.13
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 32750.0
+  min_value: -32750.0
+  name: A3.0 Car number
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0020'
+  code: 0.3.0
+  degree: .nan
+  description: Текущая ось по итогам А3.4
+  editable: true
+  max_value: 1.0
+  min_value: 0.0
+  name: A3.1 WheelTyp
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': FORWARD
+    '1': 'REAR '
+- address: '0x0021'
+  code: 0.3.1
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: A3.2 ADC_Regs0_I1
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0022'
+  code: 0.3.2
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: A3.3 ADC_Regs0_I2
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0023'
+  code: 0.3.3
+  degree: .nan
+  description: 'Выбор типа оси ТС: 0-по SN (чёт/нечёт), 1-по DIP_SW1, 2-передний,
+    3-задний'
+  editable: true
+  max_value: 3.0
+  min_value: 0.0
+  name: A3.4 WheelTypeSet
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': SER_NUM
+    '1': DIPSW_1
+    '2': FORWARD
+    '3': 'REAR '
+    '4': REZERV4
+    '5': REZERV5
+- address: '0x0026'
+  code: 0.3.4
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 32750.0
+  min_value: -32750.0
+  name: A3.7 Pila_main
+  period: 1
+  size: 4.0
+  type: SIGNED32
+  unit: .nan
+- address: '0x0028'
+  code: 0.3.5
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 32750.0
+  min_value: -32750.0
+  name: A3.9 Pila_main_long
+  period: 1
+  size: 4.0
+  type: SIGNED32
+  unit: .nan
+- address: '0x002a'
+  code: 0.3.6
+  degree: .nan
+  description: Версия ПО
+  editable: false
+  max_value: 32750.0
+  min_value: -32750.0
+  name: 'A3.11.VER_PO '
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x002c'
+  code: 0.3.7
+  degree: .nan
+  description: АЦП I1
+  editable: false
+  max_value: 32750.0
+  min_value: -32750.0
+  name: A3.13 ADC I1
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x002d'
+  code: 0.3.8
+  degree: .nan
+  description: АЦП I2
+  editable: false
+  max_value: 32750.0
+  min_value: -32750.0
+  name: A3.14 ADC I2
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0032'
+  code: 0.3.9
+  degree: .nan
+  description: РЕЗЕРВ
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: A3.19 pilaA_orig
+  period: 1
+  size: 4.0
+  type: SIGNED32
+  unit: .nan
+- address: '0x0034'
+  code: 0.3.10
+  degree: .nan
+  description: РЕЗЕРВ
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: A3.21 pilaB_orig
+  period: 1
+  size: 4.0
+  type: SIGNED32
+  unit: .nan
+- address: '0x0036'
+  code: 0.3.11
+  degree: .nan
+  description: РЕЗЕРВ
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: A3.23 pilaA_Q24
+  period: 1
+  size: 4.0
+  type: SIGNED32
+  unit: .nan
+- address: '0x0038'
+  code: 0.3.12
+  degree: .nan
+  description: РЕЗЕРВ
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: A3.25 pilaB_Q24
+  period: 1
+  size: 4.0
+  type: SIGNED32
+  unit: .nan
+B0.Global configuration&B1.Rezerv Group:
+- address: '0x003c'
+  code: 1.0.0
+  degree: .nan
+  description: Коэффициент масштабирования ШИМ относительно 20 кГц
+  editable: true
+  max_value: 10.0
+  min_value: 1.0
+  name: B0.0 PWM_Period_Scale
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'NOT USED '
+    '1': '20 kHz '
+    '10': '2.0 kHz '
+    '2': '10 kHz '
+    '3': '6.667 kHz '
+    '4': '5 kHz '
+    '5': '4 kHz '
+    '6': '3.333 kHz '
+    '7': '2.857 kHz '
+    '8': '2.5 kHz '
+    '9': '2.222 kHz '
+- address: '0x003f'
+  code: 1.0.1
+  degree: .nan
+  description: номинальная скорость об/мин
+  editable: true
+  max_value: 10000.0
+  min_value: 0.0
+  name: B0.3 FREQ_Motor_nom
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0045'
+  code: 1.0.2
+  degree: .nan
+  description: Серийный номер блока
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: B0.9 Serial_Number
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0046'
+  code: 1.0.3
+  degree: .nan
+  description: Дата выпуска
+  editable: false
+  max_value: 4294967295.0
+  min_value: 0.0
+  name: B0.10 Product_Date
+  period: 1
+  size: 4.0
+  type: DATE
+  unit: .nan
+- address: '0x0048'
+  code: 1.0.4
+  degree: .nan
+  description: Номер платы управления
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: B0.12 CPU_Number
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0049'
+  code: 1.0.5
+  degree: .nan
+  description: Номер силовой платы
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: B0.13 PWR_Number
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x004a'
+  code: 1.0.6
+  degree: 2.0
+  description: Постоянная времени датчиков температуры
+  editable: true
+  max_value: 100.0
+  min_value: 0.0
+  name: B0.14 temperTF
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x004b'
+  code: 1.1.0
+  degree: .nan
+  description: Частота обработки контура скорости
+  editable: true
+  max_value: 20000.0
+  min_value: 0.0
+  name: B1.0 REQ_SPD_CALC
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x004c'
+  code: 1.1.1
+  degree: .nan
+  description: Частота обработки контура положения
+  editable: true
+  max_value: 20000.0
+  min_value: 0.0
+  name: B1.1 REQ_POS_CALC
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+B2.CAN_BURR30:
+- address: '0x0059'
+  code: 1.2.0
+  degree: .nan
+  description: Принятая по CAN команда
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: B2.4 rxCommand
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'NONE '
+    '1': 'RUN_FRWD_STEER '
+    '10': 'Rezerv9 '
+    '11': 'Rezerv10 '
+    '12': 'Rezerv11 '
+    '13': 'Rezerv12 '
+    '14': 'Rezerv13 '
+    '15': 'Rezerv14 '
+    '16': 'Rezerv15 '
+    '2': 'RUN_REAR_STEER '
+    '3': SET_ZERO_FORWARD
+    '4': 'SET_ZERO_REAR '
+    '5': 'Rezerv4 '
+    '6': 'Rezerv5 '
+    '7': 'Rezerv6 '
+    '8': 'Rezerv7 '
+    '9': 'Rezerv8 '
+- address: '0x005a'
+  code: 1.2.1
+  degree: .nan
+  description: Принятая по CAN позиция для Передней рейки
+  editable: true
+  max_value: 32767.0
+  min_value: -32767.0
+  name: B2.5 rxSetPos1
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x005b'
+  code: 1.2.2
+  degree: .nan
+  description: Принятая по CAN позиция для Задней рейки
+  editable: true
+  max_value: 32767.0
+  min_value: -32767.0
+  name: B2.6 rxSetPos2
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x005c'
+  code: 1.2.3
+  degree: .nan
+  description: Принятый по CAN Резерв_3
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: B2.7 rxRSVD3
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x005d'
+  code: 1.2.4
+  degree: .nan
+  description: Принятый по CAN Резерв_4
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: B2.8 rxRSVD4
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x005e'
+  code: 1.2.5
+  degree: .nan
+  description: Отправка по CAN Статусного регистра блока
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: B2.9 txStatus
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'Enabled '
+    '1': 'Alarm '
+    '10': 'Rezerv9 '
+    '11': 'Rezerv10 '
+    '12': 'Rezerv11 '
+    '13': 'Rezerv12 '
+    '14': 'Rezerv13 '
+    '15': 'Rezerv14 '
+    '16': 'Rezerv15 '
+    '2': 'OverCurr '
+    '3': 'OverHeat '
+    '4': 'LowVolt '
+    '5': 'HiVolt '
+    '6': 'Rezerv5 '
+    '7': 'Rezerv6 '
+    '8': 'Rezerv7 '
+    '9': 'Rezerv8 '
+- address: '0x005f'
+  code: 1.2.6
+  degree: .nan
+  description: Отправка по CAN позиции блока -1000...+1000
+  editable: true
+  max_value: 32767.0
+  min_value: -32767.0
+  name: B2.10 txPosition
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0060'
+  code: 1.2.7
+  degree: 2.0
+  description: Отправка по CAN тока двигателя ??? ХХХ ???
+  editable: true
+  max_value: 655.35
+  min_value: 0.0
+  name: B2.11 txCurrent
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0061'
+  code: 1.2.8
+  degree: .nan
+  description: Отправка по CAN температуры двигателя (резерв на будущее)
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: B2.12 txTempMot
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0062'
+  code: 1.2.9
+  degree: .nan
+  description: Отправка по CAN температуры радиатора блока
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: B2.13 txTempRad
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0063'
+  code: 1.2.10
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: B2.14 txRSVD5
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0064'
+  code: 1.2.11
+  degree: .nan
+  description: Значение в метках рейки, соответствующее центрольному положению = 0
+  editable: true
+  max_value: 2147483648.0
+  min_value: -2147483648.0
+  name: B2.15 ZeroPosAbs
+  period: 1
+  size: 4.0
+  type: UNSIGNED32
+  unit: .nan
+- address: '0x0066'
+  code: 1.2.12
+  degree: .nan
+  description: Величина рабочей зоны перемещения рейки +- в % относительно всего допустимого
+    хода
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: B2.17 MAX_POS
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: '%'
+- address: '0x0067'
+  code: 1.2.13
+  degree: 2.0
+  description: Величина зоны нечувствительности для стабилизации рейки, Х,ХХ %
+  editable: true
+  max_value: 655.35
+  min_value: 0.0
+  name: B2.18 ZONE
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: '%'
+- address: '0x0068'
+  code: 1.2.14
+  degree: .nan
+  description: Уровень температуры для предупреждения о перегреве блока
+  editable: true
+  max_value: 32767.0
+  min_value: -32767.0
+  name: B2.19 OvHeatWarnLev
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0069'
+  code: 1.2.15
+  degree: 2.0
+  description: Уровень тока для выдачи предупреждения
+  editable: true
+  max_value: 327.67
+  min_value: -327.67
+  name: B2.20 OvCurrWarnLev
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x006a'
+  code: 1.2.16
+  degree: 1.0
+  description: Уровень низкого напряжения для выдачи предупреждения
+  editable: true
+  max_value: 3276.7
+  min_value: -3276.7
+  name: B2.21 UnVoltWarnLev
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x006b'
+  code: 1.2.17
+  degree: 1.0
+  description: Уровень высокого напряжения для выдачи предупреждения
+  editable: true
+  max_value: 3276.7
+  min_value: -3276.7
+  name: B2.22 OvVoltWarnLev
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x006c'
+  code: 1.2.18
+  degree: 1.0
+  description: Интервал времени регистрации потери связи по CAN
+  editable: true
+  max_value: 6553.5
+  min_value: 0.0
+  name: B2.23 CAN_lost
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: с
+- address: '0x006d'
+  code: 1.2.19
+  degree: .nan
+  description: 'Порядок следования байт при передаче по CAN: 0 - прямой, 1 - обратный'
+  editable: true
+  max_value: 1.0
+  min_value: 0.0
+  name: B2.24 CANPDO_ByteOrder
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'NORMAL MODE '
+    '1': 'INVERS MODE '
+- address: '0x006e'
+  code: 1.2.20
+  degree: 2.0
+  description: Интервал времени для срабатывания защиты по длительному превышению
+    тока
+  editable: true
+  max_value: 60.0
+  min_value: 0.0
+  name: B2.25 OvCurrAlarmTime
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x006f'
+  code: 1.2.21
+  degree: 2.0
+  description: Таймер интервала времени непрерывной перегрузки по длительному току
+  editable: true
+  max_value: 655.35
+  min_value: 0.0
+  name: B2.26 OvCurrAlarmCnt
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0073'
+  code: 1.2.22
+  degree: 2.0
+  description: Время выставления предупреждения о перегреве
+  editable: true
+  max_value: 600.0
+  min_value: 0.0
+  name: B2.30 OvHeatWarnTime
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0074'
+  code: 1.2.23
+  degree: 2.0
+  description: Время выставления предупреждения о превышении тока
+  editable: true
+  max_value: 60.0
+  min_value: 0.0
+  name: B2.31 OvCurrWarnTime
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0075'
+  code: 1.2.24
+  degree: 2.0
+  description: Время выставления предупреждения о низком напряжении
+  editable: true
+  max_value: 60.0
+  min_value: 0.0
+  name: B2.32 UnVoltWarnTime
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0076'
+  code: 1.2.25
+  degree: 2.0
+  description: Время выставления предупреждения о высоком напряжении
+  editable: true
+  max_value: 60.0
+  min_value: 0.0
+  name: B2.33 OvVoltWarnTime
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+B3.WORK_TIME:
+- address: '0x0078'
+  code: 1.3.0
+  degree: .nan
+  description: Индикация секундных импульсов на внешнем светодиоде "Связь"
+  editable: true
+  max_value: 1.0
+  min_value: 0.0
+  name: B3.0 SecOutInd
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'ВЫКЛЮЧЕНО '
+    '1': 'ВКЛЮЧЕНО '
+- address: '0x0079'
+  code: 1.3.1
+  degree: 1.0
+  description: Коррекция суточного хода встроенных часов
+  editable: true
+  max_value: 3276.7
+  min_value: -3276.7
+  name: B3.1 SecCorr4Day
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x007d'
+  code: 1.3.2
+  degree: .nan
+  description: Работа в днях
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: B3.5 WDays
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x007e'
+  code: 1.3.3
+  degree: .nan
+  description: Работа в часах
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: B3.6 WHours
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x007f'
+  code: 1.3.4
+  degree: .nan
+  description: Работа в минутах
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: B3.7 WMins
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0080'
+  code: 1.3.5
+  degree: 1.0
+  description: Работа в секундах
+  editable: false
+  max_value: 6553.5
+  min_value: 0.0
+  name: B3.8 WSecs
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0081'
+  code: 1.3.6
+  degree: .nan
+  description: Сброс счётчика
+  editable: true
+  max_value: 1.0
+  min_value: 0.0
+  name: B3.9 Reset
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'НЕТ КОМАНДЫ '
+    '1': 'ЗАДАТЬ '
+C0.Connection:
+- address: '0x0096'
+  code: 2.0.0
+  degree: .nan
+  description: Переключение MB master/slave
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.0 MB Select M(1)/S(0)
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0097'
+  code: 2.0.1
+  degree: .nan
+  description: Адрес MB
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.1 MB addr
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0098'
+  code: 2.0.2
+  degree: .nan
+  description: Скорость MB
+  editable: true
+  max_value: 9.0
+  min_value: 0.0
+  name: C0.2 MB baude rate
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': '2400 BAUD '
+    '1': '4800 BAUD '
+    '2': '9600 BAUD '
+    '3': '19200 BAUD '
+    '4': '38400 BAUD '
+    '5': '57600 BAUD '
+    '6': '115200 BAUD '
+    '7': '230400 BAUD '
+    '8': '460800 BAUD '
+    '9': '921600 BAUD '
+- address: '0x0099'
+  code: 2.0.3
+  degree: .nan
+  description: Команда сброс связи
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.3 Reset Modbus
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x009a'
+  code: 2.0.4
+  degree: 1.0
+  description: Таймаут соединения по последовательному интерфейсу
+  editable: true
+  max_value: 6553.5
+  min_value: 0.0
+  name: C0.4 ConnTimeOut
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x009b'
+  code: 2.0.5
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.5 CAN1RestartMode
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x009c'
+  code: 2.0.6
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.6 CAN1State
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x009d'
+  code: 2.0.7
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.7 CAN1Reset
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x009e'
+  code: 2.0.8
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.8 CAN1RestTimer
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x009f'
+  code: 2.0.9
+  degree: 1.0
+  description: .nan
+  editable: true
+  max_value: 6553.5
+  min_value: 0.0
+  name: C0.9 CAN1RestTimeOut
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00a0'
+  code: 2.0.10
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.10 CAN1ReInitCnt
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00a1'
+  code: 2.0.11
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.11 CAN1ErrCnt
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00a2'
+  code: 2.0.12
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.12 CAN1ErrCode
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00a3'
+  code: 2.0.13
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.13 CanConnStatus 8
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00a4'
+  code: 2.0.14
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.14 CanConnFaultTimer 9
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00a7'
+  code: 2.0.15
+  degree: .nan
+  description: количество пересбросов по CAN
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C0.17 CanReset
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00a8'
+  code: 2.0.16
+  degree: .nan
+  description: 'скорость CAN: 0-125, 1-250, 2-500'
+  editable: true
+  max_value: 2.0
+  min_value: 0.0
+  name: C0.18 CanSpeed
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': '125 '
+    '1': '250 '
+    '2': '500 '
+C1.PositionSens:
+- address: '0x00d0'
+  code: 2.1.0
+  degree: 4.0
+  description: Постоянная времени фильтра ЗИ по положению
+  editable: true
+  max_value: 6.5535
+  min_value: 0.0
+  name: C1.8 RefFiltrTime
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00dc'
+  code: 2.1.1
+  degree: .nan
+  description: Реверсирование работы ШИМ 0, 1
+  editable: true
+  max_value: 1.0
+  min_value: 0.0
+  name: C1.20 PwmDir
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'NORMAL MODE '
+    '1': 'INVERS MODE '
+- address: '0x00f0'
+  code: 2.1.2
+  degree: .nan
+  description: Включение/выключение режима Авто-Тест
+  editable: true
+  max_value: 1.0
+  min_value: 0.0
+  name: C1.40 AutoTestMode
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'ВЫКЛЮЧЕНО '
+    '1': 'ВКЛЮЧЕНО '
+- address: '0x00f1'
+  code: 2.1.3
+  degree: .nan
+  description: Верхний предел для режима Авто-Тест
+  editable: true
+  max_value: 1000.0
+  min_value: -1000.0
+  name: C1.41 TestHiPos
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x00f2'
+  code: 2.1.4
+  degree: .nan
+  description: Нижний предел для режима Авто-Тест
+  editable: true
+  max_value: 1000.0
+  min_value: -1000.0
+  name: C1.42 TestLowPos
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+C2.Regulators:
+- address: '0x00fa'
+  code: 2.2.0
+  degree: 4.0
+  description: Постоянная времени в ОС по скорости от магнитного датчика
+  editable: true
+  max_value: 0.9999
+  min_value: 0.0
+  name: C2.0 SpdFB_Time3F
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00fb'
+  code: 2.2.1
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 100.0
+  min_value: 0.0
+  name: C2.1 SpdReg_Kp
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00fc'
+  code: 2.2.2
+  degree: 4.0
+  description: .nan
+  editable: true
+  max_value: 0.9999
+  min_value: 0.0
+  name: C2.2 SpdReg_Ti
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00fd'
+  code: 2.2.3
+  degree: 4.0
+  description: .nan
+  editable: true
+  max_value: 0.9999
+  min_value: 0.0
+  name: C2.3 SpdReg_Rez
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00fe'
+  code: 2.2.4
+  degree: 3.0
+  description: .nan
+  editable: true
+  max_value: 9.999
+  min_value: 0.0
+  name: C2.4 SpdReg_Kc
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x00ff'
+  code: 2.2.5
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 99.99
+  min_value: 0.0
+  name: C2.5 SpdReg_OutMax
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0100'
+  code: 2.2.6
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 0.0
+  min_value: -99.99
+  name: C2.6 SpdReg_OutMin
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0101'
+  code: 2.2.7
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 100.0
+  min_value: 0.0
+  name: C2.7 CurrReg_Kp
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0102'
+  code: 2.2.8
+  degree: 4.0
+  description: .nan
+  editable: true
+  max_value: 0.9999
+  min_value: 0.0
+  name: C2.8 CurrReg_Ti
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0103'
+  code: 2.2.9
+  degree: 4.0
+  description: .nan
+  editable: true
+  max_value: 0.9999
+  min_value: 0.0
+  name: C2.9 CurrReg_Rez
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0104'
+  code: 2.2.10
+  degree: 3.0
+  description: .nan
+  editable: true
+  max_value: 9.999
+  min_value: 0.0
+  name: C2.10 CurrReg_Kc
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0105'
+  code: 2.2.11
+  degree: 3.0
+  description: .nan
+  editable: true
+  max_value: 9.999
+  min_value: 0.0
+  name: C2.11 CurrReg_OutMax
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0106'
+  code: 2.2.12
+  degree: 3.0
+  description: .nan
+  editable: true
+  max_value: 0.0
+  min_value: -9.999
+  name: C2.12 CurrReg_OutMin
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0107'
+  code: 2.2.13
+  degree: 2.0
+  description: Коэфф. усиления П-РП
+  editable: true
+  max_value: 127.0
+  min_value: 0.0
+  name: C2.13 P_PosReg_Kp
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0108'
+  code: 2.2.14
+  degree: 4.0
+  description: Ограничение ошибки П-РП
+  editable: true
+  max_value: 1.27
+  min_value: 0.0
+  name: C2.14 P_PosReg_ErrLim
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0109'
+  code: 2.2.15
+  degree: 3.0
+  description: Макс. выход П-РП
+  editable: true
+  max_value: 9.999
+  min_value: 0.0
+  name: C2.15 P_PosReg_OutMax
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x010a'
+  code: 2.2.16
+  degree: 3.0
+  description: Мин. выход П-РП
+  editable: true
+  max_value: 0.0
+  min_value: -9.999
+  name: C2.16 P_PosReg_OutMin
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0119'
+  code: 2.2.17
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 100.0
+  min_value: 0.0
+  name: C2.31 PI_PosReg_Kp
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x011a'
+  code: 2.2.18
+  degree: 4.0
+  description: .nan
+  editable: true
+  max_value: 0.9999
+  min_value: 0.0
+  name: C2.32 PI_PosReg_Ti
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x011b'
+  code: 2.2.19
+  degree: 4.0
+  description: .nan
+  editable: true
+  max_value: 0.9999
+  min_value: 0.0
+  name: C2.33 PI_PosReg_Rez
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x011c'
+  code: 2.2.20
+  degree: 3.0
+  description: .nan
+  editable: true
+  max_value: 9.999
+  min_value: 0.0
+  name: C2.34 PI_PosReg_Kc
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x011d'
+  code: 2.2.21
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 99.99
+  min_value: 0.0
+  name: C2.35 PI_PosReg_OutMax
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x011e'
+  code: 2.2.22
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 0.0
+  min_value: -99.99
+  name: C2.36 PI_PosReg_OutMin
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+C3.FBSensors:
+- address: '0x012c'
+  code: 2.3.0
+  degree: 4.0
+  description: Коэффициент усиления сигнала АЦП ко каналу I1
+  editable: true
+  max_value: 3.275
+  min_value: -3.275
+  name: C3.0 Curr1_Gain
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x012d'
+  code: 2.3.1
+  degree: .nan
+  description: Коэффициент смещения сигнала АЦП ко каналу I1
+  editable: true
+  max_value: 32750.0
+  min_value: -32750.0
+  name: C3.1 Curr1_Offs
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x012e'
+  code: 2.3.2
+  degree: 4.0
+  description: Коэффициент усиления сигнала АЦП ко каналу I2
+  editable: true
+  max_value: 3.275
+  min_value: -3.275
+  name: C3.2 Curr2_Gain
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x012f'
+  code: 2.3.3
+  degree: .nan
+  description: Коэффициент смещения сигнала АЦП ко каналу I2
+  editable: true
+  max_value: 32750.0
+  min_value: -32750.0
+  name: C3.3 Curr2_Offs
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0130'
+  code: 2.3.4
+  degree: 5.0
+  description: Постоянная времени входного фильтра токов
+  editable: true
+  max_value: 0.09999
+  min_value: 0.0
+  name: 'C3.4 CurrTimeF '
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0136'
+  code: 2.3.5
+  degree: 5.0
+  description: Коэффициент пересчёта токов в момент
+  editable: true
+  max_value: 0.12799
+  min_value: 0.0
+  name: C3.10 Curr2TorqGain
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0137'
+  code: 2.3.6
+  degree: .nan
+  description: Постоянная времени фильтров индикации
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.11 Tf indic
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0138'
+  code: 2.3.7
+  degree: 4.0
+  description: Коэффициент усиления сигнала АЦП по каналу Uin
+  editable: true
+  max_value: 3.275
+  min_value: -3.275
+  name: C3.12 Uin_Gain
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0139'
+  code: 2.3.8
+  degree: .nan
+  description: Коэффициент смещения сигнала АЦП по каналу Uin
+  editable: true
+  max_value: 32750.0
+  min_value: -32750.0
+  name: C3.13 Uin_Offs
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x013a'
+  code: 2.3.9
+  degree: 2.0
+  description: ток первой стойки
+  editable: false
+  max_value: 327.5
+  min_value: -327.5
+  name: C3.14 I1
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x013b'
+  code: 2.3.10
+  degree: 2.0
+  description: ток второй стойки
+  editable: false
+  max_value: 327.5
+  min_value: -327.5
+  name: C3.15 I2
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x013c'
+  code: 2.3.11
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.16 CAPA_max
+  period: 1
+  size: 4.0
+  type: UNSIGNED32
+  unit: .nan
+- address: '0x013e'
+  code: 2.3.12
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.18 CAPB_max
+  period: 1
+  size: 4.0
+  type: UNSIGNED32
+  unit: .nan
+- address: '0x0140'
+  code: 2.3.13
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.20 CAPA_min
+  period: 1
+  size: 4.0
+  type: UNSIGNED32
+  unit: .nan
+- address: '0x0142'
+  code: 2.3.14
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.22 CAPB_min
+  period: 1
+  size: 4.0
+  type: UNSIGNED32
+  unit: .nan
+- address: '0x0148'
+  code: 2.3.15
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.26 Temp_ADC_Test
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0149'
+  code: 2.3.16
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.27 Temp_ADC
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x014a'
+  code: 2.3.17
+  degree: 2.0
+  description: .nan
+  editable: false
+  max_value: 327.5
+  min_value: -327.5
+  name: C3.28 RadTemp
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+- address: '0x0158'
+  code: 2.3.18
+  degree: .nan
+  description: Пароль для записи идентификационных данных
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.44 InitPSWRD
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0159'
+  code: 2.3.19
+  degree: .nan
+  description: Задание серийного номера БУРР-30
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.45 SystemSN
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x015a'
+  code: 2.3.20
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 4294967295.0
+  min_value: 0.0
+  name: C3.46 SystemDT
+  period: 1
+  size: 4.0
+  type: DATE
+  unit: .nan
+- address: '0x015c'
+  code: 2.3.21
+  degree: .nan
+  description: Задание серийного номера для платы CPU
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.47 SystemCPUN
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x015d'
+  code: 2.3.22
+  degree: .nan
+  description: Задание серийного номера для платы POWER
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C3.48 SystemPWRN
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+C4.Protections&C5.CAN:
+- address: '0x015e'
+  code: 2.4.0
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 0.0
+  name: C4.0 Enable
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'ModFlt '
+    '1': 'SC1Flt '
+    '10': 'UnVoltFlt '
+    '11': 'NoCAN '
+    '12': 'NoMB '
+    '13': 'OverCurrFlt '
+    '14': 'RevErrFlt '
+    '15': 'REZERV_15 '
+    '2': 'HellaFlt '
+    '3': 'DINstopFlt '
+    '4': 'PosMAGFlt '
+    '5': 'NoMoveFlt '
+    '6': 'I2tFlt '
+    '7': 'TempFlt '
+    '8': 'OpenMotor '
+    '9': 'OvVoltFlt '
+- address: '0x0160'
+  code: 2.4.1
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 655.35
+  min_value: 1.0
+  name: C4.2 SC_Level
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0162'
+  code: 2.4.2
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 65535.0
+  min_value: 20.0
+  name: C4.4 NoMoveSpdErr
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0163'
+  code: 2.4.3
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 100.0
+  min_value: 10.0
+  name: C4.5 RadOverHeat
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0165'
+  code: 2.4.4
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 200.0
+  min_value: 0.0
+  name: C4.7 RevErrLevel
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x016f'
+  code: 2.4.5
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 1000.0
+  min_value: 1.0
+  name: C4.17 ModFltDelay
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0170'
+  code: 2.4.6
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 1000.0
+  min_value: 1.0
+  name: C4.18 SCFltDelay
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0172'
+  code: 2.4.7
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 500.0
+  min_value: 0.1
+  name: C4.20 NoMoveFltDelay
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0173'
+  code: 2.4.8
+  degree: 1.0
+  description: .nan
+  editable: true
+  max_value: 200.0
+  min_value: 1.0
+  name: C4.21 RadOverHeatDel
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x0175'
+  code: 2.4.9
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 2.0
+  min_value: 0.03
+  name: C4.23 RevErrFltDelay
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x017f'
+  code: 2.4.10
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 327.5
+  min_value: -327.5
+  name: C4.33 SetTestCurr
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: A
+- address: '0x0180'
+  code: 2.4.11
+  degree: .nan
+  description: .nan
+  editable: true
+  max_value: 32750.0
+  min_value: -32750.0
+  name: C4.34 MaxDelt4LoosPos
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: POS
+- address: '0x0193'
+  code: 2.5.0
+  degree: 2.0
+  description: .nan
+  editable: true
+  max_value: 327.5
+  min_value: -327.5
+  name: C5.3 rxSetCurr
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: A
+C6.Options 6:
+- address: '0x01cc'
+  code: 2.6.0
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.0 StdID_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01cd'
+  code: 2.6.1
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.1 DLC_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01ce'
+  code: 2.6.2
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.2 Byte0_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01cf'
+  code: 2.6.3
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.3 Byte1_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d0'
+  code: 2.6.4
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.4 Byte2_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d1'
+  code: 2.6.5
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.5 Byte3_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d2'
+  code: 2.6.6
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.6 Byte4_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d3'
+  code: 2.6.7
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.7 Byte5_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d4'
+  code: 2.6.8
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.8 Byte6_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d5'
+  code: 2.6.9
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.9 Byte7_Rx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d6'
+  code: 2.6.10
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.10 StdID_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d7'
+  code: 2.6.11
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.11 DLC_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d8'
+  code: 2.6.12
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.12 Byte0_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01d9'
+  code: 2.6.13
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.13 Byte1_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01da'
+  code: 2.6.14
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.14 Byte2_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01db'
+  code: 2.6.15
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.15 Byte3_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01dc'
+  code: 2.6.16
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.16 Byte4_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01dd'
+  code: 2.6.17
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.17 Byte5_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01de'
+  code: 2.6.18
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.18 Byte6_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+- address: '0x01df'
+  code: 2.6.19
+  degree: .nan
+  description: .nan
+  editable: false
+  max_value: 65535.0
+  min_value: 0.0
+  name: C6.19 Byte7_Tx
+  period: 1
+  size: 2.0
+  type: UNSIGNED16
+  unit: .nan
+D0.Device control:
+- address: '0x01f4'
+  code: 3.0.0
+  degree: .nan
+  description: КОМАНДЫ
+  editable: true
+  max_value: 6.0
+  min_value: 0.0
+  name: 'D0.0 ComandSet '
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'STOP '
+    '1': 'RUN '
+    '2': 'NOT USED '
+    '3': 'NOT USED '
+    '4': 'NOT USED '
+    '5': 'RESET FAULT '
+- address: '0x01f5'
+  code: 3.0.1
+  degree: .nan
+  description: РЕЖИМ
+  editable: true
+  max_value: 7.0
+  min_value: 0.0
+  name: 'D0.1 ModeSet '
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'SCALAR '
+    '1': 'CURRENT MODE '
+    '2': 'FIND ROTOR POS '
+    '3': 'SPEED CONTROL '
+    '4': 'POS CNTRL INCR '
+    '5': 'TORQUE MODE '
+    '6': 'NOT USED '
+- address: '0x01f6'
+  code: 3.0.2
+  degree: 2.0
+  description: ЗАДАНИЕ ЧАСТОТЫ
+  editable: true
+  max_value: 300.0
+  min_value: -300.0
+  name: D0.2 FreqSet/SpeedSet
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: Hz
+- address: '0x01f7'
+  code: 3.0.3
+  degree: 1.0
+  description: ЗАДАНИЕ НАПРЯЖЕНИЯ
+  editable: true
+  max_value: 100.0
+  min_value: -100.0
+  name: D0.3 Voltage
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: '%'
+- address: '0x01f8'
+  code: 3.0.4
+  degree: 1.0
+  description: ЗАДАНИЕ ТОКА ID
+  editable: true
+  max_value: 2000.0
+  min_value: -2000.0
+  name: D0.4 Id Set
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: A
+- address: '0x01f9'
+  code: 3.0.5
+  degree: 1.0
+  description: ЗАДАНИЕ ТОКА IQ
+  editable: true
+  max_value: 2000.0
+  min_value: -2000.0
+  name: D0.5 Iq Set
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: A
+- address: '0x01fa'
+  code: 3.0.6
+  degree: .nan
+  description: Режим управления 0-Модбас, 1-CAN
+  editable: true
+  max_value: 2.0
+  min_value: 0.0
+  name: D0.6 CAN_Control
+  period: 1
+  size: 2.0
+  type: SIGNED16
+  unit: .nan
+  values_table:
+    '0': 'MB CONTROL '
+    '1': 'CAN CONTROL '
+    '2': 'CAN CTRL_ETT '

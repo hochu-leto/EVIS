@@ -5,16 +5,15 @@
 подвязываем к руководству по поиску на конфлюенс по check_link и по списку параметров important_parametr
 создаём список и забрасываем его в Избранное с названием ошибки -название списка
 """
-from EVONode import EVONode
 
 empty_error = {
     'name': 'Неизвестная ошибка',
     'value': 0,
     'description': '',
     'important_parameters': [],
-    'check_link': [],
+    'check_link': '',
     'critical': False,
-    'node': EVONode
+    'node': None
 }
 
 
@@ -27,17 +26,18 @@ class EvoError:
         if raw_err_dict is None:
             raw_err_dict = empty_error
 
-        if node is None:
-            node = EVONode
-
-        def check_string(name: str, s=''):
+        def check_string(name: str, s=None):
+            if s is None:
+                s = ''
             st = raw_err_dict[name] if name in list(raw_err_dict.keys()) \
+                                       and raw_err_dict[name] \
                                        and str(raw_err_dict[name]) != 'nan' else s
             return st
 
-        def check_bool(name: str,):
+        def check_bool(name: str, ):
             st = True if name in list(raw_err_dict.keys()) \
-                                       and str(raw_err_dict[name]) != 'nan' else False
+                         and str(raw_err_dict[name]) != 'nan' \
+                         and raw_err_dict[name] else False
             return st
 
         def check_number(name: str, value=0):
@@ -48,9 +48,9 @@ class EvoError:
             return v
 
         self.name = check_string('name_error')
-        self.description = check_string('description_error')
+        self.description = check_string('description_error', f'Для ошибки {self.name} пока ещё нет полного описания')
         self.value = check_number('value_error')
-        self.important_parameters = [par for par in check_string('important_parametr').split(',')]
+        self.important_parameters = [par.strip() for par in check_string('important_parametr').split(',')]
         self.check_link = [par for par in check_string('check_link').split(',')]
         self.node = node
         self.critical = check_bool('critical')

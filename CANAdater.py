@@ -118,3 +118,7 @@ class CANAdapter:
                 ans = list(ans.values())
             return ans
         return 'Неверный битрейт'
+
+    def can_request_long(self, can_id_req: int, can_id_ans: int, l_byte):
+        adapter = self.id_nodes_dict[can_id_req]
+        return adapter.can_request_long(can_id_req, can_id_ans, l_byte)

@@ -193,7 +193,7 @@ class CANMarathon(AdapterCAN):
 
     def can_write(self, can_id: int, message: list):
         if not isinstance(message, list):
-            return error_codes[65535 - 16]
+            return error_codes[65535 - 16]    # надо исправлять это безобразие
 
         if not self.is_canal_open:
             err = self.canal_open()
@@ -239,7 +239,7 @@ class CANMarathon(AdapterCAN):
                     print(f'   в CiTrStat так {complete_dict[err]}, осталось кадров на передачу {trqcnt.value} ')
                 if not trqcnt.value and not err:
                     return ''
-            err = 65535 - 2
+            err = 65535 - 2    # надо исправлять это безобразие
 
         if err in error_codes.keys():
             return error_codes[err]
@@ -299,7 +299,7 @@ class CANMarathon(AdapterCAN):
                         exit()
                     return time_data_dict
                 else:
-                    return 'Нет нужного ID в буфере'
+                    return 'Нет нужного ID в буфере'    # надо исправлять это безобразие
                 # return data_list if data_list else 'Нет нужного ID в буфере'
         elif result == 0:
             return 'Время вышло, кадры не получены'
@@ -308,7 +308,7 @@ class CANMarathon(AdapterCAN):
     # возвращает массив int если удалось считать и str если ошибка
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
         if not isinstance(message, list):
-            return error_codes[65535 - 16]
+            return error_codes[65535 - 16]    # надо исправлять это безобразие
 
         # если канал закрыт, его нда открыть
         err = ''
@@ -326,6 +326,7 @@ class CANMarathon(AdapterCAN):
         buffer = self.Buffer()
 
         buffer.id = ctypes.c_uint32(can_id_req)
+        # print(hex(self.BCI_bt0), end='    ')
         # print(hex(buffer.id), end='    ')
         j = 0
         for i in message:
@@ -423,15 +424,100 @@ class CANMarathon(AdapterCAN):
                         return buffer.data
                     # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
                     else:
-                        err = 65535 - 15
+                        err = 65535 - 15    # надо исправлять это безобразие
                 else:
                     err = 'Ошибка при чтении с буфера канала ' + str(result)
             #  если время ожидания хоть какого-то сообщения в шине больше секунды,
             #  значит , нас отключили, уходим
             elif result == 0:
-                err = 65535 - 14
+                err = 65535 - 14    # надо исправлять это безобразие
             else:
-                err = 'Нет подключения к CAN шине '
+                err = 'Нет подключения к CAN шине '    # надо исправлять это безобразие
+        #  выход из цикла попыток
+        # print('закрытие канала')
+        self.close_canal_can()
+        if err in error_codes.keys():
+            return error_codes[err]
+        else:
+            return str(err)
+
+    def can_request_long(self, can_id_req: int, can_id_ans: int, l_byte):   # , message: list):
+        err = ''
+        if not self.is_canal_open:
+            err = self.canal_open()
+            if err:
+                return err
+        transmit_ok = 0
+        # это массив из 1 элемента - потому что читаем один канал, который мы будем отправлять в
+        # функцию ожидания события от марафона 0х01 - значит ждём нового кадра
+        array_cw = self.Cw * 1
+        cw = array_cw((self.can_canal_number, 0x01, 0))
+        self.lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
+        buffer = self.Buffer()
+        message = [0x60, 0, 0, 0, 0, 0, 0, 0]
+        buffer.id = ctypes.c_uint32(can_id_req)
+        j = 0
+        for i in message:
+            buffer.data[j] = ctypes.c_uint8(i)
+            j += 1
+        # print()
+        buffer.len = len(message)
+        #  от длины iD устанавливаем протокол расширенный
+        if can_id_req > 0xFFF:
+            self.lib.msg_seteff(ctypes.pointer(buffer))
+
+        self.lib.CiTransmit.argtypes = [ctypes.c_int8, ctypes.POINTER(self.Buffer)]
+
+        try:
+            transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(buffer))
+        except Exception as e:
+            print('CiTransmit do not work')
+            pprint(e)
+            exit()
+
+        if transmit_ok < 0:
+            self.close_canal_can()
+            if transmit_ok in error_codes.keys():
+                return error_codes[transmit_ok]
+            else:
+                return str(transmit_ok)
+        buffer_array = self.Buffer * 1000
+        buffer_a = buffer_array()
+        exit_list = []
+        for itr_global in range(self.max_iteration):
+            result = 0
+            try:
+                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 100 миллисекунд
+            except Exception as e:
+                print('CiWaitEvent do not work')
+                pprint(e)
+                exit()
+            if result > 0 and cw[0].wflags & 0x01:
+                try:
+                    result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer_a), 100)
+                except Exception as e:
+                    print('CiRead do not work')
+                    pprint(e)
+                    exit()
+                if result >= 0:
+                    # просматриваем все полученные фреймы в поисках нужных ИД, может быть несколько
+                    for w in range(result):
+                        buff = buffer_a[w]
+                        if can_id_ans == buff.id:
+                            for r in range(1, 7):
+                                exit_list.append(buff.data[r])
+                                if len(exit_list) > l_byte - 1:
+                                    return exit_list
+                    else:
+                        err = 65535 - 15    # надо исправлять это безобразие
+                else:
+                    err = 'Ошибка при чтении с буфера канала ' + str(result)
+            #  если время ожидания хоть какого-то сообщения в шине больше секунды,
+            #  значит , нас отключили, уходим
+            elif result == 0:
+                err = 65535 - 14    # надо исправлять это безобразие
+            else:
+                err = 'Нет подключения к CAN шине '    # надо исправлять это безобразие
         #  выход из цикла попыток
         # print('закрытие канала')
         self.close_canal_can()
@@ -697,9 +783,8 @@ class CANMarathon(AdapterCAN):
                         print()
                         self.close_canal_can()
                         return name_bit
-                        # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
             self.close_canal_can()
-        return error_codes[65535 - 8]
+        return error_codes[65535 - 8]    # надо исправлять это безобразие
 
 
 if __name__ == "__main__":

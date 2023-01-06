@@ -2,24 +2,9 @@
 тот самый объект параметра, который имеет все нужные поля, умеет запрашивать своё значение и записывать в блок нужное
 """
 import ctypes
-from time import sleep
 
 import CANAdater
-from EVONode import EVONode
 from helper import bytes_to_float, int_to_hex_str, float_to_int, empty_par
-
-
-# здесь когда-то будет возможность читать текст из посылки, пока нет
-def can_to_char(value):
-    # задел под чтение стрингов
-    # value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
-    # time.sleep(1)
-    # print(self.name, end='    ')
-    # for byte in value:
-    #     print(hex(byte), end=' ')
-    # print()
-    pass
-
 
 type_values = {
     'UNSIGNED8': {'min': 0, 'max': 255, 'type': 0x2F, 'func': ctypes.c_uint8},
@@ -29,8 +14,8 @@ type_values = {
     'UNSIGNED32': {'min': 0, 'max': 4294967295, 'type': 0x23, 'func': ctypes.c_uint32},
     'SIGNED32': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_int32},
     'FLOAT': {'min': -2147483648, 'max': 2147483647, 'type': 0x23, 'func': ctypes.c_uint8},
-    'VISIBLE_STRING': {'min': 0, 'max': 255, 'type': 0x21, 'func': can_to_char}
-
+    'VISIBLE_STRING': {'min': 0, 'max': 255, 'type': 0x21, 'func': ctypes.c_int32},  # can_to_char}
+    'DATE': {'min': 0, 'max': 4294967295, 'type': 0x23, 'func': ctypes.c_uint32}  # can_to_char}
 }
 
 
@@ -39,18 +24,19 @@ class Parametr:
     __slots__ = ('address', 'type',
                  'editable', 'unit', 'description',
                  'group', 'size', 'value', 'name',
-                 'scale', 'scaleB', 'period', 'degree',
+                 'scale', 'offset', 'period', 'degree',
                  'min_value', 'max_value', 'widget', 'node',
-                 'req_list', 'set_list', 'compare_value')
+                 'req_list', 'set_list', 'value_compare', 'value_dict', 'value_string')
 
     def __init__(self, param=None, node=None):
         if param is None:
             param = empty_par
-        if node is None:
-            node = EVONode
+        # if node is None:
+        #     node = EVONode()
 
         def check_value(value, name: str):
             v = value if name not in list(param.keys()) \
+                         or not param[name] \
                          or str(param[name]) == 'nan' \
                          or param[name] == 0 \
                 else (param[name] if not isinstance(param[name], str)
@@ -72,11 +58,11 @@ class Parametr:
         self.description = check_string('description')  # описание параметра по русски
         self.group = check_string('group')  # неиспользуемое поле в подарок от Векторов
         self.size = check_string('size')  # это какой-то атавизм от блоков БУРР
-        self.value = 0
-        self.compare_value = 0
+        self.value = check_value(0, 'value')
+        self.value_compare = 0
         self.name = check_string('name', 'NoName')
         self.scale = float(check_value(1, 'scale'))  # на что домножаем число из КАНа
-        self.scaleB = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
+        self.offset = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
         self.period = int(check_value(1, 'period'))  # период опроса параметра 1=каждый цикл 1000=очень редко
         self.period = 1000 if self.period > 1001 else self.period  # проверять горячие буквы, что входят в
         # статические параметры, чтоб период был = 1001
@@ -84,12 +70,17 @@ class Parametr:
 
         self.min_value = check_value(type_values[self.type]['min'], 'min_value')
         self.max_value = check_value(type_values[self.type]['max'], 'max_value')
+        v_table = check_string('values_table')
+        self.value_dict = {int(k): v for k, v in v_table.items()} if isinstance(v_table, dict) \
+            else {int(val.split(':')[0]): val.split(':')[1]
+                  for val in v_table.split(',')} if v_table else {}
         # из editable и соответствующего списка
         self.widget = 'QtWidgets'
         # что ставить, если node не передали - emptyNode - который получается, если в EVONode ничего не передать
         self.node = node
         self.req_list = []
         self.set_list = []
+        self.value_string = ''
 
     # формирует посылку в зависимости от протокола
     def get_list(self):
@@ -112,7 +103,7 @@ class Parametr:
             self.set_list = data + [sub_index, LSB, value_type, 0x10]
 
     def set_val(self, adapter: CANAdater, value):
-        value += self.scaleB
+        value += self.offset
         value *= self.scale
         if self.degree:
             value *= 10 ** self.degree
@@ -131,12 +122,23 @@ class Parametr:
         if not self.req_list:
             self.get_list()
         while adapter.is_busy:
-            sleep(0.0001)  # очень костыльный момент, ждёт миллисекунду, чтоб освободился адаптер
+            pass  # очень костыльный момент, ждёт миллисекунду, чтоб освободился адаптер
             # на случай когда идёт чтение с двух каналов
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.req_list)
         if isinstance(value_data, str):
+            # print(value_data)
             return value_data
         if self.node.protocol == 'CANOpen':
+            if value_data[0] == 0x41:  # это запрос на длинный параметр строчный
+                # print(self.name, end='   ')
+                # for i in value_data:
+                #     print(hex(i), end=' ')
+                data = adapter.can_request_long(self.node.request_id, self.node.answer_id, value_data[4])
+                value = self.string_from_can(data)
+                if not self.value_string:  # ошибка, если свой стринг пустой
+                    return value
+                self.value = None
+                return self.value
             #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
             address_ans = '0x' \
                           + int_to_hex_str(value_data[2]) \
@@ -146,6 +148,9 @@ class Parametr:
                     (value_data[6] << 16) + \
                     (value_data[5] << 8) + value_data[4]
         elif self.node.protocol == 'MODBUS':
+            # print(self.name, end='   ')
+            # for i in value_data:
+            #     print(hex(i), end=' ')
             # для реек вот так  address_ans = '0x' + int_to_hex_str(data[5]) + int_to_hex_str(data[4]) наверное
             # для реек вот так  value = (data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0]
             address_ans = '0x' + int_to_hex_str(value_data[5]) + int_to_hex_str(value_data[4])
@@ -156,15 +161,25 @@ class Parametr:
         # принятый адрес должен совпадать с тем же адресом, что был отправлен
         if address_ans.upper() == self.address.upper():
             if self.type not in type_values.keys():
-                self.type = 'UNSIGNED32'
+                self.type = 'SIGNED32'
             self.value = type_values[self.type]['func'](value).value
             if self.type == 'FLOAT':
                 self.value = bytes_to_float(value_data[-4:])
+            elif self.type == 'VISIBLE_STRING':
+                self.string_from_can(value_data[-4:])
+                self.value = None
+                return self.value
+            elif self.type == 'DATE':
+                # self.string_from_can(value_data)
+                # do something
+                self.value_string = '20.12.2022'
+                self.value = None
+                return self.value
 
             if self.degree:
                 self.value /= 10 ** self.degree
             self.value /= self.scale
-            self.value -= self.scaleB
+            self.value -= self.offset
             return self.value
         else:
             return 'Адрес не совпадает'
@@ -175,3 +190,36 @@ class Parametr:
             exit_dict[k] = self.__getattribute__(k)
         exit_dict['editable'] = 1 if exit_dict['editable'] else 0
         return exit_dict
+
+    def check_node(self, node_dict: dict):
+        if '#' in self.name:
+            node_name = self.name.split('#')[1]
+            if node_name in node_dict.keys():
+                self.node = node_dict[node_name]
+                return True
+            else:
+                print('Этого блока нет в словаре')
+                return False
+        else:
+            print('В имени параметра нет разделителя')
+            return False
+
+    def string_from_can(self, value):
+        if isinstance(value, str):
+            self.value_string = ''
+            return value
+        self.value_string = ''
+        s = ''
+        for byte in value:
+            if 'Ethernet_' in self.name or '_Ip' in self.name:
+                self.editable = False
+                s += str(byte) + '.'
+            elif '_Mac' in self.name:
+                self.editable = False
+                s += int_to_hex_str(byte) + ':'
+            elif '_time' in self.name:
+                s += str(byte)
+            else:
+                s += chr(byte)
+        self.value_string = s.strip().rstrip('.').rstrip(':')
+        return int(self.value_string) if self.value_string.isdigit() else self.value_string

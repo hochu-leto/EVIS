@@ -1,0 +1,140 @@
+- critical: true
+  name_error: “Overcurrent”
+  value_error: '0x1'
+- critical: true
+  name_error: “Undervoltage”
+  value_error: '0x2'
+- critical: true
+  name_error: “Overvoltage”
+  value_error: '0x4'
+- critical: true
+  description_error: ' temperature is too low for discharging'
+  name_error: “Low DCH temperature”
+  value_error: '0x8'
+- critical: true
+  description_error: ' temperature is too high for discharging'
+  name_error: “High DCH temperature”
+  value_error: '0x10'
+- critical: true
+  name_error: “Battery cover”
+  value_error: '0x20'
+- critical: true
+  name_error: “High humidity”
+  value_error: '0x40'
+- critical: true
+  name_error: “Water”
+  value_error: '0x80'
+- critical: true
+  description_error: ' some BMS Logic board is overheated'
+  name_error: “High logic temperature”
+  value_error: '0x100'
+- critical: true
+  description_error: ' connection with some BMS Logic board is lost'
+  name_error: “Logic offline”
+  value_error: '0x200'
+- critical: true
+  name_error: “Critical error”
+  value_error: '0x400'
+- critical: true
+  description_error: ' connection with the Crown forklift is lost'
+  name_error: “Crown error”
+  value_error: '0x800'
+- critical: true
+  description_error: ' number of cells in incorrect'
+  name_error: “Cell count error”
+  value_error: '0x1000'
+- critical: true
+  description_error: ' connection with the HYG forklift is lost'
+  name_error: “HYG offline”
+  value_error: '0x2000'
+- critical: true
+  description_error: ' errors were detected in the past and should be acknowledged'
+  name_error: “Need acknowledgement”
+  value_error: '0x4000'
+- critical: true
+  description_error: ' connection with the Combilift forklift is lost'
+  name_error: “Combilift offline”
+  value_error: '0x8000'
+- critical: true
+  name_error: “Short circuit”
+  value_error: '0x10000'
+- critical: true
+  description_error: ' the discharging contactor is overheated'
+  name_error: “High contactor temperature”
+  value_error: '0x20000'
+- critical: true
+  description_error: ' number of BMS Logic boards is incorrect'
+  name_error: “Logic count error”
+  value_error: '0x40000'
+- critical: true
+  description_error: ' battery current cannot be measured by ADC'
+  name_error: “ADC error”
+  value_error: '0x80000'
+- critical: true
+  description_error: ' wires which connect the current sensor with the BMS are damaged'
+  name_error: “Current sensor error”
+  value_error: '0x100000'
+- critical: true
+  description_error: ' the charging contactor switches very often'
+  name_error: “CH contactor cycles error”
+  value_error: '0x200000'
+- critical: true
+  description_error: ' the discharging contactor switches very often'
+  name_error: “DCH contactor cycles error”
+  value_error: '0x400000'
+- critical: true
+  description_error: ' connection with the BMS Current sensor is lost'
+  name_error: “Shunt offline”
+  value_error: '0x800000'
+- critical: true
+  description_error: ' internal error of the BMS Current sensor'
+  name_error: “Shunt error”
+  value_error: '0x1000000'
+- critical: true
+  description_error: ' checksum of the setting is incorrect'
+  name_error: “Settings error”
+  value_error: '0x2000000'
+- critical: true
+  description_error: ' boards is reset by the watchdog timer'
+  name_error: “WDT reset”
+  value_error: '0x4000000'
+- critical: true
+  name_error: “No temperature sensors”
+  value_error: '0x8000000'
+- critical: true
+  name_error: “Temperature sensor is shorted”
+  value_error: '0x10000000'
+- critical: true
+  description_error: ' connection with the Spirit truck is lost'
+  name_error: “Spirit offline”
+  value_error: '0x20000000'
+- critical: true
+  description_error: ' temperature is too low for charging'
+  name_error: “Low CH temperature”
+  value_error: '0x100000000'
+- critical: true
+  description_error: ' temperature is too high for charging'
+  name_error: “High CH temperature”
+  value_error: '0x200000000'
+- critical: true
+  name_error: “SD mount error”
+  value_error: '0x400000000'
+- critical: true
+  name_error: “SD read/write error”
+  value_error: '0x800000000'
+- critical: true
+  description_error: ' charging the battery through the discharging contactor'
+  name_error: “Unallowable charging”
+  value_error: '0x1000000000'
+- critical: true
+  name_error: “Stuck contactor”
+  value_error: '0x2000000000'
+- critical: true
+  name_error: “CH contactor feedback error”
+  value_error: '0x4000000000'
+- critical: true
+  name_error: “DCH contactor feedback error”
+  value_error: '0x8000000000'
+- critical: true
+  name_error: “Insulation fault”
+  value_error: '0x10000000000'
