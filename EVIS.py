@@ -248,11 +248,11 @@ def change_value(lst):
 def set_new_value(next_cell, param: Parametr, val):
     info_m = ''
     if 'WheelTypeSet' in param.name:
-        QMessageBox.information(window, "Пасхалка", easter_egg, QMessageBox.Ok)
+        if QMessageBox.information(window, "Пасхалка", easter_egg, QMessageBox.Ok | QMessageBox.Cancel) != QMessageBox.Ok:
+            return "Передумал"
     try:
         float(val)
         if window.thread.isRunning():  # отключаем поток, если он был включен
-            # check, info_m = window.thread.set_param(current_param, val)
             window.connect_to_node()
             # отправляю параметр, полученный из диалогового окна
             param.set_val(can_adapter, float(val))
@@ -263,7 +263,7 @@ def set_new_value(next_cell, param: Parametr, val):
             else:
                 new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
-            if val == new_val:
+            if str(val) == new_val:
                 next_cell.setBackground(QColor(0, 254, 0, 30))
                 if param.node.save_to_eeprom:
                     param.node.param_was_changed = True
@@ -405,14 +405,15 @@ def show_error(item, column):
                 break
     else:
         current_err = window.thread.err_dict[current_node_text][0]
-
-    window.errors_browser.setText(current_err.description + '\n' +
-                                  '\n'.join(current_err.check_link))
+    err_links_list = '\n'.join([f'<a href="{li}">Link</a>' for li in current_err.check_link])\
+        if current_err.check_link else ''
+    window.errors_browser.setText(current_err.description + '\n' + err_links_list)
+    window.errors_browser.setOpenExternalLinks(True)
     if current_err.important_parameters:
         # err_param_list = set([])
         err_param_list = set()
         for par in current_err.important_parameters:
-            er_par = find_param(window.thread.current_nodes_dict, par)
+            er_par = find_param(window.thread.current_nodes_dict, par, current_err.node.name)
             if er_par:
                 err_param_list.add(er_par[0])
         user_node = window.thread.current_nodes_dict[TheBestNode]
@@ -1093,5 +1094,10 @@ if __name__ == '__main__':
         print(time.perf_counter() - start_time)
         app.exec_()  # и запускаем приложение
 
-# нормальный поиск от 4х символов
-# некорректно считывает серийник и ПО на ТАБ
+# реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
+# падает, если щёлкаю по той же ошибке что уже была(если есть список параметров)
+# в избранном нет комбобоксов - нет полного копирования обьекта Параметр
+# не считывает варнинги КВУ - другой адрес
+# кнопку Сохранения в еепром-наверх
+# скукоживается блок названия блока после поиска
+# при сравнении выводится цифра, а не значение из словаря

@@ -70,7 +70,7 @@ def fill_sheet_dict(file_name):
 
 # =========================================версия для ошибок-объектов и ямл-файлов============================
 # ------------------------------------- заполнение списка с ошибками----------------------------
-def fill_err_list_from_yaml(file):
+def fill_err_list_from_yaml(file, node):
     with open(file, "r", encoding="UTF-8") as stream:
         try:
             canopen_error = yaml.safe_load(stream)
@@ -78,12 +78,12 @@ def fill_err_list_from_yaml(file):
             print(exc)
     if canopen_error is None:
         canopen_error = []
-    node_err_list = [EvoError(e) for e in canopen_error]
+    node_err_list = [EvoError(e, node=node) for e in canopen_error]
     return node_err_list
 
 
 # ------------------------------------- заполнения словаря с группами параметров -----------------------------
-def fill_par_dict_from_yaml(file):
+def fill_par_dict_from_yaml(file, node):
     with open(file, "r", encoding="UTF-8") as stream:
         try:
             canopen_params = yaml.safe_load(stream)
@@ -91,7 +91,7 @@ def fill_par_dict_from_yaml(file):
             print(exc)
     if canopen_params is None:
         canopen_params = {}
-    node_params_dict = {group: [Parametr(p) for p in group_params]
+    node_params_dict = {group: [Parametr(p, node=node) for p in group_params]
                         for group, group_params in canopen_params.items()}
     return node_params_dict
 
@@ -113,7 +113,7 @@ def get_immediate_subdirectories(a_dir):
 
 
 # ------------------------------------- попытка загрузки пикл, либо сериализация ямл -------------------------------
-def try_load_pickle(f, dir_name):
+def try_load_pickle(f, dir_name, node):
     if f == 'params':
         func = fill_par_dict_from_yaml
         file = par_file
@@ -129,7 +129,7 @@ def try_load_pickle(f, dir_name):
             dict_or_list = pickle.load(f)
     except FileNotFoundError:
         try:
-            dict_or_list = func(pathlib.Path(dir_name, file))
+            dict_or_list = func(pathlib.Path(dir_name, file), node)
             with open(pathlib.Path(dir_name, p_file), 'wb') as f:
                 pickle.dump(dict_or_list, f)
         except FileNotFoundError:
@@ -146,8 +146,8 @@ def fill_node(node: EVONode):
             node_dir = pathlib.Path(data_dir, directory)
             param_dir = err_dir = Default
             t_dir = pathlib.Path(node_dir, Default)
-            node.group_params_dict = try_load_pickle('params', t_dir)
-            node.errors_list = try_load_pickle('errors', t_dir)
+            node.group_params_dict = try_load_pickle('params', t_dir, node)
+            node.errors_list = try_load_pickle('errors', t_dir, node)
             if not node.group_params_dict or not node.errors_list:
                 return False
             f_v = node.firmware_version
@@ -157,11 +157,11 @@ def fill_node(node: EVONode):
                     min_vers = get_nearest_lower_value(version_list, str(f_v))
                     if min_vers:
                         t_dir = pathlib.Path(node_dir, str(min_vers))
-                        params_dict = try_load_pickle('params', t_dir)
+                        params_dict = try_load_pickle('params', t_dir, node)
                         if params_dict:
                             param_dir = min_vers
                             node.group_params_dict = params_dict.copy()
-                        errors_list = try_load_pickle('errors', t_dir)
+                        errors_list = try_load_pickle('errors', t_dir, node)
                         if errors_list:
                             err_dir = min_vers
                             node.errors_list = errors_list.copy()

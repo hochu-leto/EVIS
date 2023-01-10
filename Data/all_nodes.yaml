@@ -78,11 +78,6 @@
     editable: false
     name: DEVICE_SN_0
     type: VISIBLE_STRING
-  - address: '0x218001'
-    description: Байты 0..3 серийного номера КВУ
-    editable: false
-    name: DEVICE_SN_0
-    type: VISIBLE_STRING
   - address: '0x218002'
     description: Байты 4..7 серийного номера КВУ
     editable: false
@@ -184,7 +179,7 @@
   protocol: CANOpen
   req_id: '0x00000620'
   serial_number:
-    - address: '0x002A01'
+    - address: '0x2A0001'
       editable: false
       name: serial
       type: VISIBLE_STRING

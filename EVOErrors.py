@@ -50,7 +50,8 @@ class EvoError:
         self.name = check_string('name_error')
         self.description = check_string('description_error', f'Для ошибки {self.name} пока ещё нет полного описания')
         self.value = check_number('value_error')
-        self.important_parameters = [par.strip() for par in check_string('important_parametr').split(',')]
-        self.check_link = [par for par in check_string('check_link').split(',')]
+        im_pa = check_string('important_parametr')
+        self.important_parameters = [par.strip() for par in im_pa.split(',')] if im_pa else []
+        self.check_link = [par for par in check_string('check_link').split(',')] if check_string('check_link') else []
         self.node = node
         self.critical = check_bool('critical')

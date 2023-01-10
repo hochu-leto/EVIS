@@ -340,7 +340,7 @@ class CANMarathon(AdapterCAN):
             self.lib.msg_seteff(ctypes.pointer(buffer))
 
         self.lib.CiTransmit.argtypes = [ctypes.c_int8, ctypes.POINTER(self.Buffer)]
-        # несколько попыток, чтоб передать
+
         for i in range(self.max_iteration):
             try:
                 transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(buffer))
@@ -366,12 +366,12 @@ class CANMarathon(AdapterCAN):
         # идентификатор - 11 бит), длина поля данных - ноль, данные и все остальные поля
         # равны нулю;
         # не совсем понимаю зачем это нужно, но на всякий случай пока оставлю
-        # try:
-        #     self.lib.msg_zero(ctypes.pointer(buffer))
-        # except Exception as e:
-        #     print('msg_zero do not work')
-        #     pprint(e)
-        #     exit()
+        try:
+            self.lib.msg_zero(ctypes.pointer(buffer))
+        except Exception as e:
+            print('msg_zero do not work')
+            pprint(e)
+            exit()
         # else:
         #     print('    в msg_zero так ' + str(result))
         # и несколько попыток на считывание ответа
@@ -379,12 +379,12 @@ class CANMarathon(AdapterCAN):
             # CiRcQueCancel Принудительно очищает (стирает) содержимое приемной очереди канала.
             # наверное, надо почистить очередь перед опросом. но это неточно. совсем неточно
             result = 0
-            # try:
-            #     result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
-            # except Exception as e:
-            #     print('CiRcQueCancel do not work')
-            #     pprint(e)
-            #     exit()
+            try:
+                result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
+            except Exception as e:
+                print('CiRcQueCancel do not work')
+                pprint(e)
+                exit()
             # else:
             #     print('     в CiRcQueCancel так ' + str(result))
 
@@ -411,10 +411,10 @@ class CANMarathon(AdapterCAN):
                 #     print('       в CiRead так ' + str(result))
                 # если удалось прочитать
                 if result >= 0:
-                    # print(hex(buffer.id), end='    ')
-                    # for e in buffer.data:
-                    #     print(hex(e), end=' ')
-                    # print()
+                    print(hex(buffer.id), end='    ')
+                    for e in buffer.data:
+                        print(hex(e), end=' ')
+                    print()
                     # попался нужный ид
                     if can_id_ans == buffer.id:
                         # print(hex(buffer.id), end='    ')
@@ -453,39 +453,63 @@ class CANMarathon(AdapterCAN):
         array_cw = self.Cw * 1
         cw = array_cw((self.can_canal_number, 0x01, 0))
         self.lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
-        buffer = self.Buffer()
+
+        buffer60 = self.Buffer()
         message = [0x60, 0, 0, 0, 0, 0, 0, 0]
-        buffer.id = ctypes.c_uint32(can_id_req)
+        buffer60.id = ctypes.c_uint32(can_id_req)
         j = 0
         for i in message:
-            buffer.data[j] = ctypes.c_uint8(i)
+            buffer60.data[j] = ctypes.c_uint8(i)
             j += 1
-        # print()
-        buffer.len = len(message)
+        buffer60.len = len(message)
         #  от длины iD устанавливаем протокол расширенный
         if can_id_req > 0xFFF:
-            self.lib.msg_seteff(ctypes.pointer(buffer))
+            self.lib.msg_seteff(ctypes.pointer(buffer60))
+
+        buffer70 = self.Buffer()
+        message = [0x70, 0, 0, 0, 0, 0, 0, 0]
+        buffer70.id = ctypes.c_uint32(can_id_req)
+        j = 0
+        for i in message:
+            buffer70.data[j] = ctypes.c_uint8(i)
+            j += 1
+        buffer70.len = len(message)
+        if can_id_req > 0xFFF:
+            self.lib.msg_seteff(ctypes.pointer(buffer70))
 
         self.lib.CiTransmit.argtypes = [ctypes.c_int8, ctypes.POINTER(self.Buffer)]
 
-        try:
-            transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(buffer))
-        except Exception as e:
-            print('CiTransmit do not work')
-            pprint(e)
-            exit()
-
-        if transmit_ok < 0:
-            self.close_canal_can()
-            if transmit_ok in error_codes.keys():
-                return error_codes[transmit_ok]
-            else:
-                return str(transmit_ok)
         buffer_array = self.Buffer * 1000
         buffer_a = buffer_array()
         exit_list = []
+        can_string_counter = 0
         for itr_global in range(self.max_iteration):
+            print()
+            print('отправляю')
+            bf = buffer70 if can_string_counter % 2 else buffer60
+            for i in bf.data:
+                print(hex(i), end=' ')
+            try:
+                transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(bf))
+            except Exception as e:
+                print('CiTransmit do not work')
+                pprint(e)
+                exit()
+
+            if transmit_ok < 0:
+                self.close_canal_can()
+                if transmit_ok in error_codes.keys():
+                    return error_codes[transmit_ok]
+                else:
+                    return str(transmit_ok)
+            print()
             result = 0
+            '''
+            _s16 CiWaitEvent(canwait_t * cw, int cwcount, int tout)
+            Блокирует работу потока выполнения до наступления заданного события или до
+            наступления тайм-аута в одном из указанных каналов ввода-вывода. Каналы ввода-вывода и
+            интересующие события задаются с помощью массива структур canwait_t
+            '''
             try:
                 result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 100 миллисекунд
             except Exception as e:
@@ -501,23 +525,34 @@ class CANMarathon(AdapterCAN):
                     exit()
                 if result >= 0:
                     # просматриваем все полученные фреймы в поисках нужных ИД, может быть несколько
+                    print("Принял ")
                     for w in range(result):
                         buff = buffer_a[w]
+
+                        print(hex(buff.id),  end='     ')
                         if can_id_ans == buff.id:
+                            print(hex(buff.data[0]), end=' ')
+                            can_string_counter += 1
                             for r in range(1, 7):
+                                print(hex(buff.data[r]), end=' ')
                                 exit_list.append(buff.data[r])
                                 if len(exit_list) > l_byte - 1:
+                                    print()
+                                    print('Возвращаю ')
+                                    pprint(exit_list)
                                     return exit_list
                     else:
                         err = 65535 - 15    # надо исправлять это безобразие
                 else:
                     err = 'Ошибка при чтении с буфера канала ' + str(result)
+
             #  если время ожидания хоть какого-то сообщения в шине больше секунды,
             #  значит , нас отключили, уходим
             elif result == 0:
                 err = 65535 - 14    # надо исправлять это безобразие
             else:
                 err = 'Нет подключения к CAN шине '    # надо исправлять это безобразие
+
         #  выход из цикла попыток
         # print('закрытие канала')
         self.close_canal_can()

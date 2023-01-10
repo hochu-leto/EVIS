@@ -31,8 +31,6 @@ class Parametr:
     def __init__(self, param=None, node=None):
         if param is None:
             param = empty_par
-        # if node is None:
-        #     node = EVONode()
 
         def check_value(value, name: str):
             v = value if name not in list(param.keys()) \
@@ -124,11 +122,19 @@ class Parametr:
         while adapter.is_busy:
             pass  # очень костыльный момент, ждёт миллисекунду, чтоб освободился адаптер
             # на случай когда идёт чтение с двух каналов
+        # print('Запррашиваю')
+        # for i in self.req_list:
+        #     print(hex(i), end=' ')
+        # print()
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.req_list)
         if isinstance(value_data, str):
-            # print(value_data)
             return value_data
+
         if self.node.protocol == 'CANOpen':
+            print(self.name, end='   ')
+            for i in value_data:
+                print(hex(i), end=' ')
+            print()
             if value_data[0] == 0x41:  # это запрос на длинный параметр строчный
                 # print(self.name, end='   ')
                 # for i in value_data:
@@ -147,6 +153,7 @@ class Parametr:
             value = (value_data[7] << 24) + \
                     (value_data[6] << 16) + \
                     (value_data[5] << 8) + value_data[4]
+            print(f'{address_ans=}, {value=}')
         elif self.node.protocol == 'MODBUS':
             # print(self.name, end='   ')
             # for i in value_data:
@@ -181,12 +188,18 @@ class Parametr:
             self.value /= self.scale
             self.value -= self.offset
             return self.value
+        elif self.type == 'VISIBLE_STRING':
+                self.string_from_can(value_data[-4:])
+                self.value = None
+                return self.value
         else:
             return 'Адрес не совпадает'
 
     def to_dict(self):
         exit_dict = empty_par.copy()
-        for k in exit_dict.keys():
+        # for k in exit_dict.keys():
+        print(self.__dir__)
+        for k in self.__dir__():
             exit_dict[k] = self.__getattribute__(k)
         exit_dict['editable'] = 1 if exit_dict['editable'] else 0
         return exit_dict
@@ -205,10 +218,9 @@ class Parametr:
             return False
 
     def string_from_can(self, value):
-        if isinstance(value, str):
-            self.value_string = ''
-            return value
         self.value_string = ''
+        if isinstance(value, str):
+            return value
         s = ''
         for byte in value:
             if 'Ethernet_' in self.name or '_Ip' in self.name:

@@ -4,29 +4,21 @@
 import struct
 import traceback
 
-from PyQt5.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal
+from PyQt5.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal, QStringListModel
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
-    QComboBox
+    QComboBox, QListView, QSizePolicy
 
 import Dialog_params
 import my_dialog
 
 TheBestNode = 'Избранное'
 NewParamsList = 'Новый список'
-easter_egg = '''Бинго! Ты нашёл тот самый параметр\n
-                после изменения которого\n
-                блок рулевой рейки меняет свои ID\n
-                и выходит из чата.(перестаёт отвечать)\n
-                Ничего страшного, нужно перезагрузить программу\n
-                и заново определить все блоки.\n
-                Очень надеюсь ты понимаешь что делаешь\n
-                и что в данный момент подключен\n
-                только ОДИН блок рулевой рейки.\n
-                В противном случае ты поимеешь два блока,\n
-                которые отвечают по одинаковым адресам,\n
-                и тогда уже по-любому придётся отключать один из них\n
-                так что лучше сделай это заранее'''
+easter_egg = 'Бинго! Ты нашёл тот самый параметр после изменения которого блок рулевой рейки меняет свои ID и выходит ' \
+             'из чата.(перестаёт отвечать) Ничего страшного, нужно перезагрузить программу и заново определить все ' \
+             'блоки. Очень надеюсь ты понимаешь что делаешь и что в данный момент подключен только ОДИН блок рулевой ' \
+             'рейки. В противном случае ты поимеешь два блока, которые отвечают по одинаковым адресам, и тогда уже ' \
+             'по-любому придётся отключать один из них так что лучше сделай это заранее '
 empty_par = {'name': '',
              'address': '',
              'editable': '',
@@ -42,7 +34,10 @@ empty_par = {'name': '',
              'degree': '',
              'min_value': '',
              'max_value': '',
-             'widget': ''}
+             'widget': '',
+             'value_compare': '',
+             'value_dict': [],
+             'value_string': ''}
 #  параметр для экспериментов
 example_par = {'name': 'fghjk',
                'address': '34567',
@@ -128,7 +123,18 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         unit = par.unit
         description = par.description
         v_c = par.value_compare
-        compare = v_c if isinstance(v_c, str) else zero_del(v_c)
+        if isinstance(v_c, str):
+            compare = v_c
+        elif par.value_dict:
+            k = int(v_c)
+            if k in par.value_dict:
+                compare = par.value_dict[k]
+            else:
+                compare = f'{k} нет в словаре'
+        else:
+            compare = zero_del(v_c)
+
+        # compare = v_c if isinstance(v_c, str) else zero_del(v_c)
         # print(v_c, compare)
 
         if par.editable:
@@ -180,9 +186,9 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
     items_list = []
     row = 0
     for par in params_list:
-
-        if isinstance(table.item(row, 2), MyComboBox) \
-                and table.item(row, 2).isRevealed:
+        it = table.cellWidget(row, 2)
+        if isinstance(it, MyComboBox) \
+                and it.isRevealed:
             continue
 
         value_in_dict = False
@@ -202,14 +208,25 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
             v_name = zero_del(par.value)
 
         if value_in_dict and par.editable:
-            if not isinstance(table.item(row, 2), MyComboBox):
+            if not isinstance(it, MyComboBox):
                 comBox = MyComboBox()
-                comBox.addItems(list(par.value_dict.values()))
+                v_list = list(par.value_dict.values())
+                comBox.setModel(QStringListModel(v_list))
+                # Отображатель выпадающего списка QListView
+                listView = QListView()
+                # Включаем перенос строк
+                listView.setWordWrap(True)
+                # Устанавливаем отображатель списка (popup)
+                comBox.setView(listView)
+                # comBox.addItems(v_list)
                 comBox.parametr = par
-                comBox.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
+                comBox.setSizeAdjustPolicy(QComboBox.AdjustToContentsOnFirstShow)
+                # .AdjustToMinimumContentsLengthWithIcon + AdjustToContentsOnFirstShow + AdjustToContents)
+                comBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+                comBox.setMaximumSize(220, 170)
                 table.setCellWidget(row, 2, comBox)
                 items_list.append(comBox)
-            table.item(row, 2).setCurrentText(par.value_dict[int(par.value)])
+            table.cellWidget(row, 2).setCurrentText(par.value_dict[int(par.value)])
         else:
             value_item = QTableWidgetItem(v_name)
             if par.editable:
