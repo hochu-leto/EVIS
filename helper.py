@@ -307,12 +307,14 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
         self.adjustSize()
 
-    @pyqtSlot(list, list)
-    def change_mess(self, st: list, list_of_params=None):
-        if st:
+    @pyqtSlot(list, list, int)
+    def change_mess(self, st=None, list_of_params=None, progress=None):
+        if st and isinstance(st, list):
             self.text_browser.append('\n'.join(st))
         if list_of_params and isinstance(list_of_params, list):
             show_new_vmu_params(list_of_params, self.param_table)
+        if progress and isinstance(progress, int):
+            self.process_bar.setValue(progress)
 
 
 # Если при ошибке в слотах приложение просто падает без стека,

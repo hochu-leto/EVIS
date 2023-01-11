@@ -2,7 +2,7 @@
 тот самый объект параметра, который имеет все нужные поля, умеет запрашивать своё значение и записывать в блок нужное
 """
 import ctypes
-from copy import deepcopy
+from copy import deepcopy, copy
 
 import CANAdater
 from helper import bytes_to_float, int_to_hex_str, float_to_int, empty_par
@@ -238,7 +238,7 @@ class Parametr:
         return int(self.value_string) if self.value_string.isdigit() else self.value_string
 
     def copy(self):
-        return deepcopy(self)
+        return copy(self)
 
 
 class Copyable:

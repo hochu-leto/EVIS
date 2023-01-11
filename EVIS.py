@@ -60,6 +60,7 @@
  из одного блока можно напрямую заливать в другой. Или их ограничить до минимума или предлагать делать изменение вручную
 
 """
+import copy
 import datetime
 import pickle
 import sys
@@ -67,7 +68,7 @@ import time
 from pprint import pprint
 
 import pandas as pd
-from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
+from PyQt5.QtCore import pyqtSlot, Qt, QRegExp, pyqtSignal
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox
@@ -111,12 +112,17 @@ def search_param():
         if window.thread.isRunning():
             was_run = True
             window.connect_to_node()
-
+        # search_bar = DialogChange(label=f'Ищем параметр с {search_text}', process=0)
+        # search_bar.exec_()
+        # SearchProcess = pyqtSignal(int)
+        # SearchProcess.connect(search_bar.change_mess)
         par_list = find_param(window.thread.current_nodes_dict, search_text).copy()
         if par_list:
             p_list = []
             for par in par_list:
+                # search_bar.change_mess(progress=50)
                 if '#' not in par.name:
+                    new_par = copy.copy(par)
                     new_par = par.copy()
                     new_par.name += '#' + new_par.node.name
                     p_list.append(new_par)
@@ -130,6 +136,7 @@ def search_param():
         else:
             QMessageBox.critical(window, "Проблема", f'Ни одного параметра с "{search_text}"\n'
                                                      f' в текущих блоках найти не удалось ', QMessageBox.Ok)
+        # search_bar.close()
         if was_run and window.thread.isFinished():
             window.connect_to_node()
 
@@ -1104,10 +1111,7 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# падает, если щёлкаю по той же ошибке что уже была(если есть список параметров)
-# очень долго ищет параметры, когда подключена к машине
 # не считывает варнинги КВУ - другой адрес
-# при удаленнии ошибок очищать и описание их
+# при удалении ошибок очищать и описание их
 # кнопку Сохранения в еепром-наверх
 # скукоживается блок названия блока после поиска
-# при сравнении выводится цифра, а не значение из словаря
