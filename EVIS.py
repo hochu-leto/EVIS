@@ -68,8 +68,8 @@ import time
 from pprint import pprint
 
 import pandas as pd
-from PyQt5.QtCore import pyqtSlot, Qt, QRegExp, pyqtSignal
-from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
+from PyQt5.QtCore import pyqtSlot, Qt, QRegExp, pyqtSignal, QUrl
+from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush, QDesktopServices
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox
 import pathlib
@@ -83,7 +83,7 @@ from Parametr import Parametr
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode, easter_egg
+    show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_orange, color_EVO_red
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -554,6 +554,10 @@ def save_to_file_pressed():  # если нужно записать текущи
     window.tr.run()
 
 
+def link(linkStr):
+    QDesktopServices.openUrl(QUrl(linkStr))
+
+
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
     node_list_defined = False
@@ -629,9 +633,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                     child_item = QTreeWidgetItem()
                     child_item.setText(0, err.name)
                     if err.critical:
-                        child_item.setForeground(0, QBrush(QColor(254, 0, 0)))
+                        child_item.setForeground(0, QBrush(color_EVO_red))
                     else:
-                        child_item.setForeground(0, QBrush(QColor(247, 242, 26)))
+                        child_item.setForeground(0, QBrush(color_EVO_orange))
                     item.addChild(child_item)
                     # если ранее курсор стоял на группе, запоминаю ее
                     if old_item_name == err.name:  # не работает для рулевых - нужно запоминать и имя блока тоже
@@ -1086,7 +1090,15 @@ if __name__ == '__main__':
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.log_record_btn.clicked.connect(record_log)
     window.search_btn.clicked.connect(search_param)
-    # window.search_btn.hide()
+    # window.errors_browser.setOpenLinks(False)
+    # window.errors_browser.acceptRichText()
+    # window.errors_browser.setOpenExternalLinks(True)
+    # window.errors_browser.openLinks()
+    ss_link = 'http://python.su/forum/18/'
+    ss_link1 = 'https://evocargo.atlassian.net/wiki/spaces/FAQO/pages/644907782#%D0%91%D0%A0.16'
+    ss_link2 = 'helper.py'
+    window.errors_browser.setText(f'<a href="{ss_link1}">TEST LINK</a>')
+    # QDesktopServices.openUrl(QUrl(ss_link1))
     window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:
@@ -1112,8 +1124,5 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# варнинги КВУ плохо видно
 # падает при сохранении в файл
 # нет ссылки в браузере ошибок
-# кнопку Сохранения в еепром-наверх
-# скукоживается блок названия блока после поиска
