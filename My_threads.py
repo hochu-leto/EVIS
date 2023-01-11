@@ -190,22 +190,17 @@ class MainThread(QThread):
                     dt = dt.strftime("%H:%M:%S.%f")
                     self.record_dict[dt] = {par.name: par.value for par in self.current_params_list}
                 else:
-                    # pass
                     request_errors()
 
         def request_errors():
-            # опрос ошибок, на это время опрос параметров отключается
-            # timer.stop()
-            all_errors_counter = len(self.err_dict)
+            errors_old = self.err_dict.copy()
             for nd in self.current_nodes_dict.values():
                 nd.current_errors_list = nd.check_errors(self.adapter).copy()
                 nd.current_warnings_list = nd.check_errors(self.adapter, False).copy()
-
                 self.err_dict[nd.name] = list(nd.current_errors_list.union(nd.current_warnings_list))
 
-            if len(self.err_dict) > all_errors_counter:
+            if self.err_dict != errors_old:
                 self.err_thread_signal.emit(self.err_dict)
-            # timer.start(send_delay)
 
         send_delay = 5  # задержка отправки в кан сообщений методом подбора с таким не зависает
         err_req_delay = 500
