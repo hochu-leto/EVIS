@@ -112,7 +112,8 @@ def search_param():
             p_list = []
             for par in par_list:
                 if '#' not in par.name:
-                    new_par = Parametr(par.to_dict(), par.node)
+                    # new_par = Parametr(par.to_dict(), par.node)
+                    new_par = par.copy()
                     new_par.name += '#' + new_par.node.name
                     p_list.append(new_par)
             window.thread.current_nodes_dict[TheBestNode].group_params_dict[search_text] = p_list.copy()
@@ -325,7 +326,8 @@ def want_to_value_change():
         # достаю список Избранное
         user_node = window.thread.current_nodes_dict[TheBestNode]
         # из текущего параметра делаю новый с новым именем через #
-        new_param = Parametr(current_param.to_dict(), current_param.node)
+        # new_param = Parametr(current_param.to_dict(), current_param.node)
+        new_param = current_param.copy()
         if window.thread.current_node != user_node:
             new_param.name = f'{new_param.name}#{new_param.node.name}'
         text = f'добавлен в блок {TheBestNode}'
@@ -1096,8 +1098,9 @@ if __name__ == '__main__':
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
 # падает, если щёлкаю по той же ошибке что уже была(если есть список параметров)
-# в избранном нет комбобоксов - нет полного копирования обьекта Параметр
+# очень долго ищет параметры, когда подключена к машине
 # не считывает варнинги КВУ - другой адрес
+# при удаленнии ошибок очищать и описание их
 # кнопку Сохранения в еепром-наверх
 # скукоживается блок названия блока после поиска
 # при сравнении выводится цифра, а не значение из словаря

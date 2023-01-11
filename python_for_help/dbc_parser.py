@@ -87,7 +87,7 @@ for v in df_phys_t:
     now = int(timest[v])
     ln_log -= 1
     print(f'\rОсталось обработать {ln_log} записей', end='', flush=True)
-    if now >= timestamp + 1000000:
+    if now >= timestamp + 10000:
         timestamp = now
         # print(now)
         prev_dict['Time'] = timestamp

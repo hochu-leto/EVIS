@@ -46,7 +46,7 @@ class CANAdapter:
     def search_chanells(self, adapter: AdapterCAN):
         print(f'Пробую найти {adapter.__name__}')
         i = 0
-        while True:     # хреновая тема
+        while True:  # хреновая тема
             can_adapter = adapter(channel=i)
             bit = can_adapter.check_bitrate()  # пробежавшись по битрейту
             if isinstance(bit, str):  # и получив строку, понимаю, что адаптера нет совсем
@@ -121,4 +121,7 @@ class CANAdapter:
 
     def can_request_long(self, can_id_req: int, can_id_ans: int, l_byte):
         adapter = self.id_nodes_dict[can_id_req]
-        return adapter.can_request_long(can_id_req, can_id_ans, l_byte)
+        ans_list = adapter.can_request_long(can_id_req, can_id_ans, l_byte)
+        if isinstance(ans_list, list):
+            ans_list = ans_list[:l_byte]
+        return ans_list

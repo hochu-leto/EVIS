@@ -87,6 +87,14 @@ class CANMarathon(AdapterCAN):
             ('data', ctypes.c_uint8 * 8)
         ]
 
+    long_buffer_60 = Buffer()
+    long_buffer_60.data[0] = 0x60
+    long_buffer_60.len = 8
+
+    long_buffer_70 = Buffer()
+    long_buffer_70.data[0] = 0x70
+    long_buffer_70.len = 8
+
     def __init__(self, channel=0, bit=125):
         self.lib = cdll.LoadLibrary(str(pathlib.Path(pathlib.Path.cwd(), 'Marathon_Driver_and_dll', 'chai.dll')))
         self.lib.CiInit()
@@ -99,11 +107,13 @@ class CANMarathon(AdapterCAN):
 
         self.max_iteration = 15
         self.is_canal_open = False
-        self.log_file = pathlib.Path(pathlib.Path.cwd(),
-                                     'Marathon_logs',
-                                     'log_marathon_' +
-                                     datetime.now().strftime("%Y-%m-%d_%H-%M") +
-                                     '.txt')
+        # это массив из 1 элемента - потому что читаем один канал, который мы будем отправлять в
+        # функцию ожидания события от марафона 0х01 - значит ждём нового кадра
+        array_cw = self.Cw * 1
+        self.cw = array_cw((self.can_canal_number, 0x01, 0))
+        self.lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
+        self.lib.CiTransmit.argtypes = [ctypes.c_int8, ctypes.POINTER(self.Buffer)]
+        self.buffer_array = self.Buffer * 1000
 
     def canal_open(self):
         result = -1
@@ -193,7 +203,7 @@ class CANMarathon(AdapterCAN):
 
     def can_write(self, can_id: int, message: list):
         if not isinstance(message, list):
-            return error_codes[65535 - 16]    # надо исправлять это безобразие
+            return error_codes[65535 - 16]  # надо исправлять это безобразие
 
         if not self.is_canal_open:
             err = self.canal_open()
@@ -239,7 +249,7 @@ class CANMarathon(AdapterCAN):
                     print(f'   в CiTrStat так {complete_dict[err]}, осталось кадров на передачу {trqcnt.value} ')
                 if not trqcnt.value and not err:
                     return ''
-            err = 65535 - 2    # надо исправлять это безобразие
+            err = 65535 - 2  # надо исправлять это безобразие
 
         if err in error_codes.keys():
             return error_codes[err]
@@ -299,7 +309,7 @@ class CANMarathon(AdapterCAN):
                         exit()
                     return time_data_dict
                 else:
-                    return 'Нет нужного ID в буфере'    # надо исправлять это безобразие
+                    return 'Нет нужного ID в буфере'  # надо исправлять это безобразие
                 # return data_list if data_list else 'Нет нужного ID в буфере'
         elif result == 0:
             return 'Время вышло, кадры не получены'
@@ -308,7 +318,7 @@ class CANMarathon(AdapterCAN):
     # возвращает массив int если удалось считать и str если ошибка
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
         if not isinstance(message, list):
-            return error_codes[65535 - 16]    # надо исправлять это безобразие
+            return error_codes[65535 - 16]  # надо исправлять это безобразие
 
         # если канал закрыт, его нда открыть
         err = ''
@@ -411,10 +421,10 @@ class CANMarathon(AdapterCAN):
                 #     print('       в CiRead так ' + str(result))
                 # если удалось прочитать
                 if result >= 0:
-                    print(hex(buffer.id), end='    ')
-                    for e in buffer.data:
-                        print(hex(e), end=' ')
-                    print()
+                    # print(hex(buffer.id), end='    ')
+                    # for e in buffer.data:
+                    #     print(hex(e), end=' ')
+                    # print()
                     # попался нужный ид
                     if can_id_ans == buffer.id:
                         # print(hex(buffer.id), end='    ')
@@ -424,15 +434,15 @@ class CANMarathon(AdapterCAN):
                         return buffer.data
                     # ВАЖНО - здесь канал не закрывается, только возвращается данные кадра
                     else:
-                        err = 65535 - 15    # надо исправлять это безобразие
+                        err = 65535 - 15  # надо исправлять это безобразие
                 else:
                     err = 'Ошибка при чтении с буфера канала ' + str(result)
             #  если время ожидания хоть какого-то сообщения в шине больше секунды,
             #  значит , нас отключили, уходим
             elif result == 0:
-                err = 65535 - 14    # надо исправлять это безобразие
+                err = 65535 - 14  # надо исправлять это безобразие
             else:
-                err = 'Нет подключения к CAN шине '    # надо исправлять это безобразие
+                err = 'Нет подключения к CAN шине '  # надо исправлять это безобразие
         #  выход из цикла попыток
         # print('закрытие канала')
         self.close_canal_can()
@@ -441,54 +451,43 @@ class CANMarathon(AdapterCAN):
         else:
             return str(err)
 
-    def can_request_long(self, can_id_req: int, can_id_ans: int, l_byte):   # , message: list):
+    def can_request_long(self, can_id_req: int, can_id_ans: int, l_byte):  # , message: list):
         err = ''
+        frame_counter = 0
+        transmit_ok = -1
+        buffer_a = self.buffer_array()
+        exit_list = []
+        result = 0
+
         if not self.is_canal_open:
             err = self.canal_open()
             if err:
                 return err
-        transmit_ok = 0
-        # это массив из 1 элемента - потому что читаем один канал, который мы будем отправлять в
-        # функцию ожидания события от марафона 0х01 - значит ждём нового кадра
-        array_cw = self.Cw * 1
-        cw = array_cw((self.can_canal_number, 0x01, 0))
-        self.lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
-
-        buffer60 = self.Buffer()
-        message = [0x60, 0, 0, 0, 0, 0, 0, 0]
-        buffer60.id = ctypes.c_uint32(can_id_req)
-        j = 0
-        for i in message:
-            buffer60.data[j] = ctypes.c_uint8(i)
-            j += 1
-        buffer60.len = len(message)
-        #  от длины iD устанавливаем протокол расширенный
+        req_id = ctypes.c_uint32(can_id_req)
+        self.long_buffer_60.id = req_id
+        self.long_buffer_70.id = req_id
         if can_id_req > 0xFFF:
-            self.lib.msg_seteff(ctypes.pointer(buffer60))
-
-        buffer70 = self.Buffer()
-        message = [0x70, 0, 0, 0, 0, 0, 0, 0]
-        buffer70.id = ctypes.c_uint32(can_id_req)
-        j = 0
-        for i in message:
-            buffer70.data[j] = ctypes.c_uint8(i)
-            j += 1
-        buffer70.len = len(message)
-        if can_id_req > 0xFFF:
-            self.lib.msg_seteff(ctypes.pointer(buffer70))
-
-        self.lib.CiTransmit.argtypes = [ctypes.c_int8, ctypes.POINTER(self.Buffer)]
-
-        buffer_array = self.Buffer * 1000
-        buffer_a = buffer_array()
-        exit_list = []
-        can_string_counter = 0
-        for itr_global in range(self.max_iteration):
+            self.lib.msg_seteff(ctypes.pointer(self.long_buffer_60))
+            self.lib.msg_seteff(ctypes.pointer(self.long_buffer_70))
+        # длинное сообщение состоит из нескольких фрэймов , сколько их - узнаём количество значащих байт
+        # из первого фрейма с ответом 0х41 и делим на 7 значащих байт в следующих фреймов + 1 про запас
+        for frame_counter in range((l_byte // 7) + 1):
+            bf = self.long_buffer_70 if frame_counter % 2 else self.long_buffer_60
             print()
-            print('отправляю')
-            bf = buffer70 if can_string_counter % 2 else buffer60
+            print(f'отправляю {hex(bf.id)} ', end='   ')
             for i in bf.data:
                 print(hex(i), end=' ')
+            ''' _s16 CiTransmit(_u8 chan, canmsg_t * mbuf)
+                Отправляет кадр в сеть через очередь на отправку.
+                Если очередь на передачу не пуста, то кадр помещается в конец очереди, возвращается код
+                успеха. В противном случае, если аппаратный буфер на отправку свободен, то кадр
+                загружается в регистры CAN-контроллера и выставляется запрос на передачу кадра, если
+                буфер занят, кадр помещается в очередь. 
+                ● chan - номер канала;
+                ● mbuf - указатель на буфер в котором находится CAN-кадр;
+                Возвращаемое значение:
+                0 - успешное выполнение 
+                < 0 - ошибка  '''
             try:
                 transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(bf))
             except Exception as e:
@@ -502,56 +501,69 @@ class CANMarathon(AdapterCAN):
                     return error_codes[transmit_ok]
                 else:
                     return str(transmit_ok)
-            print()
-            result = 0
-            '''
-            _s16 CiWaitEvent(canwait_t * cw, int cwcount, int tout)
-            Блокирует работу потока выполнения до наступления заданного события или до
-            наступления тайм-аута в одном из указанных каналов ввода-вывода. Каналы ввода-вывода и
-            интересующие события задаются с помощью массива структур canwait_t
-            '''
-            try:
-                result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 100 миллисекунд
-            except Exception as e:
-                print('CiWaitEvent do not work')
-                pprint(e)
-                exit()
-            if result > 0 and cw[0].wflags & 0x01:
+            next_frame = False
+            while not next_frame:
+                print()
+                '''
+                _s16 CiWaitEvent(canwait_t * cw, int cwcount, int tout)
+                Блокирует работу потока выполнения до наступления заданного события или до
+                наступления тайм-аута в одном из указанных каналов ввода-вывода. Каналы ввода-вывода и
+                интересующие события задаются с помощью массива структур canwait_t
+                Возвращаемое значение:
+                > 0 - успешное выполнение: произошло одно из указанных событий;
+                = 0 - тайм-аут;
+                < 0 - ошибка
+                '''
                 try:
-                    result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer_a), 100)
+                    result = self.lib.CiWaitEvent(ctypes.pointer(self.cw), 1, 500)  # timeout = 100 миллисекунд
                 except Exception as e:
-                    print('CiRead do not work')
+                    print('CiWaitEvent do not work')
                     pprint(e)
                     exit()
-                if result >= 0:
-                    # просматриваем все полученные фреймы в поисках нужных ИД, может быть несколько
-                    print("Принял ")
-                    for w in range(result):
-                        buff = buffer_a[w]
-
-                        print(hex(buff.id),  end='     ')
-                        if can_id_ans == buff.id:
-                            print(hex(buff.data[0]), end=' ')
-                            can_string_counter += 1
-                            for r in range(1, 7):
-                                print(hex(buff.data[r]), end=' ')
-                                exit_list.append(buff.data[r])
-                                if len(exit_list) > l_byte - 1:
-                                    print()
-                                    print('Возвращаю ')
-                                    pprint(exit_list)
-                                    return exit_list
+                # количество кадров в приемной очереди стало больше или равно значению порога
+                if result > 0 and self.cw[0].wflags & 0x01:
+                    ''' s16 CiRead(_u8 chan, canmsg_t *mbuf, _s16 cnt)
+                        Вынимает cnt кадров из очереди на прием и сохраняет их в буфере mbuf. Если в приемной
+                        очереди кадров меньше чем cnt, сохраняет столько кадров сколько есть в очереди. Функция
+                        возвращает управление сразу (не ожидает приема из сети запрошенного количества кадров cnt). 
+                        ● chan - номер канала
+                        ● mbuf - указатель на буфер в который будут скопированы кадры
+                        ● cnt – запрашиваемое количество CAN-кадров
+                        Возвращаемое значение:
+                        >= 0 - успешное выполнение, количество прочитанных кадров
+                        < 0 - ошибка '''
+                    try:
+                        result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer_a), 100)
+                    except Exception as e:
+                        print('CiRead do not work')
+                        pprint(e)
+                        exit()
+                    # успешное выполнение, количество прочитанных фреймов
+                    if result >= 0:
+                        # просматриваем все полученные фреймы в поисках нужных ИД, может быть несколько
+                        print("Принял ")
+                        for w in range(result):
+                            buff = buffer_a[w]
+                            print(hex(buff.id), end='     ')
+                            if can_id_ans == buff.id:
+                                next_frame = True
+                                for r in range(1, 7):
+                                    print(hex(buff.data[r]), end=' ')
+                                    exit_list.append(buff.data[r])
+                                break
                     else:
-                        err = 65535 - 15    # надо исправлять это безобразие
-                else:
-                    err = 'Ошибка при чтении с буфера канала ' + str(result)
-
-            #  если время ожидания хоть какого-то сообщения в шине больше секунды,
-            #  значит , нас отключили, уходим
-            elif result == 0:
-                err = 65535 - 14    # надо исправлять это безобразие
-            else:
-                err = 'Нет подключения к CAN шине '    # надо исправлять это безобразие
+                        err = 'Ошибка при чтении с буфера канала ' + str(result)
+                # если время ожидания хоть какого-то сообщения в шине больше полсекунды, значит , нас отключили, уходим
+                elif result == 0:  # result = 0 - тайм-аут;
+                    err = 65535 - 14  # надо исправлять это безобразие
+                else:  # result < 0 - ошибка
+                    err = 'Нет подключения к CAN шине '  # надо исправлять это безобразие
+            # if len(exit_list) > l_byte - 1:
+        print()
+        print(f'Было отправлено {frame_counter} фреймов, принято {len(exit_list)} байт, возвращаю ')
+        pprint(exit_list)
+        if not err:
+            return exit_list
 
         #  выход из цикла попыток
         # print('закрытие канала')
@@ -819,7 +831,7 @@ class CANMarathon(AdapterCAN):
                         self.close_canal_can()
                         return name_bit
             self.close_canal_can()
-        return error_codes[65535 - 8]    # надо исправлять это безобразие
+        return error_codes[65535 - 8]  # надо исправлять это безобразие
 
 
 if __name__ == "__main__":

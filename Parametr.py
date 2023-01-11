@@ -2,6 +2,7 @@
 тот самый объект параметра, который имеет все нужные поля, умеет запрашивать своё значение и записывать в блок нужное
 """
 import ctypes
+from copy import deepcopy
 
 import CANAdater
 from helper import bytes_to_float, int_to_hex_str, float_to_int, empty_par
@@ -131,10 +132,10 @@ class Parametr:
             return value_data
 
         if self.node.protocol == 'CANOpen':
-            print(self.name, end='   ')
-            for i in value_data:
-                print(hex(i), end=' ')
-            print()
+            # print(self.name, end='   ')
+            # for i in value_data:
+            #     print(hex(i), end=' ')
+            # print()
             if value_data[0] == 0x41:  # это запрос на длинный параметр строчный
                 # print(self.name, end='   ')
                 # for i in value_data:
@@ -153,7 +154,7 @@ class Parametr:
             value = (value_data[7] << 24) + \
                     (value_data[6] << 16) + \
                     (value_data[5] << 8) + value_data[4]
-            print(f'{address_ans=}, {value=}')
+            # print(f'{address_ans=}, {value=}')
         elif self.node.protocol == 'MODBUS':
             # print(self.name, end='   ')
             # for i in value_data:
@@ -189,9 +190,9 @@ class Parametr:
             self.value -= self.offset
             return self.value
         elif self.type == 'VISIBLE_STRING':
-                self.string_from_can(value_data[-4:])
-                self.value = None
-                return self.value
+            self.string_from_can(value_data[-4:])
+            self.value = None
+            return self.value
         else:
             return 'Адрес не совпадает'
 
@@ -235,3 +236,29 @@ class Parametr:
                 s += chr(byte)
         self.value_string = s.strip().rstrip('.').rstrip(':')
         return int(self.value_string) if self.value_string.isdigit() else self.value_string
+
+    def copy(self):
+        return deepcopy(self)
+
+
+class Copyable:
+    __slots__ = 'a', '__dict__'
+
+    def __init__(self, a, b):
+        self.a, self.b = a, b
+
+    def __copy__(self):
+        return type(self)(self.a, self.b)
+
+    def __deepcopy__(self, memo):  # memo is a dict of id's to copies
+        id_self = id(self)  # memoization avoids unnecesary recursion
+        _copy = memo.get(id_self)
+        if _copy is None:
+            _copy = type(self)(
+                deepcopy(self.a, memo),
+                deepcopy(self.b, memo))
+            memo[id_self] = _copy
+        return _copy
+
+    def copye(self):
+        return deepcopy(self)

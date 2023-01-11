@@ -207,6 +207,7 @@ class EVONode:
         print(num)
         return int(num) if num.isdigit() else num
 
+    # функция НЕ РАБОТАЕТ
     # Потому-то кому-то приспичило передавать серийник в чарах
     # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,
     # но вообще неплохо бы сделать эту функцию наподобие опроса ошибок по нескольким адресам,
@@ -232,6 +233,7 @@ class EVONode:
         self.serial_number = ser
         return int(self.serial_number) if ser else ser
 
+    # функция НЕ РАБОТАЕТ
     def get_firmware_version(self, adapter: CANAdater):
         if self.firmware_version:
             return self.firmware_version
@@ -309,14 +311,12 @@ class EVONode:
             self.current_warnings_list.clear()
 
     def read_string_from_can(self, value):
-        # value = adapter.can_request(self.request_id, self.answer_id, [0x60, 0, 0, 0, 0, 0, 0, 0])
-        # это сделано только для инвертора мэи, который должен ответить
         if isinstance(value, str):
             self.string_from_can = ''
             return value
         for byte in value:
             self.string_from_can += chr(byte)
-        s = self.string_from_can.strip()
+        s = self.string_from_can.strip().rstrip('0')
         return int(s) if s.isdigit() else s
 
 
