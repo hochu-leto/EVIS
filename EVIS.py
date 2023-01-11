@@ -107,12 +107,16 @@ def search_param():
     dialog.lineEdit.textChanged.connect(line_edit_change)
     if dialog.exec_() == QDialog.Accepted:
         search_text = dialog.lineEdit.text()
+        was_run = False
+        if window.thread.isRunning():
+            was_run = True
+            window.connect_to_node()
+
         par_list = find_param(window.thread.current_nodes_dict, search_text).copy()
         if par_list:
             p_list = []
             for par in par_list:
                 if '#' not in par.name:
-                    # new_par = Parametr(par.to_dict(), par.node)
                     new_par = par.copy()
                     new_par.name += '#' + new_par.node.name
                     p_list.append(new_par)
@@ -126,6 +130,8 @@ def search_param():
         else:
             QMessageBox.critical(window, "Проблема", f'Ни одного параметра с "{search_text}"\n'
                                                      f' в текущих блоках найти не удалось ', QMessageBox.Ok)
+        if was_run and window.thread.isFinished():
+            window.connect_to_node()
 
 
 def record_log():
@@ -206,7 +212,6 @@ def save_to_eeprom(node=None):
                 # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
                 if err < 30:
                     err = node.send_val(node.save_to_eeprom, can_adapter.adapters_dict[125])
-                    sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
                     sleep_thread.start()
                 else:
                     err = 'Высокое напряжение не выключено\nВыключи высокое напряжение и повтори сохранение'
@@ -250,7 +255,7 @@ def set_new_value(next_cell, param: Parametr, val):
     info_m = ''
     if 'WheelTypeSet' in param.name:
         if QMessageBox.information(window, "Пасхалка", easter_egg, QMessageBox.Ok | QMessageBox.Cancel) != QMessageBox.Ok:
-            return "Передумал"
+            return "Пердумал"
     try:
         float(val)
         if window.thread.isRunning():  # отключаем поток, если он был включен
@@ -326,7 +331,6 @@ def want_to_value_change():
         # достаю список Избранное
         user_node = window.thread.current_nodes_dict[TheBestNode]
         # из текущего параметра делаю новый с новым именем через #
-        # new_param = Parametr(current_param.to_dict(), current_param.node)
         new_param = current_param.copy()
         if window.thread.current_node != user_node:
             new_param.name = f'{new_param.name}#{new_param.node.name}'
@@ -412,7 +416,6 @@ def show_error(item, column):
     window.errors_browser.setText(current_err.description + '\n' + err_links_list)
     window.errors_browser.setOpenExternalLinks(True)
     if current_err.important_parameters:
-        # err_param_list = set([])
         err_param_list = set()
         for par in current_err.important_parameters:
             er_par = find_param(window.thread.current_nodes_dict, par, current_err.node.name)
@@ -427,20 +430,22 @@ def show_error(item, column):
             item.setText(0, current_err.name)
             rowcount = window.nodes_tree.topLevelItemCount() - 1
             window.nodes_tree.topLevelItem(rowcount).addChild(item)
+            current_err.err_tree_item = item
 
             if window.thread.current_node == user_node:
                 show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
             window.nodes_tree.setCurrentItem(item)
         else:
             # кажется, это не работает, нужно проверить, да ЭТО НЕ РАБОТАЕТ
-            c_item = window.nodes_tree.findItems(current_err.name, Qt.MatchContains)[0]
-            window.nodes_tree.setCurrentItem(c_item)
+            window.nodes_tree.setCurrentItem(current_err.err_tree_item)
 
 
 def params_list_changed(item=None, column=None):  # если в левом окошке выбираем разные блоки или группы параметров
     # pprint(inspect.stack()[1][3])
     is_run = False
     current_group_params = ''
+    if window.nodes_tree.currentItem() is None:
+        return
     try:
         current_node_text = window.nodes_tree.currentItem().parent().text(0)
         current_group_params = window.nodes_tree.currentItem().text(0)
@@ -640,17 +645,17 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     @pyqtSlot(int, str, bool)
     def progress_bar_fulling(self, percent: int, err: str, is_finished: bool):
         # рисуем змейку прогресса
-        window.node_nsme_pbar.setValue(percent)
+        self.node_nsme_pbar.setValue(percent)
         # выходим из потока если есть строка ошибки или файл сохранён
         if is_finished or err:
             self.tr.quit()
             self.tr.wait()
 
             if is_finished:
-                QMessageBox.information(window, "Успешный успех!", 'Файл сохранён ' + '\n' + err, QMessageBox.Ok)
+                QMessageBox.information(self, "Успешный успех!", 'Файл сохранён ' + '\n' + err, QMessageBox.Ok)
                 self.log_lbl.setText('Сохранён файл с настройками ' + err.replace('\n', ''))
             elif err:
-                QMessageBox.critical(window, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
+                QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
                 self.log_lbl.setText('Файл не сохранён, ошибка ' + err.replace('\n', ''))
             self.node_nsme_pbar.setValue(0)
 
@@ -1040,6 +1045,8 @@ if __name__ == '__main__':
     splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
+    sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
+
     #
     window.main_tab.currentChanged.connect(window.change_tab)
     # подключаю сигналы нажатия на окошки

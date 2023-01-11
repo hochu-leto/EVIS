@@ -20,7 +20,7 @@ empty_error = {
 class EvoError:
     __slots__ = ('value', 'name',
                  'description', 'important_parameters',
-                 'check_link', 'node', 'critical')
+                 'check_link', 'node', 'critical', 'err_tree_item')
 
     def __init__(self, raw_err_dict=None, node=None):
         if raw_err_dict is None:
@@ -55,3 +55,5 @@ class EvoError:
         self.check_link = [par for par in check_string('check_link').split(',')] if check_string('check_link') else []
         self.node = node
         self.critical = check_bool('critical')
+        self.err_tree_item = None
+
