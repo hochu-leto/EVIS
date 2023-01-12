@@ -83,7 +83,8 @@ from Parametr import Parametr
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_orange, color_EVO_red
+    show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_orange, color_EVO_red, color_EVO_red_dark, \
+    color_EVO_orange_shine
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -418,9 +419,9 @@ def show_error(item, column):
                 break
     else:
         current_err = window.thread.err_dict[current_node_text][0]
-    err_links_list = '\n'.join([f'<a href="{li}">Link</a>' for li in current_err.check_link])\
+    err_links_list = '\n'.join([f'<br><a href="{li}">Проверка здесь</a></br>' for li in current_err.check_link])\
         if current_err.check_link else ''
-    window.errors_browser.setText(current_err.description + '\n' + err_links_list)
+    window.errors_browser.setHtml(current_err.description + '\n' + err_links_list)
     window.errors_browser.setOpenExternalLinks(True)
     if current_err.important_parameters:
         err_param_list = set()
@@ -633,9 +634,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                     child_item = QTreeWidgetItem()
                     child_item.setText(0, err.name)
                     if err.critical:
-                        child_item.setForeground(0, QBrush(color_EVO_red))
+                        child_item.setForeground(0, QBrush(color_EVO_red_dark))
                     else:
-                        child_item.setForeground(0, QBrush(color_EVO_orange))
+                        child_item.setForeground(0, QBrush(color_EVO_orange_shine))
                     item.addChild(child_item)
                     # если ранее курсор стоял на группе, запоминаю ее
                     if old_item_name == err.name:  # не работает для рулевых - нужно запоминать и имя блока тоже
@@ -1066,6 +1067,7 @@ if __name__ == '__main__':
     window.errors_tree.itemPressed.connect(show_error)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
+    window.errors_browser.setStyleSheet("font: bold 14px;")
     # и сигналы нажатия на кнопки
     # -----------------Инвертор---------------------------
     window.invert_btn.clicked.connect(mpei_invert)
@@ -1090,15 +1092,6 @@ if __name__ == '__main__':
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.log_record_btn.clicked.connect(record_log)
     window.search_btn.clicked.connect(search_param)
-    # window.errors_browser.setOpenLinks(False)
-    # window.errors_browser.acceptRichText()
-    # window.errors_browser.setOpenExternalLinks(True)
-    # window.errors_browser.openLinks()
-    ss_link = 'http://python.su/forum/18/'
-    ss_link1 = 'https://evocargo.atlassian.net/wiki/spaces/FAQO/pages/644907782#%D0%91%D0%A0.16'
-    ss_link2 = 'helper.py'
-    window.errors_browser.setText(f'<a href="{ss_link1}">TEST LINK</a>')
-    # QDesktopServices.openUrl(QUrl(ss_link1))
     window.save_to_file_btn.setEnabled(False)
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:
@@ -1125,4 +1118,4 @@ if __name__ == '__main__':
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
 # падает при сохранении в файл
-# нет ссылки в браузере ошибок
+# если стринговый параметр делать период 500 и обрезать последние нули в ТАБ

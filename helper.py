@@ -55,6 +55,7 @@ example_par = {'name': 'fghjk',
 color_EVO_red = QColor(222, 73, 14)
 color_EVO_red_dark = QColor(234, 76, 76)
 color_EVO_orange = QColor(241, 91, 34)
+color_EVO_orange_shine = QColor(255, 184, 65)
 
 
 class MyComboBox(QComboBox):
