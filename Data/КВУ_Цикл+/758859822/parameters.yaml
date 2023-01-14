@@ -1,0 +1,7624 @@
+BMS:
+- address: '0x5b2601'
+  description: БМС OnLine
+  editable: false
+  group: 44
+  name: BMS Online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2602'
+  description: Напряжение аккумулятора
+  editable: false
+  group: 44
+  name: Напряжение аккумулятора
+  scale: 1941.8074074074075
+  type: SIGNED32
+  unit: В
+  value: 11169176.0
+- address: '0x5b2603'
+  description: Ток АКБ [0,1 A]
+  editable: false
+  group: 44
+  name: Battery Current [0,1 A]
+  scale: 5242.88
+  type: SIGNED32
+  unit: А
+  value: 830412.0
+- address: '0x5b2604'
+  description: Код аварии 1
+  editable: false
+  group: 44
+  name: Faults 1
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2605'
+  description: Код аварии 2
+  editable: false
+  group: 44
+  name: Faults 2
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2606'
+  description: Макс.напряжение ячейки, мВ
+  editable: false
+  group: 44
+  name: Max Cell Voltage, mV
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 3334.0
+- address: '0x5b2607'
+  description: Мин. напряжение ячейки, мВ
+  editable: false
+  group: 44
+  name: Min Cell Voltage, mV
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 3325.0
+- address: '0x5b2608'
+  description: Заряд, %
+  editable: false
+  group: 44
+  name: State of Charge, %
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 30.0
+- address: '0x5b2609'
+  description: Температура ячеек макс.
+  editable: false
+  group: 44
+  name: Max cell temperature
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 25.0
+- address: '0x5b260a'
+  description: Температура ячеек мин.
+  editable: false
+  group: 44
+  name: Min cell temperature
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 23.0
+- address: '0x5b260b'
+  description: _
+  editable: true
+  group: 44
+  name: _
+  scale: 1941.8074074074075
+  type: SIGNED32
+  unit: В
+  value: 10252743.0
+- address: '0x5b260c'
+  description: _
+  editable: true
+  group: 44
+  name: _
+  scale: 1941.8074074074075
+  type: SIGNED32
+  unit: В
+  value: 9320676.0
+- address: '0x5b260d'
+  description: _
+  editable: true
+  group: 44
+  name: _
+  scale: 5242.88
+  type: SIGNED32
+  unit: А
+  value: 83887.0
+- address: '0x5b260e'
+  description: _
+  editable: true
+  group: 44
+  name: _
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b260f'
+  description: _
+  editable: true
+  group: 44
+  name: _
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10000.0
+BlockTransfer interpreter:
+- address: '0x270101'
+  description: cmd
+  editable: true
+  group: 2
+  name: cmd
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x270102'
+  description: status
+  editable: true
+  group: 2
+  name: status
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x270103'
+  description: quest1
+  editable: true
+  group: 2
+  name: quest1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x270104'
+  description: quest2
+  editable: true
+  group: 2
+  name: quest2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x270105'
+  description: quest3
+  editable: true
+  group: 2
+  name: quest3
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x270106'
+  description: quest4
+  editable: true
+  group: 2
+  name: quest4
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x270107'
+  description: ans1
+  editable: true
+  group: 2
+  name: ans1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x270108'
+  description: ans2
+  editable: true
+  group: 2
+  name: ans2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x270109'
+  description: ans3
+  editable: true
+  group: 2
+  name: ans3
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x27010a'
+  description: ans4
+  editable: true
+  group: 2
+  name: ans4
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x27010b'
+  description: addr
+  editable: true
+  group: 2
+  name: address
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x27010c'
+  description: CPU_ID
+  editable: true
+  group: 2
+  name: CPU_ID
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x27010d'
+  description: sector_mask
+  editable: true
+  group: 2
+  name: sector_mask
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x27010e'
+  description: Версия
+  editable: true
+  group: 2
+  name: Версия
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x27010f'
+  description: Контрольная сумма
+  editable: true
+  group: 2
+  name: Контрольная сумма
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x270200'
+  description: Маска стираемых секторов
+  editable: false
+  group: 2
+  name: Eraseble sectors mask
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 65534.0
+CAN NODE-ID:
+- address: '0x200100'
+  description: CAN Bit Rate
+  editable: false
+  group: 7
+  name: CAN Bit Rate
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 3.0
+- address: '0x210001'
+  description: Scale Number 0
+  editable: false
+  group: 8
+  name: Scale Number 0
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x210002'
+  description: Scale Number 0 Format
+  editable: false
+  group: 8
+  name: Scale Number 0 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 32.0
+Client SDO Parameter:
+- address: '0x128001'
+  description: COB-ID Client->Server(tx)
+  editable: false
+  group: 5
+  name: COB-ID Client->Server(tx)
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 609787275.0
+- address: '0x128002'
+  description: COB-ID Server->Client(rx)
+  editable: false
+  group: 5
+  name: COB-ID Server->Client(rx)
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 590432802.0
+- address: '0x128003'
+  description: NODE-ID on SDO server
+  editable: false
+  group: 5
+  name: NODE-ID on SDO server
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 160.0
+RPDO1 Communication Parameters:
+- address: '0x140001'
+  description: COB-ID for RPDO1
+  editable: false
+  group: 4
+  name: COB-ID for RPDO1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 384.0
+- address: '0x140002'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x140101'
+  description: COB-ID for RPDO2
+  editable: false
+  group: 4
+  name: COB-ID for RPDO2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 640.0
+- address: '0x140102'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x140201'
+  description: COB-ID for RPDO3
+  editable: false
+  group: 4
+  name: COB-ID for RPDO3
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 896.0
+- address: '0x140202'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x140301'
+  description: COB-ID for RPDO4
+  editable: false
+  group: 4
+  name: COB-ID for RPDO4
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1152.0
+- address: '0x140302'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x140401'
+  description: COB-ID for RPDO5
+  editable: false
+  group: 4
+  name: COB-ID for RPDO5
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 512.0
+- address: '0x140402'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x140501'
+  description: COB-ID for RPDO6
+  editable: false
+  group: 4
+  name: COB-ID for RPDO6
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 768.0
+- address: '0x140502'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x140601'
+  description: COB-ID for RPDO7
+  editable: false
+  group: 4
+  name: COB-ID for RPDO7
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1024.0
+- address: '0x140602'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x140701'
+  description: COB-ID for RPDO8
+  editable: false
+  group: 4
+  name: COB-ID for RPDO8
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1280.0
+- address: '0x140702'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x160001'
+  description: RPDO1-1 Mapping
+  editable: false
+  group: 4
+  name: RPDO1-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525809440.0
+- address: '0x160002'
+  description: RPDO1-2 Mapping
+  editable: false
+  group: 4
+  name: RPDO1-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525809696.0
+- address: '0x160003'
+  description: RPDO1-3 Mapping
+  editable: false
+  group: 4
+  name: RPDO1-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160004'
+  description: RPDO1-4 Mapping
+  editable: false
+  group: 4
+  name: RPDO1-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160101'
+  description: RPDO2-1 Mapping
+  editable: false
+  group: 4
+  name: RPDO2-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525809952.0
+- address: '0x160102'
+  description: RPDO2-2 Mapping
+  editable: false
+  group: 4
+  name: RPDO2-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525810208.0
+- address: '0x160103'
+  description: RPDO2-3 Mapping
+  editable: false
+  group: 4
+  name: RPDO2-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160104'
+  description: RPDO2-4 Mapping
+  editable: false
+  group: 4
+  name: RPDO2-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160201'
+  description: RPDO3-1 Mapping
+  editable: false
+  group: 4
+  name: RPDO3-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525810464.0
+- address: '0x160202'
+  description: RPDO3-2 Mapping
+  editable: false
+  group: 4
+  name: RPDO3-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525810720.0
+- address: '0x160203'
+  description: RPDO3-3 Mapping
+  editable: false
+  group: 4
+  name: RPDO3-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160204'
+  description: RPDO3-4 Mapping
+  editable: false
+  group: 4
+  name: RPDO3-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160301'
+  description: RPDO4-1 Mapping
+  editable: false
+  group: 4
+  name: RPDO4-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525810976.0
+- address: '0x160302'
+  description: RPDO4-2 Mapping
+  editable: false
+  group: 4
+  name: RPDO4-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525811232.0
+- address: '0x160303'
+  description: RPDO4-3 Mapping
+  editable: false
+  group: 4
+  name: RPDO4-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160304'
+  description: RPDO4-4 Mapping
+  editable: false
+  group: 4
+  name: RPDO4-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160401'
+  description: RPDO5-1 Mapping
+  editable: false
+  group: 4
+  name: RPDO5-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525811488.0
+- address: '0x160402'
+  description: RPDO5-2 Mapping
+  editable: false
+  group: 4
+  name: RPDO5-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525811744.0
+- address: '0x160403'
+  description: RPDO5-3 Mapping
+  editable: false
+  group: 4
+  name: RPDO5-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160404'
+  description: RPDO5-4 Mapping
+  editable: false
+  group: 4
+  name: RPDO5-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160501'
+  description: RPDO6-1 Mapping
+  editable: false
+  group: 4
+  name: RPDO6-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525812000.0
+- address: '0x160502'
+  description: RPDO6-2 Mapping
+  editable: false
+  group: 4
+  name: RPDO6-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525812256.0
+- address: '0x160503'
+  description: RPDO6-3 Mapping
+  editable: false
+  group: 4
+  name: RPDO6-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160504'
+  description: RPDO6-4 Mapping
+  editable: false
+  group: 4
+  name: RPDO6-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160601'
+  description: RPDO7-1 Mapping
+  editable: false
+  group: 4
+  name: RPDO7-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525812512.0
+- address: '0x160602'
+  description: RPDO7-2 Mapping
+  editable: false
+  group: 4
+  name: RPDO7-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525812768.0
+- address: '0x160603'
+  description: RPDO7-3 Mapping
+  editable: false
+  group: 4
+  name: RPDO7-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160604'
+  description: RPDO7-4 Mapping
+  editable: false
+  group: 4
+  name: RPDO7-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160701'
+  description: RPDO8-1 Mapping
+  editable: false
+  group: 4
+  name: RPDO8-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525813024.0
+- address: '0x160702'
+  description: RPDO8-2 Mapping
+  editable: false
+  group: 4
+  name: RPDO8-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525813280.0
+- address: '0x160703'
+  description: RPDO8-3 Mapping
+  editable: false
+  group: 4
+  name: RPDO8-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x160704'
+  description: RPDO8-4 Mapping
+  editable: false
+  group: 4
+  name: RPDO8-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x180001'
+  description: COB-ID for TPDO1
+  editable: false
+  group: 4
+  name: COB-ID for TPDO1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 404.0
+- address: '0x180002'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180003'
+  description: Inhibit Time 1
+  editable: false
+  group: 4
+  name: Inhibit Time 1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x180004'
+  description: Compatibility Entry
+  editable: false
+  group: 4
+  name: Compatibility Entry
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180005'
+  description: Event Timer 1
+  editable: false
+  group: 4
+  name: Event Timer 1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 250.0
+- address: '0x180101'
+  description: COB-ID for TPDO2
+  editable: false
+  group: 4
+  name: COB-ID for TPDO2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 660.0
+- address: '0x180102'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180103'
+  description: Inhibit Time 2
+  editable: false
+  group: 4
+  name: Inhibit Time 2
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x180104'
+  description: Compatibility Entry
+  editable: false
+  group: 4
+  name: Compatibility Entry
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180105'
+  description: Event Timer 2
+  editable: false
+  group: 4
+  name: Event Timer 2
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10.0
+- address: '0x180201'
+  description: COB-ID for TPDO3
+  editable: false
+  group: 4
+  name: COB-ID for TPDO3
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 916.0
+- address: '0x180202'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180203'
+  description: Inhibit Time 3
+  editable: false
+  group: 4
+  name: Inhibit Time 3
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x180204'
+  description: Compatibility Entry
+  editable: false
+  group: 4
+  name: Compatibility Entry
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180205'
+  description: Event Timer 3
+  editable: false
+  group: 4
+  name: Event Timer 3
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x180301'
+  description: COB-ID for TPDO4
+  editable: false
+  group: 4
+  name: COB-ID for TPDO4
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1172.0
+- address: '0x180302'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180303'
+  description: Inhibit Time 4
+  editable: false
+  group: 4
+  name: Inhibit Time 4
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x180304'
+  description: Compatibility Entry
+  editable: false
+  group: 4
+  name: Compatibility Entry
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180305'
+  description: Event Timer 4
+  editable: false
+  group: 4
+  name: Event Timer 4
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x180401'
+  description: COB-ID for TPDO5
+  editable: false
+  group: 4
+  name: COB-ID for TPDO5
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 532.0
+- address: '0x180402'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180403'
+  description: Inhibit Time 5
+  editable: false
+  group: 4
+  name: Inhibit Time 5
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x180404'
+  description: Compatibility Entry
+  editable: false
+  group: 4
+  name: Compatibility Entry
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180405'
+  description: Event Timer 5
+  editable: false
+  group: 4
+  name: Event Timer 5
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x180501'
+  description: COB-ID for TPDO6
+  editable: false
+  group: 4
+  name: COB-ID for TPDO6
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 788.0
+- address: '0x180502'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180503'
+  description: Inhibit Time 6
+  editable: false
+  group: 4
+  name: Inhibit Time 6
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x180504'
+  description: Compatibility Entry
+  editable: false
+  group: 4
+  name: Compatibility Entry
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180505'
+  description: Event Timer 6
+  editable: false
+  group: 4
+  name: Event Timer 6
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 50.0
+- address: '0x180601'
+  description: COB-ID for TPDO7
+  editable: false
+  group: 4
+  name: COB-ID for TPDO7
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1044.0
+- address: '0x180602'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180603'
+  description: Inhibit Time 7
+  editable: false
+  group: 4
+  name: Inhibit Time 7
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x180604'
+  description: Compatibility Entry
+  editable: false
+  group: 4
+  name: Compatibility Entry
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180605'
+  description: Event Timer 7
+  editable: false
+  group: 4
+  name: Event Timer 7
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x180701'
+  description: COB-ID for TPDO8
+  editable: false
+  group: 4
+  name: COB-ID for TPDO8
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1300.0
+- address: '0x180702'
+  description: Тип передачи
+  editable: false
+  group: 4
+  name: Transmission Type
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180703'
+  description: Inhibit Time 8
+  editable: false
+  group: 4
+  name: Inhibit Time 8
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x180704'
+  description: Compatibility Entry
+  editable: false
+  group: 4
+  name: Compatibility Entry
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x180705'
+  description: Event Timer 8
+  editable: false
+  group: 4
+  name: Event Timer 8
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x1a0001'
+  description: TPDO1-1 Mapping
+  editable: false
+  group: 4
+  name: TPDO1-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525743904.0
+- address: '0x1a0002'
+  description: TPDO1-2 Mapping
+  editable: false
+  group: 4
+  name: TPDO1-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525744160.0
+- address: '0x1a0003'
+  description: TPDO1-3 Mapping
+  editable: false
+  group: 4
+  name: TPDO1-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0004'
+  description: TPDO1-4 Mapping
+  editable: false
+  group: 4
+  name: TPDO1-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0101'
+  description: TPDO2-1 Mapping
+  editable: false
+  group: 4
+  name: TPDO2-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525744416.0
+- address: '0x1a0102'
+  description: TPDO2-2 Mapping
+  editable: false
+  group: 4
+  name: TPDO2-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525744672.0
+- address: '0x1a0103'
+  description: TPDO2-3 Mapping
+  editable: false
+  group: 4
+  name: TPDO2-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0104'
+  description: TPDO2-4 Mapping
+  editable: false
+  group: 4
+  name: TPDO2-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0201'
+  description: TPDO3-1 Mapping
+  editable: false
+  group: 4
+  name: TPDO3-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525744928.0
+- address: '0x1a0202'
+  description: TPDO3-2 Mapping
+  editable: false
+  group: 4
+  name: TPDO3-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525745184.0
+- address: '0x1a0203'
+  description: TPDO3-3 Mapping
+  editable: false
+  group: 4
+  name: TPDO3-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0204'
+  description: TPDO3-4 Mapping
+  editable: false
+  group: 4
+  name: TPDO3-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0301'
+  description: TPDO4-1 Mapping
+  editable: false
+  group: 4
+  name: TPDO4-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525745440.0
+- address: '0x1a0302'
+  description: TPDO4-2 Mapping
+  editable: false
+  group: 4
+  name: TPDO4-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525745696.0
+- address: '0x1a0303'
+  description: TPDO4-3 Mapping
+  editable: false
+  group: 4
+  name: TPDO4-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0304'
+  description: TPDO4-4 Mapping
+  editable: false
+  group: 4
+  name: TPDO4-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0401'
+  description: TPDO5-1 Mapping
+  editable: false
+  group: 4
+  name: TPDO5-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525745952.0
+- address: '0x1a0402'
+  description: TPDO5-2 Mapping
+  editable: false
+  group: 4
+  name: TPDO5-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525746208.0
+- address: '0x1a0403'
+  description: TPDO5-3 Mapping
+  editable: false
+  group: 4
+  name: TPDO5-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0404'
+  description: TPDO5-4 Mapping
+  editable: false
+  group: 4
+  name: TPDO5-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0501'
+  description: TPDO6-1 Mapping
+  editable: false
+  group: 4
+  name: TPDO6-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525746464.0
+- address: '0x1a0502'
+  description: TPDO6-2 Mapping
+  editable: false
+  group: 4
+  name: TPDO6-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525746720.0
+- address: '0x1a0503'
+  description: TPDO6-3 Mapping
+  editable: false
+  group: 4
+  name: TPDO6-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0504'
+  description: TPDO6-4 Mapping
+  editable: false
+  group: 4
+  name: TPDO6-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0601'
+  description: TPDO7-1 Mapping
+  editable: false
+  group: 4
+  name: TPDO7-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525746976.0
+- address: '0x1a0602'
+  description: TPDO7-2 Mapping
+  editable: false
+  group: 4
+  name: TPDO7-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525747232.0
+- address: '0x1a0603'
+  description: TPDO7-3 Mapping
+  editable: false
+  group: 4
+  name: TPDO7-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0604'
+  description: TPDO7-4 Mapping
+  editable: false
+  group: 4
+  name: TPDO7-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0701'
+  description: TPDO8-1 Mapping
+  editable: false
+  group: 4
+  name: TPDO8-1 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525747488.0
+- address: '0x1a0702'
+  description: TPDO8-2 Mapping
+  editable: false
+  group: 4
+  name: TPDO8-2 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1525747744.0
+- address: '0x1a0703'
+  description: TPDO8-3 Mapping
+  editable: false
+  group: 4
+  name: TPDO8-3 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x1a0704'
+  description: TPDO8-4 Mapping
+  editable: false
+  group: 4
+  name: TPDO8-4 Mapping
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af101'
+  description: TPDO 1_1
+  editable: false
+  group: 4
+  name: TPDO 1_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af102'
+  description: TPDO 1_2
+  editable: false
+  group: 4
+  name: TPDO 1_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 235536384.0
+- address: '0x5af103'
+  description: TPDO 2_1
+  editable: false
+  group: 4
+  name: TPDO 2_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af104'
+  description: TPDO 2_2
+  editable: false
+  group: 4
+  name: TPDO 2_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af105'
+  description: TPDO 3_1
+  editable: false
+  group: 4
+  name: TPDO 3_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af106'
+  description: TPDO 3_2
+  editable: false
+  group: 4
+  name: TPDO 3_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af107'
+  description: TPDO 4_1
+  editable: false
+  group: 4
+  name: TPDO 4_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af108'
+  description: TPDO 4_2
+  editable: false
+  group: 4
+  name: TPDO 4_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af109'
+  description: TPDO 5_1
+  editable: false
+  group: 4
+  name: TPDO 5_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af10a'
+  description: TPDO 5_2
+  editable: false
+  group: 4
+  name: TPDO 5_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af10b'
+  description: TPDO 6_1
+  editable: false
+  group: 4
+  name: TPDO 6_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af10c'
+  description: TPDO 6_2
+  editable: false
+  group: 4
+  name: TPDO 6_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af10d'
+  description: TPDO 7_1
+  editable: false
+  group: 4
+  name: TPDO 7_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af10e'
+  description: TPDO 7_2
+  editable: false
+  group: 4
+  name: TPDO 7_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af10f'
+  description: TPDO 8_1
+  editable: false
+  group: 4
+  name: TPDO 8_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af110'
+  description: TPDO 8_2
+  editable: false
+  group: 4
+  name: TPDO 8_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af111'
+  description: Работа TDPO
+  editable: true
+  group: 4
+  name: Работа TDPO
+  scale: 0
+  type: SIGNED32
+  unit: шест-ричн.
+  value: 255.0
+- address: '0x5af201'
+  description: RPDO 1_1
+  editable: true
+  group: 4
+  name: RPDO 1_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1358943488.0
+- address: '0x5af202'
+  description: RPDO 1_2
+  editable: true
+  group: 4
+  name: RPDO 1_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 4325120.0
+- address: '0x5af203'
+  description: RPDO 2_1
+  editable: true
+  group: 4
+  name: RPDO 2_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 91.0
+- address: '0x5af204'
+  description: RPDO 2_2
+  editable: true
+  group: 4
+  name: RPDO 2_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 5526619.0
+- address: '0x5af205'
+  description: RPDO 3_1
+  editable: true
+  group: 4
+  name: RPDO 3_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 7196.0
+- address: '0x5af206'
+  description: RPDO 3_2
+  editable: true
+  group: 4
+  name: RPDO 3_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af207'
+  description: RPDO 4_1
+  editable: true
+  group: 4
+  name: RPDO 4_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af208'
+  description: RPDO 4_2
+  editable: true
+  group: 4
+  name: RPDO 4_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af209'
+  description: RPDO 5_1
+  editable: true
+  group: 4
+  name: RPDO 5_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af20a'
+  description: RPDO 5_2
+  editable: true
+  group: 4
+  name: RPDO 5_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af20b'
+  description: RPDO 6_1
+  editable: true
+  group: 4
+  name: RPDO 6_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af20c'
+  description: RPDO 6_2
+  editable: true
+  group: 4
+  name: RPDO 6_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af20d'
+  description: RPDO 7_1
+  editable: true
+  group: 4
+  name: RPDO 7_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af20e'
+  description: RPDO 7_2
+  editable: true
+  group: 4
+  name: RPDO 7_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af20f'
+  description: RPDO 8_1
+  editable: true
+  group: 4
+  name: RPDO 8_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5af210'
+  description: RPDO 8_2
+  editable: true
+  group: 4
+  name: RPDO 8_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 21.0
+- address: '0x5af211'
+  description: Работа RDPO
+  editable: true
+  group: 4
+  name: Работа RDPO
+  scale: 0
+  type: SIGNED32
+  unit: шест-ричн.
+  value: 255.0
+Scale Number Format Q:
+- address: '0x210004'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 1.0
+- address: '0x210005'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210006'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210101'
+  description: Scale Number 1
+  editable: false
+  group: 8
+  name: Scale Number 1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x210102'
+  description: Scale Number 1 Format
+  editable: false
+  group: 8
+  name: Scale Number 1 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 4128.0
+- address: '0x210103'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210104'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 1.0
+- address: '0x210105'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210106'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 4.0
+- address: '0x210201'
+  description: Scale Number 2
+  editable: false
+  group: 8
+  name: Scale Number 2
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 50.0
+- address: '0x210202'
+  description: Scale Number 2 Format
+  editable: false
+  group: 8
+  name: Scale Number 2 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 3136.0
+- address: '0x210203'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210204'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x210205'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210206'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 3.0
+- address: '0x210301'
+  description: Scale Number 3
+  editable: false
+  group: 8
+  name: Scale Number 3
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 220.0
+- address: '0x210302'
+  description: Scale Number 3 Format
+  editable: false
+  group: 8
+  name: Scale Number 3 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 2112.0
+- address: '0x210303'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210304'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x210305'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210306'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 2.0
+- address: '0x210401'
+  description: Scale Number 4
+  editable: false
+  group: 8
+  name: Scale Number 4
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 650.0
+- address: '0x210402'
+  description: Scale Number 4 Format
+  editable: false
+  group: 8
+  name: Scale Number 4 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1056.0
+- address: '0x210403'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210404'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 1.0
+- address: '0x210405'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210406'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x210501'
+  description: Scale Number 5
+  editable: false
+  group: 8
+  name: Scale Number 5
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 200.0
+- address: '0x210502'
+  description: Scale Number 5 Format
+  editable: false
+  group: 8
+  name: Scale Number 5 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1056.0
+- address: '0x210503'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210504'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 1.0
+- address: '0x210505'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210506'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x210601'
+  description: Scale Number 6
+  editable: false
+  group: 8
+  name: Scale Number 6
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 35.0
+- address: '0x210602'
+  description: Scale Number 6 Format
+  editable: false
+  group: 8
+  name: Scale Number 6 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1088.0
+- address: '0x210603'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210604'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x210605'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210606'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x210701'
+  description: Scale Number 7
+  editable: false
+  group: 8
+  name: Scale Number 7
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 540.0
+- address: '0x210702'
+  description: Scale Number 7 Format
+  editable: false
+  group: 8
+  name: Scale Number 7 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 2112.0
+- address: '0x210703'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210704'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x210705'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210706'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 2.0
+- address: '0x210801'
+  description: Scale Number 8
+  editable: false
+  group: 8
+  name: Scale Number 8
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 19200.0
+- address: '0x210802'
+  description: Scale Number 8 Format
+  editable: false
+  group: 8
+  name: Scale Number 8 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 9414.0
+- address: '0x210803'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 6.0
+- address: '0x210804'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x210805'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x210806'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 9.0
+- address: '0x210901'
+  description: Scale Number 9
+  editable: false
+  group: 8
+  name: Scale Number 9
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x210902'
+  description: Scale Number 9 Format
+  editable: false
+  group: 8
+  name: Scale Number 9 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 5184.0
+- address: '0x210903'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210904'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x210905'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210906'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 5.0
+- address: '0x210a01'
+  description: Scale Number A
+  editable: false
+  group: 8
+  name: Scale Number A
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 20.0
+- address: '0x210a02'
+  description: Scale Number A Format
+  editable: false
+  group: 8
+  name: Scale Number A Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 12320.0
+- address: '0x210a03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210a04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 1.0
+- address: '0x210a05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210a06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 12.0
+- address: '0x210b01'
+  description: Scale Number B
+  editable: false
+  group: 8
+  name: Scale Number B
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x210b02'
+  description: Scale Number B Format
+  editable: false
+  group: 8
+  name: Scale Number B Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 6144.0
+- address: '0x210b03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210b04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210b05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210b06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 6.0
+- address: '0x210c01'
+  description: Scale Number C
+  editable: false
+  group: 8
+  name: Scale Number C
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x210c02'
+  description: Scale Number C Format
+  editable: false
+  group: 8
+  name: Scale Number C Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 7168.0
+- address: '0x210c03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210c04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210c05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210c06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 7.0
+- address: '0x210d01'
+  description: Scale Number D
+  editable: false
+  group: 8
+  name: Scale Number D
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x210d02'
+  description: Scale Number D Format
+  editable: false
+  group: 8
+  name: Scale Number D Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 2144.0
+- address: '0x210d03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210d04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 3.0
+- address: '0x210d05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210d06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 2.0
+- address: '0x210e01'
+  description: Scale Number E
+  editable: false
+  group: 8
+  name: Scale Number E
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x210e02'
+  description: Scale Number E Format
+  editable: false
+  group: 8
+  name: Scale Number E Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 29888.0
+- address: '0x210e03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210e04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x210e05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x210e06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 29.0
+- address: '0x210f01'
+  description: Scale Number F
+  editable: false
+  group: 8
+  name: Scale Number F
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x210f02'
+  description: Scale Number F Format
+  editable: false
+  group: 8
+  name: Scale Number F Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 96.0
+- address: '0x210f03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x210f04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 3.0
+- address: '0x210f05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x210f06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211001'
+  description: Scale Number 10
+  editable: false
+  group: 8
+  name: Scale Number 10
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x211002'
+  description: Scale Number 10 Format
+  editable: false
+  group: 8
+  name: Scale Number 10 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 3136.0
+- address: '0x211003'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211004'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x211005'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211006'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 3.0
+- address: '0x211101'
+  description: Scale Number 11
+  editable: false
+  group: 8
+  name: Scale Number 11
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 300.0
+- address: '0x211102'
+  description: Scale Number 11 Format
+  editable: false
+  group: 8
+  name: Scale Number 11 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 9408.0
+- address: '0x211103'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211104'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x211105'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x211106'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 9.0
+- address: '0x211201'
+  description: Scale Number 12
+  editable: false
+  group: 8
+  name: Scale Number 12
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 24000.0
+- address: '0x211202'
+  description: Scale Number 12 Format
+  editable: false
+  group: 8
+  name: Scale Number 12 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 9412.0
+- address: '0x211203'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 4.0
+- address: '0x211204'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x211205'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x211206'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 9.0
+- address: '0x211301'
+  description: Scale Number 13
+  editable: false
+  group: 8
+  name: Scale Number 13
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x211302'
+  description: Scale Number 13 Format
+  editable: false
+  group: 8
+  name: Scale Number 13 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 12352.0
+- address: '0x211303'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211304'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x211305'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211306'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 12.0
+- address: '0x211401'
+  description: Scale Number 14
+  editable: false
+  group: 8
+  name: Scale Number 14
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 8000.0
+- address: '0x211402'
+  description: Scale Number 14 Format
+  editable: false
+  group: 8
+  name: Scale Number 14 Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 13344.0
+- address: '0x211403'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211404'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 1.0
+- address: '0x211405'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211406'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 13.0
+- address: '0x211501'
+  description: Scale Number 15
+  editable: false
+  group: 8
+  name: Scale Number 15
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x211502'
+  description: Scale Number 15Format
+  editable: false
+  group: 8
+  name: Scale Number 15Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10240.0
+- address: '0x211503'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211504'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211505'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211506'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 10.0
+- address: '0x211601'
+  description: Scale Number 16
+  editable: false
+  group: 8
+  name: Scale Number 16
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1200.0
+- address: '0x211602'
+  description: Scale Number 16Format
+  editable: false
+  group: 8
+  name: Scale Number 16Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 14400.0
+- address: '0x211603'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211604'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x211605'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211606'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 14.0
+- address: '0x211701'
+  description: Scale Number 17
+  editable: false
+  group: 8
+  name: Scale Number 17
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1600.0
+- address: '0x211702'
+  description: Scale Number 17Format
+  editable: false
+  group: 8
+  name: Scale Number 17Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 15686.0
+- address: '0x211703'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 6.0
+- address: '0x211704'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x211705'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 2.0
+- address: '0x211706'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 15.0
+- address: '0x211801'
+  description: Scale Number 18
+  editable: false
+  group: 8
+  name: Scale Number 18
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x211802'
+  description: Scale Number 18Format
+  editable: false
+  group: 8
+  name: Scale Number 18Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 17344.0
+- address: '0x211803'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211804'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x211805'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 7.0
+- address: '0x211806'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 16.0
+- address: '0x211901'
+  description: Scale Number 19
+  editable: false
+  group: 8
+  name: Scale Number 19
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 90.0
+- address: '0x211902'
+  description: Scale Number 19Format
+  editable: false
+  group: 8
+  name: Scale Number 19Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 29856.0
+- address: '0x211903'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211904'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 1.0
+- address: '0x211905'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x211906'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 29.0
+- address: '0x211a01'
+  description: Scale Number 1A
+  editable: false
+  group: 8
+  name: Scale Number 1A
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x211a02'
+  description: Scale Number 1AFormat
+  editable: false
+  group: 8
+  name: Scale Number 1AFormat
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 14336.0
+- address: '0x211a03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211a04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211a05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211a06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 14.0
+- address: '0x211b01'
+  description: Scale Number 1B
+  editable: false
+  group: 8
+  name: Scale Number 1B
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x211b02'
+  description: Scale Number 1BFormat
+  editable: false
+  group: 8
+  name: Scale Number 1BFormat
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 20544.0
+- address: '0x211b03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211b04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 2.0
+- address: '0x211b05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211b06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 20.0
+- address: '0x211c01'
+  description: Scale Number 1C
+  editable: false
+  group: 8
+  name: Scale Number 1C
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x211c02'
+  description: Scale Number 1C Format
+  editable: false
+  group: 8
+  name: Scale Number 1C Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 20640.0
+- address: '0x211c03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211c04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 1.0
+- address: '0x211c05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x211c06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 20.0
+- address: '0x211d01'
+  description: Scale Number 1D
+  editable: false
+  group: 8
+  name: Scale Number 1D
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 100.0
+- address: '0x211d02'
+  description: Scale Number 1D Format
+  editable: false
+  group: 8
+  name: Scale Number 1D Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 4192.0
+- address: '0x211d03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211d04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 3.0
+- address: '0x211d05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211d06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 4.0
+- address: '0x211e01'
+  description: Системный объект
+  editable: false
+  group: 8
+  name: System object
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 24.0
+- address: '0x211e02'
+  description: Системный объект
+  editable: false
+  group: 8
+  name: System object
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 2080.0
+- address: '0x211e03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211e04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 1.0
+- address: '0x211e05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211e06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 2.0
+- address: '0x211f01'
+  description: Системный объект
+  editable: false
+  group: 8
+  name: System object
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x211f02'
+  description: Системный объект
+  editable: false
+  group: 8
+  name: System object
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 12288.0
+- address: '0x211f03'
+  description: Scale Number Format Q
+  editable: false
+  group: 8
+  name: Scale Number Format Q
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211f04'
+  description: Scale Number Format NumOfFloat
+  editable: false
+  group: 8
+  name: Scale Number Format NumOfFloat
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x211f05'
+  description: Scale Number Format Prefix
+  editable: false
+  group: 8
+  name: Scale Number Format Prefix
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x211f06'
+  description: Scale Number Format Units
+  editable: false
+  group: 8
+  name: Scale Number Format Units
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 12.0
+_:
+- address: '0x5b0f01'
+  description: Состояние ДА защит
+  editable: true
+  group: 45
+  name: Состояние ДА защит
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b0f02'
+  description: Флаги событий 1L
+  editable: true
+  group: 45
+  name: Event flags 1L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0f03'
+  description: Флаги событий 1H
+  editable: true
+  group: 45
+  name: Event flags 1H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0f04'
+  description: Маски событий 1L
+  editable: true
+  group: 45
+  name: Event Mask 1L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0f05'
+  description: Маски событий 1H
+  editable: true
+  group: 45
+  name: Event Mask 1H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0f06'
+  description: Предупреждения КВУ
+  editable: false
+  group: 45
+  name: Предупреждения КВУ
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+dlog:
+- address: '0x515001'
+  description: dlog.mode_reset
+  editable: true
+  group: 17
+  name: dlog.mode_reset
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 2.0
+- address: '0x515002'
+  description: dlog.control
+  editable: true
+  group: 17
+  name: dlog.control
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 128.0
+- address: '0x515003'
+  description: dlog.ind_subind1
+  editable: true
+  group: 17
+  name: dlog.ind_subind1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x515004'
+  description: dlog.ind_subind2
+  editable: true
+  group: 17
+  name: dlog.ind_subind2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x515005'
+  description: dlog.ind_subind3
+  editable: true
+  group: 17
+  name: dlog.ind_subind3
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x515006'
+  description: dlog.ind_subind4
+  editable: true
+  group: 17
+  name: dlog.ind_subind4
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x515007'
+  description: StartBitL
+  editable: true
+  group: 17
+  name: StartBitL
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x515008'
+  description: StartBitH
+  editable: true
+  group: 17
+  name: StartBitH
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x515009'
+  description: OneShotOperation
+  editable: true
+  group: 17
+  name: OneShotOperation
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x51500a'
+  description: Количество точек предыстории
+  editable: true
+  group: 17
+  name: Prehistory Points Number
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x51500b'
+  description: Частота
+  editable: false
+  group: 17
+  name: Частота
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 10000.0
+- address: '0x515100'
+  description: dlog.next_value_var
+  editable: true
+  group: 17
+  name: dlog.next_value_var
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 111240.0
+АЦП температура:
+- address: '0x5b6701'
+  description: Коэффициент температуры
+  editable: true
+  group: 16
+  name: Temperature sensor gain
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 7461.0
+- address: '0x5b6702'
+  description: Смещение температуры
+  editable: true
+  group: 16
+  name: Temperature sensor offset
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: -29986.0
+- address: '0x5b6703'
+  description: Температура
+  editable: false
+  group: 16
+  name: Температура
+  scale: 52428.8
+  type: SIGNED32
+  unit: град
+  value: 29641195.0
+- address: '0x5b6901'
+  description: ADC0
+  editable: false
+  group: 16
+  name: ADC0
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10060.0
+- address: '0x5b6902'
+  description: ADC1
+  editable: false
+  group: 16
+  name: ADC1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 20475.0
+- address: '0x5b6903'
+  description: ADC2
+  editable: false
+  group: 16
+  name: ADC2
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10085.0
+- address: '0x5b6904'
+  description: ADC3
+  editable: false
+  group: 16
+  name: ADC3
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 20265.0
+- address: '0x5b6905'
+  description: ADC4
+  editable: false
+  group: 16
+  name: ADC4
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b6906'
+  description: ADC5
+  editable: false
+  group: 16
+  name: ADC5
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b6907'
+  description: ADC6
+  editable: false
+  group: 16
+  name: ADC6
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b6908'
+  description: ADC7
+  editable: false
+  group: 16
+  name: ADC7
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b6909'
+  description: ADC8
+  editable: false
+  group: 16
+  name: ADC8
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b690a'
+  description: ADC9
+  editable: false
+  group: 16
+  name: ADC9
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b690b'
+  description: ADC10
+  editable: false
+  group: 16
+  name: ADC10
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10605.0
+- address: '0x5b690c'
+  description: ADC11
+  editable: false
+  group: 16
+  name: ADC11
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b690d'
+  description: ADC12
+  editable: false
+  group: 16
+  name: ADC12
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b690e'
+  description: ADC13
+  editable: false
+  group: 16
+  name: ADC13
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b690f'
+  description: ADC14
+  editable: false
+  group: 16
+  name: ADC14
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b6910'
+  description: ADC15
+  editable: false
+  group: 16
+  name: ADC15
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b7001'
+  description: Коэф. усиления АЦП
+  editable: true
+  group: 16
+  name: ADC gain
+  scale: 1048576.0
+  type: SIGNED32
+  unit: В
+  value: 5.0
+- address: '0x5b7002'
+  description: Смещение АЦП
+  editable: true
+  group: 16
+  name: ADC offset
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 0.0
+БЗУ:
+- address: '0x5b2701'
+  description: Управлять выходом для зарядного устройства
+  editable: true
+  group: 54
+  name: Use charger control output
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b2702'
+  description: Состояние процесса заряда
+  editable: false
+  group: 54
+  name: Charger State
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2703'
+  description: Таймаут ожидания связи с БЗУ, мс
+  editable: true
+  group: 54
+  name: Charger CAN timeout, ms
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 5000.0
+- address: '0x5b2704'
+  description: _
+  editable: true
+  group: 54
+  name: _
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 14260634.0
+- address: '0x5b2705'
+  description: Вход ЗУ подключено
+  editable: false
+  group: 54
+  name: Charger connected input
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2706'
+  description: Выход Разрешить зарядку
+  editable: false
+  group: 54
+  name: Charging enable out
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b2707'
+  description: БЗУ Онлайн
+  editable: false
+  group: 54
+  name: CCS Charger Online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2708'
+  description: Статус
+  editable: false
+  group: 54
+  name: Статус
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2709'
+  description: Напряжение аккумулятора
+  editable: false
+  group: 54
+  name: Напряжение аккумулятора
+  scale: 1941.8074074074075
+  type: SIGNED32
+  unit: В
+  value: 11172282.0
+- address: '0x5b270a'
+  description: Ток АКБ [0,1 A]
+  editable: false
+  group: 54
+  name: Battery Current [0,1 A]
+  scale: 5242.88
+  type: SIGNED32
+  unit: А
+  value: 989784.0
+- address: '0x5b270b'
+  description: Регистр ошибок
+  editable: false
+  group: 54
+  name: Error Register
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b270c'
+  description: Аппаратная ошибка
+  editable: false
+  group: 54
+  name: Hardware fault
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b270d'
+  description: Перегрев устройств(а)
+  editable: false
+  group: 54
+  name: Overheat
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b270e'
+  description: Ошибка по входному напряжению
+  editable: false
+  group: 54
+  name: Input voltage fault
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b270f'
+  description: Ошибка детектирования напряжения АКБ
+  editable: false
+  group: 54
+  name: Starting state error
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b2710'
+  description: Ошибка связи
+  editable: false
+  group: 54
+  name: Communication fault
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+БКУ-В1:
+- address: '0x5b2501'
+  description: Номер в сети J1939
+  editable: false
+  group: 55
+  name: J1939 node ID
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 165.0
+- address: '0x5b2502'
+  description: Работа
+  editable: false
+  group: 55
+  name: 'Command: Start'
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2503'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2504'
+  description: Аварийный стоп
+  editable: false
+  group: 55
+  name: Emergency stop
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2505'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2506'
+  description: Стояночный тормоз (команда)
+  editable: false
+  group: 55
+  name: Parking brake cmd
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b2507'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b2508'
+  description: Указатели поворота
+  editable: false
+  group: 55
+  name: TurnIndicator
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2509'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b250a'
+  description: Гидроблок
+  editable: false
+  group: 55
+  name: Hydroblok
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b250b'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b250c'
+  description: Стоп-сигнал
+  editable: false
+  group: 55
+  name: StopSignal
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b250d'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b250e'
+  description: Зад. электрический момент
+  editable: false
+  group: 55
+  name: torque
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b250f'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 100.0
+- address: '0x5b2510'
+  description: Задание положения
+  editable: false
+  group: 55
+  name: Reference position
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b2511'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 100.0
+- address: '0x5b2512'
+  description: Уст. нулевого положения
+  editable: false
+  group: 55
+  name: Set zero position
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2513'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x5b2514'
+  description: Задание положения
+  editable: false
+  group: 55
+  name: Reference position
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b2515'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 100.0
+- address: '0x5b2516'
+  description: Уст. нулевого положения
+  editable: false
+  group: 55
+  name: Set zero position
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2517'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x5b2518'
+  description: Обогрев лобового стекла (cmd)
+  editable: false
+  group: 55
+  name: Windscreen heater
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2519'
+  description: ProB_51
+  editable: false
+  group: 55
+  name: ProB_51
+  scale: 0
+  type: SIGNED32
+  unit: десятерич.
+  value: 0.0
+- address: '0x5b251a'
+  description: БКУ OnLine
+  editable: false
+  group: 55
+  name: BKU online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b251b'
+  description: Принято посылок
+  editable: false
+  group: 55
+  name: Принято посылок
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 7989.0
+- address: '0x5b251c'
+  description: Передано посылок
+  editable: false
+  group: 55
+  name: Передано посылок
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 57234.0
+- address: '0x5b251d'
+  description: DropCounter1
+  editable: false
+  group: 55
+  name: DropCounter1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 21.0
+Дискретный ввод-вывод:
+- address: '0x5b1401'
+  description: _
+  editable: true
+  group: 34
+  name: _
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 50.0
+- address: '0x5b1402'
+  description: Уровень тормозной жидкости
+  editable: false
+  group: 34
+  name: Braking liquid level sensor
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1403'
+  description: Уровень охлаждающей жидкости
+  editable: false
+  group: 34
+  name: Coolant level sensor
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1404'
+  description: Аварийный стоп
+  editable: false
+  group: 34
+  name: Emergency stop
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1405'
+  description: Стоп-кнопка GPIO
+  editable: false
+  group: 34
+  name: Turn Off button
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1406'
+  description: Стояночный тормоз отжат
+  editable: false
+  group: 34
+  name: Parking brake released
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1407'
+  description: Стояночный тормоз зажат
+  editable: false
+  group: 34
+  name: Parking brake holding
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1408'
+  description: Вход ЗУ подключено
+  editable: false
+  group: 34
+  name: Charger connected input
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1409'
+  description: Обогрев лобового стекла (cmd)
+  editable: false
+  group: 34
+  name: Windscreen heater
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b140a'
+  description: _
+  editable: false
+  group: 34
+  name: _
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b140b'
+  description: Насос гидроблока
+  editable: false
+  group: 34
+  name: Binary brake pump
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b140c'
+  description: Клапан гидроблока 1
+  editable: false
+  group: 34
+  name: Binary brake valve 1
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b140d'
+  description: Клапан гидроблока 2
+  editable: false
+  group: 34
+  name: Binary brake valve 2
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b140e'
+  description: Клапан гидроблока 8
+  editable: false
+  group: 34
+  name: Binary brake valve 8
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b140f'
+  description: Клапан гидроблока 9
+  editable: false
+  group: 34
+  name: Binary brake valve 9
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1410'
+  description: Стояночный тормоз зажать
+  editable: false
+  group: 34
+  name: Engage parking brake
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1411'
+  description: Шунтирование выключателя массы
+  editable: false
+  group: 34
+  name: Power ground circuit breaker control
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1412'
+  description: Включение питания ПСТЭД
+  editable: false
+  group: 34
+  name: PSTED power enable
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1413'
+  description: Сигнал выкл на БКУ
+  editable: false
+  group: 34
+  name: BKU Off command
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1414'
+  description: Стоп-фонари
+  editable: false
+  group: 34
+  name: Stop lights
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1415'
+  description: Поворотник лево
+  editable: false
+  group: 34
+  name: Turn indicator left
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1416'
+  description: Задний ход
+  editable: false
+  group: 34
+  name: Reverse lights
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1417'
+  description: Поворотник право
+  editable: false
+  group: 34
+  name: Turn indicator right
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1418'
+  description: Обогрев лобового стекла (out)
+  editable: false
+  group: 34
+  name: Windscreen heater state
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1419'
+  description: Выход Разрешить зарядку
+  editable: false
+  group: 34
+  name: Charging enable out
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+Для отладки:
+- address: '0x517401'
+  description: ans1
+  editable: true
+  group: 14
+  name: ans1
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 0.0
+- address: '0x517402'
+  description: ans2
+  editable: true
+  group: 14
+  name: ans2
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 0.0
+- address: '0x517403'
+  description: ans3
+  editable: true
+  group: 14
+  name: ans3
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 0.0
+- address: '0x517404'
+  description: ans4
+  editable: true
+  group: 14
+  name: ans4
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 0.0
+- address: '0x517405'
+  description: DebugW1
+  editable: true
+  group: 14
+  name: DebugW1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 400.0
+- address: '0x517406'
+  description: DebugW1
+  editable: true
+  group: 14
+  name: DebugW1
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 400.0
+- address: '0x517407'
+  description: DebugW2
+  editable: true
+  group: 14
+  name: DebugW2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x517408'
+  description: DebugW2
+  editable: true
+  group: 14
+  name: DebugW2
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 0.0
+- address: '0x517409'
+  description: DebugW3
+  editable: true
+  group: 14
+  name: DebugW3
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x51740a'
+  description: DebugW4
+  editable: true
+  group: 14
+  name: DebugW4
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x51740b'
+  description: T_1кГц_макс
+  editable: true
+  group: 14
+  name: 1 kHz time max
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 50603.0
+- address: '0x51740c'
+  description: Загрузка прерывания 1кГц макс., %
+  editable: false
+  group: 14
+  name: 1kHz Interrupt time usage max, %
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 5957737.0
+- address: '0x51740d'
+  description: T_1кГц
+  editable: false
+  group: 14
+  name: T_1кГц
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 33600.0
+- address: '0x51740e'
+  description: Загрузка прерывания 1кГц, %
+  editable: false
+  group: 14
+  name: 1kHz Interrupt time usage, %
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 4121662.0
+- address: '0x51740f'
+  description: T_10кГц_макс
+  editable: true
+  group: 14
+  name: 10 kHz time max
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 7238.0
+- address: '0x517410'
+  description: Загрузка прерывания 10кГц макс., %
+  editable: false
+  group: 14
+  name: 10kHz Interrupt time usage max, %
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 1982601979.0
+- address: '0x517411'
+  description: T_10кГц
+  editable: false
+  group: 14
+  name: T_10кГц
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 4363.0
+- address: '0x517412'
+  description: Загрузка прерывания 10кГц, %
+  editable: false
+  group: 14
+  name: 10kHz Interrupt time usage, %
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 5611243.0
+- address: '0x517413'
+  description: T_80кГц_макс
+  editable: true
+  group: 14
+  name: 80 kHz time max
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 448.0
+- address: '0x517414'
+  description: Загрузка прерывания 80кГц макс., %
+  editable: false
+  group: 14
+  name: 80kHz Interrupt time usage max, %
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 458271415.0
+- address: '0x517415'
+  description: T_80кГц
+  editable: false
+  group: 14
+  name: T_80кГц
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 346.0
+- address: '0x517416'
+  description: Загрузка прерывания 80кГц, %
+  editable: false
+  group: 14
+  name: 80kHz Interrupt time usage, %
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 3440970.0
+- address: '0x517417'
+  description: Счётчик, мс САУ
+  editable: true
+  group: 14
+  name: Counter, ms
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 260469496.0
+- address: '0x517418'
+  description: Счётчик 10кГц
+  editable: true
+  group: 14
+  name: Счётчик 10кГц
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: -1690277261.0
+- address: '0x517419'
+  description: 'Счётчик 80кГц '
+  editable: true
+  group: 14
+  name: 'Счётчик 80кГц '
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: -626233288.0
+- address: '0x51741a'
+  description: BackgroundCounter
+  editable: false
+  group: 14
+  name: BackgroundCounter
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 309989.0
+- address: '0x51741b'
+  description: DebugF1
+  editable: true
+  group: 14
+  name: DebugF1
+  scale: 0
+  type: SIGNED32
+  unit: ''
+  value: 0.0
+- address: '0x51741c'
+  description: DebugF2
+  editable: true
+  group: 14
+  name: DebugF2
+  scale: 0
+  type: SIGNED32
+  unit: ''
+  value: 0.0
+- address: '0x51741d'
+  description: DebugF3
+  editable: true
+  group: 14
+  name: DebugF3
+  scale: 0
+  type: SIGNED32
+  unit: ''
+  value: 0.0
+- address: '0x51741e'
+  description: DebugF4
+  editable: true
+  group: 14
+  name: DebugF4
+  scale: 0
+  type: SIGNED32
+  unit: ''
+  value: 0.0
+Задатчик интенсивности:
+- address: '0x5b1201'
+  description: Задание момента (местное)
+  editable: false
+  group: 30
+  name: Torque Reference (local control)
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b1202'
+  description: Задание момента (БКУ)
+  editable: false
+  group: 30
+  name: Torque Reference (remote control)
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b1203'
+  description: Задание момента (на ПСТЭД)
+  editable: false
+  group: 30
+  name: Torque Reference (cmd to Invertor)
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b1204'
+  description: Постоянная времени фильтра задания момента
+  editable: true
+  group: 30
+  name: Torque Lowpass time constant
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 16777216.0
+- address: '0x5b1205'
+  description: 'Выбор зазоров: макс. момент плавного задания, %'
+  editable: true
+  group: 30
+  name: 'Backlash Ramp: max ram torque, %'
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 2516582.0
+- address: '0x5b1206'
+  description: 'Выбор зазоров: время набора макс. момента, мс'
+  editable: true
+  group: 30
+  name: 'Backlash Ramp: time for max ramp torque, ms'
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 500.0
+- address: '0x5b1207'
+  description: 'Выбор зазоров: плавный сброс момента'
+  editable: true
+  group: 30
+  name: 'Torque Ramp: ramp torque decrease'
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b1208'
+  description: 'Задатчик интенсивности: дельта момента, %'
+  editable: true
+  group: 30
+  name: 'Torque Ramp: torque delta, %'
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 1677721.0
+- address: '0x5b1209'
+  description: 'Задатчик интенсивности: дельта времени, мс'
+  editable: true
+  group: 30
+  name: 'Torque Ramp: time delta, ms'
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x5b120a'
+  description: 'Задатчик интенсивности: множитель фронта на спаде'
+  editable: true
+  group: 30
+  name: 'Torque Ramp: ramp torque decrease multiplier'
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b120b'
+  description: 'Выбор зазора: остаточный момент'
+  editable: true
+  group: 30
+  name: 'Backalsh: residual torque at zero'
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b120c'
+  description: Ширина зоны нечувствительности, %
+  editable: true
+  group: 30
+  name: Ширина зоны нечувствительности, %
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 838.0
+Менеджер сетей:
+- address: '0x5b2a01'
+  description: Таймаут соед. Can1
+  editable: true
+  group: 47
+  name: Таймаут соед. Can1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 5000.0
+- address: '0x5b2a02'
+  description: Таймаут соед. Can2
+  editable: true
+  group: 47
+  name: Таймаут соед. Can2
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 2500.0
+- address: '0x5b2a03'
+  description: Сеть CAN (CANOpen)
+  editable: false
+  group: 47
+  name: Сеть CAN (CANOpen)
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 119.0
+- address: '0x5b2a04'
+  description: ПСТЭД OnLine
+  editable: false
+  group: 47
+  name: PSTED Online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2a05'
+  description: Серво руль 1 OnLine
+  editable: false
+  group: 47
+  name: Front steering servo online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2a06'
+  description: Серво руль 2 OnLine
+  editable: false
+  group: 47
+  name: Rear steering servo online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2a07'
+  description: Серво торм. 1 OnLine
+  editable: false
+  group: 47
+  name: Braking servo 1 online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b2a08'
+  description: БКУ OnLine
+  editable: false
+  group: 47
+  name: BKU online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2a09'
+  description: БМС OnLine
+  editable: false
+  group: 47
+  name: BMS Online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2a0a'
+  description: БЗУ Онлайн
+  editable: false
+  group: 47
+  name: CCS Charger Online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b2a0b'
+  description: Сменить NodeID CAN
+  editable: true
+  group: 47
+  name: Сменить NodeID CAN
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b2a0c'
+  description: Связь с BMS
+  editable: true
+  group: 47
+  name: BMS Communication channel
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 2.0
+Местное управление:
+- address: '0x5b4001'
+  description: Разрешить местное управление
+  editable: true
+  group: 28
+  name: Local contorl enable
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b4002'
+  description: Зад. электрический момент
+  editable: true
+  group: 28
+  name: torque
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b4003'
+  description: Команда на переднюю рулевую серво
+  editable: true
+  group: 28
+  name: Front Steering servo cmd
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 0.0
+- address: '0x5b4004'
+  description: Команда на заднюю рулевую серво
+  editable: true
+  group: 28
+  name: Rear Steering servo cmd
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 0.0
+- address: '0x5b4005'
+  description: Команда на плавое торможение
+  editable: false
+  group: 28
+  name: Braking cmd
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b4006'
+  description: Команда на дискретный тормоз
+  editable: true
+  group: 28
+  name: Discrete brake cmd
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b4007'
+  description: Стояночный тормоз отпустить
+  editable: true
+  group: 28
+  name: Release parking brake
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+Настройки:
+- address: '0x5b1001'
+  description: Инверсия задания момента
+  editable: true
+  group: 13
+  name: InverceTrqRef
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1002'
+  description: Тип ПСТЭД
+  editable: true
+  group: 13
+  name: Motor invertor type
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b1003'
+  description: Принудительно включить аварийку
+  editable: true
+  group: 13
+  name: Alarm lights enable
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1004'
+  description: Инверсия задания положения рулевой рейки
+  editable: true
+  group: 13
+  name: Inverting the steering position setting
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1005'
+  description: Перезагрузка
+  editable: true
+  group: 13
+  name: Перезагрузка
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1006'
+  description: Управлять выходом для зарядного устройства
+  editable: true
+  group: 13
+  name: Use charger control output
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1007'
+  description: Время инициализации
+  editable: true
+  group: 13
+  name: Время инициализации
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 2500.0
+- address: '0x5b1008'
+  description: Время выключения
+  editable: true
+  group: 13
+  name: Time switch off
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10000.0
+- address: '0x5b1009'
+  description: Время активации помпы дискретного тормоза, мс
+  editable: true
+  group: 13
+  name: Discrete brakes max pump operation time, ms
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 800.0
+- address: '0x5b100a'
+  description: Время активации дискретного тормоза, мс
+  editable: true
+  group: 13
+  name: Discrete brakes max operation time, ms
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 4000.0
+- address: '0x5b100b'
+  description: Обработка датчика уровня тормозной жидкости
+  editable: true
+  group: 13
+  name: Cooling liquid level sensor
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b100c'
+  description: Обработка датчика уровня охлаждающей жидкости
+  editable: true
+  group: 13
+  name: Braking liquig level sensor
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b100d'
+  description: Функция обогрева ветрового стекла
+  editable: true
+  group: 13
+  name: Windscreen heater enable
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b100e'
+  description: Время обогрева стекла, с
+  editable: true
+  group: 13
+  name: Windscreen heater time, s
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 600.0
+Настройки j1939:
+- address: '0x530001'
+  description: Номер в сети J1939
+  editable: true
+  group: 10
+  name: J1939 node ID
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 161.0
+- address: '0x530002'
+  description: CAN Bit Rate
+  editable: true
+  group: 10
+  name: CAN Bit Rate
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 4.0
+- address: '0x530003'
+  description: Принято посылок
+  editable: true
+  group: 10
+  name: Принято посылок
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 2838726.0
+- address: '0x530004'
+  description: Передано посылок
+  editable: true
+  group: 10
+  name: Передано посылок
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 31108505.0
+- address: '0x530005'
+  description: Запрашивать параметры
+  editable: true
+  group: 10
+  name: Запрашивать параметры
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x530006'
+  description: Передавать параметры
+  editable: true
+  group: 10
+  name: Передавать параметры
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x530007'
+  description: Пакетная передача вкл
+  editable: true
+  group: 10
+  name: Пакетная передача вкл
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x530008'
+  description: Для отладки
+  editable: true
+  group: 10
+  name: test
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x530101'
+  description: ProB_31
+  editable: true
+  group: 10
+  name: ProB_31
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -49449012.0
+- address: '0x530102'
+  description: ProB_31
+  editable: true
+  group: 10
+  name: ProB_31
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -1.0
+- address: '0x530103'
+  description: ProB_32
+  editable: true
+  group: 10
+  name: ProB_32
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1966105600.0
+- address: '0x530104'
+  description: ProB_32
+  editable: true
+  group: 10
+  name: ProB_32
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -5145220.0
+- address: '0x530105'
+  description: ProB_33
+  editable: true
+  group: 10
+  name: ProB_33
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1482183514.0
+- address: '0x530106'
+  description: ProB_33
+  editable: true
+  group: 10
+  name: ProB_33
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -1.0
+- address: '0x530107'
+  description: ProB_34
+  editable: true
+  group: 10
+  name: ProB_34
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1963327232.0
+- address: '0x530108'
+  description: ProB_34
+  editable: true
+  group: 10
+  name: ProB_34
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -15107976.0
+- address: '0x530109'
+  description: ProB_35
+  editable: true
+  group: 10
+  name: ProB_35
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1966145280.0
+- address: '0x53010a'
+  description: ProB_35
+  editable: true
+  group: 10
+  name: ProB_35
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -14715950.0
+- address: '0x53010b'
+  description: ProB_36
+  editable: true
+  group: 10
+  name: ProB_36
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -987135.0
+- address: '0x53010c'
+  description: ProB_36
+  editable: true
+  group: 10
+  name: ProB_36
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -1.0
+- address: '0x53010d'
+  description: ProB_37
+  editable: true
+  group: 10
+  name: ProB_37
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -1.0
+- address: '0x53010e'
+  description: ProB_37
+  editable: true
+  group: 10
+  name: ProB_37
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -1.0
+- address: '0x53010f'
+  description: ProB_41
+  editable: true
+  group: 10
+  name: ProB_41
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 2063623680.0
+- address: '0x530110'
+  description: ProB_41
+  editable: true
+  group: 10
+  name: ProB_41
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 235675261.0
+- address: '0x530111'
+  description: ProB_42
+  editable: true
+  group: 10
+  name: ProB_42
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x530112'
+  description: ProB_42
+  editable: true
+  group: 10
+  name: ProB_42
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x530113'
+  description: ProB_43
+  editable: true
+  group: 10
+  name: ProB_43
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x530114'
+  description: ProB_43
+  editable: true
+  group: 10
+  name: ProB_43
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x530115'
+  description: ProB_43
+  editable: true
+  group: 10
+  name: ProB_43
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x530116'
+  description: ProB_43
+  editable: true
+  group: 10
+  name: ProB_43
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x530201'
+  description: ProB_51
+  editable: true
+  group: 10
+  name: ProB_51
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 6557712.0
+- address: '0x530202'
+  description: ProB_51
+  editable: true
+  group: 10
+  name: ProB_51
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 6553700.0
+- address: '0x530203'
+  description: Message 10..14 от БМС
+  editable: true
+  group: 10
+  name: BMS Message 10..14
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 436476420.0
+- address: '0x530204'
+  description: Message 10..14 от БМС
+  editable: true
+  group: 10
+  name: BMS Message 10..14
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 40681485.0
+- address: '0x530205'
+  description: Message 2 от БЗУ
+  editable: true
+  group: 10
+  name: CCS Charger Message 2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1979714830.0
+- address: '0x530206'
+  description: Message 2 от БЗУ
+  editable: true
+  group: 10
+  name: CCS Charger Message 2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+Органы управления:
+- address: '0x5b1301'
+  description: Общее командное слово
+  editable: true
+  group: 23
+  name: General cmd word
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5b1302'
+  description: Аварийный стоп
+  editable: false
+  group: 23
+  name: Emergency stop
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1303'
+  description: Маска командного слова
+  editable: true
+  group: 23
+  name: Cmd word mask
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1304'
+  description: Маска командного слова
+  editable: true
+  group: 23
+  name: Cmd word mask
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 192.0
+- address: '0x5b1305'
+  description: Маска командного слова
+  editable: true
+  group: 23
+  name: Cmd word mask
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1306'
+  description: Маска командного слова
+  editable: true
+  group: 23
+  name: Cmd word mask
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1307'
+  description: Настройка АПВ
+  editable: false
+  group: 23
+  name: Настройка АПВ
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1308'
+  description: Настройка АПВ
+  editable: false
+  group: 23
+  name: Настройка АПВ
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1309'
+  description: Настройка АПВ
+  editable: false
+  group: 23
+  name: Настройка АПВ
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b130a'
+  description: Настройка АПВ
+  editable: false
+  group: 23
+  name: Настройка АПВ
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+Отладка главного ДА:
+- address: '0x5b3501'
+  description: Главный ДА
+  editable: true
+  group: 38
+  name: Главный ДА
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b3502'
+  description: Состояние КВУ
+  editable: false
+  group: 38
+  name: Current VMU state
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 13.0
+- address: '0x5b3503'
+  description: Предыдущее состояние КВУ
+  editable: false
+  group: 38
+  name: Previous VMU state
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 12.0
+- address: '0x5b3504'
+  description: ПредПредСостояние КВУ
+  editable: false
+  group: 38
+  name: Previous Previous VMU state
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 11.0
+- address: '0x5b3505'
+  description: Счётчик, мс САУ
+  editable: false
+  group: 38
+  name: Counter, ms
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 2000.0
+- address: '0x5b3506'
+  description: Счётчик времени инициализации
+  editable: false
+  group: 38
+  name: Init time counter
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 2500.0
+- address: '0x5b3507'
+  description: Счётчик времени выключения
+  editable: false
+  group: 38
+  name: Turn-off time counter
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b3508'
+  description: Ручной тормоз
+  editable: false
+  group: 38
+  name: Parking Brake
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+Параметры движения:
+- address: '0x5b1701'
+  description: Скорость
+  editable: false
+  group: 35
+  name: Vehicle velocity
+  scale: 11650.844444444445
+  type: SIGNED32
+  unit: км/ч
+  value: 0.0
+- address: '0x5b1702'
+  description: Выходная частота
+  editable: false
+  group: 35
+  name: Выходная частота
+  scale: 131.072
+  type: SIGNED32
+  unit: об/м
+  value: 0.0
+- address: '0x5b1703'
+  description: Средний момент ТД
+  editable: false
+  group: 35
+  name: Средний момент ТД
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b1704'
+  description: Макс.Мощность полная
+  editable: false
+  group: 35
+  name: Макс.Мощность полная
+  scale: 54.61333333333334
+  type: SIGNED32
+  unit: кВт
+  value: 0.0
+- address: '0x5b1705'
+  description: Макс.Мощность полная
+  editable: false
+  group: 35
+  name: Макс.Мощность полная
+  scale: 52428.8
+  type: SIGNED32
+  unit: град
+  value: 41943040.0
+- address: '0x5b1901'
+  description: Пробег, км
+  editable: false
+  group: 35
+  name: Пробег, км
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 152.0
+- address: '0x5b1902'
+  description: Пробег, м
+  editable: false
+  group: 35
+  name: Пробег, м
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 468.0
+- address: '0x5b1903'
+  description: Интегратор пробега
+  editable: false
+  group: 35
+  name: Интегратор пробега
+  scale: 11650.844444444445
+  type: SIGNED32
+  unit: км/ч
+  value: 790206.0
+- address: '0x5b1904'
+  description: Время вкл. состояния
+  editable: false
+  group: 35
+  name: Время вкл. состояния
+  scale: 0
+  type: SIGNED16
+  unit: мин
+  value: 30663.0
+- address: '0x5b1905'
+  description: Время движения
+  editable: false
+  group: 35
+  name: Время движения
+  scale: 0
+  type: SIGNED16
+  unit: мин
+  value: 367.0
+- address: '0x5b1906'
+  description: Напряжение аккумулятора
+  editable: false
+  group: 35
+  name: Напряжение аккумулятора
+  scale: 1941.8074074074075
+  type: SIGNED32
+  unit: В
+  value: -1103892257.0
+- address: '0x5b1907'
+  description: Состояние СУ
+  editable: false
+  group: 35
+  name: Control system state
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b1908'
+  description: Нул-е пол-е рулевой рейки передней оси
+  editable: false
+  group: 35
+  name: Front steering servo zero pos
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 65518.0
+- address: '0x5b1909'
+  description: Нул-е пол-е рулевой рейки задней оси
+  editable: false
+  group: 35
+  name: Rear steering servo zero pos
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 0.0
+- address: '0x5b1c01'
+  description: Радиус колеса
+  editable: true
+  group: 35
+  name: Радиус колеса
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 5284823.0
+- address: '0x5b1c02'
+  description: Передаточное число редуктора
+  editable: true
+  group: 35
+  name: Передаточное число редуктора
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 93952408.0
+- address: '0x5b1c03'
+  description: Минимальная скорость машины
+  editable: true
+  group: 35
+  name: Vehicle min velocity
+  scale: 11650.844444444445
+  type: SIGNED32
+  unit: км/ч
+  value: 932067.0
+- address: '0x5b1c04'
+  description: Максимальная скорость машины
+  editable: true
+  group: 35
+  name: Vehicle max velocity
+  scale: 11650.844444444445
+  type: SIGNED32
+  unit: км/ч
+  value: 7456540.0
+- address: '0x5b1c05'
+  description: Дельта максимальной скорости
+  editable: true
+  group: 35
+  name: Max velocity delta
+  scale: 11650.844444444445
+  type: SIGNED32
+  unit: км/ч
+  value: 932067.0
+- address: '0x5b1c06'
+  description: Кол-во меток на индукторе АБС
+  editable: true
+  group: 35
+  name: Кол-во меток на индукторе АБС
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 48.0
+Пульт ДУ:
+- address: '0x5bf901'
+  description: Разрешение работы
+  editable: true
+  group: 27
+  name: enable
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5bf902'
+  description: Инверсия дискретных входов
+  editable: true
+  group: 27
+  name: Inverting mask for discrete inputs
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5bf903'
+  description: Канал 1
+  editable: false
+  group: 27
+  name: Ch1
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5bf904'
+  description: Канал 2
+  editable: false
+  group: 27
+  name: Ch2
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5bf905'
+  description: Канал 3
+  editable: false
+  group: 27
+  name: Ch3
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5bf906'
+  description: Канал 4
+  editable: false
+  group: 27
+  name: Ch4
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5bf907'
+  description: Канал 1
+  editable: false
+  group: 27
+  name: Ch1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5bf908'
+  description: Канал 2
+  editable: false
+  group: 27
+  name: Ch2
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5bf909'
+  description: Канал 3
+  editable: false
+  group: 27
+  name: Ch3
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5bf90a'
+  description: Канал 4
+  editable: false
+  group: 27
+  name: Ch4
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+СервоРуль Параметры:
+- address: '0x5b2001'
+  description: Использовать заднюю рулевую рейку
+  editable: true
+  group: 22
+  name: Enable rear steering servo
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x5b2101'
+  description: Номер устройства
+  editable: true
+  group: 22
+  name: Node ID
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 15.0
+- address: '0x5b2102'
+  description: Работа
+  editable: true
+  group: 22
+  name: 'Command: Start'
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2103'
+  description: Уст. нулевого положения
+  editable: true
+  group: 22
+  name: Set zero position
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b2104'
+  description: Задание положения
+  editable: true
+  group: 22
+  name: Reference position
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 0.0
+- address: '0x5b2105'
+  description: Статус
+  editable: false
+  group: 22
+  name: Статус
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b2106'
+  description: Текущее положение
+  editable: false
+  group: 22
+  name: Curent position
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 65493.0
+- address: '0x5b2107'
+  description: Ток статора
+  editable: false
+  group: 22
+  name: Ток статора
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: 770.0
+- address: '0x5b2108'
+  description: Температура инвертора
+  editable: false
+  group: 22
+  name: Inverter temperature
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 25.0
+- address: '0x5b2109'
+  description: Температура двигателя
+  editable: false
+  group: 22
+  name: Motor temperature
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 25.0
+- address: '0x5b210a'
+  description: CAN-PDO online
+  editable: false
+  group: 22
+  name: CAN-PDO online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b210b'
+  description: Счетчик RPDO1
+  editable: false
+  group: 22
+  name: Счетчик RPDO1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 4736.0
+- address: '0x5b210c'
+  description: DropCounter1
+  editable: false
+  group: 22
+  name: DropCounter1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 4.0
+- address: '0x5b210d'
+  description: Ограничение рулевой рейки "+"
+  editable: true
+  group: 22
+  name: Ограничение рулевой рейки "+"
+  scale: 0
+  type: SIGNED16
+  unit: град
+  value: 964.0
+- address: '0x5b210e'
+  description: Ограничение рулевой рейки "-"
+  editable: true
+  group: 22
+  name: Ограничение рулевой рейки "-"
+  scale: 0
+  type: SIGNED16
+  unit: град
+  value: 64536.0
+- address: '0x5b210f'
+  description: Нулевое положение рулевой рейки
+  editable: true
+  group: 22
+  name: Нулевое положение рулевой рейки
+  scale: 0
+  type: SIGNED16
+  unit: град
+  value: 65518.0
+- address: '0x5b2110'
+  description: Т фильтра
+  editable: true
+  group: 22
+  name: Tfltr
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 83886.0
+- address: '0x5b2111'
+  description: Множитель для показаний тока рулевых
+  editable: true
+  group: 22
+  name: Servo current multiplier
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10.0
+- address: '0x5b2201'
+  description: Номер устройства
+  editable: true
+  group: 22
+  name: Node ID
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 15.0
+- address: '0x5b2202'
+  description: Работа
+  editable: true
+  group: 22
+  name: 'Command: Start'
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b2203'
+  description: Уст. нулевого положения
+  editable: true
+  group: 22
+  name: Set zero position
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b2204'
+  description: Задание положения
+  editable: true
+  group: 22
+  name: Reference position
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 0.0
+- address: '0x5b2205'
+  description: Статус
+  editable: false
+  group: 22
+  name: Статус
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b2206'
+  description: Текущее положение
+  editable: false
+  group: 22
+  name: Curent position
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 0.0
+- address: '0x5b2207'
+  description: Ток статора
+  editable: false
+  group: 22
+  name: Ток статора
+  scale: 0
+  type: SIGNED32
+  unit: I32
+  value: -350.0
+- address: '0x5b2208'
+  description: Температура инвертора
+  editable: false
+  group: 22
+  name: Inverter temperature
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 31.0
+- address: '0x5b2209'
+  description: Температура двигателя
+  editable: false
+  group: 22
+  name: Motor temperature
+  scale: 0
+  type: SIGNED32
+  unit: I16
+  value: 31.0
+- address: '0x5b220a'
+  description: CAN-PDO online
+  editable: false
+  group: 22
+  name: CAN-PDO online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b220b'
+  description: Счетчик RPDO1
+  editable: false
+  group: 22
+  name: Счетчик RPDO1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 4264.0
+- address: '0x5b220c'
+  description: DropCounter1
+  editable: false
+  group: 22
+  name: DropCounter1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 93.0
+- address: '0x5b220d'
+  description: Ограничение рулевой рейки "+"
+  editable: true
+  group: 22
+  name: Ограничение рулевой рейки "+"
+  scale: 0
+  type: SIGNED16
+  unit: град
+  value: 1000.0
+- address: '0x5b220e'
+  description: Ограничение рулевой рейки "-"
+  editable: true
+  group: 22
+  name: Ограничение рулевой рейки "-"
+  scale: 0
+  type: SIGNED16
+  unit: град
+  value: 64536.0
+- address: '0x5b220f'
+  description: Нулевое положение рулевой рейки
+  editable: true
+  group: 22
+  name: Нулевое положение рулевой рейки
+  scale: 0
+  type: SIGNED16
+  unit: град
+  value: 0.0
+- address: '0x5b2210'
+  description: Т фильтра
+  editable: true
+  group: 22
+  name: Tfltr
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 83886.0
+- address: '0x5b2211'
+  description: Множитель для показаний тока рулевых
+  editable: true
+  group: 22
+  name: Servo current multiplier
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10.0
+Серийный номер:
+- address: '0x200205'
+  description: GIT_VersionShortHash
+  editable: false
+  group: 0
+  name: GIT_VersionShortHash
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 605709646.0
+- address: '0x200206'
+  description: GIT_CommitTimestamp
+  editable: false
+  group: 0
+  name: GIT_CommitTimestamp
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1735861757.0
+- address: '0x200207'
+  description: GIT_UncommitedFiles
+  editable: false
+  group: 0
+  name: GIT_UncommitedFiles
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1931869748.0
+- address: '0x250f00'
+  description: Часы реального времени
+  editable: false
+  group: 0
+  name: Real time clock
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1976362389.0
+- address: '0x253401'
+  description: Номер груп для пульта управления
+  editable: true
+  group: 0
+  name: Номер груп для пульта управления
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 22.0
+- address: '0x260001'
+  description: Код производителя
+  editable: true
+  group: 0
+  name: Vendor ID
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -1338166725.0
+Симуляция работы с входами:
+- address: '0x5b1501'
+  description: Разрешить эмуляцию GPIO
+  editable: true
+  group: 40
+  name: GPIO Emulation Enable
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b1502'
+  description: Уровень тормозной жидкости
+  editable: true
+  group: 40
+  name: Braking liquid level sensor
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1503'
+  description: Уровень охлаждающей жидкости
+  editable: true
+  group: 40
+  name: Coolant level sensor
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1504'
+  description: Аварийный стоп
+  editable: true
+  group: 40
+  name: Emergency stop
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1505'
+  description: Стоп-кнопка GPIO
+  editable: true
+  group: 40
+  name: Turn Off button
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1506'
+  description: Стояночный тормоз отжат
+  editable: true
+  group: 40
+  name: Parking brake released
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1507'
+  description: Стояночный тормоз зажат
+  editable: true
+  group: 40
+  name: Parking brake holding
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1508'
+  description: Вход ЗУ подключено
+  editable: true
+  group: 40
+  name: Charger connected input
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1509'
+  description: Обогрев лобового стекла (cmd)
+  editable: true
+  group: 40
+  name: Windscreen heater
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b150a'
+  description: _
+  editable: true
+  group: 40
+  name: _
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1601'
+  description: Насос гидроблока
+  editable: true
+  group: 40
+  name: Binary brake pump
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1602'
+  description: Клапан гидроблока 1
+  editable: true
+  group: 40
+  name: Binary brake valve 1
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1603'
+  description: Клапан гидроблока 2
+  editable: true
+  group: 40
+  name: Binary brake valve 2
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1604'
+  description: Клапан гидроблока 8
+  editable: true
+  group: 40
+  name: Binary brake valve 8
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1605'
+  description: Клапан гидроблока 9
+  editable: true
+  group: 40
+  name: Binary brake valve 9
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1606'
+  description: Стояночный тормоз отпустить
+  editable: true
+  group: 40
+  name: Release parking brake
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1607'
+  description: Шунтирование выключателя массы
+  editable: false
+  group: 40
+  name: Power ground circuit breaker control
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1608'
+  description: Включение питания ПСТЭД
+  editable: false
+  group: 40
+  name: PSTED power enable
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 1.0
+- address: '0x5b1609'
+  description: Сигнал выкл на БКУ
+  editable: false
+  group: 40
+  name: BKU Off command
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b160a'
+  description: Задний ход
+  editable: true
+  group: 40
+  name: Reverse lights
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b160b'
+  description: Стоп-фонари
+  editable: true
+  group: 40
+  name: Stop lights
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b160c'
+  description: Поворотник лево
+  editable: true
+  group: 40
+  name: Turn indicator left
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b160d'
+  description: Поворотник право
+  editable: true
+  group: 40
+  name: Turn indicator right
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b160e'
+  description: Обогрев лобового стекла (out)
+  editable: true
+  group: 40
+  name: Windscreen heater state
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b160f'
+  description: Выход Разрешить зарядку
+  editable: true
+  group: 40
+  name: Charging enable out
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+Системный объект:
+- address: '0x253201'
+  description: Аварии КВУ
+  editable: false
+  group: 12
+  name: Авария
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x253202'
+  description: Предупреждения КВУ
+  editable: false
+  group: 12
+  name: Предупреждения КВУ
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x253203'
+  description: Аварийный стоп
+  editable: false
+  group: 12
+  name: Emergency stop
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b0d01'
+  description: Состояние ДА защит
+  editable: true
+  group: 12
+  name: Состояние ДА защит
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b0d02'
+  description: Сбросить состояние Аварии
+  editable: true
+  group: 12
+  name: 'Command: Reset fault'
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x5b0d03'
+  description: Флаги аварий 1L
+  editable: true
+  group: 12
+  name: Error flags 1L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0d04'
+  description: Флаги аварий 1H
+  editable: true
+  group: 12
+  name: Error flags 1H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0d05'
+  description: Флаги аварий 2L
+  editable: true
+  group: 12
+  name: Error flags 2L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0d06'
+  description: Флаги аварий 2H
+  editable: true
+  group: 12
+  name: Error flags 2H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0d07'
+  description: Маска аварий 1L
+  editable: true
+  group: 12
+  name: Error flags mask 1L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 253.0
+- address: '0x5b0d08'
+  description: Маска аварий 1H
+  editable: true
+  group: 12
+  name: Error flags mask 1H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 247.0
+- address: '0x5b0d09'
+  description: Маска аварий 2L
+  editable: true
+  group: 12
+  name: Error flags mask 2L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 254.0
+- address: '0x5b0d0a'
+  description: Маска аварий 2H
+  editable: true
+  group: 12
+  name: Error flags mask 2H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 255.0
+- address: '0x5b0d0b'
+  description: Флаги аварий для сброса 1L
+  editable: false
+  group: 12
+  name: Error flags for reset 1L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0d0c'
+  description: Флаги аварий для сброса 1H
+  editable: false
+  group: 12
+  name: Error flags for reset 1H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 32.0
+- address: '0x5b0d0d'
+  description: Флаги аварий для сброса 2L
+  editable: false
+  group: 12
+  name: Error flags for reset 2L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0d0e'
+  description: Флаги аварий для сброса 2H
+  editable: false
+  group: 12
+  name: Error flags for reset 2H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 24.0
+- address: '0x5b0d0f'
+  description: Маска аварий на отключение 1L
+  editable: true
+  group: 12
+  name: Error Mask for stop 1L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0d10'
+  description: Маска аварий на отключение 1H
+  editable: true
+  group: 12
+  name: Error Mask for stop 1H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0d11'
+  description: Маска аварий на отключение 2L
+  editable: true
+  group: 12
+  name: Error Mask for stop 2L
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b0d12'
+  description: Маска аварий на отключение 2H
+  editable: true
+  group: 12
+  name: Error Mask for stop 2H
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 64.0
+- address: '0x5b0d13'
+  description: Аварии КВУ
+  editable: false
+  group: 12
+  name: Авария
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b0e01'
+  description: Тек.Ред.Авария общая
+  editable: true
+  group: 12
+  name: Тек.Ред.Авария общая
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b0e02'
+  description: Статус Тек.Ред.Авар.Общей
+  editable: true
+  group: 12
+  name: Статус Тек.Ред.Авар.Общей
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b0e03'
+  description: Тек.Ред.Авария для останова
+  editable: true
+  group: 12
+  name: Тек.Ред.Авария для останова
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b0e04'
+  description: Статус Тек.Ред.Авар.Останов
+  editable: true
+  group: 12
+  name: Статус Тек.Ред.Авар.Останов
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+Тип устройства:
+- address: '0x100100'
+  description: Регистр ошибок
+  editable: false
+  group: 6
+  name: Error Register
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 0.0
+- address: '0x100200'
+  description: Manufacturer Status Register
+  editable: false
+  group: 6
+  name: Manufacturer Status Register
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -1815423546.0
+- address: '0x101400'
+  description: COB-ID Emergency Object
+  editable: false
+  group: 6
+  name: COB-ID Emergency Object
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 71716986.0
+- address: '0x101601'
+  description: Время ожидания сообщения Heartbeat
+  editable: false
+  group: 6
+  name: Consumer Heartbeat Time
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 2000.0
+- address: '0x101700'
+  description: Период генерации сообщения Heartbeat
+  editable: false
+  group: 6
+  name: Producer Heartbeat Time
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1000.0
+- address: '0x101801'
+  description: Код производителя
+  editable: false
+  group: 6
+  name: Vendor ID
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -2036600750.0
+- address: '0x101802'
+  description: Код продукта
+  editable: false
+  group: 6
+  name: Product Code
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 65622.0
+- address: '0x101803'
+  description: Номер ревизии
+  editable: false
+  group: 6
+  name: Revision Number
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 758859822.0
+- address: '0x101804'
+  description: Серийный номер
+  editable: false
+  group: 6
+  name: Serial Number
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1988493700.0
+- address: '0x120001'
+  description: COB-ID Client->Server(rx)
+  editable: false
+  group: 6
+  name: COB-ID Client->Server(rx)
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 537541876.0
+- address: '0x120002'
+  description: COB-ID Server->Client(tx)
+  editable: false
+  group: 6
+  name: COB-ID Server->Client(tx)
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -938372577.0
+- address: '0x200301'
+  description: Special Data 1
+  editable: false
+  group: 6
+  name: Special Data 1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 22483.0
+- address: '0x200302'
+  description: Special Data 2
+  editable: false
+  group: 6
+  name: Special Data 2
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 16932.0
+- address: '0x200303'
+  description: Special Data 3
+  editable: false
+  group: 6
+  name: Special Data 3
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 7253.0
+- address: '0x200304'
+  description: Special Data 4
+  editable: false
+  group: 6
+  name: Special Data 4
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 26202.0
+- address: '0x200400'
+  description: Secret Code
+  editable: false
+  group: 6
+  name: Secret Code
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x200500'
+  description: Protect Bit
+  editable: false
+  group: 6
+  name: Protect Bit
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x200701'
+  description: md5_hash_0
+  editable: false
+  group: 6
+  name: md5_hash_0
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -2031990394.0
+- address: '0x200702'
+  description: md5_hash_1
+  editable: false
+  group: 6
+  name: md5_hash_1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: -215633919.0
+- address: '0x200703'
+  description: md5_hash_2
+  editable: false
+  group: 6
+  name: md5_hash_2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 166485350.0
+- address: '0x200704'
+  description: md5_hash_3
+  editable: false
+  group: 6
+  name: md5_hash_3
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 980920945.0
+- address: '0x201001'
+  description: Heartbeat Flag 0-31
+  editable: false
+  group: 6
+  name: Heartbeat Flag 0-31
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 1048578.0
+- address: '0x201002'
+  description: Heartbeat Flag 32-63
+  editable: false
+  group: 6
+  name: Heartbeat Flag 32-63
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x201003'
+  description: Heartbeat Flag 64-95
+  editable: false
+  group: 6
+  name: Heartbeat Flag 64-95
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x201004'
+  description: Heartbeat Flag 96-127
+  editable: false
+  group: 6
+  name: Heartbeat Flag 96-127
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x201101'
+  description: Heartbeat Mask 0-31
+  editable: false
+  group: 6
+  name: Heartbeat Mask 0-31
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x201102'
+  description: Heartbeat Mask 32-63
+  editable: false
+  group: 6
+  name: Heartbeat Mask 32-63
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x201103'
+  description: Heartbeat Mask 64-95
+  editable: false
+  group: 6
+  name: Heartbeat Mask 64-95
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x201104'
+  description: Heartbeat Mask 96-127
+  editable: false
+  group: 6
+  name: Heartbeat Mask 96-127
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x201200'
+  description: Heartbeat Autostart
+  editable: false
+  group: 6
+  name: Heartbeat Autostart
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x201400'
+  description: Heartbeat Autorecovery
+  editable: false
+  group: 6
+  name: Heartbeat Autorecovery
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x201500'
+  description: Состояние драйвера CAN-Open
+  editable: false
+  group: 6
+  name: Состояние драйвера CAN-Open
+  scale: 0
+  type: UNSIGNED8
+  unit: U8
+  value: 5.0
+- address: '0x201600'
+  description: Emergency Error Code
+  editable: false
+  group: 6
+  name: Emergency Error Code
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x201700'
+  description: Device Error State
+  editable: false
+  group: 6
+  name: Device Error State
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x208001'
+  description: Object Dictionary Command
+  editable: false
+  group: 6
+  name: Object Dictionary Command
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x208002'
+  description: Current OD Index
+  editable: false
+  group: 6
+  name: Current OD Index
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 23545.0
+- address: '0x208003'
+  description: Current OD Sub-Index
+  editable: false
+  group: 6
+  name: Current OD Sub-Index
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 10.0
+- address: '0x208004'
+  description: Current OD Element Text
+  editable: false
+  group: 6
+  name: Current OD Element Text
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 779.0
+- address: '0x208005'
+  description: Current OD Element Format
+  editable: false
+  group: 6
+  name: Current OD Element Format
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 2688.0
+- address: '0x208006'
+  description: Current OD Element Min
+  editable: false
+  group: 6
+  name: Current OD Element Min
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x208007'
+  description: Current OD Element Max
+  editable: false
+  group: 6
+  name: Current OD Element Max
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x208008'
+  description: Current OD Element Default
+  editable: false
+  group: 6
+  name: Current OD Element Default
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 256.0
+- address: '0x208009'
+  description: Current OD Element MinLow
+  editable: false
+  group: 6
+  name: Current OD Element MinLow
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x20800a'
+  description: Current OD Element MaxLow
+  editable: false
+  group: 6
+  name: Current OD Element MaxLow
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x20800b'
+  description: Current OD Element Default Low
+  editable: false
+  group: 6
+  name: Current OD Element Default Low
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 35550.0
+- address: '0x20800c'
+  description: Current OD Element Address
+  editable: false
+  group: 6
+  name: Current OD Element Address
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 47074.0
+- address: '0x20800d'
+  description: Current OD Element Address
+  editable: false
+  group: 6
+  name: Current OD Element Address
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 0.0
+- address: '0x20800e'
+  description: Группа параметров
+  editable: false
+  group: 6
+  name: Parameter Group
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 25.0
+- address: '0x208100'
+  description: Количество индексов
+  editable: false
+  group: 6
+  name: Number of Indexes
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 135.0
+- address: '0x208201'
+  description: Default Index 1
+  editable: false
+  group: 6
+  name: Default Index 1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 805306368.0
+- address: '0x208202'
+  description: Default Index 2
+  editable: false
+  group: 6
+  name: Default Index 2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 805306368.0
+- address: '0x208301'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x208302'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x208303'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 2.0
+- address: '0x208304'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 3.0
+- address: '0x208305'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 4.0
+- address: '0x208306'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 5.0
+- address: '0x208307'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 6.0
+- address: '0x208308'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 7.0
+- address: '0x208309'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 8.0
+- address: '0x20830a'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 9.0
+- address: '0x20830b'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x20830c'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x20830d'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x20830e'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x20830f'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x208310'
+  description: Mask Element
+  editable: false
+  group: 6
+  name: Mask Element
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x250601'
+  description: req_data
+  editable: true
+  group: 6
+  name: req_data
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x250602'
+  description: ans_data
+  editable: true
+  group: 6
+  name: ans_data
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x250603'
+  description: data_Low
+  editable: true
+  group: 6
+  name: data_Low
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x250604'
+  description: data_High
+  editable: true
+  group: 6
+  name: data_High
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+Тяговый двигатель:
+- address: '0x5b1101'
+  description: Номер устройства
+  editable: true
+  group: 21
+  name: Node ID
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 1.0
+- address: '0x5b1102'
+  description: Инверсия задания момента
+  editable: true
+  group: 21
+  name: InverceTrqRef
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1103'
+  description: Ошибки ПСТЭД
+  editable: false
+  group: 21
+  name: Invertor faults
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b1104'
+  description: Работа
+  editable: true
+  group: 21
+  name: 'Command: Start'
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1105'
+  description: Статус
+  editable: false
+  group: 21
+  name: Статус
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 0.0
+- address: '0x5b1106'
+  description: Доп. статус
+  editable: false
+  group: 21
+  name: AdditStatus
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1107'
+  description: Включение АВДУ
+  editable: false
+  group: 21
+  name: DO2_OffPowerSW
+  scale: 0
+  type: SIGNED32
+  unit: двоич.
+  value: 0.0
+- address: '0x5b1108'
+  description: Код аварии 1
+  editable: false
+  group: 21
+  name: Faults 1
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5b1109'
+  description: Код аварии 2
+  editable: false
+  group: 21
+  name: Faults 2
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5b110a'
+  description: Код предупреждения
+  editable: false
+  group: 21
+  name: Warnings
+  scale: 0
+  type: UNSIGNED32
+  unit: U32
+  value: 0.0
+- address: '0x5b110b'
+  description: Зад. электрический момент
+  editable: true
+  group: 21
+  name: torque
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b110c'
+  description: Реализованный электрический момент
+  editable: false
+  group: 21
+  name: torque
+  scale: 10485.76
+  type: SIGNED32
+  unit: '%'
+  value: 0.0
+- address: '0x5b110d'
+  description: Скорость
+  editable: false
+  group: 21
+  name: Speed
+  scale: 131.072
+  type: SIGNED32
+  unit: об/м
+  value: 0.0
+- address: '0x5b110e'
+  description: Акт. мощность
+  editable: false
+  group: 21
+  name: main_pInd
+  scale: 54.61333333333334
+  type: SIGNED32
+  unit: кВт
+  value: 0.0
+- address: '0x5b110f'
+  description: Ток секции
+  editable: false
+  group: 21
+  name: Ток секции
+  scale: 1613.1938461538462
+  type: SIGNED32
+  unit: А
+  value: 0.0
+- address: '0x5b1110'
+  description: Ток возбуждения, А
+  editable: false
+  group: 21
+  name: I flux, A
+  scale: 29959.314285714285
+  type: SIGNED32
+  unit: А
+  value: 0.0
+- address: '0x5b1111'
+  description: Напряжение ЗПТ
+  editable: false
+  group: 21
+  name: Напряжение ЗПТ
+  scale: 1941.8074074074075
+  type: SIGNED32
+  unit: В
+  value: 11053224.0
+- address: '0x5b1112'
+  description: Ток ЗПТ
+  editable: false
+  group: 21
+  name: DC bus current
+  scale: 5242.88
+  type: SIGNED32
+  unit: А
+  value: 0.0
+- address: '0x5b1113'
+  description: Температура двигателя
+  editable: false
+  group: 21
+  name: Motor temperature
+  scale: 52428.8
+  type: SIGNED32
+  unit: град
+  value: 41943040.0
+- address: '0x5b1114'
+  description: Температура инвертора
+  editable: false
+  group: 21
+  name: Inverter temperature
+  scale: 52428.8
+  type: SIGNED32
+  unit: град
+  value: 36700160.0
+- address: '0x5b1115'
+  description: Uiso "+" отн. корпуса
+  editable: false
+  group: 21
+  name: Uiso "+"
+  scale: 1941.8074074074075
+  type: SIGNED32
+  unit: В
+  value: 5505024.0
+- address: '0x5b1116'
+  description: Uiso "-" отн. корпуса
+  editable: false
+  group: 21
+  name: Uiso "-"
+  scale: 1941.8074074074075
+  type: SIGNED32
+  unit: В
+  value: 5505024.0
+- address: '0x5b1117'
+  description: Максимальный ток разряда
+  editable: false
+  group: 21
+  name: ImaxUnCharge
+  scale: 5242.88
+  type: SIGNED32
+  unit: А
+  value: 0.0
+- address: '0x5b1118'
+  description: Максимальный ток заряда
+  editable: false
+  group: 21
+  name: ImaxCharge
+  scale: 5242.88
+  type: SIGNED32
+  unit: А
+  value: 0.0
+- address: '0x5b1119'
+  description: CAN-PDO online
+  editable: false
+  group: 21
+  name: CAN-PDO online
+  scale: 0
+  type: UNSIGNED8
+  unit: перечисление
+  value: 1.0
+- address: '0x5b111a'
+  description: Отфильтрованная скорость
+  editable: false
+  group: 21
+  name: Filtered Speed
+  scale: 131.072
+  type: SIGNED32
+  unit: об/м
+  value: 0.0
+- address: '0x5b111b'
+  description: Ускорение о.е.
+  editable: false
+  group: 21
+  name: Accel
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 0.0
+- address: '0x5b111c'
+  description: Мощность двигателя
+  editable: false
+  group: 21
+  name: Power Drive
+  scale: 1048576.0
+  type: SIGNED32
+  unit: IQ24
+  value: 0.0
+- address: '0x5b111d'
+  description: Температура обмотки возбуждения
+  editable: false
+  group: 21
+  name: Flux Coil Temperature
+  scale: 52428.8
+  type: SIGNED32
+  unit: град
+  value: 41943040.0
+- address: '0x5b111e'
+  description: Счетчик RPDO1
+  editable: false
+  group: 21
+  name: Счетчик RPDO1
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 4720.0
+- address: '0x5b111f'
+  description: Счетчик RPDO2
+  editable: false
+  group: 21
+  name: Счетчик RPDO2
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 472.0
+- address: '0x5b1120'
+  description: Счетчик RPDO3
+  editable: false
+  group: 21
+  name: Счетчик RPDO3
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 4720.0
+- address: '0x5b1121'
+  description: Счетчик RPDO3
+  editable: false
+  group: 21
+  name: Счетчик RPDO3
+  scale: 0
+  type: UNSIGNED16
+  unit: U16
+  value: 4720.0

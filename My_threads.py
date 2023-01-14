@@ -1,25 +1,13 @@
 import datetime
-import os
 import time
 
 import pandas as pd
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
-from pandas import ExcelWriter
+from PyQt5.QtWidgets import QMessageBox
 
-from CANAdater import CANAdapter
-from EVONode import EVONode
+from EVONode import EVONode, invertor_command_dict
 from Parametr import Parametr
-from helper import empty_par
-
-invertor_command_dict = {
-    'POWER_ON': (0x200100, "ОСТОРОЖНО!!! Высокое напряжение ВКЛЮЧЕНО!"),
-    'POWER_OFF': (0x200101, "Высокое напряжение выключено!"),
-    'RESET_DEVICE': (0x200200, "Инвертор перезагружен"),
-    'RESET_PARAMETERS': (0x200201, "Параметры инвертора сброшены на заводские настройки"),
-    'APPLY_PARAMETERS': (0x200202, "Текущие параметры сохранены в ЕЕПРОМ Инвертора"),
-    'BEGIN_POSITION_SENSOR_CALIBRATION': (0x200203, "Идёт калибровка Инвертора"),
-    'INVERT_ROTATION': (0x200204, "Направление вращения двигателя инвертировано"),
-    'RESET_FAULTS': (0x200205, "Ошибки Инвертора сброшены")}
+from helper import empty_par, buf_to_string, zero_del
 
 
 # поток для сохранения в файл настроек блока
@@ -53,13 +41,16 @@ class SaveToFileThread(QThread):
             # while param.value:
             #     self.params_counter += 1
             #     param = all_params_list[self.params_counter]
-            if not param.value:
+            if not param.value and not param.value_string:
                 if param.address and int(param.address, 16) > 0:  # нужно чтоб параметр группы не проскочил
+                    # ---!!!если параметр строковый, будет None!!---
                     param = all_params_list[self.params_counter].get_value(self.adapter)
 
                     while isinstance(param, str):
                         self.errors_counter += 1
+                        # ---!!!если параметр строковый, будет None!!---
                         param = all_params_list[self.params_counter].get_value(self.adapter)
+
                         if self.errors_counter >= self.max_errors:
                             self.errors_counter = 0
                             self.params_counter = 0
@@ -114,7 +105,7 @@ class SaveToFileThread(QThread):
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.xlsx'
         df = pd.DataFrame(save_list, columns=p.to_dict().keys())
-        df.to_excel(file_name, index=False)     #, sheet_name=self.node_to_save.name, encoding='windows-1251')
+        df.to_excel(file_name, index=False)  # , sheet_name=self.node_to_save.name, encoding='windows-1251')
         # вместо строки ошибки отправляем название файла,куда сохранил настройки
         self.SignalOfReady.emit(100, file_name, True)
 
@@ -131,13 +122,18 @@ class MainThread(QThread):
     current_node = EVONode()
     adapter = None  # CANAdapter()
     magic_word = 100794368
+    is_recording = False
+    record_dict = {}
+    thread_timer = 0
 
     def __init__(self):
         super().__init__()
-        self.current_nodes_list = []
+        self.current_nodes_dict = {}
 
     def run(self):
         def emitting():  # передача заполненного списка параметров
+            # print(time.perf_counter_ns() - self.thread_timer)
+            self.thread_timer = time.perf_counter_ns()
             self.threadSignalAThread.emit(self.ans_list)
             self.params_counter = 0
             self.errors_counter = 0
@@ -157,14 +153,15 @@ class MainThread(QThread):
                     # если период опроса текущего параметра не кратен текущей итерации,
                     # заполняем его нулями, чтоб в таблице осталось его старое значение
                     # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
-                    self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
+                    # self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
                     self.params_counter += 1
                     if self.params_counter >= self.len_param_list:
                         self.params_counter = 0
                         emitting()
                         return
-            if current_param.node.name in (node.name for node in self.current_nodes_list):
-                param = current_param.get_value(self.adapter)
+            if current_param.node.name in self.current_nodes_dict.keys():
+                param = current_param.get_value(self.adapter)  # ---!!!если параметр строковый, будет None!!---
+                # print(current_param.name, current_param.value)
                 # если строка - значит ошибка
                 if isinstance(param, str):
                     self.errors_counter += 1
@@ -173,7 +170,8 @@ class MainThread(QThread):
                         return
                 else:
                     self.errors_counter = 0
-                    if param == self.magic_word:
+                    if param == self.magic_word:  # здесь можно вкорячить проверкуна стринг параметра и
+                        # на NOne который можно выставлять при ответе блока 80
                         current_param.period = 1001
                         current_param.value = 'Параметр \nотсутствует'
             else:
@@ -187,27 +185,24 @@ class MainThread(QThread):
             if self.params_counter >= self.len_param_list:
                 self.params_counter = 0
                 emitting()
+                if self.is_recording:
+                    dt = datetime.datetime.now()
+                    dt = dt.strftime("%H:%M:%S.%f")
+                    self.record_dict[dt] = {par.name: par.value for par in self.current_params_list}
+                else:
+                    request_errors()
 
         def request_errors():
-            # опрос ошибок, на это время опрос параметров отключается
-            timer.stop()
-            err_dict = {}
-            has_new_err = False
-            for nd in self.current_nodes_list:
-                old_e_len = len(nd.current_errors_list)
-                old_w_len = len(nd.current_warnings_list)
-
+            errors_old = self.err_dict.copy()
+            for nd in self.current_nodes_dict.values():
                 nd.current_errors_list = nd.check_errors(self.adapter).copy()
-                nd.current_warnings_list = nd.check_errors(self.adapter, 'warnings').copy()
-                if len(nd.current_errors_list) != old_e_len or len(nd.current_warnings_list) != old_w_len:
-                    has_new_err = True
-                err_dict[nd.name] = sorted(list(nd.current_errors_list.union(nd.current_warnings_list)))
+                nd.current_warnings_list = nd.check_errors(self.adapter, False).copy()
+                self.err_dict[nd.name] = list(nd.current_errors_list.union(nd.current_warnings_list))
 
-            if has_new_err:
-                self.err_thread_signal.emit(err_dict)
-            timer.start(send_delay)
+            if self.err_dict != errors_old:
+                self.err_thread_signal.emit(self.err_dict)
 
-        send_delay = 13  # задержка отправки в кан сообщений методом подбора с таким не зависает
+        send_delay = 5  # задержка отправки в кан сообщений методом подбора с таким не зависает
         err_req_delay = 500
         self.max_errors = 3
         self.len_param_list = len(self.current_params_list)
@@ -216,84 +211,146 @@ class MainThread(QThread):
         self.ans_list = []
         self.params_counter = 0
         self.errors_counter = 0
+        self.err_dict = {}
 
         timer = QTimer()
         timer.timeout.connect(request_node)
         timer.start(send_delay)
 
         err_timer = QTimer()
-        err_timer.timeout.connect(request_errors)
+        # err_timer.timeout.connect(request_errors)
         err_timer.start(err_req_delay)
 
         loop = QEventLoop()
         loop.exec_()
 
-    def invertor_command(self, command: str):
-        problem_str = 'Команда не прошла'
+    def send_to_mpei(self, command):
+        node = self.current_nodes_dict['Инвертор_МЭИ']
+        # передавать надо исключительно в первый кан
+        if node.request_id in self.adapter.id_nodes_dict.keys():
+            adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
+            if self.isRunning():
+                self.wait(100)
+            answer = node.send_val(invertor_command_dict[command][0], adapter_can1)
+        else:
+            answer = 'Нет связи с CAN1-адаптером'
+        return answer
+
+    def invertor_command(self, command: str, tr=None):
+        w = None
         if command not in invertor_command_dict.keys():
-            return 'Неверная Команда', problem_str
+            return 'Неверная Команда'
+
+        warn_str = invertor_command_dict[command][2]
+        if not warn_str or \
+                QMessageBox.information(w, "Информация", warn_str,
+                                        QMessageBox.Ok, QMessageBox.Cancel) == QMessageBox.Ok:
+            answer = self.send_to_mpei(command)
+            if answer:
+                answer = 'Команду выполнить не удалось\n' + answer
+                QMessageBox.critical(w, "Ошибка", answer, QMessageBox.Ok)
+            else:
+                if tr is not None:
+                    return ''
+                answer = invertor_command_dict[command][1]
+                QMessageBox.information(w, "Успешный успех!", answer, QMessageBox.Ok)
+            return answer
+        return 'Команда отменена пользователем'
+
+    def set_param(self, param: Parametr, val=0):
         if self.isRunning():
-            self.wait(100)
-        for node in self.current_nodes_list:
-            if node.name == 'Инвертор_МЭИ':
-                # передавать надо исключительно в первый кан
-                if node.request_id in self.adapter.id_nodes_dict.keys():
-                    adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
-                    answer = node.send_val(invertor_command_dict[command][0], adapter_can1)
-                    if not answer:
-                        suc = invertor_command_dict[command][1]
-                    else:
-                        suc = problem_str
-                    return answer, suc
-                else:
-                    answer = 'Нет связи с CAN1-адаптером'
-                return answer + ' Для калибровки и инверсии инвертора\n нужно ВЫКЛЮЧИТЬ высокое напряжение', problem_str
+            self.quit()
+            self.wait()
+            was_run = True
+        else:
+            was_run = False
+        nd = param.node
+        check = False
+        info_m = ''
+        if nd.request_id in self.adapter.id_nodes_dict.keys():
+            can_adapter = self.adapter.id_nodes_dict[nd.request_id]
+            param.set_val(can_adapter, float(val))
+            # и сразу же проверяю записался ли он в блок
+            value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
+            if isinstance(value_data, str):
+                new_val = ''
+            else:
+                new_val = zero_del(value_data).strip()
+            # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
+            if val == new_val:
+                check = False
+                if param.node.save_to_eeprom:
+                    param.node.param_was_changed = True
+                    if self.current_node.name == 'Инвертор_МЭИ':
+                        info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
+            else:
+                check = False
+            # если поток был запущен до изменения, то запускаем его снова
+        else:
+            check = False
+            info_m = f'Не найден адаптер для блока {nd.name}'
+        if self.isFinished() and was_run:
+            self.start()
+        return check, info_m
 
 
 class WaitCanAnswerThread(QThread):
-    SignalOfProcess = pyqtSignal(str, list)
-    adapter = None  # CANAdapter()
-    id_for_read = 0x18FF87A7
-    answer_byte = 0
-    answer_dict = {
-        0: 'принята команда привязки',
-        1: 'приемник переведен в режим привязки, ожидание включения пульта ДУ',
-        2: 'привязка завершена',
-        254: 'ошибка',
-        255: 'команда недоступна'
-    }
-    wait_time = 15  # максимальное время в секундах, через которое поток отключится
-    max_err = 20
-    req_delay = 50
-    imp_par_list = []
+    SignalOfProcess = pyqtSignal(list, list)
 
     def __init__(self):
         super().__init__()
+        self.finished_tread()
+        self.finished.connect(self.finished_tread)
+
+    def finished_tread(self):
+        self.adapter = None
+        self.id_for_read = 0
+        self.answer_byte = 0
+        self.answer_dict = {}
+        self.wait_time = 15  # максимальное время в секундах, через которое поток отключится
+        self.max_err = 20
+        self.req_delay = 100
+        self.imp_par_list = []
 
     def run(self):
         self.err_count = 0
         self.end_time = time.perf_counter() + self.wait_time
+        self.old_ti = 0
+        self.iter = 0
 
         def request_ans():
-            answer = ''
-            print(f'\rтекущее время {time.perf_counter()} конечное время {self.end_time}', end='', flush=True)
+            answer = []
             if (time.perf_counter() > self.end_time) or \
                     self.err_count > self.max_err:
-                self.SignalOfProcess.emit('Время закончилось', self.imp_par_list)
                 self.quit()
                 self.wait()
+                self.SignalOfProcess.emit(['Время закончилось'], self.imp_par_list)
                 return
-            ans = self.adapter.can_read(self.id_for_read)
-            if not isinstance(ans, str):
-                byte_a = ans[self.answer_byte]
-                self.err_count = 0
-                if byte_a in self.answer_dict:
-                    answer = self.answer_dict[byte_a]
-            else:
-                self.err_count += 1
+
+            if self.id_for_read:
+                ans = self.adapter.can_read(self.id_for_read)  # приходит список кадров, если всё хорошо
+
+                if isinstance(ans, dict):
+                    for ti, a in ans.items():
+                        print(ti - self.old_ti, buf_to_string(a))
+                        self.old_ti = ti
+                        byte_a = a[self.answer_byte]
+                        self.err_count = 0
+                        if byte_a in self.answer_dict:
+                            answer.append(self.answer_dict[byte_a])
+                else:
+                    print(ans, hex(self.id_for_read))
+                    self.err_count += 1
+
             if self.imp_par_list:
-                for param in self.imp_par_list:
-                    param.get_value(self.adapter)
+                try:
+                    self.imp_par_list[self.iter].get_value(self.adapter)
+                    self.iter += 1
+                except IndexError:
+                    self.iter = 0
+
+                # for param in self.imp_par_list:
+                #     param.get_value(self.adapter)
             self.SignalOfProcess.emit(answer, self.imp_par_list)
 
         timer = QTimer()
@@ -302,7 +359,6 @@ class WaitCanAnswerThread(QThread):
 
         loop = QEventLoop()
         loop.exec_()
-
 
 def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
     if sheet_name is None:
@@ -322,14 +378,18 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
     else:
         ex_wr = ExcelWriter(file_name, mode="w")
 
-    with ex_wr as writer:
-        df.to_excel(writer, index=False, sheet_name=sheet_name)
+class SleepThread(QThread):
+    SignalOfProcess = pyqtSignal(int, str, bool)
+    ready_persent = 0
 
+    def __init__(self, tme: int):
+        super().__init__()
+        self.time = tme
 
-def fill_compare_values(node: EVONode, dict_for_compare: dict):
-    for group_name, group_params in node.group_params_dict.items():
-        if group_name in dict_for_compare.keys():
-            for param in group_params:
-                if param.name in dict_for_compare[group_name].keys():
-                    param.compare_value = dict_for_compare[group_name][param.name]
-    node.has_compare_params = True
+    def run(self):
+        end_time = time.perf_counter() + self.time
+        while time.perf_counter() < end_time:
+            self.ready_persent = (end_time - time.perf_counter()) * 100 / self.time
+            self.SignalOfProcess.emit(self.ready_persent, '', False)
+        self.quit()
+        self.wait()

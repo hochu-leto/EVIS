@@ -44,7 +44,7 @@ for tag in nodes:
     if stroka[0] != 'ER':
         try:
             if int(stroka[4]) > 7:
-                data_list.append([stroka[14], int(stroka[3], 16),
+                data_list.append([stroka[18], int(stroka[3], 16),
                                   False if stroka[2] == 'SFF' else True,
                                   [int(i, 16) for i in stroka[6:14]]])
         except IndexError:
@@ -58,7 +58,7 @@ print(f'В логе {ln_log} строк')
 timest = df2.to_dict()['TimeStamp']
 df_phys_t = None
 for dbc_can in dbc_files_list:
-    db = can_decoder.load_dbc(dbc_can)
+    db = can_decoder.load_dbc(dbc_can)    #.load_dbc(dbc_can)
     df_decoder = can_decoder.DataFrameDecoder(db)
     df_phys = df_decoder.decode_frame(df2, columns_to_drop=["CAN ID", "Raw Value", "PGN", "Source Address"])
 
@@ -67,6 +67,7 @@ for dbc_can in dbc_files_list:
     else:
         df_phys_t = df_phys.transpose()
         ln_log = df_phys_t.shape[1]
+        print(f'Выбраны параметры из файла {dbc_can} ')
         print(f'В датафрейме {ln_log} записей')
         break
 
@@ -86,7 +87,7 @@ for v in df_phys_t:
     now = int(timest[v])
     ln_log -= 1
     print(f'\rОсталось обработать {ln_log} записей', end='', flush=True)
-    if now >= timestamp + 20000:
+    if now >= timestamp + 10000:
         timestamp = now
         # print(now)
         prev_dict['Time'] = timestamp
@@ -98,13 +99,8 @@ for v in df_phys_t:
             continue
         else:
             i += 1
-    # delta_time = time.perf_counter() - delta_time
-    # print(f'Примерно осталось {delta_time * (ln_log - j)} секунд')
-    # j += 1
-    # delta_time = time.perf_counter()
 
 df = pd.DataFrame(final_list, columns=cols)
-# df.to_excel(new_file_name, index=False)
 if os.path.exists(new_file_name):
     ex_wr = ExcelWriter(new_file_name, mode="a", if_sheet_exists='new')
 else:

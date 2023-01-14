@@ -3,13 +3,15 @@
 (пока только МАРАФОН и Квасер) и определяет скорости кан-шин, к которым они подключены.
 Нормально работает пока только с марафоном
 '''
+from pprint import pprint
 from sys import platform
 
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow
 
 import AdapterCAN
 # from kvaser_power import Kvaser
 from marathon_power import CANMarathon
+from helper import buf_to_string
 
 
 class CANAdapter:
@@ -35,6 +37,8 @@ class CANAdapter:
             # if not self.can_adapters:
             self.search_chanells(CANMarathon)
         if not self.adapters_dict:
+            if QApplication.instance() is None:
+                app = QApplication([])
             QMessageBox.critical(None, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.Ok)
             return False
         return True
@@ -42,7 +46,7 @@ class CANAdapter:
     def search_chanells(self, adapter: AdapterCAN):
         print(f'Пробую найти {adapter.__name__}')
         i = 0
-        while True:     # хреновая тема
+        while True:  # хреновая тема
             can_adapter = adapter(channel=i)
             bit = can_adapter.check_bitrate()  # пробежавшись по битрейту
             if isinstance(bit, str):  # и получив строку, понимаю, что адаптера нет совсем
@@ -93,6 +97,8 @@ class CANAdapter:
     def can_send(self, can_id_req: int, message: list, bitrate=None):
         if bitrate is None:
             bitrate = 125
+        if not self.adapters_dict:
+            return ''
         if bitrate in self.adapters_dict.keys():
             adapter = self.adapters_dict[bitrate]
             ans = adapter.can_write(can_id_req, message)
@@ -105,5 +111,17 @@ class CANAdapter:
         if bitrate in self.adapters_dict.keys():
             adapter = self.adapters_dict[bitrate]
             ans = adapter.can_read(can_id_ans)
+            if isinstance(ans, dict):
+                for ti, a in ans.items():
+                    print(ti, buf_to_string(a))
+                    print()
+                ans = list(ans.values())
             return ans
         return 'Неверный битрейт'
+
+    def can_request_long(self, can_id_req: int, can_id_ans: int, l_byte):
+        adapter = self.id_nodes_dict[can_id_req]
+        ans_list = adapter.can_request_long(can_id_req, can_id_ans, l_byte)
+        if isinstance(ans_list, list):
+            ans_list = ans_list[:l_byte]
+        return ans_list
