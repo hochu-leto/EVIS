@@ -30,14 +30,14 @@ empty_par = {'name': '',
              'type': '',
              'group': '',
              'period': '',
-             'size': '',
+             # 'size': '',
              'degree': '',
              'min_value': '',
              'max_value': '',
-             'widget': '',
-             'value_compare': '',
-             'value_dict': [],
-             'value_string': ''}
+             # 'widget': '',
+             # 'value_compare': '',
+             'value_dict': {}}
+             # 'value_string': ''}
 #  параметр для экспериментов
 example_par = {'name': 'fghjk',
                'address': '34567',
@@ -51,11 +51,12 @@ example_par = {'name': 'fghjk',
                'group': '1',
                'period': '20',
                'size': 'nan',
-               'degree': 3}
+               'degree': 3,
+               'value_dict': '1: dvfvdhfh, 2:ygsksu, 5:uvcjvacj, 111:bhjbhjhj'}
 color_EVO_red = QColor(222, 73, 14)
-color_EVO_red_dark = QColor(234, 76, 76)
+color_EVO_red_dark = QColor(234, 76, 76, 50)
 color_EVO_orange = QColor(241, 91, 34)
-color_EVO_orange_shine = QColor(255, 184, 65)
+color_EVO_orange_shine = QColor(255, 184, 65, 50)
 
 
 class MyComboBox(QComboBox):

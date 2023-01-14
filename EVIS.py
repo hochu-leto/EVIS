@@ -247,6 +247,9 @@ def save_to_eeprom(node=None):
 
 @pyqtSlot(list)
 def change_value(lst):
+    print('Сработал комбо-бокс')
+    if not window.vmu_param_table.currentItem():
+        return
     next_cell = window.vmu_param_table.item(window.vmu_param_table.currentItem().row(),
                                             window.vmu_param_table.currentItem().column() + 1)
     info_m = 'От комбо-бокса пришёл пустой список'
@@ -589,7 +592,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def add_new_vmu_params(self, list_of_params: list):
         # global can_adapter
         # выясняем что вернул опрос параметров. Если параметр один и он текст - это ошибка подключения
-        if len(list_of_params) < 2 and isinstance(list_of_params[0], str):
+
+        if 1 < len(list_of_params) < 2 and isinstance(list_of_params[0], str):
             err = str(list_of_params[0])
             if self.thread.isRunning():
                 if self.thread.is_recording:
@@ -602,6 +606,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 can_adapter.close_canal_can()
             if err == 'Адаптер не подключен':
                 can_adapter.isDefined = False
+        elif not list_of_params:
+            print('куда-то пропал список, пора кончать с ним')
         else:
             combo_boxes = show_new_vmu_params(params_list=self.thread.current_params_list,
                                               table=self.vmu_param_table,
@@ -634,13 +640,14 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                     child_item = QTreeWidgetItem()
                     child_item.setText(0, err.name)
                     if err.critical:
-                        child_item.setForeground(0, QBrush(color_EVO_red_dark))
+                        child_item.setBackground(0, QBrush(color_EVO_red_dark))     # setForeground
                     else:
-                        child_item.setForeground(0, QBrush(color_EVO_orange_shine))
+                        child_item.setBackground(0, QBrush(color_EVO_orange_shine))
                     item.addChild(child_item)
                     # если ранее курсор стоял на группе, запоминаю ее
                     if old_item_name == err.name:  # не работает для рулевых - нужно запоминать и имя блока тоже
                         cur_item = child_item
+
                 items.append(item)
 
         if not items:
@@ -1117,5 +1124,10 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# падает при сохранении в файл
-# если стринговый параметр делать период 500 и обрезать последние нули в ТАБ
+# не сохраняет стринговый параметр в файл
+# не сохраняет словарь значений в файл
+# лишнее поле group при сохранении в файл
+# разобраться куда пропадает список в группе device_info КВУ ТТС - возможно, связано с периодом 500
+# вообще уйти уже от списка, просто слать сигнал готовности, скажу больше,
+# если уже есть считанные значения, показывать их, а потом уже считывать и обновлять
+# зависает интерфейс на вкладке ТАБа system

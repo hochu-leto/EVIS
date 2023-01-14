@@ -140,6 +140,7 @@ if __name__ == '__main__':
         if 'Строки' in t.keys() and str(t['Строки']) != 'nan':
             list_v = t['Строки'].split(';\n') if len(t['Строки'].split(';\r\n')) == 1 else t['Строки'].split(';\r\n')
             tg['values_table'] = {n.split('- ')[0]: n.split('- ')[1] for n in list_v if n}
+
         tg['period'] = 1
         if str(tg['address']) != 'nan':
             tg['address'] = '0x' + hex(int(tg['address']))[2::].zfill(4)

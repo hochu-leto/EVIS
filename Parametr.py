@@ -49,33 +49,35 @@ class Parametr:
                                 and str(param[name]) != 'nan' else s
             return st.strip() if isinstance(st, str) else st
 
+        # в следующем релизе нужно прийти к стандартным полям Параметра,
+        # но чтоб принимал все предыдущие варианты, превращая их в стандартные, примерно как сейчас в scale
         self.address = check_string('address', '0x000000')
         self.type = check_string('type')
         self.type = self.type if self.type in type_values.keys() else 'UNSIGNED32'
         self.editable = True if check_string('editable') else False
-        self.unit = check_string('unit')  # единицы измерения
+        self.unit = check_string('unit', check_string('units'))  # единицы измерения
         self.description = check_string('description')  # описание параметра по русски
         self.group = check_string('group')  # неиспользуемое поле в подарок от Векторов
         self.size = check_string('size')  # это какой-то атавизм от блоков БУРР
         self.value = check_value(0, 'value')
         self.value_compare = 0
         self.name = check_string('name', 'NoName')
-        self.scale = float(check_value(1, 'scale'))  # на что домножаем число из КАНа
+        # переходим на multiplier вместо 'mult' 'scale' и 'degree'
+        self.scale = float(check_value(float(check_value(1, 'mult')), 'scale'))  # на что домножаем число из КАНа
         self.offset = float(check_value(0, 'scaleB'))  # вычитаем это из полученного выше числа
         self.period = int(check_value(1, 'period'))  # период опроса параметра 1=каждый цикл 1000=очень редко
         self.period = 1000 if self.period > 1001 else self.period  # проверять горячие буквы, что входят в
         # статические параметры, чтоб период был = 1001
         self.degree = int(check_value(0, 'degree'))  # степень 10 на которую делится параметр из КАНа
-
         self.min_value = check_value(type_values[self.type]['min'], 'min_value')
         self.max_value = check_value(type_values[self.type]['max'], 'max_value')
-        v_table = check_string('values_table')
+        # переходим на 'values_table' вместо 'value_dict'
+        v_table = check_string('values_table', check_string('value_dict'))
         self.value_dict = {int(k): v for k, v in v_table.items()} if isinstance(v_table, dict) \
             else {int(val.split(':')[0]): val.split(':')[1]
                   for val in v_table.split(',')} if v_table else {}
         # из editable и соответствующего списка
         self.widget = 'QtWidgets'
-        # что ставить, если node не передали - emptyNode - который получается, если в EVONode ничего не передать
         self.node = node
         self.req_list = []
         self.set_list = []
@@ -121,12 +123,7 @@ class Parametr:
         if not self.req_list:
             self.get_list()
         while adapter.is_busy:
-            pass  # очень костыльный момент, ждёт миллисекунду, чтоб освободился адаптер
-            # на случай когда идёт чтение с двух каналов
-        # print('Запррашиваю')
-        # for i in self.req_list:
-        #     print(hex(i), end=' ')
-        # print()
+            pass
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.req_list)
         if isinstance(value_data, str):
             return value_data
@@ -197,12 +194,34 @@ class Parametr:
             return 'Адрес не совпадает'
 
     def to_dict(self):
-        exit_dict = empty_par.copy()
-        # for k in exit_dict.keys():
-        print(self.__dir__)
-        for k in self.__dir__():
+        # список полей параметра, который будем запихивать в файл. Можно выбрать не все поля
+        # в следующем релизе нужно согласовать со стандартными полями Параметра
+        exit_list = ['name', 'address', 'description', 'offset',
+                     'value', 'type', 'period', 'min_value', 'max_value']
+        # 'widget', 'editable', 'value_dict', 'scale',
+        exit_dict = {}
+        for k in exit_list:  # for k in self.__dir__():
             exit_dict[k] = self.__getattribute__(k)
-        exit_dict['editable'] = 1 if exit_dict['editable'] else 0
+        # эту секцию нужно будет убрать при переходе на стандартные поля, а переписать их в список exit_list
+        exit_dict['editable'] = True if self.editable else False
+
+        if self.unit:
+            exit_dict['units'] = self.unit  # -----------------------------------------
+        else:
+            exit_dict['units'] = ''  # это можно будет убрать при переход на yaml
+
+        if self.value_dict:
+            exit_dict['values_table'] = self.value_dict  # -----------------------------------------
+        else:
+            exit_dict['values_table'] = {}  # это можно будет убрать при переход на yaml
+
+        if self.scale:
+            exit_dict['mult'] = 1 / self.scale
+        elif self.degree:
+            exit_dict['mult'] = 1 / (10 ** self.degree)
+        else:
+            exit_dict['mult'] = 1  # это можно будет убрать при переход на yaml
+
         return exit_dict
 
     def check_node(self, node_dict: dict):
@@ -225,16 +244,18 @@ class Parametr:
         s = ''
         for byte in value:
             if 'Ethernet_' in self.name or '_Ip' in self.name:
-                self.editable = False
-                s += str(byte) + '.'
+                if s.count('.') < 4:
+                    s += str(byte) + '.'
             elif '_Mac' in self.name:
-                self.editable = False
-                s += int_to_hex_str(byte) + ':'
-            elif '_time' in self.name:
+                if s.count(':') < 4:
+                    s += int_to_hex_str(byte) + ':'
+            elif 'time' in self.name:
                 s += str(byte)
             else:
                 s += chr(byte)
         self.value_string = s.strip().rstrip('.').rstrip(':')
+        self.editable = False
+        self.period = 500
         return int(self.value_string) if self.value_string.isdigit() else self.value_string
 
     def copy(self):

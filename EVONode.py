@@ -205,7 +205,7 @@ class EVONode:
             elif not isinstance(ans, str):
                 num += str(ans).rstrip('0').rstrip('.')
         print(num)
-        return int(num) if num.isdigit() else num
+        return int(num) if num.isdigit() else ''.join([s for s in num if s.isprintable()])
 
     # функция НЕ РАБОТАЕТ
     # Потому-то кому-то приспичило передавать серийник в чарах
