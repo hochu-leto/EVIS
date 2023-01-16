@@ -125,7 +125,7 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
     # пока отображаю только три атрибута + само значение отображается позже
     for par in list_of_params:
         name = par.name
-        unit = par.unit
+        unit = par.units
         description = par.description
         v_c = par.value_compare
         if isinstance(v_c, str):
