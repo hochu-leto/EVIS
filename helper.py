@@ -4,32 +4,40 @@
 import struct
 import traceback
 
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QTimer, Qt, QRegExp, pyqtSlot
-from PyQt5.QtGui import QFont, QRegExpValidator, QColor
-from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt5.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal, QStringListModel
+from PyQt5.QtGui import QFont, QColor
+from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
+    QComboBox, QListView, QSizePolicy
 
 import Dialog_params
 import my_dialog
 
+TheBestNode = 'Избранное'
 NewParamsList = 'Новый список'
-
+easter_egg = 'Бинго! Ты нашёл тот самый параметр после изменения которого блок рулевой рейки меняет свои ID и выходит ' \
+             'из чата.(перестаёт отвечать) Ничего страшного, нужно перезагрузить программу и заново определить все ' \
+             'блоки. Очень надеюсь ты понимаешь что делаешь и что в данный момент подключен только ОДИН блок рулевой ' \
+             'рейки. В противном случае ты поимеешь два блока, которые отвечают по одинаковым адресам, и тогда уже ' \
+             'по-любому придётся отключать один из них так что лучше сделай это заранее '
 empty_par = {'name': '',
              'address': '',
              'editable': '',
              'description': '',
              'scale': '',
-             'scaleB': '',
+             'offset': '',
              'unit': '',
              'value': '',
              'type': '',
              'group': '',
              'period': '',
-             'size': '',
+             # 'size': '',
              'degree': '',
              'min_value': '',
              'max_value': '',
-             'widget': ''}
+             # 'widget': '',
+             # 'value_compare': '',
+             'value_dict': {}}
+             # 'value_string': ''}
 #  параметр для экспериментов
 example_par = {'name': 'fghjk',
                'address': '34567',
@@ -43,11 +51,67 @@ example_par = {'name': 'fghjk',
                'group': '1',
                'period': '20',
                'size': 'nan',
-               'degree': 3}
+               'degree': 3,
+               'value_dict': '1: dvfvdhfh, 2:ygsksu, 5:uvcjvacj, 111:bhjbhjhj'}
+color_EVO_red = QColor(222, 73, 14)
+color_EVO_red_dark = QColor(234, 76, 76, 80)
+color_EVO_orange = QColor(241, 91, 34)
+color_EVO_orange_shine = QColor(255, 184, 65, 80)
+
+
+class MyComboBox(QComboBox):
+    ItemSelected = pyqtSignal(list)
+    isRevealed = False
+    parametr = None
+
+    def __init__(self, parent=None, parametr=None):
+        super(MyComboBox, self).__init__(parent)
+        self.parametr = parametr
+        self.currentIndexChanged.connect(self.item_selected_handle)
+
+    def item_selected_handle(self, index):
+        lst = []
+        if self.parametr is not None:
+            key = list(self.parametr.value_dict.keys())[index]
+            lst = [self.parametr, key]
+        self.ItemSelected.emit(lst)
+
+    def showPopup(self):  # sPopup function
+        self.isRevealed = True
+        super(MyComboBox, self).showPopup()  # 's showPopup ()
+
+    def hidePopup(self):
+        self.isRevealed = False
+        super(MyComboBox, self).hidePopup()
+
+
+def buf_to_string(buf):
+    if isinstance(buf, str):
+        return buf
+    s = ''
+    for i in buf:
+        s += hex(i) + ' '
+    return s
+
+
+def find_param(nodes_dict: dict, s: str, node_name=None):
+    list_of_params = []
+    s = s.upper().strip()
+    if node_name is None:
+        list_of_params = [param for nd in nodes_dict.values() if nd.name != TheBestNode
+                          for param_list in nd.group_params_dict.values()
+                          for param in param_list
+                          if s in param.name.upper() or s in param.description.upper()]
+    elif node_name in nodes_dict.keys():
+        nd = nodes_dict[node_name]
+        list_of_params = [param for param_list in nd.group_params_dict.values()
+                          for param in param_list
+                          if s in param.name.upper() or s in param.description.upper()]
+    return list_of_params
 
 
 def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False):
-    # show_table = getattr(w, table)
+    items_list = []
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
     row = 0
@@ -63,7 +127,20 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         name = par.name
         unit = par.unit
         description = par.description
-        compare = par.compare_value if isinstance(par.compare_value, str) else zero_del(par.compare_value)
+        v_c = par.value_compare
+        if isinstance(v_c, str):
+            compare = v_c
+        elif par.value_dict:
+            k = int(v_c)
+            if k in par.value_dict:
+                compare = par.value_dict[k]
+            else:
+                compare = f'{k} нет в словаре'
+        else:
+            compare = zero_del(v_c)
+
+        # compare = v_c if isinstance(v_c, str) else zero_del(v_c)
+        # print(v_c, compare)
 
         if par.editable:
             color_opacity = 30
@@ -91,27 +168,82 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
+        # if par.value_dict:
+        #     comBox = MyComboBox()
+        #     comBox.addItems(list(par.value_dict.values()))
+        #     show_table.setCellWidget(row, show_table.columnCount() - 1, comBox)
+        #     items_list.append(comBox)
+
         row += 1
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
     show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
     # максимальная ширина у описания, если не хватает длины, то переносится
     show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+    return items_list
+
+
+def pass_def():
+    print('изменили комбо-бокс')
+    pass
 
 
 def show_new_vmu_params(params_list, table, has_compare_params=False):
+    items_list = []
     row = 0
     for par in params_list:
-        v_name = par.value if isinstance(par.value, str) else zero_del(par.value)
-        value_item = QTableWidgetItem(v_name)
-        if par.editable:
-            flags = (value_item.flags() | Qt.ItemIsEditable)
+        it = table.cellWidget(row, 2)
+        if isinstance(it, MyComboBox) \
+                and it.isRevealed:
+            continue
+
+        value_in_dict = False
+
+        if par.value_string:
+            v_name = par.value_string
+        elif isinstance(par.value, str):
+            v_name = par.value
+        elif par.value_dict:
+            k = int(par.value)
+            if k in par.value_dict:
+                value_in_dict = True
+                v_name = par.value_dict[k]
+            else:
+                v_name = f'{k} нет в словаре'
         else:
-            flags = value_item.flags() & ~Qt.ItemIsEditable
-        value_item.setFlags(flags)
-        # подкрашиваем в голубой в зависимости от периода опроса
-        color_opacity = int((150 / 1000) * par.period) + 3
-        value_item.setBackground(QColor(0, 255, 255, color_opacity))
-        table.setItem(row, 2, value_item)
+            v_name = zero_del(par.value)
+
+        if value_in_dict and par.editable:
+            if not isinstance(it, MyComboBox):
+                comBox = MyComboBox()
+                v_list = list(par.value_dict.values())
+                comBox.setModel(QStringListModel(v_list))
+                # Отображатель выпадающего списка QListView
+                listView = QListView()
+                # Включаем перенос строк
+                listView.setWordWrap(True)
+                # Устанавливаем отображатель списка (popup)
+                comBox.setView(listView)
+                # comBox.addItems(v_list)
+                comBox.parametr = par
+                comBox.setSizeAdjustPolicy(QComboBox.AdjustToContentsOnFirstShow)
+                # .AdjustToMinimumContentsLengthWithIcon + AdjustToContentsOnFirstShow + AdjustToContents)
+                comBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+                comBox.setMaximumSize(220, 170)
+                table.setCellWidget(row, 2, comBox)
+                items_list.append(comBox)
+            table.cellWidget(row, 2).setCurrentText(par.value_dict[int(par.value)])
+        else:
+            value_item = QTableWidgetItem(v_name)
+            if par.editable:
+                flags = (value_item.flags() | Qt.ItemIsEditable)
+            else:
+                flags = value_item.flags() & ~Qt.ItemIsEditable
+            value_item.setFlags(flags)
+            # подкрашиваем в голубой в зависимости от периода опроса
+            color_opacity = int((150 / 1000) * abs(par.period)) + 3
+            value_item.setBackground(QColor(0, 255, 255, color_opacity))
+            table.setItem(row, 2, value_item)
+
         if has_compare_params:
             compare_name = table.item(row, 3).text()
             if v_name.strip() != compare_name.strip():
@@ -120,6 +252,7 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
                 color = QColor(255, 255, 255, 0)
             table.item(row, 3).setBackground(color)
         row += 1
+    return items_list
 
 
 class InfoMessage(QDialog, Dialog_params.Ui_Dialog_params):
@@ -139,6 +272,10 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         super().__init__()
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+        self.text_browser.setEnabled(False)
+        self.text_browser.setStyleSheet("font: bold 14px;")
+        self.buttonBox.button(QDialogButtonBox.Ok).setText('ОК')
+        self.buttonBox.button(QDialogButtonBox.Cancel).setText('Отмена')
         # никаких защит и проверок
 
         if label is not None:
@@ -175,13 +312,14 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
         self.adjustSize()
 
-    @pyqtSlot(str, list)
-    def change_mess(self, st: str, list_of_params=None):
-        if st:
-            print(st)
-            self.text_browser.append(st)
+    @pyqtSlot(list, list, int)
+    def change_mess(self, st=None, list_of_params=None, progress=None):
+        if st and isinstance(st, list):
+            self.text_browser.append('\n'.join(st))
         if list_of_params and isinstance(list_of_params, list):
             show_new_vmu_params(list_of_params, self.param_table)
+        if progress and isinstance(progress, int):
+            self.process_bar.setValue(progress)
 
 
 # Если при ошибке в слотах приложение просто падает без стека,
@@ -195,8 +333,17 @@ def log_uncaught_exceptions(ex_cls, ex, tb):
     quit()
 
 
+def get_nearest_lower_value(iterable, value):
+    if value in iterable:
+        return value
+    iterable.append(value)
+    iterable.sort()
+    ind = iterable.index(value)
+    return iterable[ind - 1] if ind else ind
+
+
 def zero_del(s):
-    return f'{round(s, 5):>8}'.rstrip('0').rstrip('.')
+    return f'{round(s, 5):>8}'.rstrip('0').rstrip('.') if s is not None else 'NaN'
 
 
 def int_to_hex_str(x: int):

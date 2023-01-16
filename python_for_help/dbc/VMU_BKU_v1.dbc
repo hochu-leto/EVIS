@@ -1,29 +1,65 @@
 VERSION ""
 
 
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
 BS_:
 
 BU_: BKU VMU
 
 
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ bmsUmaxBatteryCell : 0|16@1+ (0.0015,0) [0|98.3025] "V" Vector__XXX
+ SG_ bmsUminBatteryCell : 0|16@1+ (0.0015,0) [0|98.3025] "V" Vector__XXX
+
 BO_ 2566869413 PropB_51: 8 BKU
- SG_ bkuKvuRunCmd : 0|2@1+ (1,0) [0|3] "" VMU
- SG_ bkuEmergencyStop : 2|2@1+ (1,0) [0|3] "" VMU
- SG_ bkuParkingBrakeCtrl : 4|2@1+ (1,0) [0|3] "" VMU
- SG_ bkuTurnIndicatorCtrl : 8|4@1+ (1,0) [0|15] "" VMU
- SG_ bkuStopLightsCmd : 12|2@1+ (1,0) [0|3] "" VMU
- SG_ bkuRefTorqueCmd : 16|8@1+ (1,-100) [-100|155] "%" VMU
- SG_ servoStRack1Pos_ref : 32|8@1+ (1,-100) [-100|155] "%" VMU
- SG_ servoStRack1Pos_setNull : 40|2@1+ (1,0) [0|3] "" VMU
- SG_ servoStRack2Pos_ref : 48|8@1+ (1,-100) [-100|155] "%" VMU
- SG_ servoStRack2Pos_setNull : 56|2@1+ (1,0) [0|3] "" VMU
- SG_ bkuDiscreteBrake : 6|2@1+ (1,0) [0|3] "" VMU
- SG_ bkuRearLightsCmd : 58|2@1+ (1,0) [0|3] "" VMU
- SG_ bkuAntifogLightsCmd : 60|2@1+ (1,0) [0|3] "" VMU
+ SG_ bkuKvuRunCmd : 0|2@1+ (1,0) [0|3] ""  VMU
+ SG_ bkuEmergencyStop : 2|2@1+ (1,0) [0|3] ""  VMU
+ SG_ bkuParkingBrakeCtrl : 4|2@1+ (1,0) [0|3] ""  VMU
+ SG_ bkuTurnIndicatorCtrl : 8|4@1+ (1,0) [0|15] ""  VMU
+ SG_ bkuStopLightsCmd : 12|2@1+ (1,0) [0|3] ""  VMU
+ SG_ bkuRefTorqueCmd : 16|8@1+ (1,-100) [-100|155] "%"  VMU
+ SG_ servoStRack1Pos_ref : 32|8@1+ (1,-100) [-100|155] "%"  VMU
+ SG_ servoStRack1Pos_setNull : 40|2@1+ (1,0) [0|3] ""  VMU
+ SG_ servoStRack2Pos_ref : 48|8@1+ (1,-100) [-100|155] "%"  VMU
+ SG_ servoStRack2Pos_setNull : 56|2@1+ (1,0) [0|3] ""  VMU
+ SG_ bkuDiscreteBrake : 6|2@1+ (1,0) [0|3] ""  VMU
+ SG_ bkuRearLightsCmd : 58|2@1+ (1,0) [0|3] ""  VMU
+ SG_ bkuAntifogLightsCmd : 60|2@1+ (1,0) [0|3] ""  VMU
 
 BO_ 2566865825 PropB_43: 8 VMU
- SG_ bmsUmaxBatteryCell : 16|16@1+ (0.0015,0) [0|98.3025] "V"  BKU
- SG_ bmsUminBatteryCell : 0|16@1+ (0.0015,0) [0|98.3025] "V"  BKU
+ SG_ FreqRotWheel4 : 48|16@1+ (0.01,0) [0|655.35] "Гц" Vector__XXX
+ SG_ FreqRotWheel3 : 32|16@1+ (0.01,0) [0|655.35] "Гц" Vector__XXX
+ SG_ FreqRotWheel2 : 16|16@1+ (0.01,0) [0|655.35] "Гц" Vector__XXX
+ SG_ FreqRotWheel1 : 0|16@1+ (0.01,0) [0|655.35] "Гц" Vector__XXX
 
 BO_ 2566865569 PropB_42: 8 VMU
  SG_ bmsTminBatteryCell : 56|8@1+ (1,-55) [-55|200] "пїЅC"  BKU
@@ -78,26 +114,36 @@ BO_ 2566861473 PropB_32: 8 VMU
  SG_ td1Status : 0|8@1+ (1,0) [0|255] ""  BKU
 
 BO_ 2566861217 PropB_31: 8 VMU
+ SG_ sideDoorOpenRight : 30|2@1+ (1,0) [0|3] ""  BKU
+ SG_ sideDoorOpenLeft : 28|2@1+ (1,0) [0|3] ""  BKU
+ SG_ redButtonState : 4|2@1+ (1,0) [0|3] "" Vector__XXX
  SG_ kvuMode : 24|2@1+ (1,0) [0|3] ""  BKU
  SG_ kvuStatus : 16|8@1+ (1,0) [0|255] ""  BKU
  SG_ kvuOnLineDeviceFlags : 8|8@1+ (1,0) [0|255] ""  BKU
  SG_ readyToMove : 0|2@1+ (1,0) [0|3] ""  BKU
 
-CM_ SG_ 2566869413 bkuAntifogLightsCmd "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
-CM_ SG_ 2566869413 bkuRearLightsCmd "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
-CM_ SG_ 2566869413 bkuDiscreteBrake "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
-CM_ SG_ 2566869413 servoStRack2Pos_setNull "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
-CM_ SG_ 2566869413 servoStRack2Pos_ref "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
-CM_ SG_ 2566869413 servoStRack1Pos_setNull "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
-CM_ SG_ 2566869413 servoStRack1Pos_ref "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
-CM_ SG_ 2566869413 bkuRefTorqueCmd "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
-CM_ SG_ 2566869413 bkuStopLightsCmd "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
-CM_ SG_ 2566869413 bkuTurnIndicatorCtrl "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
-CM_ SG_ 2566869413 bkuParkingBrakeCtrl "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
-CM_ SG_ 2566869413 bkuEmergencyStop "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+CM_ SG_ 3221225472 bmsUmaxBatteryCell "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 3221225472 bmsUminBatteryCell "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
 CM_ SG_ 2566869413 bkuKvuRunCmd "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
-CM_ SG_ 2566865825 bmsUmaxBatteryCell "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
-CM_ SG_ 2566865825 bmsUminBatteryCell "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 2566869413 bkuEmergencyStop "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 2566869413 bkuParkingBrakeCtrl "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 2566869413 bkuTurnIndicatorCtrl "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 2566869413 bkuStopLightsCmd "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 2566869413 bkuRefTorqueCmd "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 2566869413 servoStRack1Pos_ref "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
+CM_ SG_ 2566869413 servoStRack1Pos_setNull "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
+CM_ SG_ 2566869413 servoStRack2Pos_ref "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
+CM_ SG_ 2566869413 servoStRack2Pos_setNull "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
+CM_ SG_ 2566869413 bkuDiscreteBrake "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 2566869413 bkuRearLightsCmd "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 2566869413 bkuAntifogLightsCmd "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+CM_ SG_ 2566865825 FreqRotWheel4 "Частота вращения колеса 4";
+CM_ SG_ 2566865825 FreqRotWheel3 "Частота вращения колеса 3";
+CM_ SG_ 2566865825 FreqRotWheel2 "Частота вращения колеса 2";
+CM_ SG_ 2566865825 FreqRotWheel1 "Частота вращения колеса 1";
 CM_ SG_ 2566865569 bmsTminBatteryCell "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
 CM_ SG_ 2566865569 bmsTmaxBatteryCell "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
 CM_ SG_ 2566865569 bmsNumberCells "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ";
@@ -134,6 +180,15 @@ CM_ SG_ 2566861473 td1I_cur "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
 CM_ SG_ 2566861473 td1Speed_cur "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
 CM_ SG_ 2566861473 td1Torque_cur "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
 CM_ SG_ 2566861473 td1Status "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ пїЅпїЅпїЅ)";
+CM_ SG_ 2566861217 sideDoorOpenRight "Current state of the Emergency buttton.
+0 = not pressed.
+1 = pressed.";
+CM_ SG_ 2566861217 sideDoorOpenLeft "Current state of the Emergency buttton.
+0 = not pressed.
+1 = pressed.";
+CM_ SG_ 2566861217 redButtonState "Current state of the Emergency buttton.
+0 = not pressed.
+1 = pressed.";
 CM_ SG_ 2566861217 kvuMode "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
 CM_ SG_ 2566861217 kvuStatus "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ";
 CM_ SG_ 2566861217 kvuOnLineDeviceFlags "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ";
@@ -218,9 +273,13 @@ BA_ "VFrameFormat" BO_ 2566861985 3;
 BA_ "VFrameFormat" BO_ 2566861729 3;
 BA_ "VFrameFormat" BO_ 2566861473 3;
 BA_ "VFrameFormat" BO_ 2566861217 3;
-BA_ "GenSigStartValue" SG_ 2566869413 servoStRack2Pos_ref 100;
-BA_ "GenSigStartValue" SG_ 2566869413 servoStRack1Pos_ref 100;
 BA_ "GenSigStartValue" SG_ 2566869413 bkuRefTorqueCmd 100;
+BA_ "GenSigStartValue" SG_ 2566869413 servoStRack1Pos_ref 100;
+BA_ "GenSigStartValue" SG_ 2566869413 servoStRack2Pos_ref 100;
+BA_ "GenSigStartValue" SG_ 2566865825 FreqRotWheel4 0;
+BA_ "GenSigStartValue" SG_ 2566865825 FreqRotWheel3 0;
+BA_ "GenSigStartValue" SG_ 2566865825 FreqRotWheel2 0;
+BA_ "GenSigStartValue" SG_ 2566865825 FreqRotWheel1 0;
 BA_ "GenSigStartValue" SG_ 2566865569 bmsTminBatteryCell 55;
 BA_ "GenSigStartValue" SG_ 2566865569 bmsTmaxBatteryCell 55;
 BA_ "GenSigStartValue" SG_ 2566865569 bmsBatteryCapacity 512;
@@ -238,3 +297,4 @@ BA_ "GenSigStartValue" SG_ 2566861473 td1Power_cur 125;
 BA_ "GenSigStartValue" SG_ 2566861473 td1I_cur 125;
 BA_ "GenSigStartValue" SG_ 2566861473 td1Speed_cur 30000;
 BA_ "GenSigStartValue" SG_ 2566861473 td1Torque_cur 100;
+
