@@ -58,8 +58,11 @@ def fill_sheet_dict(file_name):
                         p_list.clear()
                         prev_group_name = param['name'].replace('group ', '')
                     else:
-                        #  делает словарь только с имя-значение. скорее нужно делать полный параметр
-                        p_list.append(Parametr(param))
+                        #  делает словарь только с имя-значение. скорее нужно делать полный параметр а зачем????
+                        p = Parametr(param)
+                        if isinstance(param['value'], str):
+                            p.value_string = param['value']
+                        p_list.append(p)
                 node_params_dict[prev_group_name] = p_list.copy()
 
             del node_params_dict['']
