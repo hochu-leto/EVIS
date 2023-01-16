@@ -199,33 +199,6 @@ def make_nodes_dict(node_dict):
 
 # =============================================================================================================
 
-
-def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
-    if sheet_name is None:
-        sheet_name = TheBestNode
-    all_params_list = []
-    param_dict = param_d.copy()
-    for group_name, param_list in param_dict.items():
-        par = empty_par.copy()
-        par['name'] = f'group {group_name}'
-        all_params_list.append(par)
-        for param in param_list:
-            all_params_list.append(param.to_dict().copy())
-
-    df = pd.DataFrame(all_params_list, columns=empty_par.keys())
-    if os.path.exists(file_name):
-        try:
-            ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='overlay')
-        except PermissionError:
-            return False
-    else:
-        ex_wr = ExcelWriter(file_name, mode="w")
-
-    with ex_wr as writer:
-        df.to_excel(writer, index=False, sheet_name=sheet_name)
-    return True
-
-
 def save_p_dict_to_file(par_dict: dict):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
     file_name = pathlib.Path(data_dir, TheBestNode, Default, par_pick_file)
@@ -243,15 +216,16 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
     all_compare_params = {}
     for group in dict_for_compare.values():
         for par in group.copy():
-            all_compare_params[par.address] = par
+            all_compare_params[par.index << 8 + par.sub_index] = par
     all_current_params = []
     for group in node.group_params_dict.values():
         for p in group:
             all_current_params.append(p)
 
     for cur_p in all_current_params:
-        if cur_p.address in all_compare_params.keys():
-            compare_par = all_compare_params[cur_p.address]
+        adr = cur_p.index << 8 + cur_p.sub_index
+        if adr in all_compare_params.keys():
+            compare_par = all_compare_params[adr]
             cur_p.value_compare = compare_par.value_string if compare_par.value_string else float(compare_par.value)
             # del all_compare_params[cur_p.address]
     node.has_compare_params = True

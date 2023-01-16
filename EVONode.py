@@ -40,6 +40,8 @@ empty_node = {
     'group_nods_list': []
 }
 
+exit_list = ['name', 'serial_number', 'firmware_version', 'request_id', 'answer_id', 'protocol']
+
 
 class EVONode:
     __slots__ = ('name', 'request_id', 'answer_id',
@@ -319,6 +321,13 @@ class EVONode:
         s = self.string_from_can.strip().rstrip('0')
         return int(s) if s.isdigit() else s
 
+    def to_dict(self):
+        exit_dict = {ke: self.__getattribute__(ke) for ke in exit_list}
+        if self.current_errors_list:
+            exit_dict['current_errors_list'] = [er.name for er in self.current_errors_list]
+        if self.current_errors_list:
+            exit_dict['current_warnings_list'] = [wr.name for wr in self.current_warnings_list]
+        return exit_dict
 
 def check_printable(lst):
     a_st = ''

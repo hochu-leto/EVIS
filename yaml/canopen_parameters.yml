@@ -30,7 +30,7 @@ readme:
       Может быть указано и для ro-параметра (для анализа конфигурации), и для rw-параметра (для быстрой загрузки 
       типовой конфигурации в устройство)
     units: Единицы измерения либо диапазон значений, если величина безразмерная
-    values_table: Расшифровка возможных значений в поле 'value'
+    value_table: Расшифровка возможных значений в поле 'value'
 
 canopen_parameters:
 
@@ -224,7 +224,7 @@ canopen_parameters:
       description: Тип тормозной системы, которая используется на этой машине
       eeprom:
       value:
-      values_table:
+      value_table:
         0: Отключено
         1: Плавный тормоз
         2: Дискретный тормоз
@@ -261,7 +261,7 @@ canopen_parameters:
       type: uint8
       description: Уровень охлаждающей жидкости
       value:
-      values_table:
+      value_table:
         0: OK/обрыв (физический уровень HIGH)
         1: Задетекирован низкий уровень ОЖ (физический уровень LOW)
 
@@ -273,7 +273,7 @@ canopen_parameters:
       type: uint8
       description: Уровень тормозной жидкости
       value:
-      values_table:
+      value_table:
         0: OK/обрыв (физический уровень HIGH)
         1: Задетекирован низкий уровень ТЖ (физический уровень LOW)
 
@@ -285,7 +285,7 @@ canopen_parameters:
       type: uint8
       description: Включение режима управления пневмоподвеской с КВУ
       value:
-      values_table:
+      value_table:
         0: Управление отключено/обрыв (физический уровень LOW)
         1: Управление включено (физический уровень HIGH)
     
@@ -297,7 +297,7 @@ canopen_parameters:
       type: uint8
       description: Разрешение управления ближним светом командами от БКУ
       value:
-      values_table:
+      value_table:
         0: Запрещено/обрыв (физический уровень LOW)
         1: Разрешено (физический уровень HIGH)
 
@@ -309,7 +309,7 @@ canopen_parameters:
       type: uint32
       description: Нажатие кнопки "Стоп КВУ"
       value:
-      values_table:
+      value_table:
         0: Кнопка отжата (физический уровень HIGH)
         1: Кнопка нажата/обрыв (физический уровень LOW)
 
@@ -321,7 +321,7 @@ canopen_parameters:
       type: uint32
       description: Состояние зарядной вилки
       value:
-      values_table:
+      value_table:
         0: Не воткнута/обрыв (физический уровень LOW)
         1: Воткнута (физический уровень HIGH)
 
@@ -333,7 +333,7 @@ canopen_parameters:
       type: uint32
       description: Состояние концевика на дверце блока 4
       value:
-      values_table:
+      value_table:
         0: Дверца закрыта (физический уровень HIGH)
         1: Дверца открыта/обрыв (физический уровень LOW)
 
@@ -345,7 +345,7 @@ canopen_parameters:
       type: uint32
       description: Состояние концевика на левом борту
       value:
-      values_table:
+      value_table:
         0: Борт закрыт (физический уровень HIGH)
         1: Борт открыт/обрыв (физический уровень LOW)
 
@@ -357,7 +357,7 @@ canopen_parameters:
       type: uint32
       description: Состояние концевика на правом борту
       value:
-      values_table:
+      value_table:
         0: Борт закрыт (физический уровень HIGH)
         1: Борт открыт/обрыв (физический уровень LOW)
 
@@ -369,7 +369,7 @@ canopen_parameters:
       type: uint32
       description: Состояние концевика на капоте
       value:
-      values_table:
+      value_table:
         0: Капот закрыт (физический уровень HIGH)
         1: Капот открыт/обрыв (физический уровень LOW)
         
@@ -1636,7 +1636,7 @@ canopen_parameters:
       type: uint8
       description: Текущее состояние основной машины состояний КВУ (см. описание на Confluence)
       value:
-      values_table:
+      value_table:
         0: Undefined
         1: Init
         2: Fault
@@ -2542,7 +2542,7 @@ canopen_parameters:
       description: Включение/выключение обработки накопленных ошибок датчиков ABS
       eeprom:
       value:
-      values_table:
+      value_table:
        0: Невалидные значения частоты будут принимать значения 'ошибка' при отправке на БКУ
        1: Невалидные значения частоты будут обрабатываться как обычные
 

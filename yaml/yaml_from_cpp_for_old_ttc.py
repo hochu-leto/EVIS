@@ -181,11 +181,11 @@ for tag in nodes:
                 tg['scale'] = 1 / parametr['mult']
             if 'offset' in parametr.keys():
                 tg['scaleB'] = parametr['offset']
-            if 'values_table' in parametr.keys():
-                tg['values_table'] = parametr['values_table']
+            if 'value_table' in parametr.keys():
+                tg['value_table'] = parametr['value_table']
 
             if 'iolib_errors' in parametr['description']:
-                tg['values_table'] = iolib_errors_dict.copy()
+                tg['value_table'] = iolib_errors_dict.copy()
     if tg:
         final_list.append(tg.copy())
 del group_par_dict['']

@@ -48,7 +48,7 @@ if __name__ == '__main__':
                 par['scaleB'] = par['offset']
                 del par['offset']
             if 'iolib_errors' in par['description']:
-                par['values_table'] = iolib_errors_dict.copy()
+                par['value_table'] = iolib_errors_dict.copy()
         parse_dict[group] = group_list
     with open(r'parameters.yaml', 'w', encoding='UTF-8') as file:
         documents = yaml.dump(check_dict(parse_dict), file, allow_unicode=True)

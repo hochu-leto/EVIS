@@ -36,7 +36,7 @@ empty_par = {'name': '',
              'max_value': '',
              # 'widget': '',
              # 'value_compare': '',
-             'value_dict': {}}
+             'value_table': {}}
              # 'value_string': ''}
 #  параметр для экспериментов
 example_par = {'name': 'fghjk',
@@ -52,7 +52,7 @@ example_par = {'name': 'fghjk',
                'period': '20',
                'size': 'nan',
                'degree': 3,
-               'value_dict': '1: dvfvdhfh, 2:ygsksu, 5:uvcjvacj, 111:bhjbhjhj'}
+               'value_table': '1: dvfvdhfh, 2:ygsksu, 5:uvcjvacj, 111:bhjbhjhj'}
 color_EVO_red = QColor(222, 73, 14)
 color_EVO_red_dark = QColor(234, 76, 76, 50)
 color_EVO_orange = QColor(241, 91, 34)
@@ -72,7 +72,7 @@ class MyComboBox(QComboBox):
     def item_selected_handle(self, index):
         lst = []
         if self.parametr is not None:
-            key = list(self.parametr.value_dict.keys())[index]
+            key = list(self.parametr.value_table.keys())[index]
             lst = [self.parametr, key]
         self.ItemSelected.emit(lst)
 
@@ -130,10 +130,10 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         v_c = par.value_compare
         if isinstance(v_c, str):
             compare = v_c
-        elif par.value_dict:
+        elif par.value_table:
             k = int(v_c)
-            if k in par.value_dict:
-                compare = par.value_dict[k]
+            if k in par.value_table:
+                compare = par.value_table[k]
             else:
                 compare = f'{k} нет в словаре'
         else:
@@ -168,9 +168,9 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
-        # if par.value_dict:
+        # if par.value_table:
         #     comBox = MyComboBox()
-        #     comBox.addItems(list(par.value_dict.values()))
+        #     comBox.addItems(list(par.value_table.values()))
         #     show_table.setCellWidget(row, show_table.columnCount() - 1, comBox)
         #     items_list.append(comBox)
 
@@ -202,11 +202,11 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
             v_name = par.value_string
         elif isinstance(par.value, str):
             v_name = par.value
-        elif par.value_dict:
+        elif par.value_table:
             k = int(par.value)
-            if k in par.value_dict:
+            if k in par.value_table:
                 value_in_dict = True
-                v_name = par.value_dict[k]
+                v_name = par.value_table[k]
             else:
                 v_name = f'{k} нет в словаре'
         else:
@@ -215,7 +215,7 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
         if value_in_dict and par.editable:
             if not isinstance(it, MyComboBox):
                 comBox = MyComboBox()
-                v_list = list(par.value_dict.values())
+                v_list = list(par.value_table.values())
                 comBox.setModel(QStringListModel(v_list))
                 # Отображатель выпадающего списка QListView
                 listView = QListView()
@@ -231,7 +231,7 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
                 comBox.setMaximumSize(220, 170)
                 table.setCellWidget(row, 2, comBox)
                 items_list.append(comBox)
-            table.cellWidget(row, 2).setCurrentText(par.value_dict[int(par.value)])
+            table.cellWidget(row, 2).setCurrentText(par.value_table[int(par.value)])
         else:
             value_item = QTableWidgetItem(v_name)
             if par.editable:

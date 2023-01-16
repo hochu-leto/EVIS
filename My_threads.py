@@ -2,11 +2,12 @@ import datetime
 import time
 
 import pandas as pd
+import yaml
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
 from PyQt5.QtWidgets import QMessageBox
 
 from EVONode import EVONode, invertor_command_dict
-from Parametr import Parametr
+from Parametr import Parametr, readme
 from helper import empty_par, buf_to_string, zero_del
 
 
@@ -24,7 +25,7 @@ class SaveToFileThread(QThread):
     def __init__(self):
         super().__init__()
         self.max_errors = 30
-        self.node_to_save = EVONode
+        self.node_to_save = EVONode()
         self.finished.connect(self.finished_tread)
 
     def finished_tread(self):
@@ -33,79 +34,82 @@ class SaveToFileThread(QThread):
     def run(self):
         self.errors_counter = 0
         self.params_counter = 0
+        self.group_counter = 0
+        send_delay = 3  # задержка отправки в кан сообщений
+        params_dict = self.node_to_save.group_params_dict.copy()
+        # ставлю текущий параметр - самый первый в первом списке параметров
+        self.current_params_list = params_dict[list(params_dict.keys())[self.group_counter]]
+        self.current_parametr = self.current_params_list[self.params_counter]
+        self.one_parametr_percent = 90 / sum([len(group) for group in params_dict.values()])
+
+        def check_par():
+            param = self.current_parametr.get_value(self.adapter)
+            while isinstance(param, str):
+                self.errors_counter += 1
+                param = self.current_parametr.get_value(self.adapter)
+                # если max_errors раз во время опроса вылезла строковая ошибка, нас отключили, вываливаемся
+                if self.errors_counter >= self.max_errors:
+                    self.errors_counter = 0
+                    self.params_counter = 0
+                    self.SignalOfReady.emit(self.ready_persent,
+                                            f'{param} \n'
+                                            f'поток сохранения прерван,повторите ', False)
+                    timer.stop()
+                    return False
+            # если величина параметра считана, выходим из функции до следующего запуска таймера
+            return True
 
         def request_param():
-            param = all_params_list[self.params_counter]
-            # я проверяю, если параметр уже известен, его опрашивать не надо,
+            # я проверяю, если  величина параметра уже известна, его опрашивать не надо,
             # но если они все известны, возникает выход за пределы словаря
-            # while param.value:
-            #     self.params_counter += 1
-            #     param = all_params_list[self.params_counter]
-            if not param.value and not param.value_string:
-                if param.address and int(param.address, 16) > 0:  # нужно чтоб параметр группы не проскочил
-                    # ---!!!если параметр строковый, будет None!!---
-                    param = all_params_list[self.params_counter].get_value(self.adapter)
+            catch_empty_params = False
+            while not catch_empty_params:
+                if not self.current_parametr.value and not self.current_parametr.value_string:
+                    if not check_par():
+                        return
+                    catch_empty_params = True
+                self.errors_counter = 0
+                self.params_counter += 1
+                # если опросили все параметры из списка этой группы, переходим к следующей группе
+                if self.params_counter > len(self.current_params_list) - 1:
+                    self.params_counter = 0
+                    self.group_counter += 1
+                    # если больше нет групп, выходим с победой, всё опросили, сохраняем
+                    if self.group_counter > len(self.node_to_save.group_params_dict.items()) - 1:
+                        timer.stop()
+                        self.save_file()
+                        catch_empty_params = True
+                    else:
+                        self.current_params_list = params_dict[list(params_dict.keys())[self.group_counter]]
 
-                    while isinstance(param, str):
-                        self.errors_counter += 1
-                        # ---!!!если параметр строковый, будет None!!---
-                        param = all_params_list[self.params_counter].get_value(self.adapter)
-
-                        if self.errors_counter >= self.max_errors:
-                            self.errors_counter = 0
-                            self.params_counter = 0
-                            self.SignalOfReady.emit(self.ready_persent,
-                                                    f'{param} \n'
-                                                    f'поток сохранения прерван,повторите ', False)
-                            timer.stop()
-                            return
-
-            self.errors_counter = 0
-            self.params_counter += 1
-            self.ready_persent = int(90 * self.params_counter / len_param_list)
-            self.SignalOfReady.emit(self.ready_persent, '', False)
-            if self.params_counter >= len_param_list:
-                timer.stop()
-                self.save_file(all_params_list)
-
-        send_delay = 3  # задержка отправки в кан сообщений
-        all_params_list = []
-        param_dict = self.node_to_save.group_params_dict.copy()
-        for group_name, param_list in param_dict.items():
-            e_par = Parametr()
-            e_par.name = f'group {group_name}'
-            all_params_list.append(e_par)
-            for param in param_list:
-                all_params_list.append(param)
-        len_param_list = len(all_params_list)
+                self.current_parametr = self.current_params_list[self.params_counter]
+                self.ready_persent += self.one_parametr_percent
+                self.SignalOfReady.emit(int(self.ready_persent), '', False)
 
         timer = QTimer()
         timer.timeout.connect(request_param)
-        self.num_timer = timer.start(send_delay)
+        timer.start(send_delay)
 
         loop = QEventLoop()
         loop.exec_()
 
-    def save_file(self, all_params_list):
+    def save_file(self):
         self.errors_counter = 0
         self.params_counter = 0
-        save_list = []
-        l = 10 / len(all_params_list)
-        for p in all_params_list:
-            if 'group' in p.name:
-                par = empty_par.copy()
-                par['name'] = p.name
-            else:
-                par = p.to_dict().copy()
-            self.ready_persent += l
-            self.SignalOfReady.emit(self.ready_persent, '', False)
-
-            save_list.append(par.copy())
-
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.xlsx'
-        df = pd.DataFrame(save_list, columns=p.to_dict().keys())
-        df.to_excel(file_name, index=False)  # , sheet_name=self.node_to_save.name, encoding='windows-1251')
+        node_yaml_dict = dict(
+            readme=readme,
+            device=self.node_to_save.to_dict(),
+            date_time=now,
+            parameters=self.node_to_save.group_params_dict)
+
+        file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.yaml'
+
+        with open(file_name, 'w', encoding='UTF-8') as file:
+            yaml.dump(node_yaml_dict, file,
+                      default_flow_style=False,
+                      sort_keys=False,
+                      allow_unicode=True)
         # вместо строки ошибки отправляем название файла,куда сохранил настройки
         self.SignalOfReady.emit(100, file_name, True)
 

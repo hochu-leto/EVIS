@@ -57,7 +57,7 @@ abs:
   name: ABS_SUPPRESS_INVALID_DATA_ERRORS
   type: UNSIGNED8
   value: null
-  values_table:
+  value_table:
     0: Невалидные значения частоты будут принимать значения 'ошибка' при отправке
       на БКУ
     1: Невалидные значения частоты будут обрабатываться как обычные
@@ -148,7 +148,7 @@ common:
   name: BRAKES_TYPE
   type: UNSIGNED8
   value: null
-  values_table:
+  value_table:
     0: Отключено
     1: Плавный тормоз
     2: Дискретный тормоз
@@ -305,7 +305,7 @@ discrete_inputs:
   name: DI_ANTIFREEZE_LOW
   type: UNSIGNED8
   value: null
-  values_table:
+  value_table:
     0: OK/обрыв (физический уровень HIGH)
     1: Задетекирован низкий уровень ОЖ (физический уровень LOW)
 - address: '0x217002'
@@ -314,7 +314,7 @@ discrete_inputs:
   name: DI_BRAKE_FLUID_LOW
   type: UNSIGNED8
   value: null
-  values_table:
+  value_table:
     0: OK/обрыв (физический уровень HIGH)
     1: Задетекирован низкий уровень ТЖ (физический уровень LOW)
 - address: '0x217003'
@@ -323,7 +323,7 @@ discrete_inputs:
   name: DI_SUSPENSION_ENABLE
   type: UNSIGNED8
   value: null
-  values_table:
+  value_table:
     0: Управление отключено/обрыв (физический уровень LOW)
     1: Управление включено (физический уровень HIGH)
 - address: '0x217004'
@@ -332,7 +332,7 @@ discrete_inputs:
   name: DI_HEAD_LIGHTS
   type: UNSIGNED8
   value: null
-  values_table:
+  value_table:
     0: Запрещено/обрыв (физический уровень LOW)
     1: Разрешено (физический уровень HIGH)
 - address: '0x217005'
@@ -341,7 +341,7 @@ discrete_inputs:
   name: DI_RED_BUTTON
   type: UNSIGNED32
   value: null
-  values_table:
+  value_table:
     0: Кнопка отжата (физический уровень HIGH)
     1: Кнопка нажата/обрыв (физический уровень LOW)
 - address: '0x217006'
@@ -350,7 +350,7 @@ discrete_inputs:
   name: DI_CHARGER_PLUG
   type: UNSIGNED32
   value: null
-  values_table:
+  value_table:
     0: Не воткнута/обрыв (физический уровень LOW)
     1: Воткнута (физический уровень HIGH)
 - address: '0x217007'
@@ -359,7 +359,7 @@ discrete_inputs:
   name: DI_BLOCK4_DOOR
   type: UNSIGNED32
   value: null
-  values_table:
+  value_table:
     0: Дверца закрыта (физический уровень HIGH)
     1: Дверца открыта/обрыв (физический уровень LOW)
 - address: '0x217008'
@@ -368,7 +368,7 @@ discrete_inputs:
   name: DI_LEFT_DOOR
   type: UNSIGNED32
   value: null
-  values_table:
+  value_table:
     0: Борт закрыт (физический уровень HIGH)
     1: Борт открыт/обрыв (физический уровень LOW)
 - address: '0x217009'
@@ -377,7 +377,7 @@ discrete_inputs:
   name: DI_RIGHT_DOOR
   type: UNSIGNED32
   value: null
-  values_table:
+  value_table:
     0: Борт закрыт (физический уровень HIGH)
     1: Борт открыт/обрыв (физический уровень LOW)
 - address: '0x21700A'
@@ -386,7 +386,7 @@ discrete_inputs:
   name: DI_CAR_HOOD
   type: UNSIGNED32
   value: null
-  values_table:
+  value_table:
     0: Капот закрыт (физический уровень HIGH)
     1: Капот открыт/обрыв (физический уровень LOW)
 discrete_outputs:
@@ -397,7 +397,7 @@ discrete_outputs:
   name: DO_STATUS_PARKING_BRAKE
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -521,7 +521,7 @@ discrete_outputs:
   name: DO_STATUS_CHARGE_CP
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -645,7 +645,7 @@ discrete_outputs:
   name: DO_STATUS_START_PSTED
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -769,7 +769,7 @@ discrete_outputs:
   name: DO_STATUS_SUSP_VALVE_UP_1
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -893,7 +893,7 @@ discrete_outputs:
   name: DO_STATUS_SUSP_VALVE_UP_2
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -1017,7 +1017,7 @@ discrete_outputs:
   name: DO_STATUS_SUSP_VALVE_UP_3
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -1141,7 +1141,7 @@ discrete_outputs:
   name: DO_STATUS_SUSP_VALVE_UP_4
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -1265,7 +1265,7 @@ discrete_outputs:
   name: DO_STATUS_SUSP_VALVE_DOWN_1
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -1389,7 +1389,7 @@ discrete_outputs:
   name: DO_STATUS_SUSP_VALVE_DOWN_2
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -1513,7 +1513,7 @@ discrete_outputs:
   name: DO_STATUS_SUSP_VALVE_DOWN_3
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -1637,7 +1637,7 @@ discrete_outputs:
   name: DO_STATUS_SUSP_VALVE_DOWN_4
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -1761,7 +1761,7 @@ discrete_outputs:
   name: DO_STATUS_BRAKE_PUMP
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -1885,7 +1885,7 @@ discrete_outputs:
   name: DO_STATUS_BRAKE_VALVE_1_8
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -2009,7 +2009,7 @@ discrete_outputs:
   name: DO_STATUS_BRAKE_VALVE_2_9
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -2133,7 +2133,7 @@ discrete_outputs:
   name: DO_STATUS_CHARGE_STATE
   type: UNSIGNED16
   value: null
-  values_table:
+  value_table:
     0: OK
     2: BUSY
     3: UNKNOWN
@@ -2725,7 +2725,7 @@ main_fsm&power_management:
   name: MAINFSM_CURRENT_STATE
   type: UNSIGNED8
   value: null
-  values_table:
+  value_table:
     0: Undefined
     1: Init
     2: Fault
