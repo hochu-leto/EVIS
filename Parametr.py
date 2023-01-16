@@ -72,7 +72,7 @@ class Parametr:
         self.min_value = check_value(type_values[self.type]['min'], 'min_value')
         self.max_value = check_value(type_values[self.type]['max'], 'max_value')
         # переходим на 'values_table' вместо 'value_dict'
-        v_table = check_string('values_table', check_string('value_dict'))
+        v_table = check_string('values_table', check_string('value_dict', check_string('value_table')))
         self.value_dict = {int(k): v for k, v in v_table.items()} if isinstance(v_table, dict) \
             else {int(val.split(':')[0]): val.split(':')[1]
                   for val in v_table.split(',')} if v_table else {}
@@ -204,16 +204,17 @@ class Parametr:
             exit_dict[k] = self.__getattribute__(k)
         # эту секцию нужно будет убрать при переходе на стандартные поля, а переписать их в список exit_list
         exit_dict['editable'] = True if self.editable else False
-
+        if self.value_string:
+            exit_dict['value'] = self.value_string
         if self.unit:
             exit_dict['units'] = self.unit  # -----------------------------------------
         else:
             exit_dict['units'] = ''  # это можно будет убрать при переход на yaml
 
         if self.value_dict:
-            exit_dict['values_table'] = self.value_dict  # -----------------------------------------
+            exit_dict['value_table'] = ', '.join([f'{k}:{v}' for k, v in self.value_dict.items()])  # -----------------------------------------
         else:
-            exit_dict['values_table'] = {}  # это можно будет убрать при переход на yaml
+            exit_dict['value_table'] = ''  # это можно будет убрать при переход на yaml
 
         if self.scale:
             exit_dict['mult'] = 1 / self.scale

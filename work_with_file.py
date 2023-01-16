@@ -58,8 +58,11 @@ def fill_sheet_dict(file_name):
                         p_list.clear()
                         prev_group_name = param['name'].replace('group ', '')
                     else:
-                        #  делает словарь только с имя-значение. скорее нужно делать полный параметр
-                        p_list.append(Parametr(param))
+                        #  делает словарь только с имя-значение. скорее нужно делать полный параметр а зачем????
+                        p = Parametr(param)
+                        if isinstance(param['value'], str):
+                            p.value_string = param['value']
+                        p_list.append(p)
                 node_params_dict[prev_group_name] = p_list.copy()
 
             del node_params_dict['']
@@ -153,7 +156,7 @@ def fill_node(node: EVONode):
             if not node.group_params_dict or not node.errors_list:
                 return False
             f_v = node.firmware_version
-            if f_v:     # версия может быть строкой, типа КВУ 1.2.0
+            if f_v:  # версия может быть строкой, типа КВУ 1.2.0
                 version_list = get_immediate_subdirectories(node_dir)
                 if version_list:
                     min_vers = get_nearest_lower_value(version_list, str(f_v))
@@ -253,5 +256,7 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
         if cur_p.address in all_compare_params.keys():
             compare_par = all_compare_params[cur_p.address]
             cur_p.value_compare = compare_par.value_string if compare_par.value_string else float(compare_par.value)
+            # cur_p.value_compare = compare_par.value if isinstance(compare_par.value, str) else float(compare_par.value)
+            # cur_p.value_compare = compare_par.value
             # del all_compare_params[cur_p.address]
     node.has_compare_params = True

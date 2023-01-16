@@ -1,9 +1,11 @@
 import datetime
+import os
 import time
 
 import pandas as pd
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
 from PyQt5.QtWidgets import QMessageBox
+from pandas import ExcelWriter
 
 from EVONode import EVONode, invertor_command_dict
 from Parametr import Parametr
@@ -104,6 +106,7 @@ class SaveToFileThread(QThread):
 
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.xlsx'
+        # writer = pd.ExcelWriter(file_name, engine='xlsxwriter')
         df = pd.DataFrame(save_list, columns=p.to_dict().keys())
         df.to_excel(file_name, index=False)  # , sheet_name=self.node_to_save.name, encoding='windows-1251')
         # вместо строки ошибки отправляем название файла,куда сохранил настройки
@@ -360,6 +363,7 @@ class WaitCanAnswerThread(QThread):
         loop = QEventLoop()
         loop.exec_()
 
+
 def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
     if sheet_name is None:
         sheet_name = 'Избранное'
@@ -377,6 +381,7 @@ def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
         ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='new')
     else:
         ex_wr = ExcelWriter(file_name, mode="w")
+
 
 class SleepThread(QThread):
     SignalOfProcess = pyqtSignal(int, str, bool)
