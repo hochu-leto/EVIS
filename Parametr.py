@@ -229,18 +229,6 @@ class Parametr:
     def to_dict(self):
         return {k: self.__getattribute__(k) for k in exit_list}
 
-    def check_node(self, node_dict: dict):
-        if '#' in self.name:
-            node_name = self.name.split('#')[1]
-            if node_name in node_dict.keys():
-                self.node = node_dict[node_name]
-                return True
-            else:
-                print('Этого блока нет в словаре')
-                return False
-        else:
-            print('В имени параметра нет разделителя')
-            return False
 
     def string_from_can(self, value):
         self.value_string = ''
@@ -265,26 +253,3 @@ class Parametr:
 
     def copy(self):
         return copy(self)
-
-
-class Copyable:
-    __slots__ = 'a', '__dict__'
-
-    def __init__(self, a, b):
-        self.a, self.b = a, b
-
-    def __copy__(self):
-        return type(self)(self.a, self.b)
-
-    def __deepcopy__(self, memo):  # memo is a dict of id's to copies
-        id_self = id(self)  # memoization avoids unnecesary recursion
-        _copy = memo.get(id_self)
-        if _copy is None:
-            _copy = type(self)(
-                deepcopy(self.a, memo),
-                deepcopy(self.b, memo))
-            memo[id_self] = _copy
-        return _copy
-
-    def copye(self):
-        return deepcopy(self)
