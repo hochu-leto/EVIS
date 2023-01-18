@@ -144,6 +144,9 @@ common:
   editable: true
   name: OUTPUTS_SERVICE_MODE
   type: UNSIGNED8
+  values_table:
+    0: Отключен
+    1: Включен
 - address: '0x210004'
   description: Тип тормозной системы, которая используется на этой машине
   editable: true
@@ -220,6 +223,9 @@ cooling_fan:
   name: COOLING_ENABLE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Отключен
+    1: Включен
 device_info:
 - address: '0x100800'
   description: Имя устройства
@@ -2259,96 +2265,144 @@ discrete_outputs:
   editable: true
   name: DO_SERVICE_CMD_PARKING_BRAKE
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217302'
   description: Командное значение в сервисном режиме для дискретного выхода "Разрешение
     зарядки".
   editable: true
   name: DO_SERVICE_CMD_CHARGE_CP
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217303'
   description: Командное значение в сервисном режиме для дискретного выхода "Старт
     ПСТЭД".
   editable: true
   name: DO_SERVICE_CMD_START_PSTED
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217304'
   description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
     нагнетание "FL".
   editable: true
   name: DO_SERVICE_CMD_SUSP_VALVE_UP_1
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217305'
   description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
     нагнетание FR".
   editable: true
   name: DO_SERVICE_CMD_SUSP_VALVE_UP_2
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217306'
   description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
     нагнетание RL".
   editable: true
   name: DO_SERVICE_CMD_SUSP_VALVE_UP_3
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217307'
   description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
     нагнетание RR".
   editable: true
   name: DO_SERVICE_CMD_SUSP_VALVE_UP_4
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217308'
   description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
     сброс FL".
   editable: true
   name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_1
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217309'
   description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
     сброс FR".
   editable: true
   name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_2
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21730A'
   description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
     сброс RL".
   editable: true
   name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_3
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21730B'
   description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
     сброс RR".
   editable: true
   name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_4
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21730C'
   description: Командное значение в сервисном режиме для дискретного выхода "Гидравлический
     тормоз. Помпа".
   editable: true
   name: DO_SERVICE_CMD_BRAKE_PUMP
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21730D'
   description: Командное значение в сервисном режиме для дискретного выхода "Гидравлический
     тормоз. Клапаны 1,8".
   editable: true
   name: DO_SERVICE_CMD_BRAKE_VALVE_1_8
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21730E'
   description: Командное значение в сервисном режиме для дискретного выхода "Гидравлический
     тормоз. Клапаны 2,9".
   editable: true
   name: DO_SERVICE_CMD_BRAKE_VALVE_2_9
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21730F'
   description: Командное значение в сервисном режиме для дискретного выхода "Статус
     зарядки".
   editable: true
   name: DO_SERVICE_CMD_CHARGE_STATE
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217401'
   description: Команда, подаваемая на дискретный выход "Парковочный тормоз" в обычном
     (не сервисном) режиме.
   editable: false
   name: DO_STATE_PARKING_BRAKE
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
   value: null
 - address: '0x217402'
   description: Команда, подаваемая на дискретный выход "Разрешение зарядки" в обычном
@@ -2357,12 +2411,18 @@ discrete_outputs:
   name: DO_STATE_CHARGE_CP
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217403'
   description: Команда, подаваемая на дискретный выход "Старт ПСТЭД" в обычном (не
     сервисном) режиме.
   editable: false
   name: DO_STATE_START_PSTED
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
   value: null
 - address: '0x217404'
   description: Команда, подаваемая на дискретный выход "Пневмоподвеска нагнетание
@@ -2370,6 +2430,9 @@ discrete_outputs:
   editable: false
   name: DO_STATE_SUSP_VALVE_UP_1
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
   value: null
 - address: '0x217405'
   description: Команда, подаваемая на дискретный выход "Пневмоподвеска нагнетание
@@ -2377,6 +2440,9 @@ discrete_outputs:
   editable: false
   name: DO_STATE_SUSP_VALVE_UP_2
   type: UNSIGNED8
+  values_table:
+    0: Откл
+    1: Вкл
   value: null
 - address: '0x217406'
   description: Команда, подаваемая на дискретный выход "Пневмоподвеска нагнетание
@@ -2385,6 +2451,9 @@ discrete_outputs:
   name: DO_STATE_SUSP_VALVE_UP_3
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217407'
   description: Команда, подаваемая на дискретный выход "Пневмоподвеска нагнетание
     4" в обычном (не сервисном) режиме.
@@ -2392,6 +2461,9 @@ discrete_outputs:
   name: DO_STATE_SUSP_VALVE_UP_4
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217408'
   description: Команда, подаваемая на дискретный выход "Пневмоподвеска сброс 1" в
     обычном (не сервисном) режиме.
@@ -2399,6 +2471,9 @@ discrete_outputs:
   name: DO_STATE_SUSP_VALVE_DOWN_1
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x217409'
   description: Команда, подаваемая на дискретный выход "Пневмоподвеска сброс 2" в
     обычном (не сервисном) режиме.
@@ -2406,6 +2481,9 @@ discrete_outputs:
   name: DO_STATE_SUSP_VALVE_DOWN_2
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21740A'
   description: Команда, подаваемая на дискретный выход "Пневмоподвеска сброс 3" в
     обычном (не сервисном) режиме.
@@ -2413,6 +2491,9 @@ discrete_outputs:
   name: DO_STATE_SUSP_VALVE_DOWN_3
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21740B'
   description: Команда, подаваемая на дискретный выход "Пневмоподвеска сброс 4" в
     обычном (не сервисном) режиме.
@@ -2420,6 +2501,9 @@ discrete_outputs:
   name: DO_STATE_SUSP_VALVE_DOWN_4
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21740C'
   description: Команда, подаваемая на дискретный выход "Гидравлический тормоз. Помпа"
     в обычном (не сервисном) режиме.
@@ -2427,6 +2511,9 @@ discrete_outputs:
   name: DO_STATE_BRAKE_PUMP
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21740D'
   description: Команда, подаваемая на дискретный выход "Гидравлический тормоз. Клапаны
     1,8" в обычном (не сервисном) режиме.
@@ -2434,6 +2521,9 @@ discrete_outputs:
   name: DO_STATE_BRAKE_VALVE_1_8
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21740E'
   description: Команда, подаваемая на дискретный выход "Гидравлический тормоз. Клапаны
     2,9" в обычном (не сервисном) режиме.
@@ -2441,6 +2531,9 @@ discrete_outputs:
   name: DO_STATE_BRAKE_VALVE_2_9
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 - address: '0x21740F'
   description: Команда, подаваемая на дискретный выход "Статус зарядки" в обычном
     (не сервисном) режиме.
@@ -2448,6 +2541,9 @@ discrete_outputs:
   name: DO_STATE_CHARGE_STATE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Откл
+    1: Вкл
 error_monitoring:
 - address: '0x212401'
   description: Код критической ошибки КВУ. Если ошибок несколько, значение меняется
@@ -2603,6 +2699,9 @@ j1939&lights_control:
   name: AUTOPILOT_ONLINE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Нет связи
+    1: В сети
 - address: '0x210005'
   description: Флаг, показывающий, включен ли прием сообщений от БКУ. Сообщения от
     БКУ игнорируются, если на шине присутствует  джойстик. При пропадании джойстика
@@ -2611,6 +2710,9 @@ j1939&lights_control:
   name: BKU_RX_ENABLED
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Нет связи
+    1: От БКУ
 - address: '0x210401'
   description: 'КВУ видит присутствие БКУ на шине. Детекция происходит по сообщению
     "Основное управление" (PGN 0xFF81),  полученному на шине CAN2 с адреса БКУ (0xA5).
@@ -2620,6 +2722,9 @@ j1939&lights_control:
   name: BKU_ONLINE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Нет связи
+    1: В сети
 - address: '0x210402'
   description: КВУ видит присутствие ПСТЭД на шине. Детекция происходит при наличии
     на шине CAN1 хотя бы одного сообщения с  CAN-ID, младший байт которого равен 0x81
@@ -2627,6 +2732,9 @@ j1939&lights_control:
   name: PSTED_ONLINE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Нет связи
+    1: В сети
 - address: '0x210403'
   description: КВУ видит присутствие передней рулевой рейки на шине. Детекция происходит
     при наличии на шине CAN1 хотя бы  одного сообщения с CAN-ID, младший байт которого
@@ -2635,6 +2743,9 @@ j1939&lights_control:
   name: STEERING_FRONT_ONLINE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Нет связи
+    1: В сети
 - address: '0x210404'
   description: КВУ видит присутствие задней рулевой рейки на шине. Детекция происходит
     при наличии на шине CAN1 хотя бы одного  сообщения с CAN-ID, младший байт которого
@@ -2643,6 +2754,9 @@ j1939&lights_control:
   name: STEERING_REAR_ONLINE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Нет связи
+    1: В сети
 - address: '0x210405'
   description: КВУ видит присутствие зарядного устройства на шине. Детекция происходит
     при наличии на шине CAN2 хотя бы одного  сообщения с SA 0xE5
@@ -2650,6 +2764,9 @@ j1939&lights_control:
   name: CHARGER_ONLINE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Нет связи
+    1: В сети
 - address: '0x210406'
   description: КВУ видит присутствие BMS на шине. Детекция происходит при наличии
     на шине CAN2 хотя бы одного сообщения  с SA 0xF4
@@ -2657,6 +2774,9 @@ j1939&lights_control:
   name: BMS_ONLINE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Нет связи
+    1: В сети
 - address: '0x210407'
   description: КВУ видит присутствие джойстика на шине. Детекция происходит по сообщению
     "Основное управление" (PGN 0xFF81),  полученному на шине CAN2 с адреса джойстика
@@ -2665,6 +2785,9 @@ j1939&lights_control:
   name: JOYSTICK_ONLINE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Нет связи
+    1: В сети
 - address: '0x210501'
   description: Таймаут детекции присутствия БКУ на шине CAN2
   editable: true
@@ -3426,6 +3549,9 @@ steering_control:
   name: STEERING_REAR_ENABLE
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Отключена
+    1: Включена
 - address: '0x211102'
   description: Текущее положение передней рулевой рейки, отправляемое на БКУ
   editable: false
@@ -3508,6 +3634,9 @@ steering_control:
   name: STEERING_FRONT_INVERT
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Не инвертировано
+    1: Инвертировано
 - address: '0x21110B'
   description: Байт статуса передней рулевой рейки, полученный от рейки бит 0 - Активна/неактивна
     бит 1 - Флаг ошибки бит 2 - Флаг предупреждения бит 3 - Флаг перегрева
@@ -3620,6 +3749,9 @@ steering_control:
   name: STEERING_REAR_INVERT
   type: UNSIGNED8
   value: null
+  values_table:
+    0: Не инвертировано
+    1: Инвертировано
 - address: '0x21120B'
   description: Байт статуса задней рулевой рейки, полученный от рейки бит 0 - Активна/неактивна
     бит 1 - Флаг ошибки бит 2 - Флаг предупреждения бит 3 - Флаг перегрева
@@ -3720,14 +3852,17 @@ voltage_monitoring&bms&parking_brake&discrete_brake:
   editable: true
   name: PARKING_BRAKE_MANUAL_CONTROL_CMD
   type: UNSIGNED8
+  values_table:
+    0: Опустить
+    1: Зажать
 - address: '0x214502'
   description: Текущее состояние парковочного тормоза
   editable: false
   name: PARKING_BRAKE_HELD
   type: UNSIGNED8
   value: null
-  value_table:
-    0: Отжат
+  values_table:
+    0: Отпущен
     1: Зажат
 - address: '0x214601'
   description: Время накачки давления в контур для осуществления торможения
@@ -3750,3 +3885,6 @@ voltage_monitoring&bms&parking_brake&discrete_brake:
   editable: true
   name: DISCRETE_BRAKE_MANUAL_CONTROL_CMD
   type: UNSIGNED8
+  values_table:
+    0: Опустить
+    1: Зажать

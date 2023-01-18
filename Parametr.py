@@ -1,7 +1,6 @@
 """
 тот самый объект параметра, который имеет все нужные поля, умеет запрашивать своё значение и записывать в блок нужное
 """
-
 import ctypes
 from copy import deepcopy, copy
 
@@ -117,7 +116,8 @@ class Parametr:
         # статические параметры, чтоб период был = 1001
         self.min_value = check_value(type_values[self.type]['min'], 'min_value')
         self.max_value = check_value(type_values[self.type]['max'], 'max_value')
-        v_table = check_string('value_table')
+        valueS_table = check_string('values_table', check_string('value_dict'))
+        v_table = valueS_table if valueS_table else check_string('value_table')
         self.value_table = {int(k): v for k, v in v_table.items()} if isinstance(v_table, dict) \
             else {int(val.split(':')[0]): val.split(':')[1]
                   for val in v_table.split(',')} if v_table else {}

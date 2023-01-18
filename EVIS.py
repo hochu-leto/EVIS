@@ -708,16 +708,21 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                     del user_node.group_params_dict[NewParamsList]
                     # проверяю удалось ли сохранить список
                     # if save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file):
-                    if save_p_dict_to_file(self.thread.current_node.group_params_dict):
+                    if save_p_dict_to_file(user_node.group_params_dict):
                         err_mess = f'{val} успешно сохранён в {TheBestNode}'
                         state = True
                         # создаём новый итем для дерева
                         child_item = QTreeWidgetItem()
                         child_item.setText(0, val)
-                        self.nodes_tree.currentItem().parent().addChild(child_item)
+                        best_node_item = self.nodes_tree.topLevelItem(self.nodes_tree.topLevelItemCount() - 1)
+                        best_node_item.addChild(child_item)
                         # а старый итем стираем
                         # может, это и неправильно и надо использовать модель-виев, но я пока не дорос
-                        self.nodes_tree.currentItem().parent().removeChild(self.nodes_tree.currentItem())
+                        for it in range(best_node_item.childCount()):
+                            best_child = best_node_item.child(it)
+                            if best_child.text(0) == NewParamsList:
+                                best_node_item.removeChild(best_child)
+                                break
                     else:  # если сохранить не удалось возвращаю Новый список
                         user_node.group_params_dict[NewParamsList] = user_node.group_params_dict[val].copy()
                         # а  список изменённый удаляем
@@ -1012,12 +1017,8 @@ def joystick_bind():
 
 
 def suspension_to_zero():
-    param_list_for_suspension = ['SUSPENSION_HEIGHT_CUR_1', 'SUSPENSION_PRESSURE_CUR_1',
-                                 'SUSPENSION_HEIGHT_CUR_2', 'SUSPENSION_PRESSURE_CUR_2',
-                                 'SUSPENSION_HEIGHT_CUR_3', 'SUSPENSION_PRESSURE_CUR_3',
-                                 'SUSPENSION_HEIGHT_CUR_4', 'SUSPENSION_PRESSURE_CUR_4', ]
-    for p_name in param_list_for_suspension:
-        wait_thread.imp_par_list.append(find_param(window.thread.current_nodes_dict, p_name)[0])
+    par_list = find_param(window.thread.current_nodes_dict, 'SUSPENSION_')
+    wait_thread.imp_par_list = par_list[:9] if par_list and len(par_list) >= 9 else []
 
     if not can_adapter.isDefined:
         if not can_adapter.find_adapters():

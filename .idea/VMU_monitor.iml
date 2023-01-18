@@ -9,11 +9,4 @@
     <orderEntry type="jdk" jdkName="Python 3.8 (VMU_monitor) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
-  <component name="PyNamespacePackagesService">
-    <option name="namespacePackageFolders">
-      <list>
-        <option value="$MODULE_DIR$/python_for_help" />
-      </list>
-    </option>
-  </component>
 </module>

@@ -1,4 +1,5 @@
 import datetime
+import os
 import time
 
 import pandas as pd
@@ -299,7 +300,7 @@ class MainThread(QThread):
 
 
 class WaitCanAnswerThread(QThread):
-    SignalOfProcess = pyqtSignal(list, list)
+    SignalOfProcess = pyqtSignal(list, list, int)
 
     def __init__(self):
         super().__init__()
@@ -328,7 +329,7 @@ class WaitCanAnswerThread(QThread):
                     self.err_count > self.max_err:
                 self.quit()
                 self.wait()
-                self.SignalOfProcess.emit(['Время закончилось'], self.imp_par_list)
+                self.SignalOfProcess.emit(['Время закончилось'], self.imp_par_list, None)
                 return
 
             if self.id_for_read:
@@ -355,7 +356,7 @@ class WaitCanAnswerThread(QThread):
 
                 # for param in self.imp_par_list:
                 #     param.get_value(self.adapter)
-            self.SignalOfProcess.emit(answer, self.imp_par_list)
+            self.SignalOfProcess.emit(answer, self.imp_par_list, None)
 
         timer = QTimer()
         timer.timeout.connect(request_ans)

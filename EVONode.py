@@ -209,7 +209,24 @@ class EVONode:
         print(num)
         return int(num) if num.isdigit() else ''.join([s for s in num if s.isprintable()])
 
-    # функция НЕ РАБОТАЕТ
+        serial = self.get_val(self.request_serial_number, adapter) if self.request_serial_number else 777
+        if self.name == 'Инвертор_МЭИ':  # Бега костыль
+            serial = check_printable(serial)
+        else:
+            if isinstance(serial, str):
+                if self.string_from_can:
+                    serial = ''
+                    for s in self.string_from_can:
+                        if s.isprintable():
+                            serial += s
+                    self.string_from_can = ''
+                else:
+                    serial = ''
+
+        self.serial_number = serial
+        # print(f'{self.name} - {serial=}')
+        return self.serial_number
+
     # Потому-то кому-то приспичило передавать серийник в чарах
     # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,
     # но вообще неплохо бы сделать эту функцию наподобие опроса ошибок по нескольким адресам,

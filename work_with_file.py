@@ -156,7 +156,7 @@ def fill_node(node: EVONode):
             if not node.group_params_dict or not node.errors_list:
                 return False
             f_v = node.firmware_version
-            if f_v:     # версия может быть строкой, типа КВУ 1.2.0
+            if f_v:  # версия может быть строкой, типа КВУ 1.2.0
                 version_list = get_immediate_subdirectories(node_dir)
                 if version_list:
                     min_vers = get_nearest_lower_value(version_list, str(f_v))
@@ -230,5 +230,7 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
         if adr in all_compare_params.keys():
             compare_par = all_compare_params[adr]
             cur_p.value_compare = compare_par.value_string if compare_par.value_string else float(compare_par.value)
+            # cur_p.value_compare = compare_par.value if isinstance(compare_par.value, str) else float(compare_par.value)
+            # cur_p.value_compare = compare_par.value
             # del all_compare_params[cur_p.address]
     node.has_compare_params = True
