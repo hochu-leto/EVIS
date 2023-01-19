@@ -176,13 +176,15 @@ class Parametr:
             #     print(hex(i), end=' ')
             # print()
             if value_data[0] == 0x41:  # это запрос на длинный параметр строчный
-                # print(self.name, end='   ')
-                # for i in value_data:
-                #     print(hex(i), end=' ')
                 data = adapter.can_request_long(self.node.request_id, self.node.answer_id, value_data[4])
                 value = self.string_from_can(data)
                 if not self.value_string:  # ошибка, если свой стринг пустой
                     return value
+                self.value = None
+                return self.value
+            elif value_data[0] == 0x80:     # блок говорит об ошибке
+                self.value_string = 'Ошибка запроса'
+                self.period = 1000
                 self.value = None
                 return self.value
             #  это работает для протокола CANOpen, где значение параметра прописано в последних 4 байтах
