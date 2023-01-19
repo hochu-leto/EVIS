@@ -155,13 +155,12 @@ class MainThread(QThread):
             if not self.iter_count == 1:
                 while not self.iter_count % current_param.period == 0:
                     # если период опроса текущего параметра не кратен текущей итерации,
-                    # заполняем его нулями, чтоб в таблице осталось его старое значение
                     # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
-                    # self.ans_list.append(bytearray([0, 0, 0, 0, 0, 0, 0, 0]))
                     self.params_counter += 1
+                    current_param = self.current_params_list[self.params_counter]
                     if self.params_counter >= self.len_param_list:
                         self.params_counter = 0
-                        emitting()
+                        emitting([''])
                         return
             # if current_param.node.name in self.current_nodes_dict.keys():
             param = current_param.get_value(self.adapter)  # ---!!!если параметр строковый, будет None!!---
