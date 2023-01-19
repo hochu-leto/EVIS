@@ -195,9 +195,9 @@ class Parametr:
                     (value_data[5] << 8) + value_data[4]
             print(f'{hex(index_ans)=}, {hex(sub_index_ans)=}, {value=}')
         elif self.node.protocol == 'MODBUS':
-            # print(self.name, end='   ')
-            # for i in value_data:
-            #     print(hex(i), end=' ')
+            print(self.name, end='   ')
+            for i in value_data:
+                print(hex(i), end=' ')
             index_ans = (value_data[5] << 8) + value_data[4]
             sub_index_ans = 0
             value = (value_data[3] << 24) + (value_data[2] << 16) + (value_data[1] << 8) + value_data[0]
@@ -230,6 +230,8 @@ class Parametr:
             self.value -= self.offset
             return self.value
         else:
+            print(f'{self.index=} , {index_ans=}')
+            print(f'{self.sub_index=} , {sub_index_ans=}')
             return 'Адрес не совпадает'
 
     def to_dict(self):

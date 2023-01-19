@@ -180,7 +180,6 @@ class MainThread(QThread):
             # тут всё просто, собираем весь список и отправляем кучкой
             # какая-то херня. мне, по-факту этот список вообще нахер не нужен, сюда можно чисто ошибки пихать
             # , значения всё равно в текущем списке параметров
-            self.ans_list.append(param)
             self.params_counter += 1
             if self.params_counter >= len(self.current_params_list):
                 self.params_counter = 0
