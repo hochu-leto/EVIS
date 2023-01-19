@@ -134,10 +134,11 @@ class MainThread(QThread):
         self.current_nodes_dict = {}
 
     def run(self):
-        def emitting():  # передача заполненного списка параметров
-            # print(time.perf_counter_ns() - self.thread_timer)
+        def emitting(ans_list):
+            # передача пустого списка если всё хорошо
+            # и строки ошибки в списке если проблемы
             self.thread_timer = time.perf_counter_ns()
-            self.threadSignalAThread.emit(self.ans_list)
+            self.threadSignalAThread.emit(ans_list)
             self.params_counter = 0
             self.errors_counter = 0
             self.ans_list = []
@@ -146,9 +147,9 @@ class MainThread(QThread):
                 self.iter_count = 1
 
         def request_node():
-            if not self.len_param_list:
-                self.threadSignalAThread.emit(['Пустой список \n Сюда можно добавить параметры двойным кликом по '
-                                               'названию нужного параметра'])
+            if not self.current_params_list:
+                emitting(['Пустой список \n Сюда можно добавить параметры двойным кликом по '
+                          'названию нужного параметра'])
                 return
             current_param = self.current_params_list[self.params_counter]
             if not self.iter_count == 1:
@@ -162,24 +163,25 @@ class MainThread(QThread):
                         self.params_counter = 0
                         emitting()
                         return
-            if current_param.node.name in self.current_nodes_dict.keys():
-                param = current_param.get_value(self.adapter)  # ---!!!если параметр строковый, будет None!!---
-                # print(current_param.name, current_param.value)
-                # если строка - значит ошибка
-                if isinstance(param, str):
-                    self.errors_counter += 1
-                    if self.errors_counter >= self.max_errors:
-                        self.threadSignalAThread.emit([param])
-                        return
-                else:
-                    self.errors_counter = 0
-                    if param == self.magic_word:  # здесь можно вкорячить проверкуна стринг параметра и
-                        # на NOne который можно выставлять при ответе блока 80
-                        current_param.period = 1001
-                        current_param.value = 'Параметр \nотсутствует'
+            # if current_param.node.name in self.current_nodes_dict.keys():
+            param = current_param.get_value(self.adapter)  # ---!!!если параметр строковый, будет None!!---
+            # если строка - значит ошибка
+            if isinstance(param, str):
+                self.errors_counter += 1
             else:
-                param = 'Блок не подключен'
-                current_param.value = param
+                self.errors_counter = 0
+
+            if self.errors_counter >= self.max_errors:
+                self.threadSignalAThread.emit([param])
+                return
+
+            if param == self.magic_word:  # здесь можно вкорячить проверкуна стринг параметра и
+                # на NOne который можно выставлять при ответе блока 80
+                current_param.period = 1001
+                current_param.value = 'Параметр \nотсутствует'
+            # else:
+            #     param = 'Блок не подключен'
+            #     current_param.value = param
             # тут всё просто, собираем весь список и отправляем кучкой
             # какая-то херня. мне, по-факту этот список вообще нахер не нужен, сюда можно чисто ошибки пихать
             # , значения всё равно в текущем списке параметров
@@ -206,7 +208,6 @@ class MainThread(QThread):
                 self.err_thread_signal.emit(self.err_dict)
 
         send_delay = 5  # задержка отправки в кан сообщений методом подбора с таким не зависает
-        err_req_delay = 500
         self.max_errors = 3
         self.len_param_list = len(self.current_params_list)
         if self.len_param_list < self.max_errors:
@@ -219,10 +220,6 @@ class MainThread(QThread):
         timer = QTimer()
         timer.timeout.connect(request_node)
         timer.start(send_delay)
-
-        err_timer = QTimer()
-        # err_timer.timeout.connect(request_errors)
-        err_timer.start(err_req_delay)
 
         loop = QEventLoop()
         loop.exec_()

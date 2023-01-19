@@ -84,7 +84,7 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_orange, color_EVO_red, color_EVO_red_dark, \
-    color_EVO_orange_shine
+    color_EVO_orange_shine, color_EVO_green
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -256,17 +256,18 @@ def change_value(lst):
     if lst:
         parametr = lst[0]
         new_value = lst[1]
-        info_m = set_new_value(next_cell, parametr, new_value)
-
+        info_m, color = set_new_value(next_cell, parametr, new_value)
+        next_cell.setBackground(color)
     if info_m:
         QMessageBox.information(window, "Информация", info_m, QMessageBox.Ok)
 
 
 def set_new_value(next_cell, param: Parametr, val):
     info_m = ''
+    color = QColor(254, 254, 254)
     if 'WheelTypeSet' in param.name:
         if QMessageBox.information(window, "Пасхалка", easter_egg, QMessageBox.Ok | QMessageBox.Cancel) != QMessageBox.Ok:
-            return "Пердумал"
+            return "Пердумал", color
     try:
         float(val)
         if window.thread.isRunning():  # отключаем поток, если он был включен
@@ -280,8 +281,9 @@ def set_new_value(next_cell, param: Parametr, val):
             else:
                 new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
+            color = color_EVO_red_dark
             if str(val) == new_val:
-                next_cell.setBackground(QColor(0, 254, 0, 30))
+                color = color_EVO_green
                 if param.node.save_to_eeprom:
                     param.node.param_was_changed = True
                     # В Избранном кнопку не активируем, может быть несколько блоков.
@@ -290,8 +292,6 @@ def set_new_value(next_cell, param: Parametr, val):
                         window.save_eeprom_btn.setEnabled(True)
                         if window.thread.current_node.name == 'Инвертор_МЭИ':
                             info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
-            else:
-                next_cell.setBackground(QColor(254, 0, 0, 30))
             # если поток был запущен до изменения, то запускаем его снова
             if window.thread.isFinished():
                 # и запускаю поток
@@ -300,7 +300,7 @@ def set_new_value(next_cell, param: Parametr, val):
             info_m = f'Подключение прервано, \nДля изменения параметра\nтребуется подключение к ВАТС'
     except ValueError:
         info_m = 'Параметр должен быть числом'
-    return info_m
+    return info_m, color
 
 
 def want_to_value_change():
@@ -541,10 +541,6 @@ def erase_errors():
         window.connect_to_node()
 
 
-def some_def():
-    print(f' выбран комбобокс ')
-
-
 def save_to_file_pressed():  # если нужно записать текущий блок в файл
     # останавливаем поток
     if window.thread.isRunning():
@@ -556,10 +552,6 @@ def save_to_file_pressed():  # если нужно записать текущи
     window.save_to_file_btn.setText(f'Сохраняются настройки блока:\n {window.tr.node_to_save.name}')
     # запускаем параллельный поток сохранения
     window.tr.run()
-
-
-def link(linkStr):
-    QDesktopServices.openUrl(QUrl(linkStr))
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
@@ -582,7 +574,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.tr = SaveToFileThread()
         self.tr.adapter = can_adapter
         self.tr.SignalOfReady.connect(self.progress_bar_fulling)
-        # проверить это
         self.errors_tree.setColumnCount(1)
         self.errors_tree.header().close()
         self.nodes_tree.setColumnCount(1)
@@ -590,30 +581,44 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
-        # global can_adapter
-        # выясняем что вернул опрос параметров. Если параметр один и он текст - это ошибка подключения
-
-        if 1 < len(list_of_params) < 2 and isinstance(list_of_params[0], str):
+        # выясняем что вернул опрос параметров.
+        # Если параметр один и он текст - это ошибка подключения
+        # Если функция опроса испустила сигнал, и при этом ничего не вернула,
+        # нужно просто отобразить текущий список параметров, их значения уже обновлены
+        # Если функция вернула строку, значит проблемы с подключением,
+        # останавливаем поток
+        # Также можно будет в дальнейшем использовать случай, если в списке есть ещё что-то
+        if list_of_params and isinstance(list_of_params[0], str):
             err = str(list_of_params[0])
             if self.thread.isRunning():
+                # останавливаем запись лога
                 if self.thread.is_recording:
                     record_log()
+                # останавливаем поток
                 self.thread.quit()
                 self.thread.wait()
+                # выкидываем ошибку
                 QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
             self.connect_btn.setText("Подключиться")
             if can_adapter.isDefined:
                 can_adapter.close_canal_can()
             if err == 'Адаптер не подключен':
                 can_adapter.isDefined = False
-        elif not list_of_params:
-            print('куда-то пропал список, пора кончать с ним')
-        else:
+        elif not list_of_params:    # ошибок нет - всё хорошо
+            # показываем свежие обновлённые параметры
+            # и считаем сколько среди них комбобоксов
+            # это неправильно, потому что могут быть и другие виджеты
             combo_boxes = show_new_vmu_params(params_list=self.thread.current_params_list,
                                               table=self.vmu_param_table,
                                               has_compare_params=self.thread.current_node.has_compare_params)
+            # если есть комбобоксы, подвязываю изменение его значения к изменению параметра
+            # это неправильно потому как у изменяемых параметров могут быть и другие виджеты
+            # - кнопка, слайдер или переключатель, значит у всех них должен быть
+            # одинаковый сигнал, который исходит при изменении виджета и выдаёт значение параметра
             for i in combo_boxes:
-                i.ItemSelected.connect(change_value)  # activated
+                i.ItemSelected.connect(change_value)
+        else:
+            print('непредвиденная ситуация в списке что то есть, длина списка = ', len(list_of_params))
 
     @pyqtSlot(dict)  # добавляем ошибки в окошко
     def add_new_errors(self, nds: dict):
