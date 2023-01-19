@@ -256,13 +256,13 @@ def change_value(lst):
     if lst:
         parametr = lst[0]
         new_value = lst[1]
-        info_m, color = set_new_value(next_cell, parametr, new_value)
+        info_m, color = set_new_value(parametr, new_value)
         next_cell.setBackground(color)
     if info_m:
         QMessageBox.information(window, "Информация", info_m, QMessageBox.Ok)
 
 
-def set_new_value(next_cell, param: Parametr, val):
+def set_new_value(param: Parametr, val):
     info_m = ''
     color = QColor(254, 254, 254)
     if 'WheelTypeSet' in param.name:
@@ -326,7 +326,8 @@ def want_to_value_change():
 
             if dialog.exec_() == QDialog.Accepted:
                 val = dialog.lineEdit.text()
-                info_m = set_new_value(next_cell, current_param, val)
+                info_m, color = set_new_value(current_param, val)
+                next_cell.setBackground(color)
         else:
             info_m = f'Сейчас этот параметр нельзя изменить\n' \
                      f'Изменяемые параметры подкрашены зелёным\n' \
