@@ -131,6 +131,7 @@ class MainThread(QThread):
 
     def __init__(self):
         super().__init__()
+        self.max_errors = 3
         self.current_nodes_dict = {}
 
     def run(self):
@@ -158,7 +159,7 @@ class MainThread(QThread):
                     # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
                     self.params_counter += 1
                     current_param = self.current_params_list[self.params_counter]
-                    if self.params_counter >= self.len_param_list:
+                    if self.params_counter >= len(self.current_params_list):
                         self.params_counter = 0
                         emitting([''])
                         return
@@ -173,11 +174,6 @@ class MainThread(QThread):
             if self.errors_counter >= self.max_errors:
                 self.threadSignalAThread.emit([param])
                 return
-
-            if param == self.magic_word:  # здесь можно вкорячить проверкуна стринг параметра и
-                # на NOne который можно выставлять при ответе блока 80
-                current_param.period = 1001
-                current_param.value = 'Параметр \nотсутствует'
             # else:
             #     param = 'Блок не подключен'
             #     current_param.value = param
@@ -186,9 +182,9 @@ class MainThread(QThread):
             # , значения всё равно в текущем списке параметров
             self.ans_list.append(param)
             self.params_counter += 1
-            if self.params_counter >= self.len_param_list:
+            if self.params_counter >= len(self.current_params_list):
                 self.params_counter = 0
-                emitting()
+                emitting([''])
                 if self.is_recording:
                     dt = datetime.datetime.now()
                     dt = dt.strftime("%H:%M:%S.%f")
@@ -207,11 +203,6 @@ class MainThread(QThread):
                 self.err_thread_signal.emit(self.err_dict)
 
         send_delay = 5  # задержка отправки в кан сообщений методом подбора с таким не зависает
-        self.max_errors = 3
-        self.len_param_list = len(self.current_params_list)
-        if self.len_param_list < self.max_errors:
-            self.max_errors = self.len_param_list
-        self.ans_list = []
         self.params_counter = 0
         self.errors_counter = 0
         self.err_dict = {}
