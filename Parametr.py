@@ -213,8 +213,12 @@ class Parametr:
             if self.type == 'FLOAT':
                 self.value = bytes_to_float(value_data[-4:])
             elif self.type == 'DATE':
-                # do something
-                self.value_string = '20.12.2022'
+                # день месяца (0-4), номер месяца (5-8) и текущий год (9-15)
+                TDateVar = ctypes.c_uint32(value).value
+                d = TDateVar & 0b11111
+                m = (TDateVar & 0b111100000) >> 5
+                y = (TDateVar & 0b1111111000000000) >> 9
+                self.value_string = f'{d}.{m}.{y}'
                 self.value = None
                 return self.value
             else:
@@ -228,7 +232,6 @@ class Parametr:
 
     def to_dict(self):
         return {k: self.__getattribute__(k) for k in exit_list}
-
 
     def string_from_can(self, value):
         self.value_string = ''

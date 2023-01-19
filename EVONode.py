@@ -209,62 +209,6 @@ class EVONode:
         print(num)
         return int(num) if num.isdigit() else ''.join([s for s in num if s.isprintable()])
 
-        serial = self.get_val(self.request_serial_number, adapter) if self.request_serial_number else 777
-        if self.name == 'Инвертор_МЭИ':  # Бега костыль
-            serial = check_printable(serial)
-        else:
-            if isinstance(serial, str):
-                if self.string_from_can:
-                    serial = ''
-                    for s in self.string_from_can:
-                        if s.isprintable():
-                            serial += s
-                    self.string_from_can = ''
-                else:
-                    serial = ''
-
-        self.serial_number = serial
-        # print(f'{self.name} - {serial=}')
-        return self.serial_number
-
-    # Потому-то кому-то приспичило передавать серийник в чарах
-    # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,
-    # но вообще неплохо бы сделать эту функцию наподобие опроса ошибок по нескольким адресам,
-    # другое дело как чары парусить, наверное, это должно быть либо в ответе от блока либо в типе параметра
-    def get_serial_for_ttc(self, adapter: CANAdater):
-        serial_ascii_address_lst = [0x218001,
-                                    0x218002,
-                                    0x218003,
-                                    0x218004]
-
-        ser = ''
-        for adr in serial_ascii_address_lst:
-            ge = self.get_val(adr, adapter)
-            i = 0
-            while isinstance(ge, str):
-                ge = self.get_val(adr, adapter)
-                i += 1
-                if i > 10:
-                    return ''
-
-            ser += check_printable(ge)
-
-        self.serial_number = ser
-        return int(self.serial_number) if ser else ser
-
-    # функция НЕ РАБОТАЕТ
-    def get_firmware_version(self, adapter: CANAdater):
-        if self.firmware_version:
-            return self.firmware_version
-        f_list = self.get_val(self.request_firmware_version, adapter) if self.request_firmware_version else 0
-        if isinstance(f_list, str):
-            if self.string_from_can:
-                f_list = self.string_from_can
-
-        self.firmware_version = f_list
-        print(f'{self.name} - {f_list=}')
-        return self.firmware_version
-
     def cut_firmware(self):
         if isinstance(self.firmware_version, int):
             fm = self.firmware_version
@@ -282,6 +226,7 @@ class EVONode:
 
     def check_errors(self, adapter: CANAdater, false_if_war=True):
         #  на выходе - список текущих ошибок
+        # тоже херня надо переходить на параметры, которые при опросе выдают свои ошибки
         if false_if_war:
             r_request = self.error_request.copy()
             s_list = self.errors_list.copy()
@@ -324,6 +269,7 @@ class EVONode:
 
     def erase_errors(self, adapter: CANAdater):
         #  ошибки должны быть объектами
+        # полная хрень. удаление ошибок - это должен быть параметр, который умеет отсылаться
         if self.error_erase['address']:
             self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
             self.current_errors_list.clear()
@@ -345,6 +291,7 @@ class EVONode:
         if self.current_errors_list:
             exit_dict['current_warnings_list'] = [wr.name for wr in self.current_warnings_list]
         return exit_dict
+
 
 def check_printable(lst):
     a_st = ''

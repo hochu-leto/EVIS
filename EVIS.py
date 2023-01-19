@@ -887,6 +887,7 @@ def load_from_eeprom():
     if node.request_id in window.thread.adapter.id_nodes_dict.keys():
         adapter_can2 = window.thread.adapter.id_nodes_dict[node.request_id]
         print('Отправляю команду на запрос из еепром')
+        # такое чувство что функция полное говно и пора бы уже сделать её универсальной для всех блоков
         answer = node.send_val(0x210201, adapter_can2, value=0x01)  # это адрес вытащить из еепром для кву ттс
         if answer:
             answer = 'Команду выполнить не удалось\n' + answer
@@ -1111,8 +1112,7 @@ if __name__ == '__main__':
             pickle.dump(node_dict, f)
     window.thread.current_nodes_dict = node_dict.copy()
     # показываю дерево с блоками и что ошибок нет
-    # window.add_new_errors({})
-    window.show_nodes_tree(list(node_dict.values()))  # ---------!!!!!!!!!! проверить, исправить на словарь!!!-----
+    window.show_nodes_tree(list(node_dict.values()))
     # если со списком блоков всё ок, показываем его в левом окошке и запускаем приложение
     if node_dict and params_list_changed():
         if can_adapter.find_adapters():

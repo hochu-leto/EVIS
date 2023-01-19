@@ -1,15 +1,13 @@
 import datetime
-import os
 import time
 
-import pandas as pd
 import yaml
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
 from PyQt5.QtWidgets import QMessageBox
 
 from EVONode import EVONode, invertor_command_dict
-from Parametr import Parametr, readme
-from helper import empty_par, buf_to_string, zero_del
+from Parametr import readme
+from helper import buf_to_string
 
 
 # поток для сохранения в файл настроек блока
@@ -21,7 +19,7 @@ class SaveToFileThread(QThread):
     iter_count = 1
     current_params_list = []
     ready_persent = 0
-    adapter = None  # CANAdapter()
+    adapter = None
 
     def __init__(self):
         super().__init__()
@@ -125,7 +123,7 @@ class MainThread(QThread):
     iter_count = 1
     current_params_list = []
     current_node = EVONode()
-    adapter = None  # CANAdapter()
+    adapter = None
     magic_word = 100794368
     is_recording = False
     record_dict = {}
@@ -262,42 +260,6 @@ class MainThread(QThread):
             return answer
         return 'Команда отменена пользователем'
 
-    def set_param(self, param: Parametr, val=0):
-        if self.isRunning():
-            self.quit()
-            self.wait()
-            was_run = True
-        else:
-            was_run = False
-        nd = param.node
-        check = False
-        info_m = ''
-        if nd.request_id in self.adapter.id_nodes_dict.keys():
-            can_adapter = self.adapter.id_nodes_dict[nd.request_id]
-            param.set_val(can_adapter, float(val))
-            # и сразу же проверяю записался ли он в блок
-            value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
-            if isinstance(value_data, str):
-                new_val = ''
-            else:
-                new_val = zero_del(value_data).strip()
-            # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
-            if val == new_val:
-                check = False
-                if param.node.save_to_eeprom:
-                    param.node.param_was_changed = True
-                    if self.current_node.name == 'Инвертор_МЭИ':
-                        info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
-            else:
-                check = False
-            # если поток был запущен до изменения, то запускаем его снова
-        else:
-            check = False
-            info_m = f'Не найден адаптер для блока {nd.name}'
-        if self.isFinished() and was_run:
-            self.start()
-        return check, info_m
-
 
 class WaitCanAnswerThread(QThread):
     SignalOfProcess = pyqtSignal(list, list, int)
@@ -354,8 +316,6 @@ class WaitCanAnswerThread(QThread):
                 except IndexError:
                     self.iter = 0
 
-                # for param in self.imp_par_list:
-                #     param.get_value(self.adapter)
             self.SignalOfProcess.emit(answer, self.imp_par_list, None)
 
         timer = QTimer()
