@@ -203,7 +203,8 @@ class EVONode:
             ans = adr.get_value(adapter)
             print(ans, adr.value_string, end=' ')
             if adr.value_string:
-                num += adr.value_string
+                if adr.value_string != num:
+                    num += adr.value_string
             elif not isinstance(ans, str):
                 num += str(ans).rstrip('0').rstrip('.')
         print(num)

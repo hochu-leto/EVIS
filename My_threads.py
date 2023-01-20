@@ -158,12 +158,12 @@ class MainThread(QThread):
                     # если период опроса текущего параметра не кратен текущей итерации,
                     # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
                     self.params_counter += 1
-                    current_param = self.current_params_list[self.params_counter]
                     if self.params_counter >= len(self.current_params_list):
                         self.params_counter = 0
-                        emitting([''])
+                        emitting([])
                         return
-            # if current_param.node.name in self.current_nodes_dict.keys():
+                    current_param = self.current_params_list[self.params_counter]
+
             param = current_param.get_value(self.adapter)  # ---!!!если параметр строковый, будет None!!---
             # если строка - значит ошибка
             if isinstance(param, str):
@@ -174,16 +174,11 @@ class MainThread(QThread):
             if self.errors_counter >= self.max_errors:
                 self.threadSignalAThread.emit([param])
                 return
-            # else:
-            #     param = 'Блок не подключен'
-            #     current_param.value = param
-            # тут всё просто, собираем весь список и отправляем кучкой
-            # какая-то херня. мне, по-факту этот список вообще нахер не нужен, сюда можно чисто ошибки пихать
-            # , значения всё равно в текущем списке параметров
+
             self.params_counter += 1
             if self.params_counter >= len(self.current_params_list):
                 self.params_counter = 0
-                emitting([''])
+                emitting([])
                 if self.is_recording:
                     dt = datetime.datetime.now()
                     dt = dt.strftime("%H:%M:%S.%f")

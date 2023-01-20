@@ -90,13 +90,20 @@ class Parametr:
 
         # в следующем релизе нужно прийти к стандартным полям Параметра,
         # но чтоб принимал все предыдущие варианты, превращая их в стандартные, примерно как сейчас в scale
-        address = int(check_string('address', '0x000000'), 16)
-        if address:
-            self.index = ((address & 0xFFFF00) >> 8)
-            self.sub_index = address & 0xFF
-        else:
+        address = check_string('address', '0x00')
+        if len(address) < 4:
             self.index = check_value(0, 'index')
             self.sub_index = check_value(0, 'sub_index')
+
+        elif 4 <= len(address) < 7:
+            # MODBUS
+            self.index = int(address, 16)
+            self.sub_index = 0
+        elif 7 <= len(address) < 9:
+            # CANOPEN
+            address = int(address, 16)
+            self.index = ((address & 0xFFFF00) >> 8)
+            self.sub_index = address & 0xFF
         typ = check_string('type')
         self.type = typ if typ in type_values.keys() else 'UNSIGNED32'
         self.editable = True if check_string('editable') else False
