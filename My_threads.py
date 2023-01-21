@@ -93,8 +93,6 @@ class SaveToFileThread(QThread):
         loop.exec_()
 
     def save_file(self):
-        self.errors_counter = 0
-        self.params_counter = 0
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         node_yaml_dict = dict(
             readme=readme,
@@ -124,7 +122,6 @@ class MainThread(QThread):
     current_params_list = []
     current_node = EVONode()
     adapter = None
-    magic_word = 100794368
     is_recording = False
     record_dict = {}
     thread_timer = 0

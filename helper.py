@@ -58,6 +58,7 @@ color_EVO_green = QColor(0, 254, 0, 80)
 color_EVO_red_dark = QColor(234, 76, 76, 80)
 color_EVO_orange = QColor(241, 91, 34)
 color_EVO_orange_shine = QColor(255, 184, 65, 80)
+color_EVO_white = QColor(255, 254, 254, 80)
 
 
 class MyComboBox(QComboBox):
@@ -140,21 +141,14 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         else:
             compare = zero_del(v_c)
 
-        # compare = v_c if isinstance(v_c, str) else zero_del(v_c)
-        # print(v_c, compare)
-
-        if par.editable:
-            color_opacity = 30
-        else:
-            color_opacity = 0
+        color_ = color_EVO_green if par.editable else color_EVO_white
         name_item = QTableWidgetItem(name)
         name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
-        name_item.setBackground(QColor(0, 192, 0, color_opacity))
+        name_item.setBackground(color_)
         show_table.setItem(row, 0, name_item)
 
         desc_item = QTableWidgetItem(description)
         desc_item.setFlags(desc_item.flags() & ~Qt.ItemIsEditable)
-        # desc_item.setBackground(QColor(0, 192, 0, color_opacity))
         show_table.setItem(row, 1, desc_item)
 
         value_item = QTableWidgetItem('')
@@ -168,12 +162,6 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         unit_item = QTableWidgetItem(unit)
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
-
-        # if par.value_table:
-        #     comBox = MyComboBox()
-        #     comBox.addItems(list(par.value_table.values()))
-        #     show_table.setCellWidget(row, show_table.columnCount() - 1, comBox)
-        #     items_list.append(comBox)
 
         row += 1
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
@@ -247,11 +235,8 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
 
         if has_compare_params:
             compare_name = table.item(row, 3).text()
-            if v_name.strip() != compare_name.strip():
-                color = QColor(255, 0, 0, 50)
-            else:
-                color = QColor(255, 255, 255, 0)
-            table.item(row, 3).setBackground(color)
+            color_ = color_EVO_red_dark if v_name.strip() != compare_name.strip() else color_EVO_white
+            table.item(row, 3).setBackground(color_)
         row += 1
     return items_list
 

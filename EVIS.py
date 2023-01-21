@@ -84,7 +84,7 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_orange, color_EVO_red, color_EVO_red_dark, \
-    color_EVO_orange_shine, color_EVO_green
+    color_EVO_orange_shine, color_EVO_green, color_EVO_white
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -347,7 +347,7 @@ def want_to_value_change():
         if window.thread.current_node != user_node:
             new_param.name = f'{new_param.name}#{new_param.node.name}'
         text = f'добавлен в блок {TheBestNode}'
-        next_cell.setBackground(QColor(254, 0, 0, 30))
+        next_cell.setBackground(color_EVO_red_dark)
         # если Новый список есть в Избранном
         rowcount = window.nodes_tree.topLevelItemCount() - 1
         best_node_item = window.nodes_tree.topLevelItem(rowcount)
@@ -361,7 +361,7 @@ def want_to_value_change():
             # если есть, то удаляю его (как-то тупо определяю, надо переделать)
             if p:
                 text = f'удалён из блока {TheBestNode}'
-                window.vmu_param_table.item(c_row, c_col + 1).setBackground(QColor(254, 254, 254, 30))
+                window.vmu_param_table.item(c_row, c_col + 1).setBackground(color_EVO_white)
                 was_run = False
                 # останавливаю поток и удаляю параметр из Нового списка
                 if window.thread.isRunning():
@@ -381,7 +381,7 @@ def want_to_value_change():
                 if not user_node.group_params_dict[NewParamsList]:
                     item = best_node_item.child(best_node_item.childCount() - 1)
                     best_node_item.setExpanded(True)
-                    item.setBackground(0, QColor(254, 0, 0, 30))
+                    item.setBackground(0, color_EVO_red_dark)
                     # window.nodes_tree.show()
                     index = window.nodes_tree.indexFromItem(item, 0)
                     window.nodes_tree.scrollTo(index)
@@ -397,7 +397,7 @@ def want_to_value_change():
 
             # и немного красоты - раскрываем, спускаем и подкрашиваем
             best_node_item.setExpanded(True)
-            item.setBackground(0, QColor(254, 0, 0, 30))
+            item.setBackground(0, color_EVO_red_dark)
             # window.nodes_tree.show()
             index = window.nodes_tree.indexFromItem(item, 0)
             window.nodes_tree.scrollTo(index)
@@ -1134,6 +1134,5 @@ if __name__ == '__main__':
 # дублируются неизвестные ошибки
 # надпись на кнопке Подключить вылазит за пределы, кнопки сверху корявые
 # не доходит до конца прогресс при сохранении
-# более зелёный цвет на изменяемых параметрах
 # проверять нужно ли сохранять параметр в еепром, и только тогда зажигать кнопку
 # если уже есть считанные значения, показывать их, а потом уже считывать и обновлять
