@@ -38,7 +38,7 @@ readme = dict(
         max_value='Максимально возможное значение параметра, при отсутствии заданной величины принимается равному'
                   ' Максимальному значению согласно типу параметра',
         widget='Отображение величины параметра в диагностической программе, при отсутствии отображается в виде цифр, '
-               'возможные значения: для нередактируемых: "BAR", для редактируемых: "BUTTON", "SLIDER", "SWITCH"'
+               'возможные значения: для не редактируемых: "BAR", для редактируемых: "BUTTON", "SLIDER", "SWITCH"'
     )
 )
 # список полей параметра, который будем запихивать в файл. Можно выбрать не все поля
@@ -178,10 +178,6 @@ class Parametr:
             return value_data
 
         if self.node.protocol == 'CANOpen':
-            # print(self.name, end='   ')
-            # for i in value_data:
-            #     print(hex(i), end=' ')
-            # print()
             if value_data[0] == 0x41:  # это запрос на длинный параметр строчный
                 data = adapter.can_request_long(self.node.request_id, self.node.answer_id, value_data[4])
                 value = self.string_from_can(data)
@@ -200,11 +196,7 @@ class Parametr:
             value = (value_data[7] << 24) + \
                     (value_data[6] << 16) + \
                     (value_data[5] << 8) + value_data[4]
-            print(f'{hex(index_ans)=}, {hex(sub_index_ans)=}, {value=}')
         elif self.node.protocol == 'MODBUS':
-            print(self.name, end='   ')
-            for i in value_data:
-                print(hex(i), end=' ')
             index_ans = (value_data[5] << 8) + value_data[4]
             sub_index_ans = 0
             value = (value_data[3] << 24) + (value_data[2] << 16) + (value_data[1] << 8) + value_data[0]
@@ -242,7 +234,10 @@ class Parametr:
             return 'Адрес не совпадает'
 
     def to_dict(self):
-        return {k: self.__getattribute__(k) for k in exit_list}
+        exit_dict = {k: self.__getattribute__(k) for k in exit_list}
+        if self.value_string:
+            exit_dict['value'] = self.value_string
+        return exit_dict
 
     def string_from_can(self, value):
         self.value_string = ''

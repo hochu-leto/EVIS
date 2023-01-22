@@ -67,11 +67,12 @@ import sys
 import time
 from pprint import pprint
 
+import PySide6 as PySide6
 import pandas as pd
 from PyQt5.QtCore import pyqtSlot, Qt, QRegExp, pyqtSignal, QUrl
 from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush, QDesktopServices
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QDialogButtonBox
+    QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
 import pathlib
 from pandas import ExcelWriter
 import VMU_monitor_ui
@@ -84,7 +85,7 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_orange, color_EVO_red, color_EVO_red_dark, \
-    color_EVO_orange_shine, color_EVO_green, color_EVO_white
+    color_EVO_orange_shine, color_EVO_green, color_EVO_white, color_EVO_graphite2
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -579,6 +580,21 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.errors_tree.header().close()
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
+        # gray_list = PySide6.QtGui.QColor.toTuple()
+        # x = 4
+        # button_style_sheet = f"QPushButton{{background-color: rgb{gray_list}; border-radius: {x}px;}}"
+        # print(gray_list, button_style_sheet)
+        # self.setStyleSheet("QPushButton{"
+        #                    "    background-color: gray;"     # {color_EVO_graphite2};"
+        #                    # "    border-style: outset;"
+        #                    # "    border-width: 2px;"
+        #                    "    border-radius: 8px;"
+        #                    # "    border-color: beige;"
+        #                    # "    font: bold 14px;"
+        #                    # "    min-width: 10em;"
+        #                    # "    padding: 14px, 22px;"
+        #                    "}")
+        # self.setStyleSheet(button_style_sheet)
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
@@ -1073,8 +1089,8 @@ if __name__ == '__main__':
     splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
-    sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
 
+    sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
     #
     window.main_tab.currentChanged.connect(window.change_tab)
     # подключаю сигналы нажатия на окошки
@@ -1131,7 +1147,8 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# дублируются неизвестные ошибки
+#  ------------------- дублируются неизвестные ошибки
+# --------------------- сохраняется нормальный yaml
 # надпись на кнопке Подключить вылазит за пределы, кнопки сверху корявые
 # не доходит до конца прогресс при сохранении
 # проверять нужно ли сохранять параметр в еепром, и только тогда зажигать кнопку

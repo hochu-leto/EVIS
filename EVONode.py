@@ -239,12 +239,11 @@ class EVONode:
 
         if not r_request or not s_list:
             return current_list
-        err_dict = {v.value: v for v in s_list}
+
         big_error = 0
         j = 0
         for adr in r_request:
             error = self.get_val(adr, adapter)
-            # print(hex(adr), error)
             if isinstance(error, int):
                 if error <= 128:
                     big_error += error << j * 8
@@ -255,13 +254,17 @@ class EVONode:
             j += 1
 
         if big_error:
+            err_dict = {v.value: v for v in s_list}
+
             if self.name == 'КВУ_ТТС':
                 if big_error in err_dict.keys():  # космический костыль
                     current_list.add(err_dict[big_error])
                 else:
-                    e = EvoError()
-                    e.name = f'Неизвестная ошибка ({big_error})'
-                    current_list.add(e)
+                    err_name = f'Неизвестная ошибка ({big_error})'
+                    if err_name in [er.name for er in current_list]:
+                        e = EvoError()
+                        e.name = err_name
+                        current_list.add(e)
             else:
                 for e_num, e_obj in err_dict.items():
                     if big_error & e_num:
@@ -269,7 +272,6 @@ class EVONode:
         return current_list
 
     def erase_errors(self, adapter: CANAdater):
-        #  ошибки должны быть объектами
         # полная хрень. удаление ошибок - это должен быть параметр, который умеет отсылаться
         if self.error_erase['address']:
             self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
@@ -289,8 +291,11 @@ class EVONode:
         exit_dict = {ke: self.__getattribute__(ke) for ke in exit_list}
         if self.current_errors_list:
             exit_dict['current_errors_list'] = [er.name for er in self.current_errors_list]
-        if self.current_errors_list:
+        if self.current_warnings_list:
             exit_dict['current_warnings_list'] = [wr.name for wr in self.current_warnings_list]
+        group_dict = {group: [par.to_dict() for par in params]
+                      for group, params in self.group_params_dict.items()}
+        exit_dict['parameters'] = group_dict
         return exit_dict
 
 

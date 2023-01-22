@@ -95,10 +95,9 @@ class SaveToFileThread(QThread):
     def save_file(self):
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         node_yaml_dict = dict(
-            readme=readme,
-            device=self.node_to_save.to_dict(),
             date_time=now,
-            parameters=self.node_to_save.group_params_dict)
+            readme=readme,
+            device=self.node_to_save.to_dict())
 
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.yaml'
 

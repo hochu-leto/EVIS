@@ -8,6 +8,7 @@ from PyQt5.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal, QStringListModel
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
     QComboBox, QListView, QSizePolicy
+# from PySide6.QtGui import QColor
 
 import Dialog_params
 import my_dialog
@@ -59,6 +60,11 @@ color_EVO_red_dark = QColor(234, 76, 76, 80)
 color_EVO_orange = QColor(241, 91, 34)
 color_EVO_orange_shine = QColor(255, 184, 65, 80)
 color_EVO_white = QColor(255, 254, 254, 80)
+# gray_list = (54, 60, 70)
+# color_EVO_white = QColor(gray_list, 80)
+color_EVO_gray = QColor(98, 104, 116, 80)
+color_EVO_graphite2 = QColor(54, 60, 70, 80)
+color_EVO_raven = QColor(188, 125, 136, 80)
 
 
 class MyComboBox(QComboBox):

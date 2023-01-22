@@ -88,7 +88,7 @@
         <item row="0" column="4">
          <widget class="QGroupBox" name="current_node_box">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
             <horstretch>1</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -148,7 +148,7 @@
             <widget class="QLabel" name="node_s_n_lab">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>2</horstretch>
+               <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
@@ -174,7 +174,7 @@
            <bool>false</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -182,18 +182,19 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>60</height>
+            <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>90</width>
-            <height>60</height>
+            <width>180</width>
+            <height>180</height>
            </size>
           </property>
           <property name="font">
            <font>
-            <pointsize>8</pointsize>
+            <pointsize>10</pointsize>
+            <kerning>false</kerning>
            </font>
           </property>
           <property name="layoutDirection">
@@ -208,22 +209,31 @@
         <item row="0" column="6">
          <widget class="QPushButton" name="search_btn">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="maximumSize">
            <size>
-            <width>90</width>
-            <height>60</height>
+            <width>180</width>
+            <height>180</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <kerning>false</kerning>
+           </font>
           </property>
           <property name="layoutDirection">
            <enum>Qt::RightToLeft</enum>
           </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="text">
-           <string>поиск</string>
+           <string>Поиск</string>
           </property>
          </widget>
         </item>
@@ -236,7 +246,7 @@
            </sizepolicy>
           </property>
           <property name="title">
-           <string>GroupBox</string>
+           <string>Кнопки</string>
           </property>
           <layout class="QFormLayout" name="formLayout">
            <item row="0" column="0">
@@ -249,14 +259,14 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>90</width>
-               <height>60</height>
+               <width>0</width>
+               <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>120</width>
-               <height>60</height>
+               <width>180</width>
+               <height>180</height>
               </size>
              </property>
              <property name="baseSize">
@@ -267,9 +277,10 @@
              </property>
              <property name="font">
               <font>
-               <pointsize>8</pointsize>
+               <pointsize>10</pointsize>
                <weight>75</weight>
                <bold>true</bold>
+               <kerning>false</kerning>
               </font>
              </property>
              <property name="text">
@@ -283,22 +294,28 @@
               <bool>false</bool>
              </property>
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="minimumSize">
               <size>
-               <width>90</width>
-               <height>60</height>
+               <width>0</width>
+               <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>90</width>
-               <height>60</height>
+               <width>180</width>
+               <height>180</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+               <kerning>false</kerning>
+              </font>
              </property>
              <property name="text">
               <string>Сброс
@@ -309,7 +326,7 @@
            <item row="1" column="0" colspan="2">
             <widget class="QPushButton" name="compare_btn">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -317,8 +334,14 @@
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>60</height>
+               <height>0</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+               <kerning>false</kerning>
+              </font>
              </property>
              <property name="text">
               <string>Выбрать файл для 
@@ -332,7 +355,7 @@
               <bool>false</bool>
              </property>
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -340,8 +363,14 @@
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>60</height>
+               <height>0</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+               <kerning>false</kerning>
+              </font>
              </property>
              <property name="text">
               <string>Сохранить настройки 
@@ -355,7 +384,7 @@
               <bool>false</bool>
              </property>
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -363,8 +392,14 @@
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>60</height>
+               <height>51</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+               <kerning>false</kerning>
+              </font>
              </property>
              <property name="text">
               <string>Запись текущих параметров</string>
@@ -385,7 +420,7 @@
           <property name="title">
            <string>Аварии</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0,0,0">
+          <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0,0">
            <item row="0" column="2" rowspan="2">
             <widget class="QTextBrowser" name="errors_browser">
              <property name="sizePolicy">
