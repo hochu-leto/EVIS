@@ -16,14 +16,14 @@ readme = dict(
              '"SIGNED32", "SIGNED64", "UNSIGNED8", "UNSIGNED16", "UNSIGNED32", "FLOAT", "VISIBLE_STRING",'
              ' "OCTET_STRING", "UNICODE_STRING", "TIME_OF_DAY", "TIME_DIFFERENCE", "DOMAIN"'),
     optional_fields=dict(
-        editable='Аналог access, указывает возможно ли изменение параметра или только для просмотра,'
+        editable='Указывает возможно ли изменение параметра или только для просмотра,'
                  'возможные значения: True, False',
         description='Содержит подробное описание параметра',
         offset='Смещение для перевода полученного integer-значения в дробное по формуле '
-               'value = (raw_value * mult) - offset.Указывается только для физических величин, '
+               'value = (raw_value * multiplier) - offset.Указывается только для физических величин, '
                'которые нуждаются в конвертации. Если значение 0, то может не указываться',
         multiplier='Множитель для перевода полученного integer-значения в дробное по формуле '
-                   'value = (raw_value * mult) - offset. Указывается только для физических величин,'
+                   'value = (raw_value * multiplier) - offset. Указывается только для физических величин,'
                    ' которые нуждаются в конвертации. Если значение 1, то может не указываться',
         eeprom='Наличие поля показывает, что этот параметр сохраняется в энергонезависимую память. '
                'Запись и чтение осуществляются по запросам со стороны пользователя. '
@@ -43,8 +43,8 @@ readme = dict(
 )
 # список полей параметра, который будем запихивать в файл. Можно выбрать не все поля
 # в следующем релизе нужно согласовать со стандартными полями Параметра
-exit_list = ['name', 'address', 'description', 'offset', 'units', 'value_table',
-             'value', 'type', 'period', 'min_value', 'max_value', 'multiplier', 'editable']
+exit_list = ['name', 'index', 'sub_index', 'description', 'type', 'value', 'units', 'eeprom',
+             'multiplier', 'editable', 'offset', 'period', 'min_value', 'max_value', 'value_table']
 
 type_values = {
     'UNSIGNED8': {'min': 0, 'max': 255, 'type': 0x2F, 'func': ctypes.c_uint8},
@@ -65,7 +65,7 @@ class Parametr:
                  'type', 'sub_index', 'index',
                  'editable', 'units', 'description',
                  'multiplier', 'offset', 'period', 'editable',
-                 'min_value', 'max_value', 'widget', 'node',
+                 'min_value', 'max_value', 'widget', 'node', 'eeprom',
                  'req_list', 'set_list', 'value_compare', 'value_table', 'value_string')
 
     def __init__(self, param=None, node=None):
@@ -134,6 +134,7 @@ class Parametr:
         self.req_list = []
         self.set_list = []
         self.value_string = ''
+        self.eeprom = True if param['eeprom'] else False
 
     # формирует посылку в зависимости от протокола
     def get_list(self):
@@ -185,7 +186,7 @@ class Parametr:
                     return value
                 self.value = None
                 return self.value
-            elif value_data[0] == 0x80:     # блок говорит об ошибке
+            elif value_data[0] == 0x80:  # блок говорит об ошибке
                 self.value_string = 'Ошибка запроса'
                 self.period = 1000
                 self.value = None
@@ -237,6 +238,18 @@ class Parametr:
         exit_dict = {k: self.__getattribute__(k) for k in exit_list}
         if self.value_string:
             exit_dict['value'] = self.value_string
+        if not exit_dict['offset']:
+            del exit_dict['offset']
+        if not exit_dict['value_table']:
+            del exit_dict['value_table']
+        if not exit_dict['units']:
+            del exit_dict['units']
+        if not exit_dict['eeprom']:
+            del exit_dict['eeprom']
+        if not exit_dict['description']:
+            del exit_dict['description']
+        if exit_dict['multiplier'] == 1:
+            del exit_dict['multiplier']
         return exit_dict
 
     def string_from_can(self, value):

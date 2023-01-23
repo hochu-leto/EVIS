@@ -227,13 +227,13 @@
   name: abs_rr_fault
   name_error: ABS RR критические невалидные данные
   value_error: 3343
-- code: 3616
+- code: 13616
   critical: true
   description_error: Кнопка нажата, либо задетектирован обрыв
   level: 2
   name: di_red_button
   name_error: Кнопка "Стоп КВУ"
-  value_error: 3616
+  value_error: 13616
 - code: 3585
   critical: false
   level: 0

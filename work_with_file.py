@@ -1,18 +1,15 @@
 import os
 import pathlib
 import pickle
-import time
 
 import pandas as pd
 import yaml
-from PyQt5.QtWidgets import QMessageBox
-from pandas import ExcelWriter
 
 from EVOErrors import EvoError
 from helper import NewParamsList, get_nearest_lower_value
 from EVONode import EVONode
 from Parametr import Parametr
-from helper import empty_par, TheBestNode
+from helper import TheBestNode
 
 value_type_dict = {'UNSIGNED16': 0x2B,
                    'SIGNED16': 0x2B,
@@ -151,7 +148,7 @@ def fill_node(node: EVONode):
             t_dir = pathlib.Path(node_dir, Default)
             node.group_params_dict = try_load_pickle('params', t_dir, node)
             node.errors_list = try_load_pickle('errors', t_dir, node)
-            if node.name == 'КВУ_ТТС':
+            if node.name == 'КВУ_ТТС' and node.errors_list:
                 node.warnings_list = node.errors_list.copy()
             if not node.group_params_dict or not node.errors_list:
                 return False

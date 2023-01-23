@@ -65,20 +65,26 @@ import datetime
 import pickle
 import sys
 import time
-from pprint import pprint
-
-import PySide6 as PySide6
 import pandas as pd
-from PyQt5.QtCore import pyqtSlot, Qt, QRegExp, pyqtSignal, QUrl
-from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush, QDesktopServices
+# from PyQt6.QtCore import pyqtSlot, Qt
+# from PyQt5.QtCore import QRegExp
+from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
+# from PyQt6.QtGui import QIcon, QColor, QPixmap, QBrush, QDesktopServices
+# from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
+# from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
+#     QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
 from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
 import pathlib
-from pandas import ExcelWriter
+
+from qt_material import apply_stylesheet, list_themes
+
 import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVOErrors import EvoError
 from EVONode import EVONode
+from EVOStyleSheet import PushButtonStyle
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
@@ -114,10 +120,6 @@ def search_param():
         if window.thread.isRunning():
             was_run = True
             window.connect_to_node()
-        # search_bar = DialogChange(label=f'Ищем параметр с {search_text}', process=0)
-        # search_bar.exec_()
-        # SearchProcess = pyqtSignal(int)
-        # SearchProcess.connect(search_bar.change_mess)
         par_list = find_param(window.thread.current_nodes_dict, search_text).copy()
         if par_list:
             p_list = []
@@ -166,7 +168,7 @@ def record_log():
             df = pd.DataFrame(window.thread.record_dict)
             df_t = df.transpose()
             window.thread.record_dict.clear()
-            ex_wr = ExcelWriter(file_name, mode="w")
+            ex_wr = pd.ExcelWriter(file_name, mode="w")
             with ex_wr as writer:
                 df_t.to_excel(writer)
             QMessageBox.information(window, "Успешный успех!", f'Лог сохранён в файл {file_name}', QMessageBox.Ok)
@@ -293,6 +295,9 @@ def set_new_value(param: Parametr, val):
                         window.save_eeprom_btn.setEnabled(True)
                         if window.thread.current_node.name == 'Инвертор_МЭИ':
                             info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
+                        elif window.thread.current_node.name == 'КВУ_ТТС':
+                            param.node.param_was_changed = param.eeprom
+                            window.save_eeprom_btn.setEnabled(param.eeprom)
             # если поток был запущен до изменения, то запускаем его снова
             if window.thread.isFinished():
                 # и запускаю поток
@@ -580,21 +585,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         self.errors_tree.header().close()
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
-        # gray_list = PySide6.QtGui.QColor.toTuple()
-        # x = 4
-        # button_style_sheet = f"QPushButton{{background-color: rgb{gray_list}; border-radius: {x}px;}}"
-        # print(gray_list, button_style_sheet)
-        # self.setStyleSheet("QPushButton{"
-        #                    "    background-color: gray;"     # {color_EVO_graphite2};"
-        #                    # "    border-style: outset;"
-        #                    # "    border-width: 2px;"
-        #                    "    border-radius: 8px;"
-        #                    # "    border-color: beige;"
-        #                    # "    font: bold 14px;"
-        #                    # "    min-width: 10em;"
-        #                    # "    padding: 14px, 22px;"
-        #                    "}")
-        # self.setStyleSheet(button_style_sheet)
+        # self.setStyleSheet(PushButtonStyle)
+        # with open('ElegantDark.qss', 'r') as f:
+        #     self.setStyleSheet(f.read())
+        # apply_stylesheet(self, theme='dark_teal.xml')
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
@@ -1084,11 +1078,14 @@ def set_log_lbl(s: str):
 if __name__ == '__main__':
     start_time = time.perf_counter()
     app = QApplication([])
+    list_themes()
+
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
     splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
+    # apply_stylesheet(app, theme='dark_teal.xml')
 
     sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
     #
@@ -1147,9 +1144,9 @@ if __name__ == '__main__':
         app.exec_()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-#  ------------------- дублируются неизвестные ошибки
-# --------------------- сохраняется нормальный yaml
-# надпись на кнопке Подключить вылазит за пределы, кнопки сверху корявые
-# не доходит до конца прогресс при сохранении
-# проверять нужно ли сохранять параметр в еепром, и только тогда зажигать кнопку
+#
+# ------------------- дублируются неизвестные ошибки
+# -------------------- не доходит до конца прогресс при сохранении
+# не обновлять значение параметр если сейчас на нём фокус
+# -------------------- проверять нужно ли сохранять параметр в еепром, и только тогда зажигать кнопку
 # если уже есть считанные значения, показывать их, а потом уже считывать и обновлять

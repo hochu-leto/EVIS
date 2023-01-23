@@ -4,11 +4,12 @@
 import struct
 import traceback
 
+# import traceback
+
 from PyQt5.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal, QStringListModel
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
     QComboBox, QListView, QSizePolicy
-# from PySide6.QtGui import QColor
 
 import Dialog_params
 import my_dialog

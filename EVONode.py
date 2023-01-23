@@ -261,7 +261,7 @@ class EVONode:
                     current_list.add(err_dict[big_error])
                 else:
                     err_name = f'Неизвестная ошибка ({big_error})'
-                    if err_name in [er.name for er in current_list]:
+                    if err_name not in [er.name for er in current_list]:
                         e = EvoError()
                         e.name = err_name
                         current_list.add(e)

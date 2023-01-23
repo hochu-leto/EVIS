@@ -25,15 +25,12 @@ class SaveToFileThread(QThread):
         super().__init__()
         self.max_errors = 30
         self.node_to_save = EVONode()
-        self.finished.connect(self.finished_tread)
-
-    def finished_tread(self):
-        self.killTimer(self.num_timer)
 
     def run(self):
         self.errors_counter = 0
         self.params_counter = 0
         self.group_counter = 0
+        self.ready_persent = 0
         send_delay = 3  # задержка отправки в кан сообщений
         params_dict = self.node_to_save.group_params_dict.copy()
         # ставлю текущий параметр - самый первый в первом списке параметров
@@ -50,7 +47,7 @@ class SaveToFileThread(QThread):
                 if self.errors_counter >= self.max_errors:
                     self.errors_counter = 0
                     self.params_counter = 0
-                    self.SignalOfReady.emit(self.ready_persent,
+                    self.SignalOfReady.emit(int(self.ready_persent),
                                             f'{param} \n'
                                             f'поток сохранения прерван,повторите ', False)
                     timer.stop()
@@ -100,7 +97,7 @@ class SaveToFileThread(QThread):
             device=self.node_to_save.to_dict())
 
         file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.yaml'
-
+        self.SignalOfReady.emit(95, '', False)
         with open(file_name, 'w', encoding='UTF-8') as file:
             yaml.dump(node_yaml_dict, file,
                       default_flow_style=False,
