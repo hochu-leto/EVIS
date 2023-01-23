@@ -2,8 +2,11 @@ import datetime
 import time
 
 import yaml
-from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
-from PyQt5.QtWidgets import QMessageBox
+# from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
+# from PyQt5.QtWidgets import QMessageBox
+
+from PyQt6.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
+from PyQt6.QtWidgets import QMessageBox
 
 from EVONode import EVONode, invertor_command_dict
 from Parametr import readme

@@ -13,37 +13,25 @@
     - возможность выбрать параметры из разных блоков и сохранить их в отдельный список и
         хранить пользовательский список параметров в файле - Избранное - Новый список
     - сравнение всех параметров из файла с текущими из блоков
+    - поиск по имени и описанию параметра
+    - возможность записи лога текущих параметров из открытого списка и сохранять запись в эксель файл - лог
+    - хранение профилей блока в отдельном файле с названием_блока_версия_ПО в папках с Название_блока
+            в файле список параметров и ошибки. Это позволит оставить пользовательский список Избранное
+    - добавить в параметр поле со словарём значений -
+            если считано подходящее - подставлять значение из словаря (как сохранять??)
+    - сделать ошибки объектами с описанием, ссылками и выводом нужных параметров
+
 
 следующие шаги
-- поиск по имени и описанию параметра
-- возможность записи лога текущих параметров из открытого списка и сохранять запись в эксель файл - лог
 - графики выбранных текущих параметров
 - виджеты по управлению параметром
-- хранение профилей блока в отдельном файле эксель с названием_блока_версия_ПО в папках с Название_блока
-        в файле список параметров и ошибки. Это позволит оставить пользовательский список Избранное
-- добавить в параметр поле со словарём значений -
-        если считано подходящее - подставлять значение из словаря (как сохранять??)
 - всплывающее меню при правом щелчке по параметру - Добавить в Избранное и Изменить период
 - автоматическое определение нужного периода опроса параметра и сохранение этого периода в свойства параметра в файл
 - работа в линуксе
 - работа с квайзером
 - в новом параметре КВУ формировать ВИН номер машины+номера_блоков -
         сделать автоматический опрос номеров и сравнение с тем, что в памяти
-- сохранение и парсинг параметров в yaml
-- при изменении параметра в инверторе мэи напоминать, что он не действует без сохранения в еепром
-- если не подключен к ВАТС, изменение параметров пачкой и при подключении их заброс в блок
-- если нет опроса, но изменён параметр, не запускать опрос после изменения
-- прерывать опрос только при отправке нового параметра, после сразу запускать
-- добавить в кву кнопку считать с ЕЕПРОМ
-- покрасить критические ошибки в красный с приставкой - критическая!
-- добавить вкладку ПНР, на ней несколько подвкладок со страницами процесса пнр с нужными параметрами
-- добавить возможность ОТМЕНы при нажатии любой кнопки управления
-- добавить напоминание выключить высокое при калибровке инвертора
-- выдавать какую ошибку схватил инвертор, если время кончилось, а положительного ответа от инвертора не поступило
 - сделать процесс подключения видимым
-- подкрашивать параметры, которые в новый список улетают, чтоб было заметно
-- сделать видимым процесс привязки джойстика и установки подвески
-- сделать ошибки объектами с описанием, ссылками и выводом нужных параметров
 
 НА ПОДУМАТЬ
 - может ли приёмник джойстика отвечать по SDO например, положения кнопок?
@@ -51,7 +39,6 @@
 - продумать реляционную БД для параметров
 - на отдельном листе управление для этого блока с виджетами типами - слайдеры, кнопки, чекбоксы - по каким адресам,
   название и так далее.
-- добавлять блок в список имеющихся и
 выводить в соседнем окошке список определённых для этого блока виджетов (слайдеры, кнопки) + количество этих окошек с
 виджетами для каждого блока задаёт пользователь, т.е. он может создать свои нужные виджеты и сохранить их в профиль к
 этому блоки, а при загрузке это должно подгрузится - и стандартные и выбранные для того блока пользователем -
@@ -60,25 +47,26 @@
  из одного блока можно напрямую заливать в другой. Или их ограничить до минимума или предлагать делать изменение вручную
 
 """
-import copy
 import datetime
 import pickle
 import sys
 import time
 import pandas as pd
-# from PyQt6.QtCore import pyqtSlot, Qt
-# from PyQt5.QtCore import QRegExp
-from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
-# from PyQt6.QtGui import QIcon, QColor, QPixmap, QBrush, QDesktopServices
-# from PyQt5.QtGui import QRegExpValidator
-from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
-# from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-#     QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
-from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
+from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
+from PyQt5.QtCore import QRegExp
+# from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
+from PyQt6.QtGui import QIcon, QColor, QPixmap, QBrush, QDesktopServices
+from PyQt5.QtGui import QRegExpValidator
+# from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
+from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
+# from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
+#     QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
 import pathlib
 
-from qt_material import apply_stylesheet, list_themes
+from PySide6.QtUiTools import QUiLoader
+
+from qt_material import apply_stylesheet, list_themes, QtStyleTools
 
 import VMU_monitor_ui
 from CANAdater import CANAdapter
@@ -103,18 +91,18 @@ def search_param():
     def line_edit_change(s):
         len_s = len(s)
         if len_s >= 4:
-            dialog.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
+            dialog.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
             dialog.lineEdit.setStyleSheet("color: black;")
         else:
-            dialog.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+            dialog.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
             dialog.lineEdit.setStyleSheet("color: red;")
 
     dialog = DialogChange(label='Не менее 4 букв из имени или описания параметра, которого нужно найти', value='')
     dialog.lineEdit.setText('')
     dialog.setWindowTitle('Поиск параметра')
-    dialog.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+    dialog.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
     dialog.lineEdit.textChanged.connect(line_edit_change)
-    if dialog.exec_() == QDialog.Accepted:
+    if dialog.exec() == QDialog.DialogCode.Accepted:
         search_text = dialog.lineEdit.text()
         was_run = False
         if window.thread.isRunning():
@@ -124,9 +112,7 @@ def search_param():
         if par_list:
             p_list = []
             for par in par_list:
-                # search_bar.change_mess(progress=50)
                 if '#' not in par.name:
-                    new_par = copy.copy(par)
                     new_par = par.copy()
                     new_par.name += '#' + new_par.node.name
                     p_list.append(new_par)
@@ -139,7 +125,8 @@ def search_param():
             window.nodes_tree.setCurrentItem(item)
         else:
             QMessageBox.critical(window, "Проблема", f'Ни одного параметра с "{search_text}"\n'
-                                                     f' в текущих блоках найти не удалось ', QMessageBox.Ok)
+                                                     f' в текущих блоках найти не удалось ',
+                                 QMessageBox.StandardButton.Ok)
         # search_bar.close()
         if was_run and window.thread.isFinished():
             window.connect_to_node()
@@ -171,7 +158,8 @@ def record_log():
             ex_wr = pd.ExcelWriter(file_name, mode="w")
             with ex_wr as writer:
                 df_t.to_excel(writer)
-            QMessageBox.information(window, "Успешный успех!", f'Лог сохранён в файл {file_name}', QMessageBox.Ok)
+            QMessageBox.information(window, "Успешный успех!", f'Лог сохранён в файл {file_name}',
+                                    QMessageBox.StandardButton.Ok)
 
 
 def make_compare_params_list():
@@ -232,10 +220,12 @@ def save_to_eeprom(node=None):
             err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
 
         if err:
-            QMessageBox.critical(window, "Ошибка ", f'Настройки сохранить не удалось\n{err}', QMessageBox.Ok)
+            QMessageBox.critical(window, "Ошибка ", f'Настройки сохранить не удалось\n{err}',
+                                 QMessageBox.StandardButton.Ok)
             window.log_lbl.setText('Настройки в память НЕ сохранены, ошибка ' + err)
         else:
-            QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохраняются в EEPROM', QMessageBox.Ok)
+            QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохраняются в EEPROM',
+                                    QMessageBox.StandardButton.Ok)
             window.log_lbl.setText('Настройки сохранены в EEPROM')
             node.param_was_changed = False
             erase_errors()
@@ -244,7 +234,8 @@ def save_to_eeprom(node=None):
         if window.thread.isFinished() and isRun:
             window.connect_to_node()
     else:
-        QMessageBox.information(window, "Информация", f'В {node.name} параметры сохранять не нужно', QMessageBox.Ok)
+        QMessageBox.information(window, "Информация", f'В {node.name} параметры сохранять не нужно',
+                                QMessageBox.StandardButton.Ok)
         window.save_eeprom_btn.setEnabled(False)
 
 
@@ -262,14 +253,16 @@ def change_value(lst):
         info_m, color = set_new_value(parametr, new_value)
         next_cell.setBackground(color)
     if info_m:
-        QMessageBox.information(window, "Информация", info_m, QMessageBox.Ok)
+        QMessageBox.information(window, "Информация", info_m, QMessageBox.StandardButton.Ok)
 
 
 def set_new_value(param: Parametr, val):
     info_m = ''
     color = QColor(254, 254, 254)
     if 'WheelTypeSet' in param.name:
-        if QMessageBox.information(window, "Пасхалка", easter_egg, QMessageBox.Ok | QMessageBox.Cancel) != QMessageBox.Ok:
+        if QMessageBox.information(window, "Пасхалка", easter_egg,
+                                   QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)\
+                != QMessageBox.StandardButton.Ok:
             return "Пердумал", color
     try:
         float(val)
@@ -323,14 +316,14 @@ def want_to_value_change():
 
     # меняем значение параметра
     if col_name == 'ЗНАЧЕНИЕ':
-        is_editable = True if Qt.ItemIsEditable & current_cell.flags() else False
+        is_editable = True if Qt.ItemFlag.ItemIsEditable & current_cell.flags() else False
         info_m = ''
         if is_editable:
             dialog = DialogChange(label=current_param.name, value=c_text.strip())
-            reg_ex = QRegExp("[+-]?([0-9]*[.])?[0-9]+")
+            reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
             dialog.lineEdit.setValidator(QRegExpValidator(reg_ex))
 
-            if dialog.exec_() == QDialog.Accepted:
+            if dialog.exec() == QDialog.DialogCode.Accepted:
                 val = dialog.lineEdit.text()
                 info_m, color = set_new_value(current_param, val)
                 next_cell.setBackground(color)
@@ -339,10 +332,10 @@ def want_to_value_change():
                      f'Изменяемые параметры подкрашены зелёным\n' \
                      f'Также требуется подключение к ВАТС'
         if info_m:
-            QMessageBox.information(window, "Информация", info_m, QMessageBox.Ok)
+            QMessageBox.information(window, "Информация", info_m, QMessageBox.StandardButton.Ok)
         # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
         # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
-        window.vmu_param_table.item(c_row, c_col).setFlags(c_flags & ~Qt.ItemIsEditable)
+        window.vmu_param_table.item(c_row, c_col).setFlags(c_flags & ~Qt.ItemFlag.ItemIsEditable)
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
@@ -561,7 +554,7 @@ def save_to_file_pressed():  # если нужно записать текущи
     window.tr.run()
 
 
-class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
+class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow,  QtStyleTools):
     record_vmu_params = False
     node_list_defined = False
     err_str = ''
@@ -569,6 +562,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
+        # self.add_menu_theme(self.main_tab, self.main_tab.menuStyles)
         self.all_params_dict = {}
         self.setupUi(self)
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
@@ -609,7 +603,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 self.thread.quit()
                 self.thread.wait()
                 # выкидываем ошибку
-                QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
+                QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.StandardButton.Ok)
             self.connect_btn.setText("Подключиться")
             if can_adapter.isDefined:
                 can_adapter.close_canal_can()
@@ -688,10 +682,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             self.tr.wait()
 
             if is_finished:
-                QMessageBox.information(self, "Успешный успех!", 'Файл сохранён ' + '\n' + err, QMessageBox.Ok)
+                QMessageBox.information(self, "Успешный успех!", 'Файл сохранён ' + '\n' + err,
+                                        QMessageBox.StandardButton.Ok)
                 self.log_lbl.setText('Сохранён файл с настройками ' + err.replace('\n', ''))
             elif err:
-                QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.Ok)
+                QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.StandardButton.Ok)
                 self.log_lbl.setText('Файл не сохранён, ошибка ' + err.replace('\n', ''))
             self.node_nsme_pbar.setValue(0)
 
@@ -713,7 +708,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
         state = False
         if p_list:
             dialog = DialogChange(label=lab, value=NewParamsList)
-            if dialog.exec_() == QDialog.Accepted:
+            if dialog.exec() == QDialog.DialogCode.Accepted:
                 val = dialog.lineEdit.text()
                 if val and val != NewParamsList:
                     # берём последний в списке блоков блок - Это Избранное
@@ -751,7 +746,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
                 state = True
         else:
             err_mess = 'Список пуст'
-        QMessageBox.information(self, "Информация", err_mess, QMessageBox.Ok)
+        QMessageBox.information(self, "Информация", err_mess, QMessageBox.StandardButton.Ok)
         self.log_lbl.setText(err_mess.replace('\n', ''))
         return state
 
@@ -842,15 +837,15 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
             if node.param_was_changed:
                 msg = QMessageBox(self)
                 msg.setWindowTitle("Параметры не сохранены")
-                msg.setIcon(QMessageBox.Information)
+                msg.setIcon(QMessageBox.Icon.Information)
                 msg.setText(f"В блоке {node.name} были изменены параметры,\n"
                             f" но они не сохранены в EEPROM,\n"
                             f" нужно ли их сохранить в память?")
 
-                buttonAceptar = msg.addButton("Сохранить", QMessageBox.YesRole)
-                msg.addButton("Не сохранять", QMessageBox.RejectRole)
+                buttonAceptar = msg.addButton("Сохранить", QMessageBox.ButtonRole.YesRole)
+                msg.addButton("Не сохранять", QMessageBox.ButtonRole.RejectRole)
                 msg.setDefaultButton(buttonAceptar)
-                msg.exec_()
+                msg.exec()
                 if msg.clickedButton() == buttonAceptar:
                     save_to_eeprom(node)
 
@@ -864,13 +859,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
 
         msg = QMessageBox(self)
         msg.setWindowTitle("Выход")
-        msg.setIcon(QMessageBox.Question)
+        msg.setIcon(QMessageBox.Icon.Question)
         msg.setText("Вы уверены, что хотите закрыть приложение?")
 
-        buttonAceptar = msg.addButton("Да", QMessageBox.YesRole)
-        msg.addButton("Отменить", QMessageBox.RejectRole)  # buttonCancelar =
+        buttonAceptar = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
+        msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)  # buttonCancelar =
         msg.setDefaultButton(buttonAceptar)
-        msg.exec_()
+        msg.exec()
 
         if msg.clickedButton() == buttonAceptar:
             if self.thread.isRunning():
@@ -908,13 +903,13 @@ def load_from_eeprom():
         if answer:
             answer = 'Команду выполнить не удалось\n' + answer
         else:
-            QMessageBox.information(window, "Успешный успех!", 'Параметры загружены из ЕЕПРОМ', QMessageBox.Ok)
+            QMessageBox.information(window, "Успешный успех!", 'Параметры загружены из ЕЕПРОМ', QMessageBox.StandardButton.Ok)
             node.param_was_changed = False
             return
     else:
         answer = 'В списке адаптеров канал 250 не найден'
 
-    QMessageBox.critical(window, "Ошибка", answer, QMessageBox.Ok)
+    QMessageBox.critical(window, "Ошибка", answer, QMessageBox.StandardButton.Ok)
 
 
 def mpei_invert():
@@ -986,7 +981,7 @@ def mpei_calibrate():
     s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION', wait_thread)
     if not s:
         wait_thread.start()
-        if dialog.exec_():
+        if dialog.exec():
             wait_thread.quit()
             wait_thread.wait()
             print('Поток калибровки остановлен')
@@ -1000,7 +995,7 @@ def joystick_bind():
         QMessageBox.information(window, "Информация", 'Перед привязкой проверь:\n'
                                                       ' - что джойстик ВЫКЛЮЧЕН\n'
                                                       ' - высокое напряжение ВКЛЮЧЕНО',
-                                QMessageBox.Ok)
+                                QMessageBox.StandardButton.Ok)
         adapter = can_adapter.adapters_dict[250]
 
         dialog = DialogChange(text='Команда на привязку отправлена')
@@ -1023,14 +1018,14 @@ def joystick_bind():
 
         if not bind_command:
             wait_thread.start()
-            if dialog.exec_():
+            if dialog.exec():
                 wait_thread.quit()
                 wait_thread.wait()
                 print('Поток остановлен')
         else:
-            QMessageBox.critical(window, "Ошибка ", 'Команда привязки не отправлена\n' + bind_command, QMessageBox.Ok)
+            QMessageBox.critical(window, "Ошибка ", 'Команда привязки не отправлена\n' + bind_command, QMessageBox.StandardButton.Ok)
     else:
-        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
+        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
 
 
 def suspension_to_zero():
@@ -1044,7 +1039,7 @@ def suspension_to_zero():
         QMessageBox.information(window, "Информация", 'Перед выравниванием проверь что:\n'
                                                       ' - тумблер режима подвески в положении АВТО КВУ\n'
                                                       ' - остальные тумблеры в нейтральном положении',
-                                QMessageBox.Ok)
+                                QMessageBox.StandardButton.Ok)
         adapter = can_adapter.adapters_dict[250]
         dialog = DialogChange(text='Команда на установку отправлена',
                               table=wait_thread.imp_par_list)
@@ -1058,16 +1053,16 @@ def suspension_to_zero():
         command_zero_suspension = adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
         if not command_zero_suspension:  # если передача прошла успешно
             wait_thread.start()
-            if dialog.exec_():
+            if dialog.exec():
                 wait_thread.quit()
                 wait_thread.wait()
                 print('Поток остановлен')
 
         else:
-            QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{command_zero_suspension}', QMessageBox.Ok)
+            QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{command_zero_suspension}', QMessageBox.StandardButton.Ok)
             window.log_lbl.setText(command_zero_suspension.replace('\n', ''))
     else:
-        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.Ok)
+        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
 
 
 @pyqtSlot(str)
@@ -1085,7 +1080,7 @@ if __name__ == '__main__':
     splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
-    # apply_stylesheet(app, theme='dark_teal.xml')
+    apply_stylesheet(app, theme='dark_teal.xml')
 
     sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
     #
@@ -1141,7 +1136,7 @@ if __name__ == '__main__':
         window.show()  # Показываем окно
         splash.finish(window)  # Убираем заставку
         print(time.perf_counter() - start_time)
-        app.exec_()  # и запускаем приложение
+        app.exec()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
 #

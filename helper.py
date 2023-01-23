@@ -6,9 +6,9 @@ import traceback
 
 # import traceback
 
-from PyQt5.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal, QStringListModel
-from PyQt5.QtGui import QFont, QColor
-from PyQt5.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
+from PyQt6.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal, QStringListModel
+from PyQt6.QtGui import QFont, QColor
+from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
     QComboBox, QListView, QSizePolicy
 
 import Dialog_params
@@ -150,31 +150,31 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 
         color_ = color_EVO_green if par.editable else color_EVO_white
         name_item = QTableWidgetItem(name)
-        name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
+        name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         name_item.setBackground(color_)
         show_table.setItem(row, 0, name_item)
 
         desc_item = QTableWidgetItem(description)
-        desc_item.setFlags(desc_item.flags() & ~Qt.ItemIsEditable)
+        desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         show_table.setItem(row, 1, desc_item)
 
         value_item = QTableWidgetItem('')
-        value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
+        value_item.setFlags(value_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         show_table.setItem(row, 2, value_item)
 
         compare_item = QTableWidgetItem(compare)
-        compare_item.setFlags(compare_item.flags() & ~Qt.ItemIsEditable)
+        compare_item.setFlags(compare_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         show_table.setItem(row, 3, compare_item)
 
         unit_item = QTableWidgetItem(unit)
-        unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
+        unit_item.setFlags(unit_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
         row += 1
-    show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-    show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+    show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+    show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
     # максимальная ширина у описания, если не хватает длины, то переносится
-    show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+    show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
     return items_list
 
 
@@ -221,9 +221,9 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
                 comBox.setView(listView)
                 # comBox.addItems(v_list)
                 comBox.parametr = par
-                comBox.setSizeAdjustPolicy(QComboBox.AdjustToContentsOnFirstShow)
+                comBox.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContentsOnFirstShow)
                 # .AdjustToMinimumContentsLengthWithIcon + AdjustToContentsOnFirstShow + AdjustToContents)
-                comBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+                comBox.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
                 comBox.setMaximumSize(220, 170)
                 table.setCellWidget(row, 2, comBox)
                 items_list.append(comBox)
@@ -231,9 +231,9 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
         else:
             value_item = QTableWidgetItem(v_name)
             if par.editable:
-                flags = (value_item.flags() | Qt.ItemIsEditable)
+                flags = (value_item.flags() | Qt.ItemFlag.ItemIsEditable)
             else:
-                flags = value_item.flags() & ~Qt.ItemIsEditable
+                flags = value_item.flags() & ~Qt.ItemFlag.ItemIsEditable
             value_item.setFlags(flags)
             # подкрашиваем в голубой в зависимости от периода опроса
             color_opacity = int((150 / 1000) * abs(par.period)) + 3
@@ -264,11 +264,11 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
     def __init__(self, label=None, value=None, table=None, radio_btn=None, text=None, process=None):
         super().__init__()
         self.setupUi(self)
-        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+        self.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
         self.text_browser.setEnabled(False)
         self.text_browser.setStyleSheet("font: bold 14px;")
-        self.buttonBox.button(QDialogButtonBox.Ok).setText('ОК')
-        self.buttonBox.button(QDialogButtonBox.Cancel).setText('Отмена')
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setText('ОК')
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setText('Отмена')
         # никаких защит и проверок
 
         if label is not None:

@@ -134,7 +134,7 @@ class Parametr:
         self.req_list = []
         self.set_list = []
         self.value_string = ''
-        self.eeprom = True if param['eeprom'] else False
+        self.eeprom = True if 'eeprom' in param.keys() and param['eeprom'] is not False else False
 
     # формирует посылку в зависимости от протокола
     def get_list(self):
