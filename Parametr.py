@@ -43,7 +43,7 @@ readme = dict(
 )
 # список полей параметра, который будем запихивать в файл. Можно выбрать не все поля
 # в следующем релизе нужно согласовать со стандартными полями Параметра
-exit_list = ['name', 'index', 'sub_index', 'description', 'type', 'value', 'units', 'eeprom',
+exit_list = ['name', 'index', 'sub_index', 'description', 'type', 'value', 'units',
              'multiplier', 'editable', 'offset', 'period', 'min_value', 'max_value', 'value_table']
 
 type_values = {
@@ -244,8 +244,8 @@ class Parametr:
             del exit_dict['value_table']
         if not exit_dict['units']:
             del exit_dict['units']
-        if not exit_dict['eeprom']:
-            del exit_dict['eeprom']
+        if hasattr(self, 'eeprom') and self.eeprom:
+            exit_dict['eeprom'] = True
         if not exit_dict['description']:
             del exit_dict['description']
         if exit_dict['multiplier'] == 1:

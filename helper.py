@@ -9,7 +9,7 @@ import traceback
 from PyQt6.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal, QStringListModel
 from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
-    QComboBox, QListView, QSizePolicy
+    QComboBox, QListView, QSizePolicy, QStyleFactory
 
 import Dialog_params
 import my_dialog
@@ -248,17 +248,6 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
     return items_list
 
 
-class InfoMessage(QDialog, Dialog_params.Ui_Dialog_params):
-
-    def __init__(self, info: str):
-        super().__init__()
-        self.setupUi(self)
-        self.info_lbl.setText(info)
-        self.info_lbl.setFont(QFont('MS Shell Dlg 2', 10))
-        self.setWindowFlag(Qt.FramelessWindowHint)
-        QTimer.singleShot(1700, self.close)
-
-
 class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
     def __init__(self, label=None, value=None, table=None, radio_btn=None, text=None, process=None):
@@ -361,6 +350,7 @@ def dw2float(dw_array):
         else ((dw & 0x7FFFFF) << 1)  # Мантисса
     m1 = m * (2 ** (-23))  # Мантисса в float
     return s * m1 * (2 ** (e - 127))
+
 
 #
 # пока просто не нужный код, может, потом пригодится

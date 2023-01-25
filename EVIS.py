@@ -51,20 +51,18 @@ import datetime
 import pickle
 import sys
 import time
+
 import pandas as pd
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
-from PyQt5.QtCore import QRegExp
 # from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
-from PyQt6.QtGui import QIcon, QColor, QPixmap, QBrush, QDesktopServices
+from PyQt6.QtGui import QIcon, QColor, QPixmap, QBrush
 from PyQt5.QtGui import QRegExpValidator
 # from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
+    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory
 # from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
 #     QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
 import pathlib
-
-from PySide6.QtUiTools import QUiLoader
 
 from qt_material import apply_stylesheet, list_themes, QtStyleTools
 
@@ -72,19 +70,20 @@ import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVOErrors import EvoError
 from EVONode import EVONode
-from EVOStyleSheet import PushButtonStyle
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_orange, color_EVO_red, color_EVO_red_dark, \
-    color_EVO_orange_shine, color_EVO_green, color_EVO_white, color_EVO_graphite2
+    show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
+    color_EVO_orange_shine, color_EVO_green, color_EVO_white
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
 sleep_thread = SleepThread(3)
+extra = {   # Density Scale
+        'density_scale': '-2', }
 
 
 def search_param():
@@ -261,7 +260,7 @@ def set_new_value(param: Parametr, val):
     color = QColor(254, 254, 254)
     if 'WheelTypeSet' in param.name:
         if QMessageBox.information(window, "Пасхалка", easter_egg,
-                                   QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)\
+                                   QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel) \
                 != QMessageBox.StandardButton.Ok:
             return "Пердумал", color
     try:
@@ -422,7 +421,7 @@ def show_error(item, column):
                 break
     else:
         current_err = window.thread.err_dict[current_node_text][0]
-    err_links_list = '\n'.join([f'<br><a href="{li}">Проверка здесь</a></br>' for li in current_err.check_link])\
+    err_links_list = '\n'.join([f'<br><a href="{li}">Проверка здесь</a></br>' for li in current_err.check_link]) \
         if current_err.check_link else ''
     window.errors_browser.setHtml(current_err.description + '\n' + err_links_list)
     window.errors_browser.setOpenExternalLinks(True)
@@ -554,10 +553,12 @@ def save_to_file_pressed():  # если нужно записать текущи
     window.tr.run()
 
 
-class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow,  QtStyleTools):
+class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
     record_vmu_params = False
     node_list_defined = False
     err_str = ''
+    themes_list = list_themes() + QStyleFactory.keys()
+    current_theme = ''
 
     def __init__(self):
         super().__init__()
@@ -567,7 +568,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow,  QtStyleTools):
         self.setupUi(self)
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
-        self.thread = MainThread()
+        self.thread = MainThread(self)
         self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
         self.thread.err_thread_signal.connect(self.add_new_errors)
         self.thread.adapter = can_adapter
@@ -579,6 +580,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow,  QtStyleTools):
         self.errors_tree.header().close()
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
+        self.default_style_sheet = self.styleSheet()
         # self.setStyleSheet(PushButtonStyle)
         # with open('ElegantDark.qss', 'r') as f:
         #     self.setStyleSheet(f.read())
@@ -609,7 +611,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow,  QtStyleTools):
                 can_adapter.close_canal_can()
             if err == 'Адаптер не подключен':
                 can_adapter.isDefined = False
-        elif not list_of_params:    # ошибок нет - всё хорошо
+        elif not list_of_params:  # ошибок нет - всё хорошо
             # показываем свежие обновлённые параметры
             # и считаем сколько среди них комбобоксов
             # это неправильно, потому что могут быть и другие виджеты
@@ -650,7 +652,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow,  QtStyleTools):
                     child_item = QTreeWidgetItem()
                     child_item.setText(0, err.name)
                     if err.critical:
-                        child_item.setBackground(0, QBrush(color_EVO_red_dark))     # setForeground
+                        child_item.setBackground(0, QBrush(color_EVO_red_dark))  # setForeground
                     else:
                         child_item.setBackground(0, QBrush(color_EVO_orange_shine))
                     item.addChild(child_item)
@@ -868,6 +870,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow,  QtStyleTools):
         msg.exec()
 
         if msg.clickedButton() == buttonAceptar:
+            with open(stylesheet_file, 'w+') as f:
+                f.write(self.current_theme)
             if self.thread.isRunning():
                 self.thread.quit()
                 self.thread.wait()
@@ -903,7 +907,8 @@ def load_from_eeprom():
         if answer:
             answer = 'Команду выполнить не удалось\n' + answer
         else:
-            QMessageBox.information(window, "Успешный успех!", 'Параметры загружены из ЕЕПРОМ', QMessageBox.StandardButton.Ok)
+            QMessageBox.information(window, "Успешный успех!", 'Параметры загружены из ЕЕПРОМ',
+                                    QMessageBox.StandardButton.Ok)
             node.param_was_changed = False
             return
     else:
@@ -1023,7 +1028,8 @@ def joystick_bind():
                 wait_thread.wait()
                 print('Поток остановлен')
         else:
-            QMessageBox.critical(window, "Ошибка ", 'Команда привязки не отправлена\n' + bind_command, QMessageBox.StandardButton.Ok)
+            QMessageBox.critical(window, "Ошибка ", 'Команда привязки не отправлена\n' + bind_command,
+                                 QMessageBox.StandardButton.Ok)
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
 
@@ -1059,7 +1065,8 @@ def suspension_to_zero():
                 print('Поток остановлен')
 
         else:
-            QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{command_zero_suspension}', QMessageBox.StandardButton.Ok)
+            QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{command_zero_suspension}',
+                                 QMessageBox.StandardButton.Ok)
             window.log_lbl.setText(command_zero_suspension.replace('\n', ''))
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
@@ -1070,28 +1077,59 @@ def set_log_lbl(s: str):
     window.log_lbl.setText(s.replace('\n', ''))
 
 
+def change_theme():
+    if window.current_theme:
+        theme_count = window.themes_list.index(window.current_theme)
+        if theme_count == len(window.themes_list) - 1:
+            window.current_theme = window.themes_list[0]
+        else:
+            window.current_theme = window.themes_list[theme_count + 1]
+    else:
+        window.current_theme = window.themes_list[0]
+    set_theme(window.current_theme)
+
+
+def set_theme(theme_str=''):
+    if theme_str in QStyleFactory.keys():
+        app.setStyleSheet('')
+        app.setStyle(theme_str)
+    elif theme_str in list_themes():
+        apply_stylesheet(app, theme_str, extra=extra)
+        window.node_fm_lab.setStyleSheet(f'color: {QTMATERIAL_PRIMARYTEXTCOLOR}')
+    else:
+        app.setStyleSheet('')
+
+    print(theme_str)
+
+
 if __name__ == '__main__':
     start_time = time.perf_counter()
     app = QApplication([])
-    list_themes()
 
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
     splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
-    apply_stylesheet(app, theme='dark_teal.xml')
-
+    # print(window.thread.parent, window, type(window.thread.parent), type(window))
+    # apply_stylesheet(app, 'dark_teal.xml', extra=extra)
+    stylesheet_file = pathlib.Path(dir_path, 'Data', 'EVOStyleSheet.txt')
+    try:
+        with open(stylesheet_file) as f:
+            window.current_theme = f.read()
+    except FileNotFoundError:
+        print('Файл со стилем не найден, Оставляем стиль по умолчанию')
+    else:
+        set_theme(window.current_theme)
     sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
-    #
     window.main_tab.currentChanged.connect(window.change_tab)
-    # подключаю сигналы нажатия на окошки
+    # ============================== подключаю сигналы нажатия на окошки
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.errors_tree.itemPressed.connect(show_error)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
     window.errors_browser.setStyleSheet("font: bold 14px;")
-    # и сигналы нажатия на кнопки
+    # ============================== и сигналы нажатия на кнопки
     # -----------------Инвертор---------------------------
     window.invert_btn.clicked.connect(mpei_invert)
     window.calibrate_btn.clicked.connect(mpei_calibrate)
@@ -1107,6 +1145,7 @@ if __name__ == '__main__':
     window.susp_zero_btn.setEnabled(False)
     window.load_from_eeprom_btn.setEnabled(False)
     window.joy_bind_btn.setEnabled(False)
+    window.change_theme_btn.clicked.connect(change_theme)
     # ------------------Главные кнопки-------------------------
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(save_to_eeprom)
@@ -1140,8 +1179,7 @@ if __name__ == '__main__':
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
 #
-# ------------------- дублируются неизвестные ошибки
 # -------------------- не доходит до конца прогресс при сохранении
 # не обновлять значение параметр если сейчас на нём фокус
 # -------------------- проверять нужно ли сохранять параметр в еепром, и только тогда зажигать кнопку
-# если уже есть считанные значения, показывать их, а потом уже считывать и обновлять
+#

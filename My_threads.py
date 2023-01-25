@@ -6,7 +6,7 @@ import yaml
 # from PyQt5.QtWidgets import QMessageBox
 
 from PyQt6.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox, QWidget
 
 from EVONode import EVONode, invertor_command_dict
 from Parametr import readme
@@ -77,7 +77,8 @@ class SaveToFileThread(QThread):
                     if self.group_counter > len(self.node_to_save.group_params_dict.items()) - 1:
                         timer.stop()
                         self.save_file()
-                        catch_empty_params = True
+                        return
+                        # catch_empty_params = True
                     else:
                         self.current_params_list = params_dict[list(params_dict.keys())[self.group_counter]]
 
@@ -90,7 +91,7 @@ class SaveToFileThread(QThread):
         timer.start(send_delay)
 
         loop = QEventLoop()
-        loop.exec_()
+        loop.exec()
 
     def save_file(self):
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -125,10 +126,11 @@ class MainThread(QThread):
     record_dict = {}
     thread_timer = 0
 
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
         self.max_errors = 3
         self.current_nodes_dict = {}
+        self.parent = parent
 
     def run(self):
         def emitting(ans_list):
@@ -202,7 +204,7 @@ class MainThread(QThread):
         timer.start(send_delay)
 
         loop = QEventLoop()
-        loop.exec_()
+        loop.exec()
 
     def send_to_mpei(self, command):
         node = self.current_nodes_dict['Инвертор_МЭИ']
@@ -217,23 +219,23 @@ class MainThread(QThread):
         return answer
 
     def invertor_command(self, command: str, tr=None):
-        w = None
+        w = self.parent
         if command not in invertor_command_dict.keys():
             return 'Неверная Команда'
 
         warn_str = invertor_command_dict[command][2]
         if not warn_str or \
                 QMessageBox.information(w, "Информация", warn_str,
-                                        QMessageBox.Ok, QMessageBox.Cancel) == QMessageBox.Ok:
+                                        QMessageBox.Ok, QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
             answer = self.send_to_mpei(command)
             if answer:
                 answer = 'Команду выполнить не удалось\n' + answer
-                QMessageBox.critical(w, "Ошибка", answer, QMessageBox.Ok)
+                QMessageBox.critical(w, "Ошибка", answer, QMessageBox.StandardButton.Ok)
             else:
                 if tr is not None:
                     return ''
                 answer = invertor_command_dict[command][1]
-                QMessageBox.information(w, "Успешный успех!", answer, QMessageBox.Ok)
+                QMessageBox.information(w, "Успешный успех!", answer, QMessageBox.StandardButton.Ok)
             return answer
         return 'Команда отменена пользователем'
 
@@ -300,7 +302,7 @@ class WaitCanAnswerThread(QThread):
         timer.start(self.req_delay)
 
         loop = QEventLoop()
-        loop.exec_()
+        loop.exec()
 
 
 class SleepThread(QThread):
