@@ -1095,7 +1095,7 @@ def set_theme(theme_str=''):
         app.setStyle(theme_str)
     elif theme_str in list_themes():
         apply_stylesheet(app, theme_str, extra=extra)
-        window.node_fm_lab.setStyleSheet(f'color: {QTMATERIAL_PRIMARYTEXTCOLOR}')
+        window.node_fm_lab.setStyleSheet('color: {QTMATERIAL_PRIMARYTEXTCOLOR}')
     else:
         app.setStyleSheet('')
 
@@ -1179,7 +1179,7 @@ if __name__ == '__main__':
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
 #
-# -------------------- не доходит до конца прогресс при сохранении
+# не работает регулярка
 # не обновлять значение параметр если сейчас на нём фокус
-# -------------------- проверять нужно ли сохранять параметр в еепром, и только тогда зажигать кнопку
+# не видно подсветки  бекграунд в тёмной теме
 #

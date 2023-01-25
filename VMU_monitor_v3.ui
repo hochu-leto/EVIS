@@ -163,6 +163,7 @@
              <property name="font">
               <font>
                <pointsize>10</pointsize>
+               <kerning>true</kerning>
               </font>
              </property>
              <property name="layoutDirection">
@@ -186,7 +187,7 @@
                <pointsize>12</pointsize>
                <weight>50</weight>
                <bold>false</bold>
-               <kerning>false</kerning>
+               <kerning>true</kerning>
               </font>
              </property>
              <property name="layoutDirection">
@@ -211,6 +212,7 @@
              <property name="font">
               <font>
                <pointsize>10</pointsize>
+               <kerning>true</kerning>
               </font>
              </property>
              <property name="text">
@@ -275,6 +277,7 @@
           <property name="font">
            <font>
             <pointsize>10</pointsize>
+            <kerning>true</kerning>
            </font>
           </property>
           <property name="text">
@@ -325,7 +328,7 @@
                <pointsize>10</pointsize>
                <weight>50</weight>
                <bold>false</bold>
-               <kerning>false</kerning>
+               <kerning>true</kerning>
               </font>
              </property>
              <property name="text">
@@ -359,7 +362,7 @@
              <property name="font">
               <font>
                <pointsize>10</pointsize>
-               <kerning>false</kerning>
+               <kerning>true</kerning>
               </font>
              </property>
              <property name="text">
@@ -385,7 +388,7 @@
              <property name="font">
               <font>
                <pointsize>10</pointsize>
-               <kerning>false</kerning>
+               <kerning>true</kerning>
               </font>
              </property>
              <property name="text">
@@ -414,7 +417,7 @@
              <property name="font">
               <font>
                <pointsize>10</pointsize>
-               <kerning>false</kerning>
+               <kerning>true</kerning>
               </font>
              </property>
              <property name="text">
@@ -443,7 +446,7 @@
              <property name="font">
               <font>
                <pointsize>10</pointsize>
-               <kerning>false</kerning>
+               <kerning>true</kerning>
               </font>
              </property>
              <property name="text">
@@ -495,7 +498,7 @@
           <property name="font">
            <font>
             <pointsize>10</pointsize>
-            <kerning>false</kerning>
+            <kerning>true</kerning>
            </font>
           </property>
           <property name="layoutDirection">
@@ -523,7 +526,7 @@
           <property name="font">
            <font>
             <pointsize>10</pointsize>
-            <kerning>false</kerning>
+            <kerning>true</kerning>
            </font>
           </property>
           <property name="layoutDirection">
