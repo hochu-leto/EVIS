@@ -76,7 +76,7 @@
     <item row="1" column="0">
      <widget class="QTabWidget" name="main_tab">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="params_tab">
        <property name="sizePolicy">
@@ -549,22 +549,8 @@
        <attribute name="title">
         <string>Управление</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_6" rowstretch="0,0,2,2,0" columnstretch="1,1,1,10">
-        <item row="4" column="1">
-         <widget class="QPushButton" name="load_from_eeprom_btn">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Загрузить из 
- ЕЕПРОМ КВУ</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="2">
+       <layout class="QGridLayout" name="gridLayout_6" rowstretch="1,0,0,0,0" columnstretch="1,1,0,0,0,10">
+        <item row="4" column="4">
          <widget class="QPushButton" name="susp_zero_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -579,21 +565,63 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QPushButton" name="joy_bind_btn">
+        <item row="0" column="4">
+         <widget class="QGroupBox" name="light_box">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="text">
-           <string>Привязать
- джойстик</string>
+          <property name="title">
+           <string>Фонари</string>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QRadioButton" name="radioButton">
+             <property name="text">
+              <string>Выкл</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_2">
+             <property name="text">
+              <string>Левыйт
+ борт</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_3">
+             <property name="text">
+              <string>Правый
+ борт</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_4">
+             <property name="text">
+              <string>Стоп</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_5">
+             <property name="text">
+              <string>Задний
+ ход</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
-        <item row="0" column="3" rowspan="5">
+        <item row="0" column="5" rowspan="5">
          <widget class="QGroupBox" name="groupBox_2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -836,6 +864,34 @@
             </widget>
            </item>
           </layout>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QPushButton" name="load_from_eeprom_btn">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Загрузить из 
+ ЕЕПРОМ КВУ</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1" colspan="3">
+         <widget class="QPushButton" name="joy_bind_btn">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Привязать
+ джойстик</string>
+          </property>
          </widget>
         </item>
        </layout>

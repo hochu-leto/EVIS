@@ -4,12 +4,13 @@
 import struct
 import traceback
 
+import qt_material
 # import traceback
 
 from PyQt6.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal, QStringListModel
-from PyQt6.QtGui import QFont, QColor
+from PyQt6.QtGui import QFont, QColor, QPalette, QBrush, qRgb
 from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
-    QComboBox, QListView, QSizePolicy, QStyleFactory
+    QComboBox, QListView, QSizePolicy, QStyleFactory, QLabel
 
 import Dialog_params
 import my_dialog
@@ -66,6 +67,11 @@ color_EVO_white = QColor(255, 254, 254, 80)
 color_EVO_gray = QColor(98, 104, 116, 80)
 color_EVO_graphite2 = QColor(54, 60, 70, 80)
 color_EVO_raven = QColor(188, 125, 136, 80)
+
+
+class MyLabel(QLabel):
+    def __init__(self, parent=None):
+        super(QLabel, self).__init__(parent)
 
 
 class MyComboBox(QComboBox):
@@ -150,9 +156,14 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 
         color_ = color_EVO_green if par.editable else color_EVO_white
         name_item = QTableWidgetItem(name)
-        name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-        name_item.setBackground(color_)
-        show_table.setItem(row, 0, name_item)
+        if par.editable:
+            lb = MyLabel()
+            lb.setText(name)
+            lb.setStyleSheet('background-color: rgba(0, 200, 0, 50);')
+            show_table.setCellWidget(row, 0, lb)
+        else:
+            name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            show_table.setItem(row, 0, name_item)
 
         desc_item = QTableWidgetItem(description)
         desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)

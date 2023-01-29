@@ -51,11 +51,13 @@ import datetime
 import pickle
 import sys
 import time
+from pprint import pprint
 
 import pandas as pd
+import qt_material
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 # from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
-from PyQt6.QtGui import QIcon, QColor, QPixmap, QBrush
+from PyQt6.QtGui import QIcon, QColor, QPixmap, QBrush, QDoubleValidator, QRegularExpressionValidator
 from PyQt5.QtGui import QRegExpValidator
 # from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
@@ -320,7 +322,7 @@ def want_to_value_change():
         if is_editable:
             dialog = DialogChange(label=current_param.name, value=c_text.strip())
             reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
-            dialog.lineEdit.setValidator(QRegExpValidator(reg_ex))
+            dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
 
             if dialog.exec() == QDialog.DialogCode.Accepted:
                 val = dialog.lineEdit.text()
@@ -1091,11 +1093,26 @@ def change_theme():
 
 def set_theme(theme_str=''):
     if theme_str in QStyleFactory.keys():
-        app.setStyleSheet('')
+        app.setStyleSheet('' + 'MyLabel {background-color: rgba(0, 200, 0, 50);}')
         app.setStyle(theme_str)
     elif theme_str in list_themes():
         apply_stylesheet(app, theme_str, extra=extra)
-        window.node_fm_lab.setStyleSheet('color: {QTMATERIAL_PRIMARYTEXTCOLOR}')
+        stapp = app.styleSheet()
+        pr_c_index = stapp.find('QPushButton {')
+        primary_color = stapp[pr_c_index + 23:pr_c_index + 30]
+        c_f_index = stapp.find('*{')
+        c_f_index_end = stapp.find('*:focus')
+        cur_font = stapp[c_f_index + 2:c_f_index_end]
+        b_f_index = stapp.find('/*  QPushButton  */')
+        b_f_index_end = stapp.find('QPushButton:checked,')
+        butt_font = stapp[b_f_index + 34:b_f_index_end]
+        my_style = f'QLabel {{color: {primary_color};\n' \
+                   f'{butt_font}\n' \
+                   f'MyLabel {{\n' \
+                   f'background-color: #00c800; \n' \
+                   f'{cur_font}' \
+
+        app.setStyleSheet(stapp + my_style)
     else:
         app.setStyleSheet('')
 
@@ -1179,7 +1196,6 @@ if __name__ == '__main__':
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
 #
-# не работает регулярка
 # не обновлять значение параметр если сейчас на нём фокус
 # не видно подсветки  бекграунд в тёмной теме
 #
