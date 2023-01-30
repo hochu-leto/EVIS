@@ -157,9 +157,11 @@ class Parametr:
     def set_val(self, adapter: CANAdater, value):
         value += self.offset
         value /= self.multiplier
-
-        self.value = (value if value < self.max_value else self.max_value) \
-            if value >= self.min_value else self.min_value
+        if 'Рулевая' in self.node.name:     # У томска проблемы с типом переменных
+            self.value = value
+        else:
+            self.value = (value if value < self.max_value else self.max_value) \
+                if value >= self.min_value else self.min_value
 
         self.get_list()
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.set_list)

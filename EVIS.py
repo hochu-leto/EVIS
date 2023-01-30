@@ -61,7 +61,7 @@ from PyQt6.QtGui import QIcon, QColor, QPixmap, QBrush, QDoubleValidator, QRegul
 from PyQt5.QtGui import QRegExpValidator
 # from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory
+    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel
 # from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
 #     QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
 import pathlib
@@ -84,8 +84,8 @@ can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
 sleep_thread = SleepThread(3)
-extra = {   # Density Scale
-        'density_scale': '-2', }
+extra = {  # Density Scale
+    'density_scale': '-2', }
 
 
 def search_param():
@@ -276,8 +276,10 @@ def set_new_value(param: Parametr, val):
             else:
                 new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
-            if str(val) == new_val:
-                my_label = GreenLabel()
+            my_label = QLabel()
+
+            if str(val).strip() == new_val:
+                my_label = GreenLabel()  # .setStyleSheet('background-color: #00c800;')
                 if param.node.save_to_eeprom:
                     param.node.param_was_changed = True
                     # В Избранном кнопку не активируем, может быть несколько блоков.
@@ -289,9 +291,9 @@ def set_new_value(param: Parametr, val):
                         elif window.thread.current_node.name == 'КВУ_ТТС':
                             param.node.param_was_changed = param.eeprom
                             window.save_eeprom_btn.setEnabled(param.eeprom)
-                else:
-                    my_label = RedLabel()
-                    # если поток был запущен до изменения, то запускаем его снова
+            else:
+                my_label = RedLabel()  # .setStyleSheet('background-color: #c80000;')
+                # если поток был запущен до изменения, то запускаем его снова
             if window.thread.isFinished():
                 # и запускаю поток
                 window.connect_to_node()
@@ -309,7 +311,8 @@ def info_and_widget(info_m='', my_lab=None):
         c_row = window.vmu_param_table.currentItem().row()
         c_next_col = window.vmu_param_table.currentItem().column() + 1
         c_next_text = window.vmu_param_table.item(c_row, c_next_col).text()
-        window.vmu_param_table.setCellWidget(c_row, c_next_col, my_lab.setText(c_next_text))
+        my_lab.setText(c_next_text)
+        window.vmu_param_table.setCellWidget(c_row, c_next_col, my_lab)
 
 
 def want_to_value_change(c_row, c_col):
@@ -322,7 +325,8 @@ def want_to_value_change(c_row, c_col):
 
     # меняем значение параметра
     if col_name == 'ЗНАЧЕНИЕ':
-        is_editable = True if Qt.ItemFlag.ItemIsEditable & current_cell.flags() else False
+        c_flags = current_cell.flags()
+        is_editable = True if Qt.ItemFlag.ItemIsEditable & c_flags else False
         info_m, lab = '', None
         if is_editable:
             dialog = DialogChange(label=current_param.name, value=c_text.strip())
@@ -339,8 +343,7 @@ def want_to_value_change(c_row, c_col):
         info_and_widget(info_m, lab)
         # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
         # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
-        # window.vmu_param_table.item(c_row, c_col).setFlags(c_flags & ~Qt.ItemFlag.ItemIsEditable)
-        window.vmu_param_table.setCurrentItem()
+        window.vmu_param_table.item(c_row, c_col).setFlags(c_flags & ~Qt.ItemFlag.ItemIsEditable)
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
@@ -1097,7 +1100,7 @@ def change_theme():
 
 def set_theme(theme_str=''):
     if theme_str in QStyleFactory.keys():
-        app.setStyleSheet('' + 'MyLabel {background-color: rgba(0, 200, 0, 50);}')
+        app.setStyleSheet('')
         app.setStyle(theme_str)
     elif theme_str in list_themes():
         apply_stylesheet(app, theme_str, extra=extra)
@@ -1113,16 +1116,14 @@ def set_theme(theme_str=''):
         my_style = f'QLabel {{color: {primary_color};\n' \
                    f'{butt_font}\n' \
                    f'GreenLabel, RedLabel {{\n' \
-                   f'background-color: #00c800; \n' \
-                   f'{cur_font} ' \
-                   f'RedLabel {{\n' \
-                   f'background-color: #c80000; }}\n' \
-
+                   f'{cur_font} '
         app.setStyleSheet(stapp + my_style)
     else:
         app.setStyleSheet('')
-
-    print(theme_str)
+    c_style_sheet = app.styleSheet()
+    app.setStyleSheet(c_style_sheet +
+                      'GreenLabel {background-color: rgba(0, 200, 0, 50);} '
+                      'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
 
 
 if __name__ == '__main__':
@@ -1134,16 +1135,8 @@ if __name__ == '__main__':
     splash.show()
     window = VMUMonitorApp()
     window.setWindowTitle('Electric Vehicle Information System')
-    # print(window.thread.parent, window, type(window.thread.parent), type(window))
-    # apply_stylesheet(app, 'dark_teal.xml', extra=extra)
     stylesheet_file = pathlib.Path(dir_path, 'Data', 'EVOStyleSheet.txt')
-    try:
-        with open(stylesheet_file) as f:
-            window.current_theme = f.read()
-    except FileNotFoundError:
-        print('Файл со стилем не найден, Оставляем стиль по умолчанию')
-    else:
-        set_theme(window.current_theme)
+
     sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
     window.main_tab.currentChanged.connect(window.change_tab)
     # ============================== подключаю сигналы нажатия на окошки
@@ -1195,6 +1188,13 @@ if __name__ == '__main__':
             window.connect_to_node()
         else:
             window.log_lbl.setText('Адаптер не подключен')
+        try:
+            with open(stylesheet_file) as f:
+                window.current_theme = f.read()
+        except FileNotFoundError:
+            print('Файл со стилем не найден, Оставляем стиль по умолчанию')
+        finally:
+            set_theme(window.current_theme)
         window.show()  # Показываем окно
         splash.finish(window)  # Убираем заставку
         print(time.perf_counter() - start_time)
@@ -1203,5 +1203,4 @@ if __name__ == '__main__':
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
 #
 # не обновлять значение параметр если сейчас на нём фокус
-# не видно подсветки  бекграунд в тёмной теме
 #

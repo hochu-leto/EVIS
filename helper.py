@@ -72,11 +72,13 @@ color_EVO_raven = QColor(188, 125, 136, 80)
 class GreenLabel(QLabel):
     def __init__(self, parent=None):
         super(QLabel, self).__init__(parent)
+        self.setStyleSheet('{background-color: rgba(0, 200, 0, 50);}')
 
 
 class RedLabel(QLabel):
     def __init__(self, parent=None):
         super(QLabel, self).__init__(parent)
+        self.setStyleSheet('{background-color: rgba(200, 0, 0, 50);}')
 
 
 class MyComboBox(QComboBox):
@@ -159,14 +161,12 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         else:
             compare = zero_del(v_c)
 
-        color_ = color_EVO_green if par.editable else color_EVO_white
-        name_item = QTableWidgetItem(name)
         if par.editable:
             lb = GreenLabel()
             lb.setText(name)
-            lb.setStyleSheet('background-color: rgba(0, 200, 0, 50);')
             show_table.setCellWidget(row, 0, lb)
         else:
+            name_item = QTableWidgetItem(name)
             name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             show_table.setItem(row, 0, name_item)
 
