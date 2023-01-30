@@ -78,7 +78,7 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
-    color_EVO_orange_shine, color_EVO_green, color_EVO_white
+    color_EVO_orange_shine, color_EVO_green, color_EVO_white, GreenLabel, RedLabel
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -245,26 +245,24 @@ def change_value(lst):
     print('Сработал комбо-бокс')
     if not window.vmu_param_table.currentItem():
         return
-    next_cell = window.vmu_param_table.item(window.vmu_param_table.currentItem().row(),
-                                            window.vmu_param_table.currentItem().column() + 1)
-    info_m = 'От комбо-бокса пришёл пустой список'
+
+    info_m, lab = 'От комбо-бокса пришёл пустой список', None
     if lst:
         parametr = lst[0]
         new_value = lst[1]
-        info_m, color = set_new_value(parametr, new_value)
-        next_cell.setBackground(color)
-    if info_m:
-        QMessageBox.information(window, "Информация", info_m, QMessageBox.StandardButton.Ok)
+        info_m, lab = set_new_value(parametr, new_value)
+
+    info_and_widget(info_m, lab)
 
 
 def set_new_value(param: Parametr, val):
     info_m = ''
-    color = QColor(254, 254, 254)
+    my_label = None
     if 'WheelTypeSet' in param.name:
         if QMessageBox.information(window, "Пасхалка", easter_egg,
                                    QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel) \
                 != QMessageBox.StandardButton.Ok:
-            return "Пердумал", color
+            return "Пердумал", my_label
     try:
         float(val)
         if window.thread.isRunning():  # отключаем поток, если он был включен
@@ -278,9 +276,8 @@ def set_new_value(param: Parametr, val):
             else:
                 new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
-            color = color_EVO_red_dark
             if str(val) == new_val:
-                color = color_EVO_green
+                my_label = GreenLabel()
                 if param.node.save_to_eeprom:
                     param.node.param_was_changed = True
                     # В Избранном кнопку не активируем, может быть несколько блоков.
@@ -292,7 +289,9 @@ def set_new_value(param: Parametr, val):
                         elif window.thread.current_node.name == 'КВУ_ТТС':
                             param.node.param_was_changed = param.eeprom
                             window.save_eeprom_btn.setEnabled(param.eeprom)
-            # если поток был запущен до изменения, то запускаем его снова
+                else:
+                    my_label = RedLabel()
+                    # если поток был запущен до изменения, то запускаем его снова
             if window.thread.isFinished():
                 # и запускаю поток
                 window.connect_to_node()
@@ -300,17 +299,23 @@ def set_new_value(param: Parametr, val):
             info_m = f'Подключение прервано, \nДля изменения параметра\nтребуется подключение к ВАТС'
     except ValueError:
         info_m = 'Параметр должен быть числом'
-    return info_m, color
+    return info_m, my_label
 
 
-def want_to_value_change():
-    #  над разбивать, как минимум, на две функции
-    current_cell = window.vmu_param_table.currentItem()
-    c_row = current_cell.row()
-    c_col = current_cell.column()
+def info_and_widget(info_m='', my_lab=None):
+    if info_m:
+        QMessageBox.information(window, "Информация", info_m, QMessageBox.StandardButton.Ok)
+    if my_lab:
+        c_row = window.vmu_param_table.currentItem().row()
+        c_next_col = window.vmu_param_table.currentItem().column() + 1
+        c_next_text = window.vmu_param_table.item(c_row, c_next_col).text()
+        window.vmu_param_table.setCellWidget(c_row, c_next_col, my_lab.setText(c_next_text))
+
+
+def want_to_value_change(c_row, c_col):
+    cell = window.vmu_param_table.item(c_row, c_col)
+    current_cell = cell if cell else window.vmu_param_table.cellWidget(c_row, c_col)
     c_text = current_cell.text()
-    # возможно, лучше сразу флаги дёрнуть, потом их изменять
-    c_flags = current_cell.flags()
     col_name = window.vmu_param_table.horizontalHeaderItem(c_col).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
     next_cell = window.vmu_param_table.item(c_row, c_col + 1)
@@ -318,7 +323,7 @@ def want_to_value_change():
     # меняем значение параметра
     if col_name == 'ЗНАЧЕНИЕ':
         is_editable = True if Qt.ItemFlag.ItemIsEditable & current_cell.flags() else False
-        info_m = ''
+        info_m, lab = '', None
         if is_editable:
             dialog = DialogChange(label=current_param.name, value=c_text.strip())
             reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
@@ -326,17 +331,16 @@ def want_to_value_change():
 
             if dialog.exec() == QDialog.DialogCode.Accepted:
                 val = dialog.lineEdit.text()
-                info_m, color = set_new_value(current_param, val)
-                next_cell.setBackground(color)
+                info_m, lab = set_new_value(current_param, val)
         else:
             info_m = f'Сейчас этот параметр нельзя изменить\n' \
                      f'Изменяемые параметры подкрашены зелёным\n' \
                      f'Также требуется подключение к ВАТС'
-        if info_m:
-            QMessageBox.information(window, "Информация", info_m, QMessageBox.StandardButton.Ok)
+        info_and_widget(info_m, lab)
         # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
         # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
-        window.vmu_param_table.item(c_row, c_col).setFlags(c_flags & ~Qt.ItemFlag.ItemIsEditable)
+        # window.vmu_param_table.item(c_row, c_col).setFlags(c_flags & ~Qt.ItemFlag.ItemIsEditable)
+        window.vmu_param_table.setCurrentItem()
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
@@ -1108,9 +1112,11 @@ def set_theme(theme_str=''):
         butt_font = stapp[b_f_index + 34:b_f_index_end]
         my_style = f'QLabel {{color: {primary_color};\n' \
                    f'{butt_font}\n' \
-                   f'MyLabel {{\n' \
+                   f'GreenLabel, RedLabel {{\n' \
                    f'background-color: #00c800; \n' \
-                   f'{cur_font}' \
+                   f'{cur_font} ' \
+                   f'RedLabel {{\n' \
+                   f'background-color: #c80000; }}\n' \
 
         app.setStyleSheet(stapp + my_style)
     else:

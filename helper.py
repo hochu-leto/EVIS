@@ -69,7 +69,12 @@ color_EVO_graphite2 = QColor(54, 60, 70, 80)
 color_EVO_raven = QColor(188, 125, 136, 80)
 
 
-class MyLabel(QLabel):
+class GreenLabel(QLabel):
+    def __init__(self, parent=None):
+        super(QLabel, self).__init__(parent)
+
+
+class RedLabel(QLabel):
     def __init__(self, parent=None):
         super(QLabel, self).__init__(parent)
 
@@ -157,7 +162,7 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         color_ = color_EVO_green if par.editable else color_EVO_white
         name_item = QTableWidgetItem(name)
         if par.editable:
-            lb = MyLabel()
+            lb = GreenLabel()
             lb.setText(name)
             lb.setStyleSheet('background-color: rgba(0, 200, 0, 50);')
             show_table.setCellWidget(row, 0, lb)
