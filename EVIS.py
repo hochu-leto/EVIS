@@ -51,19 +51,12 @@ import datetime
 import pickle
 import sys
 import time
-from pprint import pprint
 
 import pandas as pd
-import qt_material
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
-# from PyQt5.QtCore import pyqtSlot, Qt, QRegExp
-from PyQt6.QtGui import QIcon, QColor, QPixmap, QBrush, QDoubleValidator, QRegularExpressionValidator
-from PyQt5.QtGui import QRegExpValidator
-# from PyQt5.QtGui import QIcon, QColor, QPixmap, QRegExpValidator, QBrush
+from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel
-# from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-#     QSplashScreen, QFileDialog, QDialogButtonBox, QPushButton
 import pathlib
 
 from qt_material import apply_stylesheet, list_themes, QtStyleTools
@@ -74,16 +67,17 @@ from EVOErrors import EvoError
 from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
+from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
+    mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
-    color_EVO_orange_shine, color_EVO_green, color_EVO_white, GreenLabel, RedLabel
+    color_EVO_orange_shine, color_EVO_white, GreenLabel, RedLabel
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
-sleep_thread = SleepThread(3)
 extra = {  # Density Scale
     'density_scale': '-2', }
 
@@ -194,51 +188,6 @@ def make_compare_params_list():
         return False
 
 
-def save_to_eeprom(node=None):
-    if not node:
-        node = window.thread.current_node
-
-    if node.save_to_eeprom:
-        if window.thread.isRunning():
-            window.connect_to_node()
-            isRun = True
-        else:
-            isRun = False
-
-        if node.name == 'Инвертор_МЭИ':
-            voltage = find_param(window.thread.current_nodes_dict, 'DC_VOLTAGE', 'Инвертор_МЭИ')[0]
-            err = voltage.get_value(can_adapter.adapters_dict[125])  # ---!!!если параметр строковый, будет None!!---
-            if not isinstance(err, str):
-                # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
-                if err < 30:
-                    err = node.send_val(node.save_to_eeprom, can_adapter.adapters_dict[125])
-                    sleep_thread.start()
-                else:
-                    err = 'Высокое напряжение не выключено\nВыключи высокое напряжение и повтори сохранение'
-            else:
-                err = f'Некорректный ответ от инвертора\n{err}'
-        else:
-            err = node.send_val(node.save_to_eeprom, can_adapter, value=1)
-
-        if err:
-            QMessageBox.critical(window, "Ошибка ", f'Настройки сохранить не удалось\n{err}',
-                                 QMessageBox.StandardButton.Ok)
-            window.log_lbl.setText('Настройки в память НЕ сохранены, ошибка ' + err)
-        else:
-            QMessageBox.information(window, "Успешный успех!", 'Текущие настройки сохраняются в EEPROM',
-                                    QMessageBox.StandardButton.Ok)
-            window.log_lbl.setText('Настройки сохранены в EEPROM')
-            node.param_was_changed = False
-            erase_errors()
-            window.save_eeprom_btn.setEnabled(False)
-
-        if window.thread.isFinished() and isRun:
-            window.connect_to_node()
-    else:
-        QMessageBox.information(window, "Информация", f'В {node.name} параметры сохранять не нужно',
-                                QMessageBox.StandardButton.Ok)
-        window.save_eeprom_btn.setEnabled(False)
-
 
 @pyqtSlot(list)
 def change_value(lst):
@@ -268,7 +217,7 @@ def set_new_value(param: Parametr, val):
         if window.thread.isRunning():  # отключаем поток, если он был включен
             window.connect_to_node()
             # отправляю параметр, полученный из диалогового окна
-            param.set_val(can_adapter, float(val))
+            param.set_value(can_adapter, float(val))
             # и сразу же проверяю записался ли он в блок
             value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
             if isinstance(value_data, str):
@@ -905,182 +854,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             print('Неизвестное состояние')
 
 
-# --------------------------------------------------- кнопки управления ----------------------------------------------
-def load_from_eeprom():
-    node = window.thread.current_nodes_dict['КВУ_ТТС']
-    if node.request_id in window.thread.adapter.id_nodes_dict.keys():
-        adapter_can2 = window.thread.adapter.id_nodes_dict[node.request_id]
-        print('Отправляю команду на запрос из еепром')
-        # такое чувство что функция полное говно и пора бы уже сделать её универсальной для всех блоков
-        answer = node.send_val(0x210201, adapter_can2, value=0x01)  # это адрес вытащить из еепром для кву ттс
-        if answer:
-            answer = 'Команду выполнить не удалось\n' + answer
-        else:
-            QMessageBox.information(window, "Успешный успех!", 'Параметры загружены из ЕЕПРОМ',
-                                    QMessageBox.StandardButton.Ok)
-            node.param_was_changed = False
-            return
-    else:
-        answer = 'В списке адаптеров канал 250 не найден'
-
-    QMessageBox.critical(window, "Ошибка", answer, QMessageBox.StandardButton.Ok)
-
-
-def mpei_invert():
-    m = window.thread.invertor_command('INVERT_ROTATION')
-    window.log_lbl.setText(m)
-
-
-def mpei_power_on():
-    m = window.thread.invertor_command('POWER_ON')
-    window.log_lbl.setText(m)
-
-
-def mpei_power_off():
-    m = window.thread.invertor_command('POWER_OFF')
-    window.log_lbl.setText(m)
-
-
-def mpei_reset_device():
-    m = window.thread.invertor_command('RESET_DEVICE')
-    window.log_lbl.setText(m)
-
-
-def mpei_reset_params():
-    m = window.thread.invertor_command('RESET_PARAMETERS')
-    window.log_lbl.setText(m.replace('\n', ''))
-
-
-# ---------------------------------------------- кнопки с диалогом ----------------------------------------------------
-def mpei_calibrate():
-    param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'SPEED_RPM', 'FIELD_CURRENT',
-                                'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']  # 'STATOR_CURRENT', 'TORQUE',
-    for p_name in param_list_for_calibrate:
-        wait_thread.imp_par_list.append(
-            find_param(window.thread.current_nodes_dict, p_name, node_name='Инвертор_МЭИ')[0])
-
-    wait_thread.req_delay = 50
-    wait_thread.adapter = can_adapter.adapters_dict[125]
-    wait_thread.id_for_read = 0x381
-    wait_thread.answer_byte = 4
-    wait_thread.answer_dict = {0x0A: 'Калибровка прошла успешно!',
-                               0x0B: 'Калибровка не удалась',
-                               0x0C: 'Настройки сохранены в ЕЕПРОМ'}
-
-    dialog = DialogChange(label='Процесс калибровки',
-                          text='Команда на калибровку отправлена',
-                          table=wait_thread.imp_par_list)
-    dialog.setWindowTitle('Калибровка Инвертора МЭИ')
-
-    @pyqtSlot(list, list)
-    def check_dialog_mess(st, list_of_params):
-        if wait_thread.isRunning():
-            dialog.change_mess(st, list_of_params)
-        else:
-            print('Поток калибровки остановлен')
-            node = window.thread.current_nodes_dict['Инвертор_МЭИ']
-            # передавать надо исключительно в первый кан
-            if node.request_id in window.thread.adapter.id_nodes_dict.keys():
-                adapter_can1 = window.thread.adapter.id_nodes_dict[node.request_id]
-                faults = list(node.check_errors(adapter=adapter_can1))
-                if not faults:
-                    st.append('Ошибок во время калибровки не появилось')
-                else:
-                    faults.insert(0, 'Во время калибровки возникли ошибки: ')
-                    st += faults
-                dialog.change_mess(st)
-
-    wait_thread.SignalOfProcess.connect(check_dialog_mess)
-
-    s = window.thread.invertor_command('BEGIN_POSITION_SENSOR_CALIBRATION', wait_thread)
-    if not s:
-        wait_thread.start()
-        if dialog.exec():
-            wait_thread.quit()
-            wait_thread.wait()
-            print('Поток калибровки остановлен')
-
-
-def joystick_bind():
-    if not can_adapter.isDefined:
-        if not can_adapter.find_adapters():
-            return
-    if 250 in can_adapter.adapters_dict:
-        QMessageBox.information(window, "Информация", 'Перед привязкой проверь:\n'
-                                                      ' - что джойстик ВЫКЛЮЧЕН\n'
-                                                      ' - высокое напряжение ВКЛЮЧЕНО',
-                                QMessageBox.StandardButton.Ok)
-        adapter = can_adapter.adapters_dict[250]
-
-        dialog = DialogChange(text='Команда на привязку отправлена')
-        dialog.setWindowTitle('Привязка джойстика')
-
-        wait_thread.SignalOfProcess.connect(dialog.change_mess)
-        wait_thread.wait_time = 20  # время в секундах для включения и прописки джойстика
-        wait_thread.req_delay = 250  # время в миллисекундах на опрос параметров
-        wait_thread.max_err = 80  # потому что приёмник джойстика не отвечает постоянно, а только трижды
-        wait_thread.adapter = adapter
-        wait_thread.id_for_read = 0x18FF87A7
-        wait_thread.answer_dict = {
-            0: 'принята команда привязки',
-            1: 'приемник переведен в режим привязки, ожидание включения пульта ДУ',
-            2: 'привязка завершена',
-            254: 'ошибка',
-            255: 'команда недоступна'}
-
-        bind_command = adapter.can_write(0x18FF86A5, [0] * 8)
-
-        if not bind_command:
-            wait_thread.start()
-            if dialog.exec():
-                wait_thread.quit()
-                wait_thread.wait()
-                print('Поток остановлен')
-        else:
-            QMessageBox.critical(window, "Ошибка ", 'Команда привязки не отправлена\n' + bind_command,
-                                 QMessageBox.StandardButton.Ok)
-    else:
-        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
-
-
-def suspension_to_zero():
-    par_list = find_param(window.thread.current_nodes_dict, 'SUSPENSION_')
-    wait_thread.imp_par_list = par_list[:9] if par_list and len(par_list) >= 9 else []
-
-    if not can_adapter.isDefined:
-        if not can_adapter.find_adapters():
-            return
-    if 250 in can_adapter.adapters_dict:
-        QMessageBox.information(window, "Информация", 'Перед выравниванием проверь что:\n'
-                                                      ' - тумблер режима подвески в положении АВТО КВУ\n'
-                                                      ' - остальные тумблеры в нейтральном положении',
-                                QMessageBox.StandardButton.Ok)
-        adapter = can_adapter.adapters_dict[250]
-        dialog = DialogChange(text='Команда на установку отправлена',
-                              table=wait_thread.imp_par_list)
-        dialog.setWindowTitle('Установка подвески v ноль')
-
-        wait_thread.SignalOfProcess.connect(dialog.change_mess)
-        wait_thread.wait_time = 20  # время в секундах для установки подвески
-        wait_thread.req_delay = 50  # время в миллисекундах на опрос параметров
-        wait_thread.adapter = adapter
-
-        command_zero_suspension = adapter.can_write(0x18FF83A5, [1, 0x7D, 0x7D, 0x7D, 0x7D])
-        if not command_zero_suspension:  # если передача прошла успешно
-            wait_thread.start()
-            if dialog.exec():
-                wait_thread.quit()
-                wait_thread.wait()
-                print('Поток остановлен')
-
-        else:
-            QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{command_zero_suspension}',
-                                 QMessageBox.StandardButton.Ok)
-            window.log_lbl.setText(command_zero_suspension.replace('\n', ''))
-    else:
-        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
-
-
 @pyqtSlot(str)
 def set_log_lbl(s: str):
     window.log_lbl.setText(s.replace('\n', ''))
@@ -1129,7 +902,6 @@ def set_theme(theme_str=''):
 if __name__ == '__main__':
     start_time = time.perf_counter()
     app = QApplication([])
-
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
     splash.show()
@@ -1137,7 +909,7 @@ if __name__ == '__main__':
     window.setWindowTitle('Electric Vehicle Information System')
     stylesheet_file = pathlib.Path(dir_path, 'Data', 'EVOStyleSheet.txt')
 
-    sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
+    # sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
     window.main_tab.currentChanged.connect(window.change_tab)
     # ============================== подключаю сигналы нажатия на окошки
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
@@ -1147,24 +919,25 @@ if __name__ == '__main__':
     window.errors_browser.setStyleSheet("font: bold 14px;")
     # ============================== и сигналы нажатия на кнопки
     # -----------------Инвертор---------------------------
-    window.invert_btn.clicked.connect(mpei_invert)
-    window.calibrate_btn.clicked.connect(mpei_calibrate)
-    window.power_on_btn.clicked.connect(mpei_power_on)
-    window.power_off_btn.clicked.connect(mpei_power_off)
-    window.reset_device_btn.clicked.connect(mpei_reset_device)
-    window.reset_param_btn.clicked.connect(mpei_reset_params)
+    window.invert_btn.clicked.connect(lambda: mpei_invert(window))
+    window.calibrate_btn.clicked.connect(lambda: mpei_calibrate(window))
+    window.power_on_btn.clicked.connect(lambda: mpei_power_on(window))
+    window.power_off_btn.clicked.connect(lambda: mpei_power_off(window))
+    window.reset_device_btn.clicked.connect(lambda: mpei_reset_device(window))
+    window.reset_param_btn.clicked.connect(lambda: mpei_reset_params(window))
+    window.let_moment_btn.clicked.connect(lambda: let_moment_mpei(window))
     window.invertor_mpei_box.setEnabled(False)
     # ------------------Кнопки вспомогательные----------------
-    window.joy_bind_btn.clicked.connect(joystick_bind)
-    window.susp_zero_btn.clicked.connect(suspension_to_zero)
-    window.load_from_eeprom_btn.clicked.connect(load_from_eeprom)
+    window.joy_bind_btn.clicked.connect(lambda: joystick_bind(window))
+    window.susp_zero_btn.clicked.connect(lambda: suspension_to_zero(window))
+    window.load_from_eeprom_btn.clicked.connect(lambda: load_from_eeprom(window))
     window.susp_zero_btn.setEnabled(False)
     window.load_from_eeprom_btn.setEnabled(False)
     window.joy_bind_btn.setEnabled(False)
     window.change_theme_btn.clicked.connect(change_theme)
     # ------------------Главные кнопки-------------------------
     window.connect_btn.clicked.connect(window.connect_to_node)
-    window.save_eeprom_btn.clicked.connect(save_to_eeprom)
+    window.save_eeprom_btn.clicked.connect(lambda: save_to_eeprom(window))
     window.reset_faults.clicked.connect(erase_errors)
     window.compare_btn.clicked.connect(make_compare_params_list)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
@@ -1201,6 +974,6 @@ if __name__ == '__main__':
         app.exec()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-#
+# затирать ячейку, когда ставлю виджет на сохранение параметра
 # не обновлять значение параметр если сейчас на нём фокус
-#
+# сохранять в еепром мэи настройки после прокрутки

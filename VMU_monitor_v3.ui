@@ -76,7 +76,7 @@
     <item row="1" column="0">
      <widget class="QTabWidget" name="main_tab">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="params_tab">
        <property name="sizePolicy">
@@ -757,7 +757,7 @@
             </widget>
            </item>
            <item row="4" column="0" colspan="2">
-            <widget class="QPushButton" name="let_3_moment">
+            <widget class="QPushButton" name="let_moment_btn">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                <horstretch>0</horstretch>

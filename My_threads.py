@@ -1,20 +1,16 @@
 import datetime
 import time
-
 import yaml
-# from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
-# from PyQt5.QtWidgets import QMessageBox
-
 from PyQt6.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
-from PyQt6.QtWidgets import QMessageBox, QWidget
-
+from PyQt6.QtWidgets import QMessageBox
 from EVONode import EVONode, invertor_command_dict
 from Parametr import readme
 from helper import buf_to_string
 
 
 # поток для сохранения в файл настроек блока
-# возвращает сигналу о процентах выполнения, сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
+# возвращает сигналу о процентах выполнения,
+# сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
 class SaveToFileThread(QThread):
     SignalOfReady = pyqtSignal(int, str, bool)
     err_thread_signal = pyqtSignal(str)
@@ -226,7 +222,8 @@ class MainThread(QThread):
         warn_str = invertor_command_dict[command][2]
         if not warn_str or \
                 QMessageBox.information(w, "Информация", warn_str,
-                                        QMessageBox.Ok, QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
+                                        QMessageBox.StandardButton.Ok,
+                                        QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
             answer = self.send_to_mpei(command)
             if answer:
                 answer = 'Команду выполнить не удалось\n' + answer
@@ -242,6 +239,7 @@ class MainThread(QThread):
 
 class WaitCanAnswerThread(QThread):
     SignalOfProcess = pyqtSignal(list, list, int)
+    FinishedSignal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -256,7 +254,8 @@ class WaitCanAnswerThread(QThread):
         self.wait_time = 15  # максимальное время в секундах, через которое поток отключится
         self.max_err = 20
         self.req_delay = 100
-        self.imp_par_list = []
+        self.imp_par_set = set()
+        self.FinishedSignal.emit()
 
     def run(self):
         self.err_count = 0
@@ -270,7 +269,7 @@ class WaitCanAnswerThread(QThread):
                     self.err_count > self.max_err:
                 self.quit()
                 self.wait()
-                self.SignalOfProcess.emit(['Время закончилось'], self.imp_par_list, None)
+                self.SignalOfProcess.emit(['Время закончилось'], list(self.imp_par_set), None)
                 return
 
             if self.id_for_read:
@@ -288,14 +287,14 @@ class WaitCanAnswerThread(QThread):
                     print(ans, hex(self.id_for_read))
                     self.err_count += 1
 
-            if self.imp_par_list:
+            if self.imp_par_set:
                 try:
-                    self.imp_par_list[self.iter].get_value(self.adapter)
+                    list(self.imp_par_set)[self.iter].get_value(self.adapter)
                     self.iter += 1
                 except IndexError:
                     self.iter = 0
 
-            self.SignalOfProcess.emit(answer, self.imp_par_list, None)
+            self.SignalOfProcess.emit(answer, list(self.imp_par_set), None)
 
         timer = QTimer()
         timer.timeout.connect(request_ans)

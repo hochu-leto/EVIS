@@ -154,7 +154,7 @@ class Parametr:
             self.req_list = [0, 0, 0, 0, LSB, MSB, value_type, 0x03]
             self.set_list = data + [LSB, MSB, value_type, 0x10]
 
-    def set_val(self, adapter: CANAdater, value):
+    def set_value(self, adapter: CANAdater, value):
         value += self.offset
         value /= self.multiplier
         if 'Рулевая' in self.node.name:     # У томска проблемы с типом переменных

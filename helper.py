@@ -116,7 +116,7 @@ def buf_to_string(buf):
     return s
 
 
-def find_param(nodes_dict: dict, s: str, node_name=None):
+def find_param(nodes_dict: dict, s: str, node_name=None) -> list:
     list_of_params = []
     s = s.upper().strip()
     if node_name is None:
@@ -270,7 +270,7 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         super().__init__()
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
-        self.text_browser.setEnabled(False)
+        # self.text_browser.setEnabled(False)
         self.text_browser.setStyleSheet("font: bold 14px;")
         self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setText('ОК')
         self.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setText('Отмена')
