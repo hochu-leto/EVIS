@@ -65,6 +65,7 @@ import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVOErrors import EvoError
 from EVONode import EVONode
+from EVOWidgets import GreenLabel, RedLabel
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
@@ -73,7 +74,7 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
-    color_EVO_orange_shine, color_EVO_white, GreenLabel, RedLabel
+    color_EVO_orange_shine, color_EVO_white
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -227,7 +228,7 @@ def set_new_value(param: Parametr, val):
             my_label = QLabel()
 
             if str(val).strip() == new_val:
-                my_label = GreenLabel()  # .setStyleSheet('background-color: #00c800;')
+                my_label = GreenLabel()
                 if param.node.save_to_eeprom:
                     param.node.param_was_changed = True
                     # В Избранном кнопку не активируем, может быть несколько блоков.

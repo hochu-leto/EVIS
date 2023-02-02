@@ -3,17 +3,13 @@
 """
 import struct
 import traceback
-
-import qt_material
-# import traceback
-
-from PyQt6.QtCore import QTimer, Qt, pyqtSlot, pyqtSignal, QStringListModel
-from PyQt6.QtGui import QFont, QColor, QPalette, QBrush, qRgb
+from PyQt6.QtCore import Qt, pyqtSlot, QStringListModel
+from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
-    QComboBox, QListView, QSizePolicy, QStyleFactory, QLabel
+    QComboBox, QListView, QSizePolicy
 
-import Dialog_params
 import my_dialog
+from EVOWidgets import GreenLabel, MyComboBox
 
 TheBestNode = 'Избранное'
 NewParamsList = 'Новый список'
@@ -62,49 +58,9 @@ color_EVO_red_dark = QColor(234, 76, 76, 80)
 color_EVO_orange = QColor(241, 91, 34)
 color_EVO_orange_shine = QColor(255, 184, 65, 80)
 color_EVO_white = QColor(255, 254, 254, 80)
-# gray_list = (54, 60, 70)
-# color_EVO_white = QColor(gray_list, 80)
 color_EVO_gray = QColor(98, 104, 116, 80)
 color_EVO_graphite2 = QColor(54, 60, 70, 80)
 color_EVO_raven = QColor(188, 125, 136, 80)
-
-
-class GreenLabel(QLabel):
-    def __init__(self, parent=None):
-        super(QLabel, self).__init__(parent)
-        self.setStyleSheet('{background-color: rgba(0, 200, 0, 50);}')
-
-
-class RedLabel(QLabel):
-    def __init__(self, parent=None):
-        super(QLabel, self).__init__(parent)
-        self.setStyleSheet('{background-color: rgba(200, 0, 0, 50);}')
-
-
-class MyComboBox(QComboBox):
-    ItemSelected = pyqtSignal(list)
-    isRevealed = False
-    parametr = None
-
-    def __init__(self, parent=None, parametr=None):
-        super(MyComboBox, self).__init__(parent)
-        self.parametr = parametr
-        self.currentIndexChanged.connect(self.item_selected_handle)
-
-    def item_selected_handle(self, index):
-        lst = []
-        if self.parametr is not None:
-            key = list(self.parametr.value_table.keys())[index]
-            lst = [self.parametr, key]
-        self.ItemSelected.emit(lst)
-
-    def showPopup(self):  # sPopup function
-        self.isRevealed = True
-        super(MyComboBox, self).showPopup()  # 's showPopup ()
-
-    def hidePopup(self):
-        self.isRevealed = False
-        super(MyComboBox, self).hidePopup()
 
 
 def buf_to_string(buf):
@@ -206,11 +162,8 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
     for par in params_list:
         it = table.cellWidget(row, 2)
         if isinstance(it, MyComboBox) \
-                and it.isRevealed:
+                and it.isInFocus:
             continue
-
-        # if table.item(row, 2).isSelected():
-        #     continue
 
         value_in_dict = False
 

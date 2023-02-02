@@ -7,6 +7,7 @@ import CANAdater
 from EVONode import EVONode
 from My_threads import WaitCanAnswerThread, SleepThread
 from helper import find_param, DialogChange
+
 '''
 0х18FF82A5  
 1.1-2 Управление левым поворотником (1 - горит, 0 - погашен) 
@@ -41,12 +42,9 @@ def save_to_eeprom(window, node=None):
             isRun = True
         else:
             isRun = False
-        if not window.thread.adapter.isDefined:
-            if not window.thread.adapter.find_adapters():
-                return
-        if node.request_id in window.thread.adapter.id_nodes_dict.keys():
-            adapter = window.thread.adapter.id_nodes_dict[node.request_id]
 
+        adapter = adapter_for_node(window.thread.adapter, node)
+        if adapter:
             if node.name == 'Инвертор_МЭИ':
                 err = save_to_eeprom_mpei(window, node, adapter)
             else:
@@ -93,11 +91,11 @@ def save_to_eeprom_mpei(window, node, adapter):
 # --------------------------------------------------- кнопки управления ----------------------------------------------
 def load_from_eeprom(window):
     node = window.thread.current_nodes_dict['КВУ_ТТС']
-    if node.request_id in window.thread.adapter.id_nodes_dict.keys():
-        adapter_can2 = window.thread.adapter.id_nodes_dict[node.request_id]
+    adapter = adapter_for_node(window.thread.adapter, node)
+    if adapter:
         print('Отправляю команду на запрос из еепром')
         # такое чувство что функция полное говно и пора бы уже сделать её универсальной для всех блоков
-        answer = node.send_val(0x210201, adapter_can2, value=0x01)  # это адрес вытащить из еепром для кву ттс
+        answer = node.send_val(0x210201, adapter, value=0x01)  # это адрес вытащить из еепром для кву ттс
         if answer:
             answer = 'Команду выполнить не удалось\n' + answer
         else:
@@ -145,9 +143,8 @@ def mpei_calibrate(window):
         else:
             print('Поток калибровки остановлен')
             node = window.thread.current_nodes_dict['Инвертор_МЭИ']
-            # передавать надо исключительно в первый кан
-            if node.request_id in window.thread.adapter.id_nodes_dict.keys():
-                adapter = window.thread.adapter.id_nodes_dict[node.request_id]
+            adapter = adapter_for_node(window.thread.adapter, node)
+            if adapter:
                 faults = list(node.check_errors(adapter=adapter))
                 if not faults:
                     st.append('Ошибок во время калибровки не появилось')
@@ -191,16 +188,12 @@ def mpei_calibrate(window):
 
 
 def joystick_bind(window):
-    if not window.thread.adapter.isDefined:
-        if not window.thread.adapter.find_adapters():
-            return
-    if 250 in window.thread.adapter.adapters_dict:
+    adapter = adapter_for_node(window.thread.adapter, 250)
+    if adapter:
         QMessageBox.information(window, "Информация", 'Перед привязкой проверь:\n'
                                                       ' - что джойстик ВЫКЛЮЧЕН\n'
                                                       ' - высокое напряжение ВКЛЮЧЕНО',
                                 QMessageBox.StandardButton.Ok)
-        adapter = window.thread.adapter.adapters_dict[250]
-
         dialog = DialogChange(text='Команда на привязку отправлена')
         dialog.setWindowTitle('Привязка джойстика')
 
@@ -236,15 +229,12 @@ def suspension_to_zero(window):
     par_list = find_param(window.thread.current_nodes_dict, 'SUSPENSION_')
     p_list = par_list[:9] if par_list and len(par_list) >= 9 else []
     wait_thread.imp_par_set = set(p_list)
-    if not window.thread.adapter.isDefined:
-        if not window.thread.adapter.find_adapters():
-            return
-    if 250 in window.thread.adapter.adapters_dict:
+    adapter = adapter_for_node(window.thread.adapter, 250)
+    if adapter:
         QMessageBox.information(window, "Информация", 'Перед выравниванием проверь что:\n'
                                                       ' - тумблер режима подвески в положении АВТО КВУ\n'
                                                       ' - остальные тумблеры в нейтральном положении',
                                 QMessageBox.StandardButton.Ok)
-        adapter = window.thread.adapter.adapters_dict[250]
         dialog = DialogChange(text='Команда на установку отправлена',
                               table=list(wait_thread.imp_par_set))
         dialog.setWindowTitle('Установка подвески v ноль')
@@ -278,8 +268,8 @@ def let_moment_mpei(window):
         # выставляю стандартные значения параметров
         ref_torque.set_value(adapter_vmu, 0)
         man_control.set_value(adapter_vmu, 0)
-        is_motor_max.set_value(adapter_inv, 270)
-        speed_max.set_value(adapter_inv, 8000)
+        is_motor_max.set_value(adapter_inv, standart_current)
+        speed_max.set_value(adapter_inv, standart_speed)
         # тушу высокое и сохраняю их в еепром
         window.thread.invertor_command('POWER_OFF', True)
         save_to_eeprom_mpei(window, node_inv, adapter_inv)
@@ -287,9 +277,13 @@ def let_moment_mpei(window):
         if dialog.close():
             window.thread.invertor_command('POWER_ON', True)
 
+    # стандартные значения инвертора
+    standart_current = 270
+    standart_speed = 8000
     # ограничения по инвертору
-    max_moment = 10
-    max_speed = 1200
+    limit_current = 130  # меньше 100А не крутится
+    limit_moment = 10
+    limit_speed = 1200
     # определяю рабочие блоки из общего списка
     if 'Инвертор_МЭИ' not in window.thread.current_nodes_dict.keys() or \
             'КВУ_ТТС' not in window.thread.current_nodes_dict.keys():
@@ -304,16 +298,10 @@ def let_moment_mpei(window):
     wait_thread.imp_par_set.add(find_param(window.thread.current_nodes_dict, 'TORQUE', node_name=node_inv.name)[2])
     wait_thread.imp_par_set.add(find_param(window.thread.current_nodes_dict, 'SPEED_RPM',
                                            node_name=node_inv.name)[1])
-    # ищу адаптер
-    if not window.thread.adapter.isDefined:
-        if not window.thread.adapter.find_adapters():
-            return
-    if node_inv.request_id in window.thread.adapter.id_nodes_dict.keys() and \
-            node_vmu.request_id in window.thread.adapter.id_nodes_dict.keys():
-        # определяю адаптеры для работы с инвертором и кву
-        adapter_inv = window.thread.adapter.id_nodes_dict[node_inv.request_id]
-        adapter_vmu = window.thread.adapter.id_nodes_dict[node_vmu.request_id]
-
+    # ищу адаптеры
+    adapter_inv = adapter_for_node(window.thread.adapter, node_inv)
+    adapter_vmu = adapter_for_node(window.thread.adapter, node_vmu)
+    if adapter_inv and adapter_vmu:
         QMessageBox.information(window, "Информация", 'Перед запуском проверь что:\n'
                                                       ' - стояночный тормоз отпущен\n'
                                                       ' - приводная ось вывешена\n'
@@ -340,6 +328,7 @@ def let_moment_mpei(window):
         # Запрашиваю текущие их значения
         start_max_i = is_motor_max.get_value(adapter_inv)
         start_max_speed = speed_max.get_value(adapter_inv)
+        print(f'{start_max_i=}, {start_max_speed=}')
         if isinstance(start_max_i, str) or isinstance(start_max_speed, str):
             QMessageBox.critical(window, "Ошибка ", 'Инвертор не отвечает,\n'
                                                     'Попробуй заново к нему подключиться',
@@ -348,6 +337,7 @@ def let_moment_mpei(window):
         # ручной контроль должен быть отключен и момент должен быть нулевым
         cur_man = man_control.get_value(adapter_vmu)
         cur_tor = ref_torque.get_value(adapter_vmu)
+        print(f'{cur_man=}, {cur_tor=}')
         if isinstance(cur_man, str) or isinstance(cur_tor, str):
             QMessageBox.critical(window, "Ошибка ", 'КВУ не отвечает\n'
                                                     'Попробуй ещё раз', QMessageBox.StandardButton.Ok)
@@ -357,8 +347,8 @@ def let_moment_mpei(window):
                                                     'Или ненулевой момент', QMessageBox.StandardButton.Ok)
             return
         # Устанавливаю ограничения для вращения
-        set_max_i = is_motor_max.set_value(adapter_inv, 130)  # меньше 100А не крутится
-        set_max_speed = speed_max.set_value(adapter_inv, max_speed)
+        set_max_i = is_motor_max.set_value(adapter_inv, limit_current)
+        set_max_speed = speed_max.set_value(adapter_inv, limit_speed)
         if set_max_speed or set_max_i:
             QMessageBox.critical(window, "Ошибка ", 'Не удалось задать значения в инвертор\n'
                                                     'Попробуй ещё раз',
@@ -380,7 +370,7 @@ def let_moment_mpei(window):
                                        QMessageBox.StandardButton.Ok,
                                        QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
                 wait_thread.start()
-                ref_torque.set_value(adapter_vmu, max_moment)
+                ref_torque.set_value(adapter_vmu, limit_moment)
             if dialog.exec():
                 finish()
         else:
