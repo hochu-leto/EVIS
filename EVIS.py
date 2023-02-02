@@ -188,7 +188,6 @@ def make_compare_params_list():
         return False
 
 
-
 @pyqtSlot(list)
 def change_value(lst):
     print('Сработал комбо-бокс')
@@ -241,7 +240,7 @@ def set_new_value(param: Parametr, val):
                             param.node.param_was_changed = param.eeprom
                             window.save_eeprom_btn.setEnabled(param.eeprom)
             else:
-                my_label = RedLabel()  # .setStyleSheet('background-color: #c80000;')
+                my_label = RedLabel()
                 # если поток был запущен до изменения, то запускаем его снова
             if window.thread.isFinished():
                 # и запускаю поток
@@ -257,12 +256,15 @@ def info_and_widget(info_m='', my_lab=None):
     if info_m:
         QMessageBox.information(window, "Информация", info_m, QMessageBox.StandardButton.Ok)
     if my_lab:
-        c_row = window.vmu_param_table.currentItem().row()
-        c_next_col = window.vmu_param_table.currentItem().column() + 1
-        c_next_text = window.vmu_param_table.item(c_row, c_next_col).text()
-        my_lab.setText(c_next_text)
-        window.vmu_param_table.setCellWidget(c_row, c_next_col, my_lab)
-
+        try:
+            c_row = window.vmu_param_table.currentItem().row()
+            c_next_col = window.vmu_param_table.currentItem().column() + 1
+            c_next_text = window.vmu_param_table.item(c_row, c_next_col).text()
+            window.vmu_param_table.item(c_row, c_next_col).setText('')
+            my_lab.setText(c_next_text)
+            window.vmu_param_table.setCellWidget(c_row, c_next_col, my_lab)
+        except AttributeError:
+            print(my_lab, type(my_lab))
 
 def want_to_value_change(c_row, c_col):
     cell = window.vmu_param_table.item(c_row, c_col)
@@ -435,9 +437,6 @@ def params_list_changed(item=None, column=None):  # если в левом ок�
     window.show_node_name(window.thread.current_node)
     show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,  # combo_list =
                            has_compare=window.thread.current_node.has_compare_params)
-    # for com in combo_list:
-    #     com.clicked.connect(some_def)
-    # и запускаю поток, если он был запущен
     if is_run and window.thread.isFinished():
         window.connect_to_node()
     return True
@@ -899,6 +898,39 @@ def set_theme(theme_str=''):
                       'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
 
 
+def cell_changed(row, col):
+    # print('cellchanged')
+    # col_name = window.vmu_param_table.horizontalHeaderItem(col).text().strip().upper()
+    # if col_name != 'ЗНАЧЕНИЕ':       #
+    if col != 2:
+        print('Промазал')
+
+        return
+
+def cell_current_changed(row, col):
+    print('cell_current_changed')
+    # col_name = window.vmu_param_table.horizontalHeaderItem(col).text().strip().upper()
+    # if col_name != 'ЗНАЧЕНИЕ':       # i
+    if col != 2:
+        print('Промазал')
+
+        return
+
+
+def cell_entered(row, col):
+    print('cell_entered', row, col)
+
+def table_event(e):
+    print('cellPressed', e)
+
+def cell_aktivated(row, col):
+    print('cell_aktivated', row, col)
+
+
+def rb_togled(row):
+    print('rb_togled', row)
+
+
 if __name__ == '__main__':
     start_time = time.perf_counter()
     app = QApplication([])
@@ -909,13 +941,18 @@ if __name__ == '__main__':
     window.setWindowTitle('Electric Vehicle Information System')
     stylesheet_file = pathlib.Path(dir_path, 'Data', 'EVOStyleSheet.txt')
 
-    # sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
     window.main_tab.currentChanged.connect(window.change_tab)
     # ============================== подключаю сигналы нажатия на окошки
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.errors_tree.itemPressed.connect(show_error)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
+    # window.rear_light_rbtn.toggled.connect()
+    window.light_box.clicked.connect(rb_togled)
+    # window.vmu_param_table.cellChanged.connect(cell_changed)
+    # window.vmu_param_table.currentCellChanged.connect(cell_current_changed)
+    # window.vmu_param_table.cellActivated.connect(cell_aktivated)
+    # window.vmu_param_table.cellPressed.connect(table_event)
     window.errors_browser.setStyleSheet("font: bold 14px;")
     # ============================== и сигналы нажатия на кнопки
     # -----------------Инвертор---------------------------
@@ -952,6 +989,15 @@ if __name__ == '__main__':
         node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
         with open(nodes_pickle_file, 'wb') as f:
             pickle.dump(node_dict, f)
+
+    try:
+        with open(stylesheet_file) as f:
+            window.current_theme = f.read()
+    except FileNotFoundError:
+        print('Файл со стилем не найден, Оставляем стиль по умолчанию')
+    finally:
+        set_theme(window.current_theme)
+
     window.thread.current_nodes_dict = node_dict.copy()
     # показываю дерево с блоками и что ошибок нет
     window.show_nodes_tree(list(node_dict.values()))
@@ -961,13 +1007,7 @@ if __name__ == '__main__':
             window.connect_to_node()
         else:
             window.log_lbl.setText('Адаптер не подключен')
-        try:
-            with open(stylesheet_file) as f:
-                window.current_theme = f.read()
-        except FileNotFoundError:
-            print('Файл со стилем не найден, Оставляем стиль по умолчанию')
-        finally:
-            set_theme(window.current_theme)
+
         window.show()  # Показываем окно
         splash.finish(window)  # Убираем заставку
         print(time.perf_counter() - start_time)

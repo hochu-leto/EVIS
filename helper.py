@@ -171,7 +171,8 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
             show_table.setItem(row, 0, name_item)
 
         desc_item = QTableWidgetItem(description)
-        desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
         show_table.setItem(row, 1, desc_item)
 
         value_item = QTableWidgetItem('')
@@ -207,6 +208,9 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
         if isinstance(it, MyComboBox) \
                 and it.isRevealed:
             continue
+
+        # if table.item(row, 2).isSelected():
+        #     continue
 
         value_in_dict = False
 

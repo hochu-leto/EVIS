@@ -1,13 +1,21 @@
 from time import sleep
 
 from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox, QDialogButtonBox
 
 from My_threads import WaitCanAnswerThread, SleepThread
 from helper import find_param, DialogChange
 
 wait_thread = WaitCanAnswerThread()
 sleep_thread = SleepThread(3)
+
+light_commamd_dict = dict(
+    off_rbtn=[],
+    left_side_rbtn=[],
+    right_side_rbtn=[],
+    stop_light_rbtn=[],
+    rear_light_rbtn=[]
+)
 
 
 def save_to_eeprom(window, node=None):
@@ -54,14 +62,14 @@ def save_to_eeprom(window, node=None):
 
 
 def save_to_eeprom_mpei(window, node, adapter):
+    sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
     voltage = find_param(window.thread.current_nodes_dict, 'DC_VOLTAGE', node_name=node.name)[0]
-    err = voltage.get_value(adapter)  # ---!!!если параметр строковый, будет None!!---
+    err = voltage.get_value(adapter)
     if not isinstance(err, str):
         # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
         if err < 30:
-            err = node.send_val(node.save_to_eeprom, adapter)  # неправильно
+            err = node.send_val(node.save_to_eeprom, adapter)
             sleep_thread.start()
-            err = ''
         else:
             err = 'Высокое напряжение не выключено\nВыключи высокое напряжение и повтори сохранение'
     else:
@@ -135,11 +143,15 @@ def mpei_calibrate(window):
                     st += faults
                 dialog.change_mess(st)
 
-    param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'SPEED_RPM', 'FIELD_CURRENT',
-                                'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']  # 'STATOR_CURRENT', 'TORQUE',
+    param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'DC_CURRENT',
+                                'PHA_CURRENT', 'PHB_CURRENT', 'PHC_CURRENT']
+    n_name = 'Инвертор_МЭИ'
     for p_name in param_list_for_calibrate:
         wait_thread.imp_par_set.add(
-            find_param(window.thread.current_nodes_dict, p_name, node_name='Инвертор_МЭИ')[0])
+            find_param(window.thread.current_nodes_dict, p_name, node_name=n_name)[0])
+    wait_thread.imp_par_set.add(find_param(window.thread.current_nodes_dict, 'TORQUE', node_name=n_name)[2])
+    wait_thread.imp_par_set.add(find_param(window.thread.current_nodes_dict, 'SPEED_RPM',
+                                           node_name=n_name)[1])
 
     wait_thread.req_delay = 50
     wait_thread.adapter = window.thread.adapter.adapters_dict[125]
@@ -258,6 +270,9 @@ def let_moment_mpei(window):
         # тушу высокое и сохраняю их в еепром
         window.thread.invertor_command('POWER_OFF', True)
         save_to_eeprom_mpei(window, node_inv, adapter_inv)
+        sleep(5)
+        if dialog.close():
+            window.thread.invertor_command('POWER_ON', True)
 
     # ограничения по инвертору
     max_moment = 10
@@ -294,7 +309,7 @@ def let_moment_mpei(window):
         dialog = DialogChange(text='Команда на вращение отправлена',
                               table=list(wait_thread.imp_par_set))
         dialog.setWindowTitle('Вращение двигателя')
-
+        dialog.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).hide()
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.FinishedSignal.connect(finish)
         wait_thread.wait_time = 10  # время в секундах для вращения
@@ -313,23 +328,27 @@ def let_moment_mpei(window):
         start_max_i = is_motor_max.get_value(adapter_inv)
         start_max_speed = speed_max.get_value(adapter_inv)
         if isinstance(start_max_i, str) or isinstance(start_max_speed, str):
-            QMessageBox.critical(window, "Ошибка ", 'Инвертор не отвечает', QMessageBox.StandardButton.Ok)
+            QMessageBox.critical(window, "Ошибка ", 'Инвертор не отвечает,\n'
+                                                    'Попробуй заново к нему подключиться',
+                                 QMessageBox.StandardButton.Ok)
             return
         # ручной контроль должен быть отключен и момент должен быть нулевым
         cur_man = man_control.get_value(adapter_vmu)
         cur_tor = ref_torque.get_value(adapter_vmu)
         if isinstance(cur_man, str) or isinstance(cur_tor, str):
-            QMessageBox.critical(window, "Ошибка ", 'КВУ не отвечает', QMessageBox.StandardButton.Ok)
+            QMessageBox.critical(window, "Ошибка ", 'КВУ не отвечает\n'
+                                                    'Попробуй ещё раз', QMessageBox.StandardButton.Ok)
             return
         if cur_tor != 0 or cur_man != 0:
-            QMessageBox.critical(window, "Ошибка ", 'Включен ручной режим КВУ'
+            QMessageBox.critical(window, "Ошибка ", 'Включен ручной режим КВУ\n'
                                                     'Или ненулевой момент', QMessageBox.StandardButton.Ok)
             return
         # Устанавливаю ограничения для вращения
         set_max_i = is_motor_max.set_value(adapter_inv, 130)  # меньше 100А не крутится
         set_max_speed = speed_max.set_value(adapter_inv, max_speed)
         if set_max_speed or set_max_i:
-            QMessageBox.critical(window, "Ошибка ", 'Не удалось задать значения в инвертор',
+            QMessageBox.critical(window, "Ошибка ", 'Не удалось задать значения в инвертор\n'
+                                                    'Попробуй ещё раз',
                                  QMessageBox.StandardButton.Ok)
             return
         # Сохраняю ограничения в еепром инвертора

@@ -76,7 +76,7 @@
     <item row="1" column="0">
      <widget class="QTabWidget" name="main_tab">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="params_tab">
        <property name="sizePolicy">
@@ -578,7 +578,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QRadioButton" name="radioButton">
+            <widget class="QRadioButton" name="off_rbtn">
              <property name="text">
               <string>Выкл</string>
              </property>
@@ -588,15 +588,15 @@
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_2">
+            <widget class="QRadioButton" name="left_side_rbtn">
              <property name="text">
-              <string>Левыйт
+              <string>Левый
  борт</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_3">
+            <widget class="QRadioButton" name="right_side_rbtn">
              <property name="text">
               <string>Правый
  борт</string>
@@ -604,14 +604,14 @@
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_4">
+            <widget class="QRadioButton" name="stop_light_rbtn">
              <property name="text">
               <string>Стоп</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_5">
+            <widget class="QRadioButton" name="rear_light_rbtn">
              <property name="text">
               <string>Задний
  ход</string>

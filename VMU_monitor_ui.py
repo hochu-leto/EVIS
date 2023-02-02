@@ -324,22 +324,22 @@ class Ui_MainWindow(object):
         self.light_box.setObjectName("light_box")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.light_box)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.radioButton = QtWidgets.QRadioButton(self.light_box)
-        self.radioButton.setChecked(True)
-        self.radioButton.setObjectName("radioButton")
-        self.verticalLayout.addWidget(self.radioButton)
-        self.radioButton_2 = QtWidgets.QRadioButton(self.light_box)
-        self.radioButton_2.setObjectName("radioButton_2")
-        self.verticalLayout.addWidget(self.radioButton_2)
-        self.radioButton_3 = QtWidgets.QRadioButton(self.light_box)
-        self.radioButton_3.setObjectName("radioButton_3")
-        self.verticalLayout.addWidget(self.radioButton_3)
-        self.radioButton_4 = QtWidgets.QRadioButton(self.light_box)
-        self.radioButton_4.setObjectName("radioButton_4")
-        self.verticalLayout.addWidget(self.radioButton_4)
-        self.radioButton_5 = QtWidgets.QRadioButton(self.light_box)
-        self.radioButton_5.setObjectName("radioButton_5")
-        self.verticalLayout.addWidget(self.radioButton_5)
+        self.off_rbtn = QtWidgets.QRadioButton(self.light_box)
+        self.off_rbtn.setChecked(True)
+        self.off_rbtn.setObjectName("off_rbtn")
+        self.verticalLayout.addWidget(self.off_rbtn)
+        self.left_side_rbtn = QtWidgets.QRadioButton(self.light_box)
+        self.left_side_rbtn.setObjectName("left_side_rbtn")
+        self.verticalLayout.addWidget(self.left_side_rbtn)
+        self.right_side_rbtn = QtWidgets.QRadioButton(self.light_box)
+        self.right_side_rbtn.setObjectName("right_side_rbtn")
+        self.verticalLayout.addWidget(self.right_side_rbtn)
+        self.stop_light_rbtn = QtWidgets.QRadioButton(self.light_box)
+        self.stop_light_rbtn.setObjectName("stop_light_rbtn")
+        self.verticalLayout.addWidget(self.stop_light_rbtn)
+        self.rear_light_rbtn = QtWidgets.QRadioButton(self.light_box)
+        self.rear_light_rbtn.setObjectName("rear_light_rbtn")
+        self.verticalLayout.addWidget(self.rear_light_rbtn)
         self.gridLayout_6.addWidget(self.light_box, 0, 4, 1, 1)
         self.groupBox_2 = QtWidgets.QGroupBox(self.management_tab)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -494,7 +494,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.main_tab.setCurrentIndex(0)
+        self.main_tab.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -531,13 +531,13 @@ class Ui_MainWindow(object):
 " положение\n"
 " подвески"))
         self.light_box.setTitle(_translate("MainWindow", "Фонари"))
-        self.radioButton.setText(_translate("MainWindow", "Выкл"))
-        self.radioButton_2.setText(_translate("MainWindow", "Левыйт\n"
+        self.off_rbtn.setText(_translate("MainWindow", "Выкл"))
+        self.left_side_rbtn.setText(_translate("MainWindow", "Левый\n"
 " борт"))
-        self.radioButton_3.setText(_translate("MainWindow", "Правый\n"
+        self.right_side_rbtn.setText(_translate("MainWindow", "Правый\n"
 " борт"))
-        self.radioButton_4.setText(_translate("MainWindow", "Стоп"))
-        self.radioButton_5.setText(_translate("MainWindow", "Задний\n"
+        self.stop_light_rbtn.setText(_translate("MainWindow", "Стоп"))
+        self.rear_light_rbtn.setText(_translate("MainWindow", "Задний\n"
 " ход"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Панель управления"))
         self.invertor_mpei_box.setTitle(_translate("MainWindow", "Инвертор МЭИ"))
