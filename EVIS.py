@@ -68,7 +68,7 @@ from EVONode import EVONode
 from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
-    mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei
+    mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
@@ -464,6 +464,7 @@ def check_node_online(all_node_dict: dict):
                 window.joy_bind_btn.setEnabled(True)
                 window.susp_zero_btn.setEnabled(True)
                 window.load_from_eeprom_btn.setEnabled(True)
+                window.light_box.setEnabled(True)
             exit_dict[nd.name] = nd
     if has_invertor:
         if 'Инвертор_МЭИ' in exit_dict.keys():
@@ -897,40 +898,6 @@ def set_theme(theme_str=''):
                       'GreenLabel {background-color: rgba(0, 200, 0, 50);} '
                       'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
 
-
-def cell_changed(row, col):
-    # print('cellchanged')
-    # col_name = window.vmu_param_table.horizontalHeaderItem(col).text().strip().upper()
-    # if col_name != 'ЗНАЧЕНИЕ':       #
-    if col != 2:
-        print('Промазал')
-
-        return
-
-def cell_current_changed(row, col):
-    print('cell_current_changed')
-    # col_name = window.vmu_param_table.horizontalHeaderItem(col).text().strip().upper()
-    # if col_name != 'ЗНАЧЕНИЕ':       # i
-    if col != 2:
-        print('Промазал')
-
-        return
-
-
-def cell_entered(row, col):
-    print('cell_entered', row, col)
-
-def table_event(e):
-    print('cellPressed', e)
-
-def cell_aktivated(row, col):
-    print('cell_aktivated', row, col)
-
-
-def rb_togled(row):
-    print('rb_togled', row)
-
-
 if __name__ == '__main__':
     start_time = time.perf_counter()
     app = QApplication([])
@@ -947,12 +914,6 @@ if __name__ == '__main__':
     window.errors_tree.itemPressed.connect(show_error)
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
-    # window.rear_light_rbtn.toggled.connect()
-    window.light_box.clicked.connect(rb_togled)
-    # window.vmu_param_table.cellChanged.connect(cell_changed)
-    # window.vmu_param_table.currentCellChanged.connect(cell_current_changed)
-    # window.vmu_param_table.cellActivated.connect(cell_aktivated)
-    # window.vmu_param_table.cellPressed.connect(table_event)
     window.errors_browser.setStyleSheet("font: bold 14px;")
     # ============================== и сигналы нажатия на кнопки
     # -----------------Инвертор---------------------------
@@ -981,6 +942,16 @@ if __name__ == '__main__':
     window.log_record_btn.clicked.connect(record_log)
     window.search_btn.clicked.connect(search_param)
     window.save_to_file_btn.setEnabled(False)
+    # ----------------------------- сигналы от радио кнопок
+    window.off_rbtn.clicked.connect(lambda: rb_togled(window))
+    window.left_side_rbtn.clicked.connect(lambda: rb_togled(window))
+    window.right_side_rbtn.clicked.connect(lambda: rb_togled(window))
+    window.stop_light_rbtn.clicked.connect(lambda: rb_togled(window))
+    window.rear_light_rbtn.clicked.connect(lambda: rb_togled(window))
+    window.low_beam_rbtn.clicked.connect(lambda: rb_togled(window))
+    window.high_beam_rbtn.clicked.connect(lambda: rb_togled(window))
+    window.light_box.setEnabled(False)
+
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:
         with open(nodes_pickle_file, 'rb') as f:
@@ -1014,6 +985,7 @@ if __name__ == '__main__':
         app.exec()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# затирать ячейку, когда ставлю виджет на сохранение параметра
-# не обновлять значение параметр если сейчас на нём фокус
-# сохранять в еепром мэи настройки после прокрутки
+#
+# на изменяемые параметры - всегда виджет
+# сравнивать ямл настройки
+# галочки в предупреждениях

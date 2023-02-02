@@ -340,6 +340,12 @@ class Ui_MainWindow(object):
         self.rear_light_rbtn = QtWidgets.QRadioButton(self.light_box)
         self.rear_light_rbtn.setObjectName("rear_light_rbtn")
         self.verticalLayout.addWidget(self.rear_light_rbtn)
+        self.low_beam_rbtn = QtWidgets.QRadioButton(self.light_box)
+        self.low_beam_rbtn.setObjectName("low_beam_rbtn")
+        self.verticalLayout.addWidget(self.low_beam_rbtn)
+        self.high_beam_rbtn = QtWidgets.QRadioButton(self.light_box)
+        self.high_beam_rbtn.setObjectName("high_beam_rbtn")
+        self.verticalLayout.addWidget(self.high_beam_rbtn)
         self.gridLayout_6.addWidget(self.light_box, 0, 4, 1, 1)
         self.groupBox_2 = QtWidgets.QGroupBox(self.management_tab)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -494,7 +500,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.main_tab.setCurrentIndex(1)
+        self.main_tab.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -539,6 +545,11 @@ class Ui_MainWindow(object):
         self.stop_light_rbtn.setText(_translate("MainWindow", "Стоп"))
         self.rear_light_rbtn.setText(_translate("MainWindow", "Задний\n"
 " ход"))
+        self.low_beam_rbtn.setText(_translate("MainWindow", "Ближний\n"
+" свет"))
+        self.high_beam_rbtn.setText(_translate("MainWindow", "Дальний\n"
+"  свет\n"
+"(ещё нет)"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Панель управления"))
         self.invertor_mpei_box.setTitle(_translate("MainWindow", "Инвертор МЭИ"))
         self.power_off_btn.setText(_translate("MainWindow", "Высокое ВЫКЛ"))

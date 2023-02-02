@@ -3,18 +3,31 @@ from time import sleep
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QMessageBox, QDialogButtonBox
 
+import CANAdater
+from EVONode import EVONode
 from My_threads import WaitCanAnswerThread, SleepThread
 from helper import find_param, DialogChange
-
+'''
+0х18FF82A5  
+1.1-2 Управление левым поворотником (1 - горит, 0 - погашен) 
+1.3-4 Управление правым поворотником (1 - горит, 0 - погашен) 
+1.5-6 Команда управления стоп-сигналами  
+1.7-8 Команда управления сигналом заднего хода 
+2.1-2 Команда управления фонарями ближнего света  
+2.3-4 Команда управления фонарями дальнего света  
+'''
 wait_thread = WaitCanAnswerThread()
 sleep_thread = SleepThread(3)
+light_id_vmu = 0x18FF82A5
 
 light_commamd_dict = dict(
-    off_rbtn=[],
-    left_side_rbtn=[],
-    right_side_rbtn=[],
-    stop_light_rbtn=[],
-    rear_light_rbtn=[]
+    off_rbtn=[0b00000000, 0b00000000],
+    left_side_rbtn=[0b00000001, 0b00000000],
+    right_side_rbtn=[0b00000100, 0b00000000],
+    stop_light_rbtn=[0b00010000, 0b00000000],
+    rear_light_rbtn=[0b01000000, 0b00000000],
+    low_beam_rbtn=[0b00000000, 0b00000001],
+    high_beam_rbtn=[0b00000000, 0b00000100],
 )
 
 
@@ -375,3 +388,42 @@ def let_moment_mpei(window):
                                  QMessageBox.StandardButton.Ok)
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине', QMessageBox.StandardButton.Ok)
+
+
+def rb_togled(window):
+    rb_name = window.sender().objectName()
+    print(rb_name)
+    if rb_name not in light_commamd_dict.keys():
+        return
+    adapter = adapter_for_node(window.thread.adapter, value=250)
+    if adapter:
+        light_on = adapter.can_write(light_id_vmu, light_commamd_dict[rb_name])
+        if light_on:
+            QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{light_on}',
+                                 QMessageBox.StandardButton.Ok)
+            window.log_lbl.setText(light_on.replace('\n', ''))
+    else:
+        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
+
+
+def adapter_for_node(ad: CANAdater, value=None) -> CANAdater:
+    adapter = False
+    n_id = False
+    if isinstance(value, int):
+        if value not in ad.can_bitrate.keys():
+            n_id = value
+    elif isinstance(value, EVONode):
+        n_id = value.request_id
+    else:
+        return adapter
+
+    if not ad.isDefined:
+        if not ad.find_adapters():
+            return
+    if n_id:
+        if n_id in ad.id_nodes_dict.keys():
+            adapter = ad.id_nodes_dict[n_id]
+    else:
+        if value in ad.adapters_dict:
+            adapter = ad.adapters_dict[value]
+    return adapter

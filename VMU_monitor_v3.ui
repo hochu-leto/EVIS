@@ -76,7 +76,7 @@
     <item row="1" column="0">
      <widget class="QTabWidget" name="main_tab">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="params_tab">
        <property name="sizePolicy">
@@ -615,6 +615,23 @@
              <property name="text">
               <string>Задний
  ход</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="low_beam_rbtn">
+             <property name="text">
+              <string>Ближний
+ свет</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="high_beam_rbtn">
+             <property name="text">
+              <string>Дальний
+  свет
+(ещё нет)</string>
              </property>
             </widget>
            </item>

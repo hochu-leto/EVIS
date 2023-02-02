@@ -21,6 +21,7 @@ class CANAdapter:
         self.id_nodes_dict = {}  # словарь блоков, где ключ - айди обращения к блоку, а значение - объект адаптера
         self.is_busy = False
         self.adapters_dict = {}  # словарь адаптеров,где ключ - цифра битрейта, а значение - объект адаптера
+        self.can_bitrate = CANMarathon.can_bitrate
         # self.find_adapters()
 
     def find_adapters(self):
