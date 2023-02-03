@@ -42,7 +42,8 @@ readme = dict(
     )
 )
 # список полей параметра, который будем запихивать в файл. Можно выбрать не все поля
-# в следующем релизе нужно согласовать со стандартными полями Параметра
+# возможно, здесь и следует задавать дефолтные значения полей,
+# которые нужно игнорировать при записи в файл
 exit_list = ['name', 'index', 'sub_index', 'description', 'type', 'value', 'units',
              'multiplier', 'editable', 'offset', 'period', 'min_value', 'max_value', 'value_table']
 
@@ -240,18 +241,22 @@ class Parametr:
         exit_dict = {k: self.__getattribute__(k) for k in exit_list}
         if self.value_string:
             exit_dict['value'] = self.value_string
+        if hasattr(self, 'eeprom') and self.eeprom:
+            exit_dict['eeprom'] = True
+        # надо задать словарь со значениями,
+        # которые не следует добавлять в выходной список
         if not exit_dict['offset']:
             del exit_dict['offset']
         if not exit_dict['value_table']:
             del exit_dict['value_table']
         if not exit_dict['units']:
             del exit_dict['units']
-        if hasattr(self, 'eeprom') and self.eeprom:
-            exit_dict['eeprom'] = True
         if not exit_dict['description']:
             del exit_dict['description']
         if exit_dict['multiplier'] == 1:
             del exit_dict['multiplier']
+        if exit_dict['period'] == 1:
+            del exit_dict['period']
         return exit_dict
 
     def string_from_can(self, value):

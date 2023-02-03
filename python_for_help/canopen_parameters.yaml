@@ -30,7 +30,7 @@ readme:
       Может быть указано и для ro-параметра (для анализа конфигурации), и для rw-параметра (для быстрой загрузки 
       типовой конфигурации в устройство)
     units: Единицы измерения либо диапазон значений, если величина безразмерная
-    value_table: Расшифровка возможных значений в поле 'value'
+    values_table: Расшифровка возможных значений в поле 'value'
 
 canopen_parameters:
 
@@ -170,7 +170,7 @@ canopen_parameters:
       description: Тип тормозной системы, которая используется на этой машине
       eeprom:
       value:
-      value_table:
+      values_table:
         0: none
         1: smooth
         2: discrete
@@ -207,7 +207,7 @@ canopen_parameters:
       type: uint8
       description: Уровень охлаждающей жидкости
       value:
-      value_table:
+      values_table:
         0: OK/обрыв (физический уровень HIGH)
         1: Задетекирован низкий уровень ОЖ (физический уровень LOW)
 
@@ -219,7 +219,7 @@ canopen_parameters:
       type: uint8
       description: Уровень тормозной жидкости
       value:
-      value_table:
+      values_table:
         0: OK/обрыв (физический уровень HIGH)
         1: Задетекирован низкий уровень ТЖ (физический уровень LOW)
 
@@ -231,7 +231,7 @@ canopen_parameters:
       type: uint8
       description: Включение режима управления пневмоподвеской с КВУ
       value:
-      value_table:
+      values_table:
         0: Управление отключено/обрыв (физический уровень LOW)
         1: Управление включено (физический уровень HIGH)
     
@@ -243,7 +243,7 @@ canopen_parameters:
       type: uint8
       description: Ручное включение передних фар. Если выключено, то исполняются команды КВУ
       value:
-      value_table:
+      values_table:
         0: Выключены/обрыв (физический уровень LOW)
         1: Включено (физический уровень HIGH)
 
@@ -255,7 +255,7 @@ canopen_parameters:
       type: uint32
       description: Нажатие кнопки "Стоп КВУ"
       value:
-      value_table:
+      values_table:
         0: Кнопка отжата (физический уровень HIGH)
         1: Кнопка нажата/обрыв (физический уровень LOW)
 
@@ -267,7 +267,7 @@ canopen_parameters:
       type: uint32
       description: Состояние зарядной вилки
       value:
-      value_table:
+      values_table:
         0: Не воткнута/обрыв (физический уровень LOW)
         1: Воткнута (физический уровень HIGH)
 
@@ -279,7 +279,7 @@ canopen_parameters:
       type: uint32
       description: Состояние концевика на дверце блока 4
       value:
-      value_table:
+      values_table:
         0: Дверца открыта/обрыв (физический уровень LOW)
         1: Дверца закрыта (физический уровень HIGH)
 
@@ -291,7 +291,7 @@ canopen_parameters:
       type: uint32
       description: Состояние концевика на левом борту
       value:
-      value_table:
+      values_table:
         0: Борт открыт/обрыв (физический уровень LOW)
         1: Борт закрыт (физический уровень HIGH)
 
@@ -303,7 +303,7 @@ canopen_parameters:
       type: uint32
       description: Состояние концевика на правом борту
       value:
-      value_table:
+      values_table:
         0: Борт открыт/обрыв (физический уровень LOW)
         1: Борт закрыт (физический уровень HIGH)
 
@@ -315,7 +315,7 @@ canopen_parameters:
       type: uint32
       description: Состояние концевика на капоте
       value:
-      value_table:
+      values_table:
         0: Капот открыт/обрыв (физический уровень LOW)
         1: Капот закрыт (физический уровень HIGH)
         
@@ -1030,7 +1030,7 @@ canopen_parameters:
       type: uint32
       description: Статусный байт, полученный от ПСТЭД
       value:
-      value_table:
+      values_table:
         BIT0: Инвертор готов к работе
         BIT1: Критическая ошибка
         BIT2: Некритическая ошибка/близко к какому-либо защитному лимиту
@@ -1239,7 +1239,7 @@ canopen_parameters:
       description: Режим управления инвертором
       eeprom:
       value:
-      value_table:
+      values_table:
         0: Управление по моменту
         1: Управление по току
 
@@ -1417,7 +1417,7 @@ canopen_parameters:
       type: uint8
       description: Байт статуса передней рулевой рейки, полученный от рейки
       value:
-      value_table:
+      values_table:
         BIT3: Перегрев
         BIT4: Превышение тока
         BIT5: Слишком низкое напряжение
@@ -1545,7 +1545,7 @@ canopen_parameters:
       type: uint8
       description: Байт статуса задней рулевой рейки, полученный от рейки
       value:
-      value_table:
+      values_table:
         BIT3: Перегрев
         BIT4: Превышение тока
         BIT5: Слишком низкое напряжение
@@ -1645,7 +1645,7 @@ canopen_parameters:
       type: uint8
       description: Текущее состояние основной машины состояний КВУ (см. описание на Confluence)
       value:
-      value_table:
+      values_table:
         0: Undefined
         1: Init
         2: Fault
@@ -2560,7 +2560,7 @@ canopen_parameters:
        Параметр для назначения конкретного датчика на позицию "Передний левый"
       eeprom:
       value:
-      value_table:
+      values_table:
        0: Пин 115
        1: Пин 139
        2: Пин 116
@@ -2577,7 +2577,7 @@ canopen_parameters:
        Параметр для назначения конкретного датчика на позицию "Передний правый"
       eeprom:
       value:
-      value_table:
+      values_table:
        0: Пин 115
        1: Пин 139
        2: Пин 116
@@ -2594,7 +2594,7 @@ canopen_parameters:
        Параметр для назначения конкретного датчика на позицию "Задний левый"
       eeprom:
       value:
-      value_table:
+      values_table:
        0: Пин 115
        1: Пин 139
        2: Пин 116
@@ -2611,7 +2611,7 @@ canopen_parameters:
        Параметр для назначения конкретного датчика на позицию "Задний правый"
       eeprom:
       value:
-      value_table:
+      values_table:
        0: Пин 115
        1: Пин 139
        2: Пин 116

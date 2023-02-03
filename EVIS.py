@@ -51,8 +51,10 @@ import datetime
 import pickle
 import sys
 import time
+from pprint import pprint
 
 import pandas as pd
+import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
@@ -160,7 +162,7 @@ def record_log():
 
 def make_compare_params_list():
     file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', dir_path,
-                                            "Excel tables (*.xlsx)")[0]
+                                            "YAML files (*.yaml);;Excel tables (*.xlsx)")[0]
     if file_name and ('.xls' in file_name):
         compare_nodes_dict = fill_sheet_dict(file_name)
         comp_node_name = ''
@@ -266,6 +268,7 @@ def info_and_widget(info_m='', my_lab=None):
             window.vmu_param_table.setCellWidget(c_row, c_next_col, my_lab)
         except AttributeError:
             print(my_lab, type(my_lab))
+
 
 def want_to_value_change(c_row, c_col):
     cell = window.vmu_param_table.item(c_row, c_col)
@@ -516,7 +519,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
     record_vmu_params = False
     node_list_defined = False
     err_str = ''
-    themes_list = list_themes() + QStyleFactory.keys()
+    themes_list = list_themes() + QStyleFactory.keys() + \
+                  list([sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()])
     current_theme = ''
 
     def __init__(self):
@@ -892,12 +896,15 @@ def set_theme(theme_str=''):
                    f'GreenLabel, RedLabel {{\n' \
                    f'{cur_font} '
         app.setStyleSheet(stapp + my_style)
+    elif theme_str in [sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()]:
+        app.setStyleSheet(qrainbowstyle.load_stylesheet(style=theme_str))
     else:
         app.setStyleSheet('')
     c_style_sheet = app.styleSheet()
     app.setStyleSheet(c_style_sheet +
                       'GreenLabel {background-color: rgba(0, 200, 0, 50);} '
                       'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
+
 
 if __name__ == '__main__':
     start_time = time.perf_counter()
@@ -986,7 +993,7 @@ if __name__ == '__main__':
         app.exec()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-#
+# парсим ямл для сравнения настроек
 # на изменяемые параметры - всегда виджет
-# сравнивать ямл настройки
 # галочки в предупреждениях
+# кнопка для определения токов рейки

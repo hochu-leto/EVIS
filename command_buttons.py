@@ -273,9 +273,7 @@ def let_moment_mpei(window):
         # тушу высокое и сохраняю их в еепром
         window.thread.invertor_command('POWER_OFF', True)
         save_to_eeprom_mpei(window, node_inv, adapter_inv)
-        sleep(5)
-        if dialog.close():
-            window.thread.invertor_command('POWER_ON', True)
+        window.thread.invertor_command('POWER_ON_SILENT', True)
 
     # стандартные значения инвертора
     standart_current = 270
