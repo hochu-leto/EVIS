@@ -73,7 +73,8 @@ from Parametr import Parametr
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
-    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_pickle_file, save_p_dict_to_yaml_file
+    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_pickle_file, save_p_dict_to_yaml_file, \
+    fill_yaml_dict
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
     color_EVO_orange_shine, color_EVO_white
@@ -162,9 +163,15 @@ def record_log():
 
 def make_compare_params_list():
     file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', dir_path,
-                                            "YAML files (*.yaml);;Excel tables (*.xlsx)")[0]
-    if file_name and ('.xls' in file_name):
-        compare_nodes_dict = fill_sheet_dict(file_name)
+                                            "Файл с настройками блока (*.yaml *.xlsx)")[0]     #;;Excel tables (*.xlsx)
+    if file_name:
+        if '.xls' in file_name:
+            compare_nodes_dict = fill_sheet_dict(file_name)
+        elif '.yaml' in file_name:
+            compare_nodes_dict = fill_yaml_dict(file_name)
+        else:
+            window.log_lbl.setText('Выбран неправильный файл')
+            return False
         comp_node_name = ''
         if compare_nodes_dict:
             for cur_node in window.thread.current_nodes_dict.values():

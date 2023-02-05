@@ -68,6 +68,24 @@ def fill_sheet_dict(file_name):
     return sheets_dict
 
 
+# можно несколько блоков в одном файле
+def fill_yaml_dict(file_name):
+    with open(file_name, "r", encoding="UTF-8") as stream:
+        try:
+            nodes_list = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+            return
+    node_dict = {}
+    # немного косянул со списком блоков, нужно исправлять сохранение в ямл. А пока так
+    node = nodes_list['device']
+    node_dict[node['name']] = param_dict(node['parameters'])
+    return node_dict
+
+
+def param_dict(params: dict):
+    return {name_group: [Parametr(p) for p in group] for name_group, group in params.items()}
+
 # =========================================версия для ошибок-объектов и ямл-файлов============================
 # ------------------------------------- заполнение списка с ошибками----------------------------
 def fill_err_list_from_yaml(file, node):
@@ -189,7 +207,6 @@ def make_nodes_dict(node_dict):
             final_nodes_dict[name] = full_node
 
     node = final_nodes_dict[TheBestNode] = node_dict[TheBestNode]
-    # node = final_nodes_dict[TheBestNode]
     if node.group_params_dict:
         for group in node.group_params_dict.values():
             for param in group:

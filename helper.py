@@ -93,12 +93,9 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
     row = 0
-    if has_compare:
-        show_table.setColumnCount(5)
-        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность'])
-    else:
-        show_table.setColumnCount(4)
-        show_table.setHorizontalHeaderLabels(['Параметр', 'Описание', 'Значение', 'Размерность'])
+    headers_list = ['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность']
+    show_table.setColumnCount(len(headers_list))
+    show_table.setHorizontalHeaderLabels(headers_list)
 
     # пока отображаю только три атрибута + само значение отображается позже
     for par in list_of_params:
@@ -137,6 +134,7 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 
         compare_item = QTableWidgetItem(compare)
         compare_item.setFlags(compare_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+
         show_table.setItem(row, 3, compare_item)
 
         unit_item = QTableWidgetItem(unit)
@@ -144,16 +142,15 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
         row += 1
+
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-    show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-    # максимальная ширина у описания, если не хватает длины, то переносится
+
+    show_table.setColumnHidden(show_table.columnCount() - 2, not has_compare)
+    # # максимальная ширина у описания, если не хватает длины, то переносится
+    show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
     show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+    show_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
     return items_list
-
-
-def pass_def():
-    print('изменили комбо-бокс')
-    pass
 
 
 def show_new_vmu_params(params_list, table, has_compare_params=False):

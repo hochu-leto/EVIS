@@ -91,7 +91,7 @@ class Parametr:
 
         # в следующем релизе нужно прийти к стандартным полям Параметра,
         # но чтоб принимал все предыдущие варианты, превращая их в стандартные, примерно как сейчас в scale
-        address = check_string('address', '0x00')
+        address = check_string('address', '0x0')
         if len(address) < 4:
             self.index = check_value(0, 'index')
             self.sub_index = check_value(0, 'sub_index')
