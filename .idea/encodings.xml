@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/Data/all_nodes.yaml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Data/ИСН/Default/errors.yaml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Data/Избранное/Default/parameters.yaml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Data/Инвертор_МЭИ/22092/errors.yaml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Data/Инвертор_МЭИ/22092/parameters.yaml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Data/Инвертор_МЭИ/2211/parameters.yaml" charset="UTF-8" />

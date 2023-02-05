@@ -2553,6 +2553,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -2595,6 +2596,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1536: Пин светового оборудования
     1792: EEPROM CRC
     1793: EEPROM iolib
@@ -2696,6 +2698,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -2731,6 +2734,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -2766,6 +2770,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -2801,6 +2806,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -2836,6 +2842,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -2871,6 +2878,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -2906,6 +2914,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -2941,6 +2950,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -2976,6 +2986,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке
@@ -3011,6 +3022,7 @@ error_monitoring:
   type: UNSIGNED16
   value: null
   values_table:
+    0: Нет ошибок
     1827: EEPROM таймаут
     2336: Передняя рулевая рейка оффлайн
     2337: Критическая ошибка на передней рулевой рейке

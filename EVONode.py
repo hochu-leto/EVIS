@@ -294,10 +294,12 @@ class EVONode:
             exit_dict['current_errors_list'] = [er.name for er in self.current_errors_list]
         if self.current_warnings_list:
             exit_dict['current_warnings_list'] = [wr.name for wr in self.current_warnings_list]
-        group_dict = {group: [par.to_dict() for par in params]
-                      for group, params in self.group_params_dict.items()}
-        exit_dict['parameters'] = group_dict
+        exit_dict['parameters'] = self.groups_to_dict()
         return exit_dict
+
+    def groups_to_dict(self):
+        return {group: [par.to_dict() for par in params]
+                for group, params in self.group_params_dict.items()}
 
 
 def check_printable(lst):

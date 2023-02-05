@@ -1,0 +1,106 @@
+пер рул:
+- name: A3.1 WheelTyp#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: Текущая ось по итогам А3.4
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32768
+  max_value: 1.0
+  value_table:
+    0: FORWARD
+    1: 'REAR '
+- name: A0.2 SetSteerPos#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: Задание реечной позиции -1000...+1000
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A0.3 ActSteerPos#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: Актуальная реечная позиция -1000...+1000
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A1.7 CurrentRMS#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0
+  units: A
+  multiplier: 0.1
+  editable: false
+  min_value: 0
+  max_value: 6553.5
+- name: A1.8 Torque#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: МОМЕНТ Нм * 100
+  type: SIGNED16
+  value: 0
+  units: kNm
+  multiplier: 0.01
+  editable: false
+  min_value: -327.5
+  max_value: 327.5
+зад рул:
+- name: A3.1 WheelTyp#Рулевая_зад_Томск
+  index: 32
+  sub_index: 0
+  description: Текущая ось по итогам А3.4
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32768
+  max_value: 1.0
+  value_table:
+    0: FORWARD
+    1: 'REAR '
+- name: A0.2 SetSteerPos#Рулевая_зад_Томск
+  index: 2
+  sub_index: 0
+  description: Задание реечной позиции -1000...+1000
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A0.3 ActSteerPos#Рулевая_зад_Томск
+  index: 3
+  sub_index: 0
+  description: Актуальная реечная позиция -1000...+1000
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A1.7 CurrentRMS#Рулевая_зад_Томск
+  index: 18
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0
+  units: A
+  multiplier: 0.1
+  editable: false
+  min_value: 0
+  max_value: 6553.5
+- name: A1.8 Torque#Рулевая_зад_Томск
+  index: 19
+  sub_index: 0
+  description: МОМЕНТ Нм * 100
+  type: SIGNED16
+  value: 0
+  units: kNm
+  multiplier: 0.01
+  editable: false
+  min_value: -327.5
+  max_value: 327.5

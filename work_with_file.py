@@ -148,8 +148,8 @@ def fill_node(node: EVONode):
             t_dir = pathlib.Path(node_dir, Default)
             node.group_params_dict = try_load_pickle('params', t_dir, node)
             node.errors_list = try_load_pickle('errors', t_dir, node)
-            if node.name == 'КВУ_ТТС' and node.errors_list:
-                node.warnings_list = node.errors_list.copy()
+            # if node.name == 'КВУ_ТТС' and node.errors_list:       кажется, это дублируется ниже
+            #     node.warnings_list = node.errors_list.copy()
             if not node.group_params_dict or not node.errors_list:
                 return False
             f_v = node.firmware_version
@@ -171,7 +171,7 @@ def fill_node(node: EVONode):
                                 node.warnings_list = errors_list.copy()
 
             for group in node.group_params_dict.values():
-                for param in group:
+                for param in group:     # только это не работает для избранного
                     param.node = node
             print(f'для блока {node.name} с версией ПО {node.firmware_version} '
                   f'применяю параметры из папки {param_dir} и ошибки из папки {err_dir}')
@@ -187,26 +187,52 @@ def make_nodes_dict(node_dict):
         full_node = fill_node(node)
         if full_node:
             final_nodes_dict[name] = full_node
-    # надо добавить избранное, если его нет
-    if TheBestNode not in final_nodes_dict.keys():
+
+    node = final_nodes_dict[TheBestNode] = node_dict[TheBestNode]
+    # node = final_nodes_dict[TheBestNode]
+    if node.group_params_dict:
+        for group in node.group_params_dict.values():
+            for param in group:
+                node_name_from_param_name = param.name.split('#')[1]
+                param.node = node_dict[node_name_from_param_name]
+    else:
         # и если в избранном нет параметров - добавить Новый список
-        if not node_dict[TheBestNode].group_params_dict:
-            node_dict[TheBestNode].group_params_dict[NewParamsList] = []
-        final_nodes_dict[TheBestNode] = node_dict[TheBestNode]
+        node.group_params_dict[NewParamsList] = []
 
     return final_nodes_dict
 
 
 # =============================================================================================================
 
-def save_p_dict_to_file(par_dict: dict):
+def save_p_dict_to_pickle_file(node: EVONode):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
-    file_name = pathlib.Path(data_dir, TheBestNode, Default, par_pick_file)
+    s_num = node.serial_number if node.serial_number else Default
+    file_name = pathlib.Path(data_dir, node.name, s_num, par_pick_file)
     try:
         with open(file_name, 'wb') as f:
-            pickle.dump(par_dict, f)
+            pickle.dump(node.group_params_dict, f)
         if os.path.isfile(nodes_pickle_file):
             os.remove(nodes_pickle_file)
+        return True
+    except PermissionError:
+        return False
+
+
+def save_p_dict_to_yaml_file(node: EVONode):
+    data_dir = pathlib.Path(os.getcwd(), 'Data')
+    s_num = node.serial_number if node.serial_number else Default
+    file_name = pathlib.Path(data_dir, node.name, s_num, par_file)
+    pickle_params_file = pathlib.Path(data_dir,  node.name, s_num, par_pick_file)
+    try:
+        with open(file_name, 'w', encoding='UTF-8') as file:
+            yaml.dump(node.groups_to_dict(), file,
+                      default_flow_style=False,
+                      sort_keys=False,
+                      allow_unicode=True)
+        if os.path.isfile(nodes_pickle_file):
+            os.remove(nodes_pickle_file)
+        if os.path.isfile(pickle_params_file):
+            os.remove(pickle_params_file)
         return True
     except PermissionError:
         return False
@@ -227,7 +253,4 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
         if adr in all_compare_params.keys():
             compare_par = all_compare_params[adr]
             cur_p.value_compare = compare_par.value_string if compare_par.value_string else float(compare_par.value)
-            # cur_p.value_compare = compare_par.value if isinstance(compare_par.value, str) else float(compare_par.value)
-            # cur_p.value_compare = compare_par.value
-            # del all_compare_params[cur_p.address]
     node.has_compare_params = True

@@ -68,12 +68,12 @@ from CANAdater import CANAdapter
 from EVOErrors import EvoError
 from EVONode import EVONode
 from EVOWidgets import GreenLabel, RedLabel
-from My_threads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
+from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from Parametr import Parametr
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
-    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_file
+    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_pickle_file, save_p_dict_to_yaml_file
 from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
     color_EVO_orange_shine, color_EVO_white
@@ -684,7 +684,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                     del user_node.group_params_dict[NewParamsList]
                     # проверяю удалось ли сохранить список
                     # if save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file):
-                    if save_p_dict_to_file(user_node.group_params_dict):
+                    # if save_p_dict_to_pickle_file(user_node):
+                    if save_p_dict_to_yaml_file(user_node):
                         err_mess = f'{val} успешно сохранён в {TheBestNode}'
                         state = True
                         # создаём новый итем для дерева

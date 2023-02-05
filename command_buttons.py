@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QMessageBox, QDialogButtonBox
 
 import CANAdater
 from EVONode import EVONode
-from My_threads import WaitCanAnswerThread, SleepThread
+from EVOThreads import WaitCanAnswerThread, SleepThread
 from helper import find_param, DialogChange
 
 '''
