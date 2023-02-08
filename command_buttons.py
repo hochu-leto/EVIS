@@ -450,6 +450,7 @@ class SteerParametr:
 class Steer:
 
     def __init__(self, steer: EVONode, adapter):
+        # словарь с параметрами, которые опрашиваем
         self.parameters_get = dict(
             status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
                                  min_value=0, max_value=0),
@@ -458,6 +459,7 @@ class Steer:
                                    nominal_value=0, min_value=-30, max_value=30),
             current=SteerParametr(name='A1.7 CurrentRMS',
                                   min_value=1, max_value=100))
+        # словарь с параметрами, которые задаём
         self.parameters_set = dict(
             current=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
                                   nominal_value=70, min_value=1, max_value=90),
@@ -466,14 +468,13 @@ class Steer:
             control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2,
                                   min_value=0, max_value=0),
             position=SteerParametr(name='A0.2 SetSteerPos', nominal_value=0,
-                                   min_value=-1000, max_value=1000)
-        )
+                                   min_value=-1000, max_value=1000))
         self.node = steer
         self.adapter = adapter
         self.max_iteration = 3
-        self.time_for_moving = 3
-        self.time_for_request = 20
-
+        self.time_for_moving = 3    # время для движения в секундах
+        self.time_for_request = 0.02    # время опроса - 20мс
+        # определяем все параметры
         for par in list(self.parameters_get.values()) + list(self.parameters_set.values()):
             par.parametr = find_param(par.name, self.node)[0]
             if not par.parametr:
@@ -489,6 +490,7 @@ class Steer:
             value = param.parametr.get_value(self.adapter)
             if not isinstance(value, str):
                 return value
+        QMessageBox.critical(None, "Ошибка ", f'Запросить {param.name} не удалось', QMessageBox.StandardButton.Ok)
         return None
 
     def actual_position(self):
@@ -498,6 +500,7 @@ class Steer:
     def actual_current(self):
         return self.get_param(self.parameters_get['current'])
 
+    # это только задание положения, ещё не вращение
     def set_position(self, value: int):
         if value > self.max_position:
             value = self.max_position
@@ -508,6 +511,7 @@ class Steer:
             return False
         return True
 
+    # задаём максимальный рабочий ток
     def set_current(self, value: int):
         if value > self.max_current:
             value = self.max_current
@@ -516,38 +520,38 @@ class Steer:
             return False
         return True
 
+    # задание движения, за показаниями не следим, мотор не выключаем
     def move_to(self, value: int):
         if value > self.max_position:
             value = self.max_position
         elif value < self.min_position:
             value = self.min_position
+        # если есть ошибки, не включаем
         err = self.node.check_errors(self.adapter)
         if err:
             errs = "\n - ".join(err)
             QMessageBox.critical(None, "Ошибка ", f' В блоке ошибки {errs}', QMessageBox.StandardButton.Ok)
             return False
-        self.max_current = self.get_param(self.parameters_set['current'])
 
-        if not self.max_current:
-            QMessageBox.critical(None, "Ошибка ", f'Запросить максимальный ток не удалось', QMessageBox.StandardButton.Ok)
-            return False
         if not self.set_position(value) or not self.turn_on_motor():
             self.stop()
-            QMessageBox.critical(None, "Ошибка ", f'Повернуть не удалось', QMessageBox.StandardButton.Ok)
             return False
+
         return True
 
+    #
     def turn_on_motor(self):
         if self.parameters_set['control'].parametr.set_value(self.adapter,
-                                                                  self.parameters_set['control'].min_value):
+                                                             self.parameters_set['control'].min_value):
             QMessageBox.critical(None, "Ошибка ", f'Не удалось перейти в тестовый режим', QMessageBox.StandardButton.Ok)
             return False
         if self.parameters_set['command'].parametr.set_value(self.adapter,
-                                                                     self.parameters_set['command'].min_value):
+                                                             self.parameters_set['command'].min_value):
             QMessageBox.critical(None, "Ошибка ", f'Не удалось включить мотор', QMessageBox.StandardButton.Ok)
             return False
         return True
 
+    #
     def stop(self):
         for par in self.parameters_set.values():
             err = par.parametr.set_value(self.adapter, par.nominal_value)
@@ -558,27 +562,29 @@ class Steer:
         return True
 
     def set_straight(self):
-        self.move_to(self.parameters_get['position'].nominal_value)
-        self.parameters_set['current'].nominal_value = self.max_current
-        current_time = start_time = time.perf_counter()
-        # timer = QTimer()
-        # timer.timeout.connect(self.actual_position)
-        # timer.start(self.time_for_request)
-        # loop = QEventLoop()
-        # loop.exec()
-
-        while time.perf_counter() < start_time + self.time_for_moving:
-            print(f'\rТекущее положение {self.current_position} ток сейчас {self.actual_current()}', end='', flush=True)
-
-            if time.perf_counter() > current_time + self.time_for_request / 1000:
-                current_time = time.perf_counter()
-                self.actual_position()
-
-            if self.parameters_get['position'].min_value < \
-                    self.current_position < self.parameters_get['position'].max_value:
-                break
+        result = False
+        # определяем заданный пользователем максимальный ток (возможно, это нужно изменять)
+        # и задаём команду на вращение
+        self.max_current = self.get_param(self.parameters_set['current'])
+        move = self.move_to(self.parameters_get['position'].nominal_value)
+        if move and self.max_current:
+            self.parameters_set['current'].nominal_value = self.max_current
+            current_time = start_time = time.perf_counter()
+            # а дальше смотрим за текущими параметрами пока не вышло время
+            while time.perf_counter() < start_time + self.time_for_moving:
+                print(f'\rТекущее положение {self.current_position} ток сейчас {self.actual_current()}', end='', flush=True)
+                # регулярно опрашиваем текущее положение
+                if time.perf_counter() > current_time + self.time_for_request:
+                    current_time = time.perf_counter()
+                    self.actual_position()
+                #  выходим с победой если попали в нужный диапазон
+                if self.parameters_get['position'].min_value < \
+                        self.current_position < self.parameters_get['position'].max_value:
+                    result = True
+                    break
+        # отключаем мотор и все параметры возвращаем к номинальным
         self.stop()
-
+        return result
 
 def check_steering_current(window):
     # def end_func():
@@ -707,4 +713,3 @@ def check_steering_current(window):
     #     loop.exec()
 
     return True
-
