@@ -1,6 +1,6 @@
 import time
 
-from EVIS import BRAKE_TIMER
+from EvCON import BRAKE_TIMER
 
 # шляпа нерабочая
 

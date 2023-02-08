@@ -2,7 +2,7 @@ import ctypes
 
 import CANAdater
 from EVOErrors import EvoError
-from Parametr import Parametr
+from EVOParametr import Parametr
 from helper import int_to_hex_str
 
 invertor_command_dict = {

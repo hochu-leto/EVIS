@@ -4,7 +4,7 @@ import yaml
 from PyQt6.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
 from PyQt6.QtWidgets import QMessageBox
 from EVONode import EVONode, invertor_command_dict
-from Parametr import readme
+from EVOParametr import readme
 from helper import buf_to_string
 
 

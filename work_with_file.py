@@ -8,7 +8,7 @@ import yaml
 from EVOErrors import EvoError
 from helper import NewParamsList, get_nearest_lower_value
 from EVONode import EVONode
-from Parametr import Parametr
+from EVOParametr import Parametr
 from helper import TheBestNode
 
 value_type_dict = {'UNSIGNED16': 0x2B,
@@ -78,8 +78,13 @@ def fill_yaml_dict(file_name):
             return
     node_dict = {}
     # немного косянул со списком блоков, нужно исправлять сохранение в ямл. А пока так
-    node = nodes_list['device']
-    node_dict[node['name']] = param_dict(node['parameters'])
+    if 'device' in nodes_list.keys():
+        node = nodes_list['device']
+        node_dict[node['name']] = param_dict(node['parameters'])
+    elif 'devices' in nodes_list.keys():
+        # а вот сюда можно запихнуть всю машину с настройками всех блоков
+        for node in nodes_list['devices'].values():
+            node_dict[node['name']] = param_dict(node['parameters'])
     return node_dict
 
 
@@ -238,8 +243,8 @@ def save_p_dict_to_pickle_file(node: EVONode):
 def save_p_dict_to_yaml_file(node: EVONode):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
     s_num = node.serial_number if node.serial_number else Default
-    file_name = pathlib.Path(data_dir, node.name, s_num, par_file)
-    pickle_params_file = pathlib.Path(data_dir,  node.name, s_num, par_pick_file)
+    file_name = pathlib.Path(data_dir, str(node.name), str(s_num), par_file)
+    pickle_params_file = pathlib.Path(data_dir,  str(node.name), str(s_num), par_pick_file)
     try:
         with open(file_name, 'w', encoding='UTF-8') as file:
             yaml.dump(node.groups_to_dict(), file,

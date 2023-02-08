@@ -69,9 +69,10 @@ from EVOErrors import EvoError
 from EVONode import EVONode
 from EVOWidgets import GreenLabel, RedLabel
 from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
-from Parametr import Parametr
+from EVOParametr import Parametr
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
-    mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled
+    mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled, \
+    check_steering_current
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_pickle_file, save_p_dict_to_yaml_file, \
     fill_yaml_dict
@@ -921,7 +922,8 @@ if __name__ == '__main__':
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
     splash.show()
     window = VMUMonitorApp()
-    window.setWindowTitle('Electric Vehicle Information System')
+    # window.setWindowTitle('Electric Vehicle Information System')
+    window.setWindowTitle('Electrical vehicle CONtrol')
     stylesheet_file = pathlib.Path(dir_path, 'Data', 'EVOStyleSheet.txt')
 
     window.main_tab.currentChanged.connect(window.change_tab)
@@ -945,6 +947,7 @@ if __name__ == '__main__':
     window.joy_bind_btn.clicked.connect(lambda: joystick_bind(window))
     window.susp_zero_btn.clicked.connect(lambda: suspension_to_zero(window))
     window.load_from_eeprom_btn.clicked.connect(lambda: load_from_eeprom(window))
+    window.curr_measure_btn.clicked.connect(lambda: check_steering_current(window))
     window.susp_zero_btn.setEnabled(False)
     window.load_from_eeprom_btn.setEnabled(False)
     window.joy_bind_btn.setEnabled(False)

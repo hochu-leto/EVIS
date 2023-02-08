@@ -72,7 +72,7 @@ def buf_to_string(buf):
     return s
 
 
-def find_param(nodes_dict: dict, s: str, node_name=None) -> list:
+def find_param(s: str, node_name=None, nodes_dict=None) -> list:
     list_of_params = []
     s = s.upper().strip()
     if node_name is None:
