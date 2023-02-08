@@ -74,7 +74,8 @@ def save_to_eeprom(window, node=None):
 
 def save_to_eeprom_mpei(window, node, adapter):
     sleep_thread.SignalOfProcess.connect(window.progress_bar_fulling)
-    voltage = find_param(window.thread.current_nodes_dict, 'DC_VOLTAGE', node_name=node.name)[0]
+    voltage = find_param('DC_VOLTAGE', node=node.name,
+                         nodes_dict=window.thread.current_nodes_dict)[0]
     err = voltage.get_value(adapter)
     if not isinstance(err, str):
         # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
@@ -158,10 +159,12 @@ def mpei_calibrate(window):
     n_name = 'Инвертор_МЭИ'
     for p_name in param_list_for_calibrate:
         wait_thread.imp_par_set.add(
-            find_param(window.thread.current_nodes_dict, p_name, node_name=n_name)[0])
-    wait_thread.imp_par_set.add(find_param(window.thread.current_nodes_dict, 'TORQUE', node_name=n_name)[2])
-    wait_thread.imp_par_set.add(find_param(window.thread.current_nodes_dict, 'SPEED_RPM',
-                                           node_name=n_name)[1])
+            find_param(p_name, node=n_name,
+                       nodes_dict=window.thread.current_nodes_dict)[0])
+    wait_thread.imp_par_set.add(find_param('TORQUE', node=n_name,
+                                           nodes_dict=window.thread.current_nodes_dict)[2])
+    wait_thread.imp_par_set.add(find_param('SPEED_RPM', node=n_name,
+                                           nodes_dict=window.thread.current_nodes_dict)[1])
 
     wait_thread.req_delay = 50
     wait_thread.adapter = window.thread.adapter.adapters_dict[125]
@@ -226,7 +229,7 @@ def joystick_bind(window):
 
 
 def suspension_to_zero(window):
-    par_list = find_param(window.thread.current_nodes_dict, 'SUSPENSION_')
+    par_list = find_param('SUSPENSION_', nodes_dict=window.thread.current_nodes_dict)
     p_list = par_list[:9] if par_list and len(par_list) >= 9 else []
     wait_thread.imp_par_set = set(p_list)
     adapter = adapter_for_node(window.thread.adapter, 250)
@@ -292,10 +295,10 @@ def let_moment_mpei(window):
     param_list_for_calibrate = ['FAULTS', 'DC_VOLTAGE', 'DC_CURRENT', 'DRIVE_STATE']
     for p_name in param_list_for_calibrate:
         wait_thread.imp_par_set.add(
-            find_param(p_name, node_name=node_inv.name, nodes_dict=window.thread.current_nodes_dict)[0])
-    wait_thread.imp_par_set.add(find_param('TORQUE', node_name=node_inv.name,
+            find_param(p_name, node=node_inv.name, nodes_dict=window.thread.current_nodes_dict)[0])
+    wait_thread.imp_par_set.add(find_param('TORQUE', node=node_inv.name,
                                            nodes_dict=window.thread.current_nodes_dict)[2])
-    wait_thread.imp_par_set.add(find_param('SPEED_RPM', node_name=node_inv.name,
+    wait_thread.imp_par_set.add(find_param('SPEED_RPM', node=node_inv.name,
                                            nodes_dict=window.thread.current_nodes_dict)[1])
     # ищу адаптеры
     adapter_inv = adapter_for_node(window.thread.adapter, node_inv)
@@ -316,11 +319,14 @@ def let_moment_mpei(window):
         wait_thread.req_delay = 50  # время в миллисекундах на опрос параметров
         wait_thread.adapter = adapter_inv
         # Нахожу нужные параметры от инвертора и кву
-        is_motor_max = find_param(window.thread.current_nodes_dict, 'IS_MOTOR_MAX', node_name=node_inv.name)[0]
-        speed_max = find_param(window.thread.current_nodes_dict, 'SPEED_MAX', node_name=node_inv.name)[0]
-        man_control = find_param(window.thread.current_nodes_dict, 'MANUAL_CONTROL', node_name=node_vmu.name)[0]
-        ref_torque = find_param(window.thread.current_nodes_dict, 'PSTED_MANUAL_CONTROL_REF_TORQUE',
-                                node_name=node_vmu.name)[0]
+        is_motor_max = find_param('IS_MOTOR_MAX', node=node_inv.name,
+                                  nodes_dict=window.thread.current_nodes_dict)[0]
+        speed_max = find_param('SPEED_MAX', node=node_inv.name,
+                               nodes_dict=window.thread.current_nodes_dict)[0]
+        man_control = find_param('MANUAL_CONTROL', node=node_vmu.name,
+                                 nodes_dict=window.thread.current_nodes_dict)[0]
+        ref_torque = find_param('PSTED_MANUAL_CONTROL_REF_TORQUE', node=node_vmu.name,
+                                nodes_dict=window.thread.current_nodes_dict)[0]
         if not is_motor_max or not speed_max or not man_control or not ref_torque:
             QMessageBox.critical(window, "Ошибка ", 'Не найдены нужные параметры', QMessageBox.StandardButton.Ok)
             return
@@ -417,6 +423,7 @@ def adapter_for_node(ad: CANAdater, value=None) -> CANAdater:
             adapter = ad.adapters_dict[value]
     return adapter
 
+
 class SteerParametr:
 
     def __init__(self, name: str, warning='', nominal_value=0, min_value=None, max_value=None):
@@ -440,79 +447,186 @@ class SteerParametr:
         return False
 
 
-
 class Steer:
 
     def __init__(self, steer: EVONode, adapter):
-        parametr_dict = dict(
-            st_status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
-                                    min_value=0, max_value=0),
-            st_alarms=SteerParametr(name='A0.0 Alarms', warning='В блоке есть ошибки'),
-            st_act_pos=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении',
-                                     min_value=-30, max_value=30),
-            st_set_curr=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
-                                      min_value=1, max_value=100),
-            st_motor_command=SteerParametr(name='D0.0 ComandSet',
-                                           min_value=1, max_value=1),
-            st_control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2,
-                                     min_value=0, max_value=0),
-            st_set_pos=SteerParametr(name='A0.2 SetSteerPos',
-                                     min_value=-1000, max_value=1000)
+        self.parameters_get = dict(
+            status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
+                                 min_value=0, max_value=0),
+            alarms=SteerParametr(name='A0.0 Alarms', warning='В блоке есть ошибки'),
+            position=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении',
+                                   nominal_value=0, min_value=-30, max_value=30),
+            current=SteerParametr(name='A1.7 CurrentRMS',
+                                  min_value=1, max_value=100))
+        self.parameters_set = dict(
+            current=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
+                                  nominal_value=70, min_value=1, max_value=90),
+            command=SteerParametr(name='D0.0 ComandSet', nominal_value=0,
+                                  min_value=1, max_value=1),
+            control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2,
+                                  min_value=0, max_value=0),
+            position=SteerParametr(name='A0.2 SetSteerPos', nominal_value=0,
+                                   min_value=-1000, max_value=1000)
         )
         self.node = steer
         self.adapter = adapter
-        for par in parametr_dict.values():
-            par.parametr = find_param(window.thread.current_nodes_dict, par.name, current_steer.name)[0]
-            if not par.parametr:
-                QMessageBox.critical(window, "Ошибка ", f'Не найден параметр{par.name}', QMessageBox.StandardButton.Ok)
+        self.max_iteration = 3
+        self.time_for_moving = 3
+        self.time_for_request = 20
 
-def check_steering_current(window):
-    def end_func():
-        timer.stop()
-        current.parametr.set_value(adapter, current.max_value)
-        for par in list(parametr_dict.values())[4:]:
-            if par.parametr.set_value(adapter, par.nominal_value):
-                QMessageBox.critical(window, "Ошибка ",
-                                     f'Не могу установить значение по умолчанию параметра {par.name}',
-                                     QMessageBox.StandardButton.Ok)
-                return False
-        if currents.max_value:
-            QMessageBox.information(window,
-                                    "Информация",
-                                    f'Ток страгивания = {currents.min_value}\n'
-                                    f'Ток максимального выворота = {currents.max_value}',
-                                    QMessageBox.StandardButton.Ok)
+        for par in list(self.parameters_get.values()) + list(self.parameters_set.values()):
+            par.parametr = find_param(par.name, self.node)[0]
+            if not par.parametr:
+                QMessageBox.critical(None, "Ошибка ", f'Не найден параметр{par.name}', QMessageBox.StandardButton.Ok)
+
+        self.current_position = self.parameters_get['position'].nominal_value
+        self.min_position = self.parameters_get['position'].min_value
+        self.max_position = self.parameters_get['position'].max_value
+        self.max_current = self.parameters_get['current'].max_value
+
+    def get_param(self, param: SteerParametr):
+        for i in range(self.max_iteration):
+            value = param.parametr.get_value(self.adapter)
+            if not isinstance(value, str):
+                return value
+        return None
+
+    def actual_position(self):
+        self.current_position = self.get_param(self.parameters_get['position'])
+        return self.current_position
+
+    def actual_current(self):
+        return self.get_param(self.parameters_get['current'])
+
+    def set_position(self, value: int):
+        if value > self.max_position:
+            value = self.max_position
+        elif value < self.min_position:
+            value = self.min_position
+        if self.parameters_set['position'].parametr.set_value(self.adapter, value):
+            QMessageBox.critical(None, "Ошибка ", f'Задать положение {value} не удалось', QMessageBox.StandardButton.Ok)
+            return False
         return True
 
-    def moving_steer():
-        old_delta = target_position - position.current_value
-        position.current_value = position.parametr.get_value(adapter)
-        new_delta = target_position - position.current_value
+    def set_current(self, value: int):
+        if value > self.max_current:
+            value = self.max_current
+        if self.parameters_set['current'].parametr.set_value(self.adapter, value):
+            QMessageBox.critical(None, "Ошибка ", f'Задать ток {value} не удалось', QMessageBox.StandardButton.Ok)
+            return False
+        return True
 
-        if abs(new_delta) > abs(old_delta) + abs(target_position / 100):
-            QMessageBox.critical(window, "Ошибка ", f'Рейка движется не в том направлении',
-                                 QMessageBox.StandardButton.Ok)
-            end_func()
-            return
-        if not currents.min_value:
-            if abs(position.current_value) >= abs(target_position / 10):
-                currents.min_value = current.current_value
+    def move_to(self, value: int):
+        if value > self.max_position:
+            value = self.max_position
+        elif value < self.min_position:
+            value = self.min_position
+        err = self.node.check_errors(self.adapter)
+        if err:
+            errs = "\n - ".join(err)
+            QMessageBox.critical(None, "Ошибка ", f' В блоке ошибки {errs}', QMessageBox.StandardButton.Ok)
+            return False
+        self.max_current = self.get_param(self.parameters_set['current'])
 
-        if abs(position.current_value) >= abs(target_position):
-            currents.max_value = current.current_value
-            end_func()
-            return
-        else:
-            if current.current_value < current.max_value:
-                current.current_value += delta_current
-                current.parametr.set_value(adapter, current.current_value)
-            else:
-                QMessageBox.critical(window, "Ошибка ", f'Достигнут предел тока', QMessageBox.StandardButton.Ok)
-                end_func()
-                return
+        if not self.max_current:
+            QMessageBox.critical(None, "Ошибка ", f'Запросить максимальный ток не удалось', QMessageBox.StandardButton.Ok)
+            return False
+        if not self.set_position(value) or not self.turn_on_motor():
+            self.stop()
+            QMessageBox.critical(None, "Ошибка ", f'Повернуть не удалось', QMessageBox.StandardButton.Ok)
+            return False
+        return True
 
-    delay = 500
-    delta_current = 0.5
+    def turn_on_motor(self):
+        if self.parameters_set['control'].parametr.set_value(self.adapter,
+                                                                  self.parameters_set['control'].min_value):
+            QMessageBox.critical(None, "Ошибка ", f'Не удалось перейти в тестовый режим', QMessageBox.StandardButton.Ok)
+            return False
+        if self.parameters_set['command'].parametr.set_value(self.adapter,
+                                                                     self.parameters_set['command'].min_value):
+            QMessageBox.critical(None, "Ошибка ", f'Не удалось включить мотор', QMessageBox.StandardButton.Ok)
+            return False
+        return True
+
+    def stop(self):
+        for par in self.parameters_set.values():
+            err = par.parametr.set_value(self.adapter, par.nominal_value)
+            if err:
+                QMessageBox.critical(None, "Ошибка ", f'Не могу установить параметр{par.name}',
+                                     QMessageBox.StandardButton.Ok)
+                return False
+        return True
+
+    def set_straight(self):
+        self.move_to(self.parameters_get['position'].nominal_value)
+        self.parameters_set['current'].nominal_value = self.max_current
+        current_time = start_time = time.perf_counter()
+        # timer = QTimer()
+        # timer.timeout.connect(self.actual_position)
+        # timer.start(self.time_for_request)
+        # loop = QEventLoop()
+        # loop.exec()
+
+        while time.perf_counter() < start_time + self.time_for_moving:
+            print(f'\rТекущее положение {self.current_position} ток сейчас {self.actual_current()}', end='', flush=True)
+
+            if time.perf_counter() > current_time + self.time_for_request / 1000:
+                current_time = time.perf_counter()
+                self.actual_position()
+
+            if self.parameters_get['position'].min_value < \
+                    self.current_position < self.parameters_get['position'].max_value:
+                break
+        self.stop()
+
+
+def check_steering_current(window):
+    # def end_func():
+    #     timer.stop()
+    #     current.parametr.set_value(adapter, current.max_value)
+    #     for par in list(parametr_dict.values())[4:]:
+    #         if par.parametr.set_value(adapter, par.nominal_value):
+    #             QMessageBox.critical(window, "Ошибка ",
+    #                                  f'Не могу установить значение по умолчанию параметра {par.name}',
+    #                                  QMessageBox.StandardButton.Ok)
+    #             return False
+    #     if currents.max_value:
+    #         QMessageBox.information(window,
+    #                                 "Информация",
+    #                                 f'Ток страгивания = {currents.min_value}\n'
+    #                                 f'Ток максимального выворота = {currents.max_value}',
+    #                                 QMessageBox.StandardButton.Ok)
+    #     return True
+    #
+    # def moving_steer():
+    #     old_delta = target_position - position.current_value
+    #     position.current_value = position.parametr.get_value(adapter)
+    #     new_delta = target_position - position.current_value
+    #
+    #     if abs(new_delta) > abs(old_delta) + abs(target_position / 100):
+    #         QMessageBox.critical(window, "Ошибка ", f'Рейка движется не в том направлении',
+    #                              QMessageBox.StandardButton.Ok)
+    #         end_func()
+    #         return
+    #     if not currents.min_value:
+    #         if abs(position.current_value) >= abs(target_position / 10):
+    #             currents.min_value = current.current_value
+    #
+    #     if abs(position.current_value) >= abs(target_position):
+    #         currents.max_value = current.current_value
+    #         end_func()
+    #         return
+    #     else:
+    #         if current.current_value < current.max_value:
+    #             current.current_value += delta_current
+    #             current.parametr.set_value(adapter, current.current_value)
+    #         else:
+    #             QMessageBox.critical(window, "Ошибка ", f'Достигнут предел тока', QMessageBox.StandardButton.Ok)
+    #             end_func()
+    #             return
+    #
+    # delay = 500
+    # delta_current = 0.5
     rb_steer_dict = dict(
         front_steer_rbtn='Рулевая_перед_Томск',
         rear_steer_rbtn='Рулевая_зад_Томск'
@@ -527,67 +641,70 @@ def check_steering_current(window):
         return
     print(current_steer.name)
 
-    parametr_dict = dict(
-        st_status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
-                                min_value=0, max_value=0),
-        st_alarms=SteerParametr(name='A0.0 Alarms', warning='В блоке есть ошибки'),
-        st_act_pos=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении',
-                                 min_value=-30, max_value=30),
-        st_set_curr=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
-                                  min_value=1, max_value=100),
-        st_motor_command=SteerParametr(name='D0.0 ComandSet',
-                                       min_value=1, max_value=1),
-        st_control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2,
-                                 min_value=0, max_value=0),
-        st_set_pos=SteerParametr(name='A0.2 SetSteerPos',
-                                 min_value=-1000, max_value=1000)
-    )
-
-    for par in parametr_dict.values():
-        par.parametr = find_param(window.thread.current_nodes_dict, par.name, current_steer.name)[0]
-        if not par.parametr:
-            QMessageBox.critical(window, "Ошибка ", f'Не найден параметр{par.name}', QMessageBox.StandardButton.Ok)
-            return False
-        print(par.parametr.description)
+    # parametr_dict = dict(
+    #     st_status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
+    #                             min_value=0, max_value=0),
+    #     st_alarms=SteerParametr(name='A0.0 Alarms', warning='В блоке есть ошибки'),
+    #     st_act_pos=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении',
+    #                              min_value=-30, max_value=30),
+    #     st_set_curr=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
+    #                               min_value=1, max_value=100),
+    #     st_motor_command=SteerParametr(name='D0.0 ComandSet',
+    #                                    min_value=1, max_value=1),
+    #     st_control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2,
+    #                              min_value=0, max_value=0),
+    #     st_set_pos=SteerParametr(name='A0.2 SetSteerPos',
+    #                              min_value=-1000, max_value=1000)
+    # )
+    #
+    # for par in parametr_dict.values():
+    #     par.parametr = find_param(window.thread.current_nodes_dict, par.name, current_steer.name)[0]
+    #     if not par.parametr:
+    #         QMessageBox.critical(window, "Ошибка ", f'Не найден параметр{par.name}', QMessageBox.StandardButton.Ok)
+    #         return False
+    #     print(par.parametr.description)
     adapter = adapter_for_node(window.thread.adapter, current_steer)
     if not adapter:
         return False
-
-    for par in list(parametr_dict.values())[:4]:
-        par.current_value = par.parametr.get_value(adapter)
-        if isinstance(par.current_value, str):
-            QMessageBox.critical(window, "Ошибка ", f'Не удалось считать параметр {par.name}',
-                                 QMessageBox.StandardButton.Ok)
-            return False
-        elif not par.check():
-            return False
-        print(par.name, par.current_value)
-
-    position = parametr_dict['st_act_pos']
-    current = parametr_dict['st_set_curr']
-    currents = parametr_dict['st_status']
-    current.max_value = current.current_value
-    timer = QTimer()
-    timer.timeout.connect(moving_steer)
-
-    if QMessageBox.information(window,
-                               "Информация",
-                               'Сейчас рейка начнёт движение, лучше убрать всё лишнее, что может помешать движению',
-                               QMessageBox.StandardButton.Ok,
-                               QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
-
-        target_position = parametr_dict['st_set_pos'].min_value
-        current.current_value = current.min_value
-        for par in list(parametr_dict.values())[3:]:
-            if par.parametr.set_value(adapter, par.min_value):
-                QMessageBox.critical(window, "Ошибка ", f'Не могу установить значение параметра {par.name}'
-                                                        f' повтори ещё раз', QMessageBox.StandardButton.Ok)
-                end_func()
-                return False
-        timer.start(delay)
-        loop = QEventLoop()
-        loop.exec()
+    steer = Steer(current_steer, adapter)
+    print(steer.actual_position(), steer.max_current)
+    steer.set_straight()
+    print()
+    print(steer.actual_position(), steer.max_current)
+    # for par in list(parametr_dict.values())[:4]:
+    #     par.current_value = par.parametr.get_value(adapter)
+    #     if isinstance(par.current_value, str):
+    #         QMessageBox.critical(window, "Ошибка ", f'Не удалось считать параметр {par.name}',
+    #                              QMessageBox.StandardButton.Ok)
+    #         return False
+    #     elif not par.check():
+    #         return False
+    #     print(par.name, par.current_value)
+    #
+    # position = parametr_dict['st_act_pos']
+    # current = parametr_dict['st_set_curr']
+    # currents = parametr_dict['st_status']
+    # current.max_value = current.current_value
+    # timer = QTimer()
+    # timer.timeout.connect(moving_steer)
+    #
+    # if QMessageBox.information(window,
+    #                            "Информация",
+    #                            'Сейчас рейка начнёт движение, лучше убрать всё лишнее, что может помешать движению',
+    #                            QMessageBox.StandardButton.Ok,
+    #                            QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
+    #
+    #     target_position = parametr_dict['st_set_pos'].min_value
+    #     current.current_value = current.min_value
+    #     for par in list(parametr_dict.values())[3:]:
+    #         if par.parametr.set_value(adapter, par.min_value):
+    #             QMessageBox.critical(window, "Ошибка ", f'Не могу установить значение параметра {par.name}'
+    #                                                     f' повтори ещё раз', QMessageBox.StandardButton.Ok)
+    #             end_func()
+    #             return False
+    #     timer.start(delay)
+    #     loop = QEventLoop()
+    #     loop.exec()
 
     return True
 
-def set_steer_straight(adapter, steer):

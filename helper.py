@@ -36,7 +36,7 @@ empty_par = {'name': '',
              # 'widget': '',
              # 'value_compare': '',
              'value_table': {}}
-             # 'value_string': ''}
+# 'value_string': ''}
 #  параметр для экспериментов
 example_par = {'name': 'fghjk',
                'address': '34567',
@@ -72,17 +72,22 @@ def buf_to_string(buf):
     return s
 
 
-def find_param(s: str, node_name=None, nodes_dict=None) -> list:
+def find_param(s: str, node=None, nodes_dict=None) -> list:
     list_of_params = []
     s = s.upper().strip()
-    if node_name is None:
+    if node is None:
         list_of_params = [param for nd in nodes_dict.values() if nd.name != TheBestNode
                           for param_list in nd.group_params_dict.values()
                           for param in param_list
                           if s in param.name.upper() or s in param.description.upper()]
-    elif node_name in nodes_dict.keys():
-        nd = nodes_dict[node_name]
-        list_of_params = [param for param_list in nd.group_params_dict.values()
+    elif isinstance(node, str):
+        if node in nodes_dict.keys():
+            nd = nodes_dict[node]
+            list_of_params = [param for param_list in nd.group_params_dict.values()
+                              for param in param_list
+                              if s in param.name.upper() or s in param.description.upper()]
+    elif hasattr(node, 'group_params_dict'):
+        list_of_params = [param for param_list in node.group_params_dict.values()
                           for param in param_list
                           if s in param.name.upper() or s in param.description.upper()]
     return list_of_params
@@ -320,7 +325,6 @@ def dw2float(dw_array):
         else ((dw & 0x7FFFFF) << 1)  # Мантисса
     m1 = m * (2 ** (-23))  # Мантисса в float
     return s * m1 * (2 ** (e - 127))
-
 
 #
 # пока просто не нужный код, может, потом пригодится

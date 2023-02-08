@@ -108,7 +108,7 @@ def search_param():
         if window.thread.isRunning():
             was_run = True
             window.connect_to_node()
-        par_list = find_param(window.thread.current_nodes_dict, search_text).copy()
+        par_list = find_param(search_text, nodes_dict=window.thread.current_nodes_dict).copy()
         if par_list:
             p_list = []
             for par in par_list:
@@ -400,7 +400,7 @@ def show_error(item, column):
     if current_err.important_parameters:
         err_param_list = set()
         for par in current_err.important_parameters:
-            er_par = find_param(window.thread.current_nodes_dict, par, current_err.node.name)
+            er_par = find_param(par, current_err.node.name, window.thread.current_nodes_dict)
             if er_par:
                 err_param_list.add(er_par[0])
         user_node = window.thread.current_nodes_dict[TheBestNode]
