@@ -474,6 +474,8 @@ class Steer:
         self.max_iteration = 3
         self.time_for_moving = 3    # время для движения в секундах
         self.time_for_request = 0.02    # время опроса - 20мс
+        self.time_for_set = 0.2    # время наращивания тока - 200мс
+        self.delta_current = 0.3
         # определяем все параметры
         for par in list(self.parameters_get.values()) + list(self.parameters_set.values()):
             par.parametr = find_param(par.name, self.node)[0]
@@ -585,6 +587,41 @@ class Steer:
         # отключаем мотор и все параметры возвращаем к номинальным
         self.stop()
         return result
+
+    def define_current(self, value: int):
+        result = None
+        # определяем заданный пользователем максимальный ток (возможно, это нужно изменять)
+        # и задаём команду на вращение
+        self.max_current = self.get_param(self.parameters_set['current'])
+        move = self.move_to(value)
+        current = self.parameters_get['current'].min_value
+        cur = self.set_current(current)
+        if move and cur and self.max_current:
+            self.parameters_set['current'].nominal_value = self.max_current
+            current_set_time = current_time = start_time = time.perf_counter()
+            # а дальше смотрим за текущими параметрами пока не вышло время
+            while time.perf_counter() < start_time + self.time_for_moving:
+                print(f'\rТекущее положение {self.current_position} ток сейчас {self.actual_current()} '
+                      f'максимальный ток {self.max_current}', end='', flush=True)
+                # регулярно опрашиваем текущее положение
+                if time.perf_counter() > current_time + self.time_for_request:
+                    current_time = time.perf_counter()
+                    self.actual_position()
+                # регулярно добавляем ток
+                if time.perf_counter() > current_set_time + self.time_for_set:
+                    current_set_time = time.perf_counter()
+                    current += self.delta_current
+                    self.set_current(current)
+                #  надо ещё добавить контроль за тем, что рейка идёт в нужную сторону
+                #  выходим с победой если попали в нужный диапазон
+                if value + self.parameters_get['position'].min_value < \
+                        self.current_position < value + self.parameters_get['position'].max_value:
+                    result = current
+                    break
+        # отключаем мотор и все параметры возвращаем к номинальным
+        self.stop()
+        return result
+
 
 def check_steering_current(window):
     # def end_func():
