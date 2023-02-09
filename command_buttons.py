@@ -482,9 +482,9 @@ class Steer:
             if not par.parametr:
                 QMessageBox.critical(None, "Ошибка ", f'Не найден параметр{par.name}', QMessageBox.StandardButton.Ok)
 
-        self.current_position = self.parameters_get['position'].nominal_value
-        self.min_position = self.parameters_get['position'].min_value
-        self.max_position = self.parameters_get['position'].max_value
+        self.current_position = self.parameters_set['position'].nominal_value
+        self.min_position = self.parameters_set['position'].min_value
+        self.max_position = self.parameters_set['position'].max_value
         self.max_current = self.parameters_get['current'].max_value
 
     def get_param(self, param: SteerParametr):
@@ -588,17 +588,17 @@ class Steer:
         self.stop()
         return result
 
-    def define_current(self, value: int):
+    def define_current(self, value: int, current=None):
         result = None
-        # определяем заданный пользователем максимальный ток (возможно, это нужно изменять)
         # и задаём команду на вращение
-        self.max_current = self.get_param(self.parameters_set['current'])
         move = self.move_to(value)
-        current = self.parameters_get['current'].min_value
+        # задаём минимальный ток для начала вращения
+        if current is None:
+            current = self.parameters_get['current'].min_value
         cur = self.set_current(current)
-        if move and cur and self.max_current:
-            self.parameters_set['current'].nominal_value = self.max_current
+        if move and cur:
             current_set_time = current_time = start_time = time.perf_counter()
+            new_delta = old_delta = 0
             # а дальше смотрим за текущими параметрами пока не вышло время
             while time.perf_counter() < start_time + self.time_for_moving:
                 print(f'\rТекущее положение {self.current_position} ток сейчас {self.actual_current()} '
@@ -606,13 +606,20 @@ class Steer:
                 # регулярно опрашиваем текущее положение
                 if time.perf_counter() > current_time + self.time_for_request:
                     current_time = time.perf_counter()
+                    old_delta = value - self.current_position
+                    #  надо ещё добавить контроль за тем, что рейка идёт в нужную сторону
                     self.actual_position()
-                # регулярно добавляем ток
-                if time.perf_counter() > current_set_time + self.time_for_set:
-                    current_set_time = time.perf_counter()
-                    current += self.delta_current
-                    self.set_current(current)
-                #  надо ещё добавить контроль за тем, что рейка идёт в нужную сторону
+                    new_delta = value - self.current_position
+                if abs(new_delta) <= abs(old_delta) + self.parameters_get['position'].max_value:
+                    # регулярно добавляем ток если рейка не движется
+                    if time.perf_counter() > current_set_time + self.time_for_set:
+                        current_set_time = time.perf_counter()
+                        current += self.delta_current
+                        self.set_current(current)
+                else:
+                    QMessageBox.critical(None, "Ошибка ", f'Рейка движется не в том направлении',
+                                         QMessageBox.StandardButton.Ok)
+                    break
                 #  выходим с победой если попали в нужный диапазон
                 if value + self.parameters_get['position'].min_value < \
                         self.current_position < value + self.parameters_get['position'].max_value:
@@ -710,10 +717,24 @@ def check_steering_current(window):
     if not adapter:
         return False
     steer = Steer(current_steer, adapter)
-    print(steer.actual_position(), steer.max_current)
-    steer.set_straight()
-    print()
-    print(steer.actual_position(), steer.max_current)
+    # определяем заданный пользователем максимальный ток (возможно, это нужно изменять)
+    steer.max_current = steer.get_param(steer.parameters_set['current'])
+    if steer.max_current:
+        steer.parameters_set['current'].nominal_value = steer.max_current
+        print(steer.actual_position(), steer.max_current)
+        steer.set_straight()
+        print()
+        print(steer.actual_position(), steer.max_current)
+
+        start_current_left = steer.define_current(steer.min_position / 10)
+        print(start_current_left)
+        steer.set_straight()
+
+        start_current_right = steer.define_current(steer.max_position / 10)
+        print(start_current_right)
+        steer.set_straight()
+
+
     # for par in list(parametr_dict.values())[:4]:
     #     par.current_value = par.parametr.get_value(adapter)
     #     if isinstance(par.current_value, str):
