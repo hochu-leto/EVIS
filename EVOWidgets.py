@@ -1,5 +1,6 @@
-from PyQt6.QtCore import pyqtSignal, QSize, Qt, QPropertyAnimation, QEasingCurve, QObject, QPointF, pyqtProperty
-from PyQt6.QtGui import QPainter, QPalette, QLinearGradient, QGradient
+from PyQt6.QtCore import pyqtSignal, QSize, Qt, QPropertyAnimation, QEasingCurve, QObject, QPointF, pyqtProperty, \
+    QRegularExpression
+from PyQt6.QtGui import QPainter, QPalette, QLinearGradient, QGradient, QRegularExpressionValidator
 from PyQt6.QtWidgets import QComboBox, QLabel, QLineEdit, QProgressBar, QSlider, QDoubleSpinBox, QPushButton, \
     QAbstractButton
 
@@ -17,9 +18,8 @@ class RedLabel(QLabel):
 
 
 class MyComboBox(QComboBox):
-    ItemSelected = pyqtSignal(list)
+    ValueSelected = pyqtSignal(list)
     isInFocus = False
-    # parametr = None
 
     def __init__(self, parent=None, parametr=None):
         super(MyComboBox, self).__init__(parent)
@@ -31,7 +31,7 @@ class MyComboBox(QComboBox):
         if self.parametr is not None:
             key = list(self.parametr.value_table.keys())[index]
             lst = [self.parametr, key]
-        self.ItemSelected.emit(lst)
+        self.ValueSelected.emit(lst)
 
     def showPopup(self):  # sPopup function
         self.isInFocus = True
@@ -43,10 +43,22 @@ class MyComboBox(QComboBox):
 
 
 class MyEditLine(QLineEdit):
+    ValueSelected = pyqtSignal(list)
+    isInFocus = False
 
     def __init__(self, parent=None, parametr=None):
         super(QLineEdit, self).__init__(parent)
         self.parametr = parametr
+        reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+        self.setValidator(QRegularExpressionValidator(reg_ex))
+        self.editingFinished.connect(self.end_edited_handle)
+
+    def end_edited_handle(self):
+        lst = []
+        if self.parametr is not None:
+            value = float(self.text())
+            lst = [self.parametr, value]
+        self.ValueSelected.emit(lst)
 
 
 class MyColorBar(QProgressBar):

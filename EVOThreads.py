@@ -565,18 +565,17 @@ class SteerMoveThread(QThread):
         full_progress = abs(self.min_position + self.min_position / divider) + \
                         abs(self.max_position + self.max_position / divider)
         self.percent_of_progress = 100 / full_progress
-        print(full_progress, self.percent_of_progress)
         self.set_straight()
         self.SignalOfProcess.emit(['Страгиваем влево...'], [], int(self.progress))
         min_go = self.min_position / divider
-        start_current_left = self.define_current(min_go)
+        start_current_left = self.define_current(int(min_go))
         print(f'ток страгивания влево на величину {min_go} = {start_current_left}')
         self.set_straight()
         self.progress += abs(min_go) * self.percent_of_progress
         self.SignalOfProcess.emit([f'Ток страгивания влево = {start_current_left} А',
                                    'Страгиваем вправо...'], [], int(self.progress))
         min_go = self.max_position / divider
-        start_current_right = self.define_current(min_go)
+        start_current_right = self.define_current(int(min_go))
         print(f'ток страгивания вправо на величину {min_go} = {start_current_right}')
         self.set_straight()
         self.progress += abs(min_go) * self.percent_of_progress

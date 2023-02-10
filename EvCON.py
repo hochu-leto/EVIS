@@ -164,7 +164,7 @@ def record_log():
 
 def make_compare_params_list():
     file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', dir_path,
-                                            "Файл с настройками блока (*.yaml *.xlsx)")[0]     #;;Excel tables (*.xlsx)
+                                            "Файл с настройками блока (*.yaml *.xlsx)")[0]
     if file_name:
         if '.xls' in file_name:
             compare_nodes_dict = fill_sheet_dict(file_name)
@@ -201,16 +201,14 @@ def make_compare_params_list():
 
 @pyqtSlot(list)
 def change_value(lst):
-    print('Сработал комбо-бокс')
+    # принимает список из двух элементов, первый - Parametr(), второй -новое значение для него
     if not window.vmu_param_table.currentItem():
         return
-
-    info_m, lab = 'От комбо-бокса пришёл пустой список', None
+    info_m, lab = 'От виджета пришёл пустой список', None
     if lst:
         parametr = lst[0]
         new_value = lst[1]
         info_m, lab = set_new_value(parametr, new_value)
-
     info_and_widget(info_m, lab)
 
 
@@ -224,7 +222,8 @@ def set_new_value(param: Parametr, val):
             return "Пердумал", my_label
     try:
         float(val)
-        if window.thread.isRunning():  # отключаем поток, если он был включен
+        if window.thread.isRunning():
+            # отключаем поток, если он был включен
             window.connect_to_node()
             # отправляю параметр, полученный из диалогового окна
             param.set_value(can_adapter, float(val))
@@ -269,13 +268,13 @@ def info_and_widget(info_m='', my_lab=None):
     if my_lab:
         try:
             c_row = window.vmu_param_table.currentItem().row()
-            c_next_col = window.vmu_param_table.currentItem().column() + 1
+            c_next_col = window.vmu_param_table.columnCount() - 1
             c_next_text = window.vmu_param_table.item(c_row, c_next_col).text()
             window.vmu_param_table.item(c_row, c_next_col).setText('')
             my_lab.setText(c_next_text)
             window.vmu_param_table.setCellWidget(c_row, c_next_col, my_lab)
         except AttributeError:
-            print(my_lab, type(my_lab))
+            print('Поставить метку  НЕ УДАЛОСЬ')
 
 
 def want_to_value_change(c_row, c_col):
@@ -299,6 +298,7 @@ def want_to_value_change(c_row, c_col):
             if dialog.exec() == QDialog.DialogCode.Accepted:
                 val = dialog.lineEdit.text()
                 info_m, lab = set_new_value(current_param, val)
+                print(lab, lab.styleSheet())
         else:
             info_m = f'Сейчас этот параметр нельзя изменить\n' \
                      f'Изменяемые параметры подкрашены зелёным\n' \
@@ -477,6 +477,13 @@ def check_node_online(all_node_dict: dict):
                 window.susp_zero_btn.setEnabled(True)
                 window.load_from_eeprom_btn.setEnabled(True)
                 window.light_box.setEnabled(True)
+            elif 'Рулевая_зад_Томск' in nd.name:
+                window.rear_steer_rbtn.setEnabled(True)
+                window.rear_steer_rbtn.setChecked(True)
+                window.curr_measure_btn.setEnabled(True)
+            elif 'Рулевая_перед_Томск' in nd.name:
+                window.front_steer_rbtn.setEnabled(True)
+                window.curr_measure_btn.setEnabled(True)
             exit_dict[nd.name] = nd
     if has_invertor:
         if 'Инвертор_МЭИ' in exit_dict.keys():
@@ -484,6 +491,7 @@ def check_node_online(all_node_dict: dict):
             window.invertor_mpei_box.setEnabled(False)
     # на случай если только избранное найдено - значит ни один блок не ответил
     if not exit_dict:
+        window.front_steer_rbtn.setEnabled(True)
         return all_node_dict.copy(), False
     exit_dict[TheBestNode] = all_node_dict[TheBestNode]
     exit_dict = make_nodes_dict(exit_dict)
@@ -586,15 +594,15 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             # показываем свежие обновлённые параметры
             # и считаем сколько среди них комбобоксов
             # это неправильно, потому что могут быть и другие виджеты
-            combo_boxes = show_new_vmu_params(params_list=self.thread.current_params_list,
-                                              table=self.vmu_param_table,
-                                              has_compare_params=self.thread.current_node.has_compare_params)
+            widgets_list = show_new_vmu_params(params_list=self.thread.current_params_list,
+                                               table=self.vmu_param_table,
+                                               has_compare_params=self.thread.current_node.has_compare_params)
             # если есть комбобоксы, подвязываю изменение его значения к изменению параметра
             # это неправильно потому как у изменяемых параметров могут быть и другие виджеты
             # - кнопка, слайдер или переключатель, значит у всех них должен быть
             # одинаковый сигнал, который исходит при изменении виджета и выдаёт значение параметра
-            for i in combo_boxes:
-                i.ItemSelected.connect(change_value)
+            for i in widgets_list:
+                i.ValueSelected.connect(change_value)
         else:
             print('непредвиденная ситуация в списке что то есть, длина списка = ', len(list_of_params))
 
@@ -910,9 +918,8 @@ def set_theme(theme_str=''):
     else:
         app.setStyleSheet('')
     c_style_sheet = app.styleSheet()
-    app.setStyleSheet(c_style_sheet +
-                      'GreenLabel {background-color: rgba(0, 200, 0, 50);} '
-                      'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
+    app.setStyleSheet(c_style_sheet + 'GreenLabel {background-color: rgba(0, 200, 0, 50);} '
+                                      'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
 
 
 if __name__ == '__main__':
@@ -952,6 +959,10 @@ if __name__ == '__main__':
     window.load_from_eeprom_btn.setEnabled(False)
     window.joy_bind_btn.setEnabled(False)
     window.change_theme_btn.clicked.connect(change_theme)
+    window.front_steer_rbtn.setEnabled(False)
+    window.rear_steer_rbtn.setEnabled(False)
+    window.curr_measure_btn.setEnabled(False)
+
     # ------------------Главные кнопки-------------------------
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(lambda: save_to_eeprom(window))
@@ -1004,7 +1015,5 @@ if __name__ == '__main__':
         app.exec()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# парсим ямл для сравнения настроек
 # на изменяемые параметры - всегда виджет
 # галочки в предупреждениях
-# кнопка для определения токов рейки
