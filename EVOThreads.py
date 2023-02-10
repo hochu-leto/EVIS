@@ -5,7 +5,7 @@ from PyQt6.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
 from PyQt6.QtWidgets import QMessageBox
 from EVONode import EVONode, invertor_command_dict
 from EVOParametr import readme
-from helper import buf_to_string
+from helper import buf_to_string, find_param
 
 
 # поток для сохранения в файл настроек блока
@@ -317,5 +317,292 @@ class SleepThread(QThread):
         while time.perf_counter() < end_time:
             self.ready_persent = (end_time - time.perf_counter()) * 100 / self.time
             self.SignalOfProcess.emit(self.ready_persent, '', False)
+        self.quit()
+        self.wait()
+
+
+class SteerParametr:
+
+    def __init__(self, name: str, warning='', nominal_value=0, min_value=0, max_value=0):
+        self.name = name
+        self.parametr = None
+        self.warning = warning
+        self.nominal_value = nominal_value
+        self.current_value = 0
+        self.max_value = max_value
+        self.min_value = min_value
+
+    def check(self):
+        if self.max_value and self.min_value:
+            if self.min_value < self.current_value < self.max_value:
+                return True
+        elif self.current_value == self.nominal_value:
+            return True
+        if self.warning:
+            QMessageBox.critical(None, "Ошибка ", self.warning,
+                                 QMessageBox.StandardButton.Ok)
+        return False
+
+
+class SteerMoveThread(QThread):
+    SignalOfProcess = pyqtSignal(list, list, int)
+
+    def __init__(self, steer: EVONode, adapter):
+        super().__init__()
+        # словарь с параметрами, которые опрашиваем
+        self.err_counter = None
+        self.parameters_get = dict(
+            status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
+                                 min_value=0, max_value=0),
+            alarms=SteerParametr(name='A0.0 Alarms', warning='В блоке есть ошибки'),
+            position=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении',
+                                   nominal_value=0, min_value=-17, max_value=17),
+            current=SteerParametr(name='A1.7 CurrentRMS',
+                                  min_value=1, max_value=100))
+        # словарь с параметрами, которые задаём
+        self.parameters_set = dict(
+            current=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
+                                  nominal_value=70, min_value=1, max_value=90),
+            command=SteerParametr(name='D0.0 ComandSet', nominal_value=0,
+                                  min_value=0, max_value=5),
+            control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2,
+                                  min_value=0, max_value=2),
+            position=SteerParametr(name='A0.2 SetSteerPos', nominal_value=0,
+                                   min_value=-1000, max_value=1000))
+        self.node = steer
+        self.adapter = adapter
+        self.max_iteration = 7
+        self.time_for_moving = 17  # время для движения в секундах
+        self.time_for_request = 0.02  # время опроса - 20мс
+        self.time_for_set = 0.2  # время наращивания тока - 200мс
+        self.delta_current = 0.5  # кусочки тока для добавления
+        # определяем все параметры
+        for par in list(self.parameters_get.values()) + list(self.parameters_set.values()):
+            par.parametr = find_param(par.name, self.node)[0]
+            if not par.parametr:
+                QMessageBox.critical(None, "Ошибка ", f'Не найден параметр{par.name}', QMessageBox.StandardButton.Ok)
+
+        self.current_position = self.parameters_set['position'].nominal_value
+        self.min_position = self.parameters_set['position'].min_value
+        self.max_position = self.parameters_set['position'].max_value
+        self.max_current = self.parameters_get['current'].max_value
+        self.params_for_view = [self.parameters_get['current'].parametr, self.parameters_get['position'].parametr]
+        self.progress = 0
+        self.percent_of_progress = 1
+
+    def get_param(self, param: SteerParametr):
+        for i in range(self.max_iteration):
+            value = param.parametr.get_value(self.adapter)
+            if not isinstance(value, str):
+                return value
+        # QMessageBox.critical(None, "Ошибка ", f'Запросить {param.name} не удалось', QMessageBox.StandardButton.Ok)
+        self.err_counter += 1
+        return None
+
+    def set_param(self, param: SteerParametr, value: int):
+        if value > param.max_value:
+            value = param.max_value
+        if value < param.min_value:
+            value = param.min_value
+        for i in range(self.max_iteration):
+            err = param.parametr.set_value(self.adapter, value)
+            if not err:
+                return True
+        # QMessageBox.critical(None, "Ошибка ", f'Установить значение {value} для параметра {param.name} не удалось',
+        #                      QMessageBox.StandardButton.Ok)
+        self.err_counter += 1
+        return False
+
+    def actual_position(self):
+        self.current_position = self.get_param(self.parameters_get['position'])
+        return self.current_position
+
+    def actual_current(self):
+        return self.get_param(self.parameters_get['current'])
+
+    # это только задание положения, ещё не вращение
+    def set_position(self, value: int):
+        if value > self.max_position:
+            value = self.max_position
+        elif value < self.min_position:
+            value = self.min_position
+        if not self.set_param(self.parameters_set['position'], value):
+            print(f'Задать положение {value} не удалось')
+            # QMessageBox.critical(None, "Ошибка ", f'Задать положение {value} не удалось', QMessageBox.StandardButton.Ok)
+            return False
+        return True
+
+    # задаём максимальный рабочий ток
+    def set_current(self, value: int):
+        if value > self.max_current:
+            value = self.max_current
+        if not self.set_param(self.parameters_set['current'], value):
+            # QMessageBox.critical(None, "Ошибка ", f'Задать ток {value} не удалось', QMessageBox.StandardButton.Ok)
+            return False
+        return True
+
+    # задание движения, за показаниями не следим, мотор не выключаем
+    def move_to(self, value: int):
+        if value > self.max_position:
+            value = self.max_position
+        elif value < self.min_position:
+            value = self.min_position
+        # если есть ошибки, не включаем
+        err = self.node.check_errors(self.adapter)
+        if err:
+            errs = "\n - ".join(err)
+            QMessageBox.critical(None, "Ошибка ", f' В блоке ошибки {errs}', QMessageBox.StandardButton.Ok)
+            return False
+
+        if not self.set_position(value) or not self.turn_on_motor():
+            self.stop()
+            return False
+
+        return True
+
+    #
+    def turn_on_motor(self):
+        if not self.set_param(self.parameters_set['control'], 0):
+            QMessageBox.critical(None, "Ошибка ", f'Не удалось перейти в тестовый режим', QMessageBox.StandardButton.Ok)
+            print(f'Не удалось перейти в тестовый режим')
+            return False
+        if not self.set_param(self.parameters_set['command'], 1):
+            QMessageBox.critical(None, "Ошибка ", f'Не удалось включить мотор', QMessageBox.StandardButton.Ok)
+            print(f'Не удалось включить мотор')
+            return False
+        return True
+
+    #
+    def stop(self):
+        for par in self.parameters_set.values():
+            self.set_param(par, par.nominal_value)
+        return True
+
+    def set_straight(self):
+        result = False
+        # определяем заданный пользователем максимальный ток (возможно, это нужно изменять)
+        # и задаём команду на вращение
+        self.max_current = self.get_param(self.parameters_set['current'])
+        move = self.move_to(self.parameters_get['position'].nominal_value)
+        if move and self.max_current:
+            print('Выходим в ноль')
+            self.parameters_set['current'].nominal_value = self.max_current
+            current_time = start_time = time.perf_counter()
+            # а дальше смотрим за текущими параметрами пока не вышло время
+            while time.perf_counter() < start_time + self.time_for_moving:
+                # print(f'\rТекущее положение {self.current_position}', end='', flush=True)
+                # регулярно опрашиваем текущее положение
+                if time.perf_counter() > current_time + self.time_for_request:
+                    current_time = time.perf_counter()
+                    self.actual_position()
+                #  выходим с победой если попали в нужный диапазон
+                if self.parameters_get['position'].min_value < \
+                        self.current_position < self.parameters_get['position'].max_value:
+                    result = True
+                    break
+        # отключаем мотор и все параметры возвращаем к номинальным
+        self.stop()
+        print()
+        return result
+
+    def define_current(self, value: int, current=None):
+        # self.max_current = self.get_param(self.parameters_set['current'])
+        result = f'Упёрлись в ограничение по времени {self.time_for_moving}с'
+        # и задаём команду на вращение
+        move = self.move_to(value)
+        # задаём минимальный ток для начала вращения
+        if current is None:
+            current = self.parameters_get['current'].min_value
+        cur = self.set_current(current)
+        if move and cur:
+            current_set_time = current_time = start_time = time.perf_counter()
+            # new_delta = old_delta = 0
+            # а дальше смотрим за текущими параметрами пока не вышло время
+
+            while time.perf_counter() < start_time + self.time_for_moving:
+                if time.perf_counter() > current_time + self.time_for_request:
+                    current_time = time.perf_counter()
+                    # old_delta = value - self.current_position
+                    self.actual_current()
+                    if self.actual_position() is not None:
+                        progress = abs(self.current_position) * self.percent_of_progress
+                        self.SignalOfProcess.emit([], self.params_for_view, int(self.progress + progress))
+                    else:
+                        self.current_position = 0
+                        print(' Неудачный опрос текущей позиции')
+                # регулярно добавляем ток если рейка не движется
+                if time.perf_counter() > current_set_time + self.time_for_set:
+                    current_set_time = time.perf_counter()
+                    current += self.delta_current
+                    err = self.set_current(current)
+                    print(f'\rТекущее положение {self.current_position} '
+                          f'Добавляю ток  {current} '
+                          f'Удалось? -  {err}', end='', flush=True)
+                    if current > self.max_current:
+                        result = f'Упёрлись в ограничение по току {round(current, 2)}'
+                        break
+
+                if value + self.parameters_get['position'].min_value < \
+                        self.current_position < value + self.parameters_get['position'].max_value:
+                    print(f'\n Определили ток {current}')
+                    result = round(current, 2)
+                    break
+
+                if self.err_counter > self.max_iteration:
+                    self.SignalOfProcess.emit(['Слишком много ошибок, повторите процедуру'], self.params_for_view, 0)
+                    self.stop()
+                    self.wait()
+                    self.quit()
+                    return 'Много ошибок'
+        # отключаем мотор и все параметры возвращаем к номинальным
+        self.stop()
+        print()
+        return result
+
+    def run(self):
+        self.err_counter = 0
+        divider = 10
+        full_progress = abs(self.min_position + self.min_position / divider) + \
+                        abs(self.max_position + self.max_position / divider)
+        self.percent_of_progress = 100 / full_progress
+        print(full_progress, self.percent_of_progress)
+        self.set_straight()
+        self.SignalOfProcess.emit(['Страгиваем влево...'], [], int(self.progress))
+        min_go = self.min_position / divider
+        start_current_left = self.define_current(min_go)
+        print(f'ток страгивания влево на величину {min_go} = {start_current_left}')
+        self.set_straight()
+        self.progress += abs(min_go) * self.percent_of_progress
+        self.SignalOfProcess.emit([f'Ток страгивания влево = {start_current_left} А',
+                                   'Страгиваем вправо...'], [], int(self.progress))
+        min_go = self.max_position / divider
+        start_current_right = self.define_current(min_go)
+        print(f'ток страгивания вправо на величину {min_go} = {start_current_right}')
+        self.set_straight()
+        self.progress += abs(min_go) * self.percent_of_progress
+        self.time_for_moving = 30
+        self.SignalOfProcess.emit([f'Ток страгивания вправо = {start_current_right} А',
+                                   'Выворачиваем полностью влево...'], [], int(self.progress))
+        if isinstance(start_current_left, str):
+            start_current_left = self.max_current / 5
+        self.delta_current = start_current_left / 5
+        self.time_for_set = start_current_left / 5
+        full_current_left = self.define_current(self.min_position, start_current_left * 1.2)
+        print(f'ток максимального выворота влево = {full_current_left}')
+        self.set_straight()
+        self.progress += abs(self.min_position) * self.percent_of_progress
+        self.SignalOfProcess.emit([f'ток максимального выворота влево = {full_current_left} А',
+                                   'Выворачиваем полностью вправо...'], [], int(self.progress))
+        if isinstance(start_current_right, str):
+            start_current_right = self.max_current / 5
+        self.delta_current = start_current_right / 5
+        self.time_for_set = start_current_right / 5
+        full_current_right = self.define_current(self.max_position, start_current_right * 1.2)
+        print(f'ток максимального выворота вправо = {full_current_right}')
+        self.set_straight()
+        self.progress += abs(self.max_position) * self.percent_of_progress
+        self.SignalOfProcess.emit([f'ток максимального выворота вправо = {full_current_right} А',
+                                   'Процедура завершена, одевайтесь, уходите'], [], int(self.progress))
+        self.stop()
         self.quit()
         self.wait()

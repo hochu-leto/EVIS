@@ -216,7 +216,13 @@ def make_nodes_dict(node_dict):
         for group in node.group_params_dict.values():
             for param in group:
                 node_name_from_param_name = param.name.split('#')[1]
-                param.node = node_dict[node_name_from_param_name]
+                try:
+                    n = node_dict[node_name_from_param_name]
+                    param.node = n
+                except KeyError:
+                    print(f'Блок {node_name_from_param_name} в списке блоков не найден')
+                    param.period = 1000
+                    param.value_string = 'Блок не определён'
     else:
         # и если в избранном нет параметров - добавить Новый список
         node.group_params_dict[NewParamsList] = []
