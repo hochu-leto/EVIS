@@ -293,7 +293,6 @@ def want_to_value_change(c_row, c_col):
             dialog = DialogChange(label=current_param.name, value=c_text.strip())
             reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
             dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
-
             if dialog.exec() == QDialog.DialogCode.Accepted:
                 val = dialog.lineEdit.text()
                 info_m, lab = set_new_value(current_param, val)
@@ -309,15 +308,7 @@ def want_to_value_change(c_row, c_col):
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
-        suc_color = add_param_to_the_best_node(current_param)
-        # if suc_color:
-        #     window.vmu_param_table.item(c_row, c_col + 1).setBackground(color_EVO_red_dark)
-        # else:
-        #     c_item = window.vmu_param_table.item(c_row, c_col + 1)
-        #     try:
-        #         c_item.setBackground(color_EVO_white)
-        #     except AttributeError:
-        #         print('Ячейка отсутствует')
+        add_param_to_the_best_node(current_param)
     return
 
 
@@ -326,7 +317,7 @@ def add_param_to_the_best_node(current_param):
     user_node = window.thread.current_nodes_dict[TheBestNode]
     # из текущего параметра делаю новый с новым именем через #
     new_param = current_param.copy()
-    if window.thread.current_node != user_node:
+    if window.thread.current_node != user_node and '#' not in new_param.name:
         new_param.name = f'{new_param.name}#{new_param.node.name}'
     text = f'добавлен в блок {TheBestNode}'
     # если Новый список есть в Избранном
@@ -334,7 +325,6 @@ def add_param_to_the_best_node(current_param):
     best_node_item = window.nodes_tree.topLevelItem(rowcount)
     result = True
     if NewParamsList in user_node.group_params_dict.keys():
-        # если есть, то удаляю его (как-то тупо определяю, надо переделать)
         if remove_param_from_the_best_node(new_param):
             text = f'удалён из блока {TheBestNode}'
             result = False
@@ -386,24 +376,34 @@ def paint_cells(parametr, color):
 def remove_param_from_the_best_node(parametr):
     result = False
     user_node = window.thread.current_nodes_dict[TheBestNode]
+    par = check_param_in_the_best_node(parametr)
+    if par:
+        result = True
+        was_run = False
+        # останавливаю поток и удаляю параметр из Нового списка
+        if window.thread.isRunning():
+            window.connect_to_node()
+            was_run = True
+        user_node.group_params_dict[NewParamsList].remove(par)
+        # если юзер сейчас в Новом списке, обновляю вид таблицы
+        if window.thread.current_node == user_node:
+            show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
+        if window.thread.isFinished() and was_run:
+            window.connect_to_node()
+    return result
+
+
+def check_param_in_the_best_node(parametr):
+    user_node = window.thread.current_nodes_dict[TheBestNode]
+    if NewParamsList not in user_node.group_params_dict.keys():
+        return False
     if window.thread.current_node != user_node and '#' not in parametr.name:
         parametr.name = f'{parametr.name}#{parametr.node.name}'
     # Проверяю есть ли уже новый параметр в Новом списке
     for par in user_node.group_params_dict[NewParamsList]:
         if par.name in parametr.name:
-            result = True
-            was_run = False
-            # останавливаю поток и удаляю параметр из Нового списка
-            if window.thread.isRunning():
-                window.connect_to_node()
-                was_run = True
-            user_node.group_params_dict[NewParamsList].remove(par)
-            # если юзер сейчас в Новом списке, обновляю вид таблицы
-            if window.thread.current_node == user_node:
-                show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
-            if window.thread.isFinished() and was_run:
-                window.connect_to_node()
-    return result
+            return par
+    return False
 
 
 def show_error(item, column):
@@ -907,13 +907,20 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             return
         parametr = window.thread.current_params_list[c_row]
         menu = QMenu()
-        all_items_menu_dict = [
-            ['Добавить в Избранное', add_param_to_the_best_node],
-            ['Удалить из Избранного', add_param_to_the_best_node],  # remove_param_from_the_best_node],
-            ['Период опроса', change_period],
-            ['Максимум', change_max]
-        ]
-        items = {menu.addAction(u'' + item[0]): item[1] for item in all_items_menu_dict}
+        all_items_menu_dict = dict([
+            ('Добавить в Избранное', add_param_to_the_best_node),
+            ('Удалить из Избранного', add_param_to_the_best_node),
+            ('Период опроса', change_period),
+            ('Максимум', change_max)
+        ])
+
+        if check_param_in_the_best_node(parametr):
+            del all_items_menu_dict['Добавить в Избранное']
+        else:
+            del all_items_menu_dict['Удалить из Избранного']
+
+        items = {menu.addAction(u'' + item): value for item, value in all_items_menu_dict.items()}
+
         action = menu.exec(self.vmu_param_table.mapToGlobal(pos))
         # Display the data text of the selected row
         if action:
