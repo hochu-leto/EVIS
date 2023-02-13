@@ -58,7 +58,7 @@ import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel
+    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu
 import pathlib
 
 from qt_material import apply_stylesheet, list_themes, QtStyleTools
@@ -283,7 +283,6 @@ def want_to_value_change(c_row, c_col):
     c_text = current_cell.text()
     col_name = window.vmu_param_table.horizontalHeaderItem(c_col).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
-    next_cell = window.vmu_param_table.item(c_row, c_col + 1)
 
     # меняем значение параметра
     if col_name == 'ЗНАЧЕНИЕ':
@@ -310,70 +309,101 @@ def want_to_value_change(c_row, c_col):
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
-        # достаю список Избранное
-        user_node = window.thread.current_nodes_dict[TheBestNode]
-        # из текущего параметра делаю новый с новым именем через #
-        new_param = current_param.copy()
-        if window.thread.current_node != user_node:
-            new_param.name = f'{new_param.name}#{new_param.node.name}'
-        text = f'добавлен в блок {TheBestNode}'
-        next_cell.setBackground(color_EVO_red_dark)
-        # если Новый список есть в Избранном
-        rowcount = window.nodes_tree.topLevelItemCount() - 1
-        best_node_item = window.nodes_tree.topLevelItem(rowcount)
-
-        if NewParamsList in user_node.group_params_dict.keys():
-            # Проверяю есть ли уже новый параметр в Новом списке
-            p = None
-            for par in user_node.group_params_dict[NewParamsList]:
-                if par.name in new_param.name:
-                    p = par
-            # если есть, то удаляю его (как-то тупо определяю, надо переделать)
-            if p:
-                text = f'удалён из блока {TheBestNode}'
-                window.vmu_param_table.item(c_row, c_col + 1).setBackground(color_EVO_white)
-                was_run = False
-                # останавливаю поток и удаляю параметр из Нового списка
-                if window.thread.isRunning():
-                    window.connect_to_node()
-                    was_run = True
-
-                user_node.group_params_dict[NewParamsList].remove(p)
-
-                # если юзер сейчас в Новом списке, обновляю вид таблицы
-                if window.thread.current_node == user_node:
-                    show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
-
-                if window.thread.isFinished() and was_run:
-                    window.connect_to_node()
-            # если нового параметра нет в Новом списке, добавляю его туда
-            else:
-                if not user_node.group_params_dict[NewParamsList]:
-                    item = best_node_item.child(best_node_item.childCount() - 1)
-                    best_node_item.setExpanded(True)
-                    item.setBackground(0, color_EVO_red_dark)
-                    # window.nodes_tree.show()
-                    index = window.nodes_tree.indexFromItem(item, 0)
-                    window.nodes_tree.scrollTo(index)
-
-                user_node.group_params_dict[NewParamsList].append(new_param)
-
-        # если Нового списка нет в Избранном, надо его создать и добавить в него новый параметр
-        else:
-            user_node.group_params_dict[NewParamsList] = [new_param]
-            item = QTreeWidgetItem()
-            item.setText(0, NewParamsList)
-            best_node_item.addChild(item)
-
-            # и немного красоты - раскрываем, спускаем и подкрашиваем
-            best_node_item.setExpanded(True)
-            item.setBackground(0, color_EVO_red_dark)
-            # window.nodes_tree.show()
-            index = window.nodes_tree.indexFromItem(item, 0)
-            window.nodes_tree.scrollTo(index)
-
-        window.log_lbl.setText(f'Параметр {current_param.name} {text}')
+        suc_color = add_param_to_the_best_node(current_param)
+        # if suc_color:
+        #     window.vmu_param_table.item(c_row, c_col + 1).setBackground(color_EVO_red_dark)
+        # else:
+        #     c_item = window.vmu_param_table.item(c_row, c_col + 1)
+        #     try:
+        #         c_item.setBackground(color_EVO_white)
+        #     except AttributeError:
+        #         print('Ячейка отсутствует')
     return
+
+
+def add_param_to_the_best_node(current_param):
+    # достаю список Избранное
+    user_node = window.thread.current_nodes_dict[TheBestNode]
+    # из текущего параметра делаю новый с новым именем через #
+    new_param = current_param.copy()
+    if window.thread.current_node != user_node:
+        new_param.name = f'{new_param.name}#{new_param.node.name}'
+    text = f'добавлен в блок {TheBestNode}'
+    # если Новый список есть в Избранном
+    rowcount = window.nodes_tree.topLevelItemCount() - 1
+    best_node_item = window.nodes_tree.topLevelItem(rowcount)
+    result = True
+    if NewParamsList in user_node.group_params_dict.keys():
+        # если есть, то удаляю его (как-то тупо определяю, надо переделать)
+        if remove_param_from_the_best_node(new_param):
+            text = f'удалён из блока {TheBestNode}'
+            result = False
+        # если нового параметра нет в Новом списке, добавляю его туда
+        else:
+            if not user_node.group_params_dict[NewParamsList]:
+                item = best_node_item.child(best_node_item.childCount() - 1)
+                best_node_item.setExpanded(True)
+                item.setBackground(0, color_EVO_red_dark)
+                index = window.nodes_tree.indexFromItem(item, 0)
+                window.nodes_tree.scrollTo(index)
+            user_node.group_params_dict[NewParamsList].append(new_param)
+    # если Нового списка нет в Избранном, надо его создать и добавить в него новый параметр
+    else:
+        user_node.group_params_dict[NewParamsList] = [new_param]
+        item = QTreeWidgetItem()
+        item.setText(0, NewParamsList)
+        best_node_item.addChild(item)
+        # и немного красоты - раскрываем, спускаем и подкрашиваем
+        best_node_item.setExpanded(True)
+        item.setBackground(0, color_EVO_red_dark)
+        index = window.nodes_tree.indexFromItem(item, 0)
+        window.nodes_tree.scrollTo(index)
+    window.log_lbl.setText(f'Параметр {current_param.name} {text}')
+    if result:
+        paint_cells(current_param, color_EVO_red_dark)
+    else:
+        paint_cells(current_param, color_EVO_white)
+    return result
+
+
+def paint_cells(parametr, color):
+    if window.thread.current_params_list == \
+            window.thread.current_nodes_dict[TheBestNode].group_params_dict[NewParamsList]:
+        return
+    try:
+        c_row = window.thread.current_params_list.index(parametr)
+    except ValueError:
+        print('Параметр отсутствует')
+        return
+    for i in range(1, window.vmu_param_table.columnCount()):
+        c_item = window.vmu_param_table.item(c_row, i)
+        try:
+            c_item.setBackground(color)
+        except AttributeError:
+            print('Ячейка отсутствует', i)
+
+
+def remove_param_from_the_best_node(parametr):
+    result = False
+    user_node = window.thread.current_nodes_dict[TheBestNode]
+    if window.thread.current_node != user_node and '#' not in parametr.name:
+        parametr.name = f'{parametr.name}#{parametr.node.name}'
+    # Проверяю есть ли уже новый параметр в Новом списке
+    for par in user_node.group_params_dict[NewParamsList]:
+        if par.name in parametr.name:
+            result = True
+            was_run = False
+            # останавливаю поток и удаляю параметр из Нового списка
+            if window.thread.isRunning():
+                window.connect_to_node()
+                was_run = True
+            user_node.group_params_dict[NewParamsList].remove(par)
+            # если юзер сейчас в Новом списке, обновляю вид таблицы
+            if window.thread.current_node == user_node:
+                show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
+            if window.thread.isFinished() and was_run:
+                window.connect_to_node()
+    return result
 
 
 def show_error(item, column):
@@ -542,7 +572,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
-        # self.add_menu_theme(self.main_tab, self.main_tab.menuStyles)
         self.all_params_dict = {}
         self.setupUi(self)
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
@@ -560,10 +589,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
         self.default_style_sheet = self.styleSheet()
-        # self.setStyleSheet(PushButtonStyle)
-        # with open('ElegantDark.qss', 'r') as f:
-        #     self.setStyleSheet(f.read())
-        # apply_stylesheet(self, theme='dark_teal.xml')
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
@@ -870,10 +895,39 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         elif self.main_tab.currentWidget() == self.params_tab:
             self.connect_to_node()
             print('Вкладка параметры, поток запущен')
-        elif self.main_tab.currentWidget() == self.grafics_tab:
-            print('Графики не готовы')
+        # elif self.main_tab.currentWidget() == self.grafics_tab:
+        #     print('Графики не готовы')
         else:
             print('Неизвестное состояние')
+
+    def generate_menu(self, pos):
+        c_row = window.vmu_param_table.currentRow()
+        if c_row < 0:
+            print('Нет ячейки')
+            return
+        parametr = window.thread.current_params_list[c_row]
+        menu = QMenu()
+        all_items_menu_dict = [
+            ['Добавить в Избранное', add_param_to_the_best_node],
+            ['Удалить из Избранного', add_param_to_the_best_node],  # remove_param_from_the_best_node],
+            ['Период опроса', change_period],
+            ['Максимум', change_max]
+        ]
+        items = {menu.addAction(u'' + item[0]): item[1] for item in all_items_menu_dict}
+        action = menu.exec(self.vmu_param_table.mapToGlobal(pos))
+        # Display the data text of the selected row
+        if action:
+            res = items[action](parametr)
+
+
+def change_period(param):
+    print(f'Меняю период параметра {param.name}')
+    pass
+
+
+def change_max(param):
+    print(f'Задаю максимум для параметра {param.name}')
+    pass
 
 
 @pyqtSlot(str)
@@ -940,6 +994,9 @@ if __name__ == '__main__':
     window.nodes_tree.doubleClicked.connect(window.double_click)
     window.vmu_param_table.cellDoubleClicked.connect(want_to_value_change)
     window.errors_browser.setStyleSheet("font: bold 14px;")
+    window.vmu_param_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+    window.vmu_param_table.customContextMenuRequested.connect(window.generate_menu)
+    window.grafics_tab.hide()
     # ============================== и сигналы нажатия на кнопки
     # -----------------Инвертор---------------------------
     window.invert_btn.clicked.connect(lambda: mpei_invert(window))
@@ -962,7 +1019,6 @@ if __name__ == '__main__':
     window.front_steer_rbtn.setEnabled(False)
     window.rear_steer_rbtn.setEnabled(False)
     window.curr_measure_btn.setEnabled(False)
-
     # ------------------Главные кнопки-------------------------
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(lambda: save_to_eeprom(window))

@@ -204,6 +204,7 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
                 items_list.append(comBox)
             table.cellWidget(row, 2).setCurrentText(par.value_table[int(par.value)])
         else:
+            # отсюда будем танцевать с виджетами
             value_item = QTableWidgetItem(v_name)
             if par.editable:
                 flags = (value_item.flags() | Qt.ItemFlag.ItemIsEditable)

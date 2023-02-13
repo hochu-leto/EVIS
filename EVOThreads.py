@@ -408,8 +408,6 @@ class SteerMoveThread(QThread):
             err = param.parametr.set_value(self.adapter, value)
             if not err:
                 return True
-        # QMessageBox.critical(None, "Ошибка ", f'Установить значение {value} для параметра {param.name} не удалось',
-        #                      QMessageBox.StandardButton.Ok)
         self.err_counter += 1
         return False
 
@@ -428,7 +426,6 @@ class SteerMoveThread(QThread):
             value = self.min_position
         if not self.set_param(self.parameters_set['position'], value):
             print(f'Задать положение {value} не удалось')
-            # QMessageBox.critical(None, "Ошибка ", f'Задать положение {value} не удалось', QMessageBox.StandardButton.Ok)
             return False
         return True
 
@@ -460,7 +457,7 @@ class SteerMoveThread(QThread):
 
         return True
 
-    #
+    # задаю команду на местное управление и включаю мотор
     def turn_on_motor(self):
         if not self.set_param(self.parameters_set['control'], 0):
             QMessageBox.critical(None, "Ошибка ", f'Не удалось перейти в тестовый режим', QMessageBox.StandardButton.Ok)
@@ -472,7 +469,7 @@ class SteerMoveThread(QThread):
             return False
         return True
 
-    #
+    # возвращаю всё на штатные значения
     def stop(self):
         for par in self.parameters_set.values():
             self.set_param(par, par.nominal_value)
