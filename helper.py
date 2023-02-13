@@ -3,13 +3,12 @@
 """
 import struct
 import traceback
-from PyQt6.QtCore import Qt, pyqtSlot, QStringListModel
+from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
-    QComboBox, QListView, QSizePolicy
+from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox
 
 import my_dialog
-from EVOWidgets import GreenLabel, MyComboBox
+from EVOWidgets import GreenLabel, MyComboBox, MyEditLine, zero_del
 
 TheBestNode = 'Избранное'
 NewParamsList = 'Новый список'
@@ -93,6 +92,16 @@ def find_param(s: str, node=None, nodes_dict=None) -> list:
     return list_of_params
 
 
+@pyqtSlot(object)
+def focus_in(item):
+    print("focus in", item.isInFocus, item.text())
+
+
+@pyqtSlot()
+def focus_out():
+    print("focus out")
+
+
 def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False):
     items_list = []
     show_table.setRowCount(0)
@@ -133,6 +142,13 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
         show_table.setItem(row, 1, desc_item)
 
+        # desc_item = MyEditLine(description, par)
+        # desc_item.FocusInSignal.connect(focus_in)
+        # desc_item.FocusOutSignal.connect(focus_out)
+        # # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        # # desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
+        # show_table.setCellWidget(row, 1, desc_item)
+
         value_item = QTableWidgetItem('')
         value_item.setFlags(value_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         show_table.setItem(row, 2, value_item)
@@ -163,12 +179,11 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
     row = 0
     for par in params_list:
         it = table.cellWidget(row, 2)
-        if isinstance(it, MyComboBox) \
+        # if isinstance(it, MyComboBox) \
+        if hasattr(it, 'isInFocus') \
                 and it.isInFocus:
             continue
-
         value_in_dict = False
-
         if par.value_string:
             v_name = par.value_string
         elif isinstance(par.value, str):
@@ -185,31 +200,23 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
 
         if value_in_dict and par.editable:
             if not isinstance(it, MyComboBox):
-                comBox = MyComboBox()
-                v_list = list(par.value_table.values())
-                comBox.setModel(QStringListModel(v_list))
-                # Отображатель выпадающего списка QListView
-                listView = QListView()
-                # Включаем перенос строк
-                listView.setWordWrap(True)
-                # Устанавливаем отображатель списка (popup)
-                comBox.setView(listView)
-                # comBox.addItems(v_list)
-                comBox.parametr = par
-                comBox.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContentsOnFirstShow)
-                # .AdjustToMinimumContentsLengthWithIcon + AdjustToContentsOnFirstShow + AdjustToContents)
-                comBox.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-                comBox.setMaximumSize(220, 170)
-                table.setCellWidget(row, 2, comBox)
-                items_list.append(comBox)
-            table.cellWidget(row, 2).setCurrentText(par.value_table[int(par.value)])
+                par.widget = MyComboBox(parametr=par)      #comBox = MyComboBox(parametr=par)
+                table.setCellWidget(row, 2, par.widget)
+                items_list.append(par.widget)
+            table.cellWidget(row, 2).setText()
+        elif par.editable:
+            if not isinstance(it, MyComboBox):
+                par.widget = MyEditLine(v_name, parametr=par)
+                table.setCellWidget(row, 2, par.widget)
+                items_list.append(par.widget)
+            table.cellWidget(row, 2).setText()
         else:
             # отсюда будем танцевать с виджетами
             value_item = QTableWidgetItem(v_name)
-            if par.editable:
-                flags = (value_item.flags() | Qt.ItemFlag.ItemIsEditable)
-            else:
-                flags = value_item.flags() & ~Qt.ItemFlag.ItemIsEditable
+            # if par.editable:
+            #     flags = (value_item.flags() | Qt.ItemFlag.ItemIsEditable)
+            # else:
+            flags = value_item.flags() & ~Qt.ItemFlag.ItemIsEditable
             value_item.setFlags(flags)
             # подкрашиваем в голубой в зависимости от периода опроса
             color_opacity = int((150 / 1000) * abs(par.period)) + 3
@@ -298,10 +305,6 @@ def get_nearest_lower_value(iterable, value):
     iterable.sort()
     ind = iterable.index(value)
     return iterable[ind - 1] if ind else ind
-
-
-def zero_del(s):
-    return f'{round(s, 5):>8}'.rstrip('0').rstrip('.') if s is not None else 'NaN'
 
 
 def int_to_hex_str(x: int):

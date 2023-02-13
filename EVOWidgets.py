@@ -1,8 +1,12 @@
 from PyQt6.QtCore import pyqtSignal, QSize, Qt, QPropertyAnimation, QEasingCurve, QObject, QPointF, pyqtProperty, \
-    QRegularExpression
+    QRegularExpression, QStringListModel
 from PyQt6.QtGui import QPainter, QPalette, QLinearGradient, QGradient, QRegularExpressionValidator
 from PyQt6.QtWidgets import QComboBox, QLabel, QLineEdit, QProgressBar, QSlider, QDoubleSpinBox, QPushButton, \
-    QAbstractButton
+    QAbstractButton, QSizePolicy, QListView
+
+
+def zero_del(s):
+    return f'{round(s, 5):>8}'.rstrip('0').rstrip('.') if s is not None else 'NaN'
 
 
 class GreenLabel(QLabel):
@@ -25,6 +29,19 @@ class MyComboBox(QComboBox):
         super(MyComboBox, self).__init__(parent)
         self.parametr = parametr
         self.currentIndexChanged.connect(self.item_selected_handle)
+        if hasattr(self.parametr, 'value_table'):
+            v_list = list(self.parametr.value_table.values())
+            self.setModel(QStringListModel(v_list))
+            # Отображатель выпадающего списка QListView
+            listView = QListView()
+            # Включаем перенос строк
+            listView.setWordWrap(True)
+            # Устанавливаем отображатель списка (popup)
+            self.setView(listView)
+            self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContentsOnFirstShow)
+            # .AdjustToMinimumContentsLengthWithIcon + AdjustToContentsOnFirstShow + AdjustToContents)
+            self.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+            self.setMaximumSize(250, 250)
 
     def item_selected_handle(self, index):
         lst = []
@@ -41,9 +58,18 @@ class MyComboBox(QComboBox):
         self.isInFocus = False
         super(MyComboBox, self).hidePopup()
 
+    def setText(self, text=None):
+        if text is not None:
+            self.setCurrentText(text)
+        if hasattr(self.parametr, 'value_table'):
+            self.setCurrentText(self.parametr.value_table[int(self.parametr.value)])
+
 
 class MyEditLine(QLineEdit):
     ValueSelected = pyqtSignal(list)
+    FocusInSignal = pyqtSignal(object)
+    FocusOutSignal = pyqtSignal()
+
     isInFocus = False
 
     def __init__(self, parent=None, parametr=None):
@@ -59,6 +85,34 @@ class MyEditLine(QLineEdit):
             value = float(self.text())
             lst = [self.parametr, value]
         self.ValueSelected.emit(lst)
+
+    def focusInEvent(self, event):
+        self.isInFocus = True
+        self.FocusInSignal.emit(self)
+        super().focusInEvent(event)
+
+    def focusOutEvent(self, event):
+        self.isInFocus = False
+        super().focusOutEvent(event)
+        self.FocusOutSignal.emit()
+
+    def setText(self, text=None):
+        if text is not None:
+            self.setText(text)
+        if hasattr(self.parametr, 'value'):
+            if self.parametr.value_string:
+                v_name = self.parametr.value_string
+            elif isinstance(self.parametr.value, str):
+                v_name = self.parametr.value
+            elif self.parametr.value_table:
+                k = int(self.parametr.value)
+                if k in self.parametr.value_table:
+                    v_name = self.parametr.value_table[k]
+                else:
+                    v_name = f'{k} нет в словаре'
+            else:
+                v_name = zero_del(self.parametr.value)
+            self.setText(v_name)
 
 
 class MyColorBar(QProgressBar):

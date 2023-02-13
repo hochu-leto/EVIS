@@ -67,7 +67,7 @@ import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVOErrors import EvoError
 from EVONode import EVONode
-from EVOWidgets import GreenLabel, RedLabel
+from EVOWidgets import GreenLabel, RedLabel, zero_del
 from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
 from EVOParametr import Parametr
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
@@ -76,7 +76,7 @@ from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpe
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_pickle_file, save_p_dict_to_yaml_file, \
     fill_yaml_dict
-from helper import zero_del, NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
+from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
     color_EVO_orange_shine, color_EVO_white
 
@@ -283,7 +283,6 @@ def want_to_value_change(c_row, c_col):
     c_text = current_cell.text()
     col_name = window.vmu_param_table.horizontalHeaderItem(c_col).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
-
     # меняем значение параметра
     if col_name == 'ЗНАЧЕНИЕ':
         c_flags = current_cell.flags()
@@ -393,15 +392,17 @@ def remove_param_from_the_best_node(parametr):
     return result
 
 
-def check_param_in_the_best_node(parametr):
+def check_param_in_the_best_node(parametr: Parametr):
     user_node = window.thread.current_nodes_dict[TheBestNode]
     if NewParamsList not in user_node.group_params_dict.keys():
         return False
     if window.thread.current_node != user_node and '#' not in parametr.name:
-        parametr.name = f'{parametr.name}#{parametr.node.name}'
+        p_name = f'{parametr.name}#{parametr.node.name}'
+    else:
+        p_name = parametr.name
     # Проверяю есть ли уже новый параметр в Новом списке
     for par in user_node.group_params_dict[NewParamsList]:
-        if par.name in parametr.name:
+        if par.name in p_name:
             return par
     return False
 
@@ -910,8 +911,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         all_items_menu_dict = dict([
             ('Добавить в Избранное', add_param_to_the_best_node),
             ('Удалить из Избранного', add_param_to_the_best_node),
-            ('Период опроса', change_period),
-            ('Максимум', change_max)
+            ('Задать период опроса', change_period),
+            ('Установить максимум', change_max)
         ])
 
         if check_param_in_the_best_node(parametr):
