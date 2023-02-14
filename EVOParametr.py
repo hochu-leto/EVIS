@@ -129,7 +129,6 @@ class Parametr:
         self.value_table = {int(k): v for k, v in v_table.items()} if isinstance(v_table, dict) \
             else {int(val.split(':')[0]): val.split(':')[1]
                   for val in v_table.split(',')} if v_table else {}
-        # из editable и соответствующего списка
         self.widget = 'QtWidgets'
         self.node = node
         self.req_list = []

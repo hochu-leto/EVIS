@@ -110,6 +110,16 @@ def load_from_eeprom(window):
     QMessageBox.critical(window, "Ошибка", answer, QMessageBox.StandardButton.Ok)
 
 
+def mpei_iso_off(window):
+    m = window.thread.invertor_command('ISOLATION_MONITORING_OFF')
+    window.log_lbl.setText(m)
+
+
+def mpei_iso_on(window):
+    m = window.thread.invertor_command('ISOLATION_MONITORING_ON')
+    window.log_lbl.setText(m)
+
+
 def mpei_invert(window):
     m = window.thread.invertor_command('INVERT_ROTATION')
     window.log_lbl.setText(m)
@@ -374,6 +384,18 @@ def let_moment_mpei(window):
                                        'Сейчас мотор начнёт вращаться',
                                        QMessageBox.StandardButton.Ok,
                                        QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
+
+                err = voltage.get_value(adapter)
+                if not isinstance(err, str):
+                    # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
+                    if err < 30:
+                        err = node.send_val(node.save_to_eeprom, adapter)
+                        sleep_thread.start()
+                    else:
+                        err = 'Высокое напряжение не выключено\nВыключи высокое напряжение и повтори сохранение'
+                else:
+                    err = f'Некорректный ответ от инвертора\n{err}'
+
                 wait_thread.start()
                 ref_torque.set_value(adapter_vmu, limit_moment)
             if dialog.exec():

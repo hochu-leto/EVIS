@@ -72,7 +72,7 @@ from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepT
 from EVOParametr import Parametr
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled, \
-    check_steering_current
+    check_steering_current, mpei_iso_on, mpei_iso_off
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_pickle_file, save_p_dict_to_yaml_file, \
     fill_yaml_dict
@@ -201,7 +201,7 @@ def make_compare_params_list():
 
 @pyqtSlot(list)
 def change_value(lst):
-    # принимает список из двух элементов, первый - Parametr(), второй -новое значение для него
+    # принимает список из двух элементов, первый - Parametr(), второй - новое значение для него
     if not window.vmu_param_table.currentItem():
         return
     info_m, lab = 'От виджета пришёл пустой список', None
@@ -454,7 +454,6 @@ def show_error(item, column):
 
 
 def params_list_changed(item=None, column=None):  # если в левом окошке выбираем разные блоки или группы параметров
-    # pprint(inspect.stack()[1][3])
     is_run = False
     current_group_params = ''
     if window.nodes_tree.currentItem() is None:
@@ -478,7 +477,7 @@ def params_list_changed(item=None, column=None):  # если в левом ок�
         window.connect_to_node()
     # отображаем имя блока, ерийник и всё такое и обновляю список параметров в окошке справа
     window.show_node_name(window.thread.current_node)
-    show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,  # combo_list =
+    show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
                            has_compare=window.thread.current_node.has_compare_params)
     if is_run and window.thread.isFinished():
         window.connect_to_node()
@@ -618,15 +617,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 can_adapter.isDefined = False
         elif not list_of_params:  # ошибок нет - всё хорошо
             # показываем свежие обновлённые параметры
-            # и считаем сколько среди них комбобоксов
-            # это неправильно, потому что могут быть и другие виджеты
             widgets_list = show_new_vmu_params(params_list=self.thread.current_params_list,
                                                table=self.vmu_param_table,
                                                has_compare_params=self.thread.current_node.has_compare_params)
-            # если есть комбобоксы, подвязываю изменение его значения к изменению параметра
-            # это неправильно потому как у изменяемых параметров могут быть и другие виджеты
-            # - кнопка, слайдер или переключатель, значит у всех них должен быть
-            # одинаковый сигнал, который исходит при изменении виджета и выдаёт значение параметра
+            # если есть виджеты, подвязываю изменение их значения к изменению параметра
             for i in widgets_list:
                 i.ValueSelected.connect(change_value)
         else:
@@ -672,7 +666,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             item.setText(0, 'Ошибок нет')
             items.append(item)
         self.errors_tree.insertTopLevelItems(0, items)
-        # self.errors_tree.currentItemChanged.connect(show_error)
         # если курсор стоял на блоке, который отсутствует в нынешнем списке, то курсор на самый первый блок...
         if not cur_item:
             cur_item = self.errors_tree.topLevelItem(0)
@@ -991,6 +984,7 @@ if __name__ == '__main__':
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
     splash.show()
     window = VMUMonitorApp()
+    window.label.setPixmap(QPixmap('pictures/grafic.png'))
     # window.setWindowTitle('Electric Vehicle Information System')
     window.setWindowTitle('Electrical vehicle CONtrol')
     stylesheet_file = pathlib.Path(dir_path, 'Data', 'EVOStyleSheet.txt')
@@ -1014,6 +1008,8 @@ if __name__ == '__main__':
     window.reset_device_btn.clicked.connect(lambda: mpei_reset_device(window))
     window.reset_param_btn.clicked.connect(lambda: mpei_reset_params(window))
     window.let_moment_btn.clicked.connect(lambda: let_moment_mpei(window))
+    window.iso_on_btn.clicked.connect(lambda: mpei_iso_on(window))
+    window.iso_off_btn.clicked.connect(lambda: mpei_iso_off(window))
     window.invertor_mpei_box.setEnabled(False)
     # ------------------Кнопки вспомогательные----------------
     window.joy_bind_btn.clicked.connect(lambda: joystick_bind(window))

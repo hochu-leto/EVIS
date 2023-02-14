@@ -75,8 +75,13 @@
     </item>
     <item row="1" column="0">
      <widget class="QTabWidget" name="main_tab">
+      <property name="font">
+       <font>
+        <family>Old English Text MT</family>
+       </font>
+      </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="params_tab">
        <property name="sizePolicy">
@@ -581,7 +586,7 @@
         <item row="0" column="4">
          <widget class="QGroupBox" name="light_box">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -592,6 +597,12 @@
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QRadioButton" name="off_rbtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Выкл</string>
              </property>
@@ -602,6 +613,12 @@
            </item>
            <item>
             <widget class="QRadioButton" name="left_side_rbtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Левый
  борт</string>
@@ -610,6 +627,12 @@
            </item>
            <item>
             <widget class="QRadioButton" name="right_side_rbtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Правый
  борт</string>
@@ -618,6 +641,12 @@
            </item>
            <item>
             <widget class="QRadioButton" name="stop_light_rbtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Стоп</string>
              </property>
@@ -625,6 +654,12 @@
            </item>
            <item>
             <widget class="QRadioButton" name="rear_light_rbtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Задний
  ход</string>
@@ -633,6 +668,12 @@
            </item>
            <item>
             <widget class="QRadioButton" name="low_beam_rbtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Ближний
  свет</string>
@@ -641,6 +682,12 @@
            </item>
            <item>
             <widget class="QRadioButton" name="high_beam_rbtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Дальний
   свет
@@ -883,6 +930,36 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="iso_off_btn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Отключить
+контроль
+изоляции</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="iso_on_btn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Включить
+контроль
+изоляции</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -972,6 +1049,9 @@
        </layout>
       </widget>
       <widget class="QWidget" name="grafics_tab">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <attribute name="title">
         <string>Графики</string>
        </attribute>
@@ -982,6 +1062,9 @@
            <font>
             <pointsize>36</pointsize>
            </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>

@@ -200,18 +200,17 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
 
         if value_in_dict and par.editable:
             if not isinstance(it, MyComboBox):
-                par.widget = MyComboBox(parametr=par)      #comBox = MyComboBox(parametr=par)
+                par.widget = MyComboBox(parametr=par)
                 table.setCellWidget(row, 2, par.widget)
                 items_list.append(par.widget)
             table.cellWidget(row, 2).setText()
         elif par.editable:
-            if not isinstance(it, MyComboBox):
+            if not isinstance(it, MyEditLine):
                 par.widget = MyEditLine(v_name, parametr=par)
                 table.setCellWidget(row, 2, par.widget)
                 items_list.append(par.widget)
             table.cellWidget(row, 2).setText()
         else:
-            # отсюда будем танцевать с виджетами
             value_item = QTableWidgetItem(v_name)
             # if par.editable:
             #     flags = (value_item.flags() | Qt.ItemFlag.ItemIsEditable)
