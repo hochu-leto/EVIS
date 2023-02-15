@@ -356,6 +356,7 @@ class SteerMoveThread(QThread):
     def __init__(self, steer: EVONode, adapter):
         super().__init__()
         # словарь с параметрами, которые опрашиваем
+        self.result = None
         self.err_counter = None
         self.parameters_get = dict(
             status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
@@ -364,7 +365,9 @@ class SteerMoveThread(QThread):
             position=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении',
                                    nominal_value=0, min_value=-17, max_value=17),
             current=SteerParametr(name='A1.7 CurrentRMS',
-                                  min_value=1, max_value=100))
+                                  min_value=1, max_value=100),
+            serial=SteerParametr(name='B0.9 Serial_Number',
+                                  min_value=1, max_value=1000))
         # словарь с параметрами, которые задаём
         self.parameters_set = dict(
             current=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
@@ -563,6 +566,7 @@ class SteerMoveThread(QThread):
         return result
 
     def run(self):
+        self.result = []
         self.err_counter = 0
         divider = 10
         full_progress = abs(self.min_position + self.min_position / divider) + \
@@ -572,39 +576,60 @@ class SteerMoveThread(QThread):
         self.SignalOfProcess.emit(['Страгиваем влево...'], [], int(self.progress))
         min_go = self.min_position / divider
         start_current_left = self.define_current(int(min_go))
-        print(f'ток страгивания влево на величину {min_go} = {start_current_left}')
+        text = f'Ток страгивания влево на величину {min_go} = {start_current_left}'
+        self.result.append(text)
+        print(text)
         self.set_straight()
         self.progress += abs(min_go) * self.percent_of_progress
-        self.SignalOfProcess.emit([f'Ток страгивания влево = {start_current_left} А',
-                                   'Страгиваем вправо...'], [], int(self.progress))
+        self.SignalOfProcess.emit([text, 'Страгиваем вправо...'], [], int(self.progress))
         min_go = self.max_position / divider
         start_current_right = self.define_current(int(min_go))
-        print(f'ток страгивания вправо на величину {min_go} = {start_current_right}')
+        text = f'Ток страгивания вправо на величину {min_go} = {start_current_right}'
+        self.result.append(text)
+        print(text)
         self.set_straight()
         self.progress += abs(min_go) * self.percent_of_progress
         self.time_for_moving = 30
-        self.SignalOfProcess.emit([f'Ток страгивания вправо = {start_current_right} А',
-                                   'Выворачиваем полностью влево...'], [], int(self.progress))
+        self.SignalOfProcess.emit([text, 'Выворачиваем полностью влево...'], [], int(self.progress))
         if isinstance(start_current_left, str):
             start_current_left = self.max_current / 5
         self.delta_current = start_current_left / 5
         self.time_for_set = start_current_left / 5
         full_current_left = self.define_current(self.min_position, start_current_left * 1.2)
-        print(f'ток максимального выворота влево = {full_current_left}')
+        text = f'Ток максимального выворота влево = {full_current_left}А'
+        self.result.append(text)
+        print(text)
         self.set_straight()
         self.progress += abs(self.min_position) * self.percent_of_progress
-        self.SignalOfProcess.emit([f'ток максимального выворота влево = {full_current_left} А',
-                                   'Выворачиваем полностью вправо...'], [], int(self.progress))
+        self.SignalOfProcess.emit([text, 'Выворачиваем полностью вправо...'], [], int(self.progress))
         if isinstance(start_current_right, str):
             start_current_right = self.max_current / 5
         self.delta_current = start_current_right / 5
         self.time_for_set = start_current_right / 5
         full_current_right = self.define_current(self.max_position, start_current_right * 1.2)
-        print(f'ток максимального выворота вправо = {full_current_right}')
+        text = f'Еок максимального выворота вправо = {full_current_right}А'
+        self.result.append(text)
+        print(text)
         self.set_straight()
         self.progress += abs(self.max_position) * self.percent_of_progress
-        self.SignalOfProcess.emit([f'ток максимального выворота вправо = {full_current_right} А',
-                                   'Процедура завершена, одевайтесь, уходите'], [], int(self.progress))
+        self.SignalOfProcess.emit([text, 'Процедура завершена',
+                                   'Файл проверки сохранён в папку /BURR_current/'], [], int(self.progress))
         self.stop()
         self.quit()
         self.wait()
+        self.save_to_file()
+
+    def save_to_file(self):
+        now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        serial = self.get_param(self.parameters_get['serial'])
+        node_yaml_dict = dict(
+            date_time=now,
+            burr_name=self.node.name,
+            serial_number=serial,
+            result=self.result)
+        file_name = f'BURR_current/{serial}_{now}.yaml'
+        with open(file_name, 'w', encoding='UTF-8') as file:
+            yaml.dump(node_yaml_dict, file,
+                      default_flow_style=False,
+                      sort_keys=False,
+                      allow_unicode=True)
