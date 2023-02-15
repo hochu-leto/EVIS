@@ -206,7 +206,7 @@ class MainThread(QThread):
         node = self.current_nodes_dict['Инвертор_МЭИ']
         # передавать надо исключительно в первый кан
         # есть же функция определения адаптера для блока, следует здесь использовать её
-        # 
+        #
         if node.request_id in self.adapter.id_nodes_dict.keys():
             adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
             if self.isRunning():
@@ -231,9 +231,6 @@ class MainThread(QThread):
             dialog.setWindowTitle('Управление Инвертором МЭИ')
             if not dialog.exec():
                 return 'Команда отменена пользователем'
-        #      QMessageBox.information(w, "Информация", warn_str,
-        #                                 QMessageBox.StandardButton.Ok,
-        #                                 QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
         answer = self.send_to_mpei(command)
         if answer:
             answer = 'Команду выполнить не удалось\n' + answer

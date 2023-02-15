@@ -32,6 +32,16 @@ light_commamd_dict = dict(
 )
 
 
+def warning_dialog(title: str, warn_str: str):
+    points_list = None
+    if '-' in warn_str:
+        points_list = warn_str.split('-')
+        warn_str = points_list.pop(0)
+    dialog = DialogChange(label=warn_str, check_boxes=points_list)
+    dialog.setWindowTitle(title)
+    return dialog.exec()
+
+
 def save_to_eeprom(window, node=None):
     if not node:
         node = window.thread.current_node
@@ -152,7 +162,6 @@ def mpei_calibrate(window):
         if wait_thread.isRunning():
             dialog.change_mess(st, list_of_params)
         else:
-            print('Поток калибровки остановлен')
             node = window.thread.current_nodes_dict['Инвертор_МЭИ']
             adapter = adapter_for_node(window.thread.adapter, node)
             if adapter:
@@ -177,7 +186,7 @@ def mpei_calibrate(window):
                                            nodes_dict=window.thread.current_nodes_dict)[1])
 
     wait_thread.req_delay = 50
-    wait_thread.adapter = adapter_for_node(window.thread.adapter, 125)     # window.thread.adapter.adapters_dict[125]
+    wait_thread.adapter = adapter_for_node(window.thread.adapter, 125)
     wait_thread.id_for_read = 0x381
     wait_thread.answer_byte = 4
     wait_thread.answer_dict = {0x0A: 'Калибровка прошла успешно!',
@@ -202,13 +211,13 @@ def mpei_calibrate(window):
 
 def joystick_bind(window):
     adapter = adapter_for_node(window.thread.adapter, 250)
-    if adapter:
-        QMessageBox.information(window, "Информация", 'Перед привязкой проверь:\n'
-                                                      ' - что джойстик ВЫКЛЮЧЕН\n'
-                                                      ' - высокое напряжение ВКЛЮЧЕНО',
-                                QMessageBox.StandardButton.Ok)
+    tit = 'Привязка джойстика'
+    if adapter and warning_dialog(tit,
+                                  'Перед привязкой проверь что:'
+                                  ' - джойстик ВЫКЛЮЧЕН'
+                                  ' - высокое напряжение ВКЛЮЧЕНО'):
         dialog = DialogChange(text='Команда на привязку отправлена')
-        dialog.setWindowTitle('Привязка джойстика')
+        dialog.setWindowTitle(tit)
 
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.wait_time = 20  # время в секундах для включения и прописки джойстика
@@ -243,14 +252,13 @@ def suspension_to_zero(window):
     p_list = par_list[:9] if par_list and len(par_list) >= 9 else []
     wait_thread.imp_par_set = set(p_list)
     adapter = adapter_for_node(window.thread.adapter, 250)
-    if adapter:
-        QMessageBox.information(window, "Информация", 'Перед выравниванием проверь что:\n'
-                                                      ' - тумблер режима подвески в положении АВТО КВУ\n'
-                                                      ' - остальные тумблеры в нейтральном положении',
-                                QMessageBox.StandardButton.Ok)
+    tit = 'Установка подвески v ноль'
+    if adapter and warning_dialog(tit, 'Перед выравниванием проверь что:'
+                                       ' - тумблер режима подвески в положении АВТО КВУ'
+                                       ' - остальные тумблеры в нейтральном положении'):
         dialog = DialogChange(text='Команда на установку отправлена',
                               table=list(wait_thread.imp_par_set))
-        dialog.setWindowTitle('Установка подвески v ноль')
+        dialog.setWindowTitle(tit)
 
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.wait_time = 20  # время в секундах для установки подвески
@@ -313,96 +321,93 @@ def let_moment_mpei(window):
                                            nodes_dict=window.thread.current_nodes_dict)[2])
     wait_thread.imp_par_set.add(find_param('SPEED_RPM', node=node_inv.name,
                                            nodes_dict=window.thread.current_nodes_dict)[1])
-    # ищу адаптеры
-    adapter_inv = adapter_for_node(window.thread.adapter, node_inv)
-    adapter_vmu = adapter_for_node(window.thread.adapter, node_vmu)
-    if adapter_inv and adapter_vmu:
-        QMessageBox.information(window, "Информация", 'Перед запуском проверь что:\n'
-                                                      ' - стояночный тормоз отпущен\n'
-                                                      ' - приводная ось вывешена\n'
-                                                      ' - высокое напряжение ВЫКЛЮЧЕНО',
-                                QMessageBox.StandardButton.Ok)
-        dialog = DialogChange(text='Команда на вращение отправлена',
-                              table=list(wait_thread.imp_par_set))
-        dialog.setWindowTitle('Вращение двигателя')
-        dialog.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).hide()
-        wait_thread.SignalOfProcess.connect(dialog.change_mess)
-        wait_thread.FinishedSignal.connect(finish)
-        wait_thread.wait_time = 10  # время в секундах для вращения
-        wait_thread.req_delay = 50  # время в миллисекундах на опрос параметров
-        wait_thread.adapter = adapter_inv
-        # Нахожу нужные параметры от инвертора и кву
-        is_motor_max = find_param('IS_MOTOR_MAX', node=node_inv.name,
-                                  nodes_dict=window.thread.current_nodes_dict)[0]
-        speed_max = find_param('SPEED_MAX', node=node_inv.name,
-                               nodes_dict=window.thread.current_nodes_dict)[0]
-        man_control = find_param('MANUAL_CONTROL', node=node_vmu.name,
-                                 nodes_dict=window.thread.current_nodes_dict)[0]
-        ref_torque = find_param('PSTED_MANUAL_CONTROL_REF_TORQUE', node=node_vmu.name,
-                                nodes_dict=window.thread.current_nodes_dict)[0]
-        high_voltage = find_param('DC_VOLTAGE', node=node_inv.name,
+    # Нахожу нужные параметры от инвертора и кву
+    is_motor_max = find_param('IS_MOTOR_MAX', node=node_inv.name,
+                              nodes_dict=window.thread.current_nodes_dict)[0]
+    speed_max = find_param('SPEED_MAX', node=node_inv.name,
+                           nodes_dict=window.thread.current_nodes_dict)[0]
+    man_control = find_param('MANUAL_CONTROL', node=node_vmu.name,
                              nodes_dict=window.thread.current_nodes_dict)[0]
-        if not is_motor_max or not speed_max or not man_control or not ref_torque:
-            QMessageBox.critical(window, "Ошибка ", 'Не найдены нужные параметры', QMessageBox.StandardButton.Ok)
-            return
-        # Запрашиваю текущие их значения
-        start_max_i = is_motor_max.get_value(adapter_inv)
-        start_max_speed = speed_max.get_value(adapter_inv)
-        print(f'{start_max_i=}, {start_max_speed=}')
-        if isinstance(start_max_i, str) or isinstance(start_max_speed, str):
-            QMessageBox.critical(window, "Ошибка ", 'Инвертор не отвечает,\n'
-                                                    'Попробуй заново к нему подключиться',
-                                 QMessageBox.StandardButton.Ok)
-            return
-        # ручной контроль должен быть отключен и момент должен быть нулевым
-        cur_man = man_control.get_value(adapter_vmu)
-        cur_tor = ref_torque.get_value(adapter_vmu)
-        if isinstance(cur_man, str) or isinstance(cur_tor, str):
-            QMessageBox.critical(window, "Ошибка ", 'КВУ не отвечает\n'
-                                                    'Попробуй ещё раз', QMessageBox.StandardButton.Ok)
-            return
-        if cur_tor != 0 or cur_man != 0:
-            QMessageBox.critical(window, "Ошибка ", 'Включен ручной режим КВУ\n'
-                                                    'Или ненулевой момент', QMessageBox.StandardButton.Ok)
-            return
-        # Устанавливаю ограничения для вращения
-        set_max_i = is_motor_max.set_value(adapter_inv, limit_current)
-        set_max_speed = speed_max.set_value(adapter_inv, limit_speed)
-        if set_max_speed or set_max_i:
-            QMessageBox.critical(window, "Ошибка ", 'Не удалось задать значения в инвертор\n'
-                                                    'Попробуй ещё раз',
-                                 QMessageBox.StandardButton.Ok)
-            return
-        # Сохраняю ограничения в еепром инвертора
-        err = save_to_eeprom_mpei(window, node_inv, adapter_inv)
-        if err:
-            QMessageBox.critical(window, "Ошибка ", 'Выключи высокое и повтори', QMessageBox.StandardButton.Ok)
-            return
-        man_c = man_control.set_value(adapter_vmu, 1)
-        if not man_c:  # если передача прошла успешно
-            if QMessageBox.information(window,
-                                       "Информация",
-                                       'Включи ВЫСОКОЕ напряжение\n'
-                                       '     и нажми ОК\n'
-                                       '     ОСТОРОЖНО!!!!\n'
-                                       'Сейчас мотор начнёт вращаться',
-                                       QMessageBox.StandardButton.Ok,
-                                       QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
-                err = high_voltage.get_value(adapter_inv)
-                if not isinstance(err, str):
-                    if err > 300:
-                        wait_thread.start()
-                        ref_torque.set_value(adapter_vmu, limit_moment)
-                    if dialog.exec():
-                        finish()
-                    else:
-                        err = 'Высокое напряжение не выключено\nВыключи высокое напряжение и повтори сохранение'
-                else:
-                    err = f'Некорректный ответ от инвертора\n{err}'
-        else:
-            err = f'Команда не отправлена\n{man_c}'
+    ref_torque = find_param('PSTED_MANUAL_CONTROL_REF_TORQUE', node=node_vmu.name,
+                            nodes_dict=window.thread.current_nodes_dict)[0]
+    high_voltage = find_param('DC_VOLTAGE', node=node_inv.name,
+                              nodes_dict=window.thread.current_nodes_dict)[0]
+    if not is_motor_max or not speed_max or not man_control or not ref_torque:
+        err = 'Не найдены нужные параметры'
     else:
-        err = 'Нет адаптера на шине'
+        # ищу адаптеры
+        adapter_inv = adapter_for_node(window.thread.adapter, node_inv)
+        adapter_vmu = adapter_for_node(window.thread.adapter, node_vmu)
+        if not adapter_inv or not adapter_vmu:
+            err = 'Нет адаптера на шине'
+        else:
+            tit = 'Вращение двигателя'
+            if not warning_dialog(tit, 'Перед запуском проверь что:'
+                                       ' - стояночный тормоз отпущен'
+                                       ' - приводная ось вывешена'
+                                       ' - высокое напряжение ВЫКЛЮЧЕНО'):
+                err = 'Отказ пользователя'
+            else:
+                dialog = DialogChange(text='Команда на вращение отправлена',
+                                      table=list(wait_thread.imp_par_set))
+                dialog.setWindowTitle(tit)
+                dialog.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).hide()
+                wait_thread.SignalOfProcess.connect(dialog.change_mess)
+                wait_thread.FinishedSignal.connect(finish)
+                wait_thread.wait_time = 10  # время в секундах для вращения
+                wait_thread.req_delay = 50  # время в миллисекундах на опрос параметров
+                wait_thread.adapter = adapter_inv
+                # Запрашиваю текущие значения нужных параметров
+                start_max_i = is_motor_max.get_value(adapter_inv)
+                start_max_speed = speed_max.get_value(adapter_inv)
+                if isinstance(start_max_i, str) or isinstance(start_max_speed, str):
+                    err = 'Инвертор не отвечает,\nПопробуй заново к нему подключиться'
+                else:
+                    cur_man = man_control.get_value(adapter_vmu)
+                    cur_tor = ref_torque.get_value(adapter_vmu)
+                    if isinstance(cur_man, str) or isinstance(cur_tor, str):
+                        err = 'КВУ не отвечает\nПопробуй ещё раз'
+                    else:
+                        # ручной контроль должен быть отключен и момент должен быть нулевым
+                        if cur_tor != 0 or cur_man != 0:
+                            err = 'Включен ручной режим КВУ\nИли ненулевой момент'
+                        else:
+                            # Устанавливаю ограничения для вращения
+                            set_max_i = is_motor_max.set_value(adapter_inv, limit_current)
+                            set_max_speed = speed_max.set_value(adapter_inv, limit_speed)
+                            if set_max_speed or set_max_i:
+                                err = 'Не удалось задать значения в инвертор\nПопробуй ещё раз',
+                            else:
+                                # Сохраняю ограничения в еепром инвертора
+                                err = save_to_eeprom_mpei(window, node_inv, adapter_inv)
+                                if err:
+                                    err = 'Не удалось сохранить значения в инвертор\nВыключи высокое и повтори'
+                                else:
+                                    man_c = man_control.set_value(adapter_vmu, 1)
+                                    if man_c:
+                                        err = f'Команда не отправлена\n{man_c}'
+                                    else:  # если передача прошла успешно
+                                        if QMessageBox.information(window,
+                                                                   "Информация",
+                                                                   '<b>Включи</b> ВЫСОКОЕ напряжение\n'
+                                                                   '     и нажми ОК\n'
+                                                                   '     <b>ОСТОРОЖНО!!!!</b>\n'
+                                                                   'Сейчас мотор начнёт вращаться',
+                                                                   QMessageBox.StandardButton.Ok,
+                                                                   QMessageBox.StandardButton.Cancel) == \
+                                                QMessageBox.StandardButton.Ok:
+                                            err = high_voltage.get_value(adapter_inv)
+                                            if isinstance(err, str):
+                                                err = f'Некорректный ответ от инвертора\n{err}'
+                                            else:
+                                                if err < 300:
+                                                    err = f'Высокое напряжение не включено, сейчас {err}В'
+                                                    finish()
+                                                else:
+                                                    wait_thread.start()
+                                                    ref_torque.set_value(adapter_vmu, limit_moment)
+                                                    if dialog.exec():
+                                                        finish()
     if err:
         QMessageBox.critical(window, "Ошибка ", err,
                              QMessageBox.StandardButton.Ok)
