@@ -5,7 +5,8 @@ import struct
 import traceback
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox
+from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
+    QCheckBox
 
 import my_dialog
 from EVOWidgets import GreenLabel, MyComboBox, MyEditLine, zero_del
@@ -232,11 +233,10 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
 
 class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
-    def __init__(self, label=None, value=None, table=None, radio_btn=None, text=None, process=None):
+    def __init__(self, label=None, value=None, table=None, radio_btn=None, text=None, process=None, check_boxes=None):
         super().__init__()
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
-        # self.text_browser.setEnabled(False)
         self.text_browser.setStyleSheet("font: bold 14px;")
         self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setText('ОК')
         self.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setText('Отмена')
@@ -274,7 +274,27 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         else:
             self.process_bar.hide()
 
+        if check_boxes is not None:
+            i, self.check_box_list = 0, []
+            for check in check_boxes:
+                c_box = QCheckBox(self)
+                c_box.setObjectName('c_box' + str(i))
+                self.check_box_list.append(c_box)
+                c_box.setText(str(check))
+                c_box.stateChanged.connect(self.c_boxes)
+                self.gridLayout.addWidget(c_box, i + 1, 0)
+                i += 1
+            self.gridLayout.addWidget(self.buttonBox, i + 1, 0, 1, 1)
+            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+
         self.adjustSize()
+
+    def c_boxes(self, state):
+        for check in self.check_box_list:
+            if not check.isChecked():
+                self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+                return
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
 
     @pyqtSlot(list, list, int)
     def change_mess(self, st=None, list_of_params=None, progress=None):

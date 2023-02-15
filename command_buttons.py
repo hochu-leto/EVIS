@@ -177,7 +177,7 @@ def mpei_calibrate(window):
                                            nodes_dict=window.thread.current_nodes_dict)[1])
 
     wait_thread.req_delay = 50
-    wait_thread.adapter = window.thread.adapter.adapters_dict[125]
+    wait_thread.adapter = adapter_for_node(window.thread.adapter, 125)     # window.thread.adapter.adapters_dict[125]
     wait_thread.id_for_read = 0x381
     wait_thread.answer_byte = 4
     wait_thread.answer_dict = {0x0A: 'Калибровка прошла успешно!',
@@ -283,10 +283,13 @@ def let_moment_mpei(window):
         man_control.set_value(adapter_vmu, 0)
         is_motor_max.set_value(adapter_inv, standart_current)
         speed_max.set_value(adapter_inv, standart_speed)
+        voltage = high_voltage.get_value(adapter_inv)
         # тушу высокое и сохраняю их в еепром
         window.thread.invertor_command('POWER_OFF', True)
         save_to_eeprom_mpei(window, node_inv, adapter_inv)
-        window.thread.invertor_command('POWER_ON_SILENT', True)
+        # снова поднимаю высокое
+        if not isinstance(voltage, str) and voltage > 300:
+            window.thread.invertor_command('POWER_ON_SILENT', True)
 
     # стандартные значения инвертора
     standart_current = 270
@@ -337,6 +340,8 @@ def let_moment_mpei(window):
                                  nodes_dict=window.thread.current_nodes_dict)[0]
         ref_torque = find_param('PSTED_MANUAL_CONTROL_REF_TORQUE', node=node_vmu.name,
                                 nodes_dict=window.thread.current_nodes_dict)[0]
+        high_voltage = find_param('DC_VOLTAGE', node=node_inv.name,
+                             nodes_dict=window.thread.current_nodes_dict)[0]
         if not is_motor_max or not speed_max or not man_control or not ref_torque:
             QMessageBox.critical(window, "Ошибка ", 'Не найдены нужные параметры', QMessageBox.StandardButton.Ok)
             return
@@ -352,7 +357,6 @@ def let_moment_mpei(window):
         # ручной контроль должен быть отключен и момент должен быть нулевым
         cur_man = man_control.get_value(adapter_vmu)
         cur_tor = ref_torque.get_value(adapter_vmu)
-        print(f'{cur_man=}, {cur_tor=}')
         if isinstance(cur_man, str) or isinstance(cur_tor, str):
             QMessageBox.critical(window, "Ошибка ", 'КВУ не отвечает\n'
                                                     'Попробуй ещё раз', QMessageBox.StandardButton.Ok)
@@ -384,27 +388,24 @@ def let_moment_mpei(window):
                                        'Сейчас мотор начнёт вращаться',
                                        QMessageBox.StandardButton.Ok,
                                        QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
-
-                err = voltage.get_value(adapter)
+                err = high_voltage.get_value(adapter_inv)
                 if not isinstance(err, str):
-                    # Сохраняем в ЕЕПРОМ Инвертора МЭИ только если выключено высокое - напряжение ниже 30В
-                    if err < 30:
-                        err = node.send_val(node.save_to_eeprom, adapter)
-                        sleep_thread.start()
+                    if err > 300:
+                        wait_thread.start()
+                        ref_torque.set_value(adapter_vmu, limit_moment)
+                    if dialog.exec():
+                        finish()
                     else:
                         err = 'Высокое напряжение не выключено\nВыключи высокое напряжение и повтори сохранение'
                 else:
                     err = f'Некорректный ответ от инвертора\n{err}'
-
-                wait_thread.start()
-                ref_torque.set_value(adapter_vmu, limit_moment)
-            if dialog.exec():
-                finish()
         else:
-            QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{man_c}',
-                                 QMessageBox.StandardButton.Ok)
+            err = f'Команда не отправлена\n{man_c}'
     else:
-        QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине', QMessageBox.StandardButton.Ok)
+        err = 'Нет адаптера на шине'
+    if err:
+        QMessageBox.critical(window, "Ошибка ", err,
+                             QMessageBox.StandardButton.Ok)
 
 
 def rb_togled(window):

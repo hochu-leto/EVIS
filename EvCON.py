@@ -1010,7 +1010,7 @@ if __name__ == '__main__':
     window.let_moment_btn.clicked.connect(lambda: let_moment_mpei(window))
     window.iso_on_btn.clicked.connect(lambda: mpei_iso_on(window))
     window.iso_off_btn.clicked.connect(lambda: mpei_iso_off(window))
-    window.invertor_mpei_box.setEnabled(False)
+    # window.invertor_mpei_box.setEnabled(False)
     # ------------------Кнопки вспомогательные----------------
     window.joy_bind_btn.clicked.connect(lambda: joystick_bind(window))
     window.susp_zero_btn.clicked.connect(lambda: suspension_to_zero(window))

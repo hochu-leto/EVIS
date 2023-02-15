@@ -2,10 +2,10 @@ import datetime
 import time
 import yaml
 from PyQt6.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox, QDialogButtonBox
 from EVONode import EVONode, invertor_command_dict
 from EVOParametr import readme
-from helper import buf_to_string, find_param
+from helper import buf_to_string, find_param, DialogChange
 
 
 # поток для сохранения в файл настроек блока
@@ -205,6 +205,8 @@ class MainThread(QThread):
     def send_to_mpei(self, command):
         node = self.current_nodes_dict['Инвертор_МЭИ']
         # передавать надо исключительно в первый кан
+        # есть же функция определения адаптера для блока, следует здесь использовать её
+        # 
         if node.request_id in self.adapter.id_nodes_dict.keys():
             adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
             if self.isRunning():
@@ -220,21 +222,28 @@ class MainThread(QThread):
             return 'Неверная Команда'
 
         warn_str = invertor_command_dict[command][2]
-        if not warn_str or \
-                QMessageBox.information(w, "Информация", warn_str,
-                                        QMessageBox.StandardButton.Ok,
-                                        QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
-            answer = self.send_to_mpei(command)
-            if answer:
-                answer = 'Команду выполнить не удалось\n' + answer
-                QMessageBox.critical(w, "Ошибка", answer, QMessageBox.StandardButton.Ok)
-            else:
-                if tr is not None:
-                    return ''
-                answer = invertor_command_dict[command][1]
-                QMessageBox.information(w, "Успешный успех!", answer, QMessageBox.StandardButton.Ok)
-            return answer
-        return 'Команда отменена пользователем'
+        if warn_str:
+            points_list = None
+            if '-' in warn_str:
+                points_list = warn_str.split('-')
+                warn_str = points_list.pop(0)
+            dialog = DialogChange(label=warn_str, check_boxes=points_list)
+            dialog.setWindowTitle('Управление Инвертором МЭИ')
+            if not dialog.exec():
+                return 'Команда отменена пользователем'
+        #      QMessageBox.information(w, "Информация", warn_str,
+        #                                 QMessageBox.StandardButton.Ok,
+        #                                 QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
+        answer = self.send_to_mpei(command)
+        if answer:
+            answer = 'Команду выполнить не удалось\n' + answer
+            QMessageBox.critical(w, "Ошибка", answer, QMessageBox.StandardButton.Ok)
+        else:
+            if tr is not None:
+                return ''
+            answer = invertor_command_dict[command][1]
+            QMessageBox.information(w, "Успешный успех!", answer, QMessageBox.StandardButton.Ok)
+        return answer
 
 
 class WaitCanAnswerThread(QThread):
