@@ -69,7 +69,7 @@ from EVOErrors import EvoError
 from EVONode import EVONode
 from EVOWidgets import GreenLabel, RedLabel, zero_del
 from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
-from EVOParametr import Parametr
+from EVOParametr import Parametr, type_values
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled, \
     check_steering_current, mpei_iso_on, mpei_iso_off
@@ -905,7 +905,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             ('Добавить в Избранное', add_param_to_the_best_node),
             ('Удалить из Избранного', add_param_to_the_best_node),
             ('Задать период опроса', change_period),
-            ('Установить максимум', change_max)
+            ('Установить максимум', change_max),
+            ('Установить минимум', change_min)
         ])
 
         if check_param_in_the_best_node(parametr):
@@ -923,12 +924,45 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
 
 def change_period(param):
     print(f'Меняю период параметра {param.name}')
-    pass
+    dialog = DialogChange(label=f'Измени период опроса для параметра {param.name} (1-1000)', value=str(param.period))
+    reg_ex = QRegularExpression("^([1-9][0-9]{0,2}|1000)$")
+    dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+    if dialog.exec() == QDialog.DialogCode.Accepted:
+        val = dialog.lineEdit.text()
+        if val:
+            param.period = int(val)
 
 
 def change_max(param):
     print(f'Задаю максимум для параметра {param.name}')
-    pass
+    dialog = DialogChange(label=f'Измени максимальное значение для {param.name}', value=str(param.max_value))
+    reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+    dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+    if dialog.exec() == QDialog.DialogCode.Accepted:
+        val = dialog.lineEdit.text()
+        if val:
+            val = float(val)
+            if val > type_values[param.type]['max'] or \
+                    val < param.min_value or \
+                    val < param.value:
+                val = param.max_value
+            param.max_value = val
+
+
+def change_min(param):
+    print(f'Задаю минимум для параметра {param.name}')
+    dialog = DialogChange(label=f'Измени минимальное значение для {param.name}', value=str(param.min_value))
+    reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+    dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+    if dialog.exec() == QDialog.DialogCode.Accepted:
+        val = dialog.lineEdit.text()
+        if val:
+            val = float(val)
+            if val < type_values[param.type]['min'] or \
+                    val > param.max_value or \
+                    val > param.value:
+                val = param.min_value
+            param.min_value = val
 
 
 @pyqtSlot(str)
@@ -990,7 +1024,7 @@ if __name__ == '__main__':
     stylesheet_file = pathlib.Path(dir_path, 'Data', 'EVOStyleSheet.txt')
 
     window.main_tab.currentChanged.connect(window.change_tab)
-    # ============================== подключаю сигналы нажатия на окошки
+    # ============================== подключаю сигналы нажатия на окошки============
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
     window.errors_tree.itemPressed.connect(show_error)
     window.nodes_tree.doubleClicked.connect(window.double_click)
@@ -998,8 +1032,7 @@ if __name__ == '__main__':
     window.errors_browser.setStyleSheet("font: bold 14px;")
     window.vmu_param_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
     window.vmu_param_table.customContextMenuRequested.connect(window.generate_menu)
-    window.grafics_tab.hide()
-    # ============================== и сигналы нажатия на кнопки
+    # ============================== и сигналы нажатия на кнопки=====================
     # -----------------Инвертор---------------------------
     window.invert_btn.clicked.connect(lambda: mpei_invert(window))
     window.calibrate_btn.clicked.connect(lambda: mpei_calibrate(window))
