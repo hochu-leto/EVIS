@@ -110,7 +110,7 @@ class Parametr:
         self.editable = True if check_string('editable') else False
         self.units = check_string('unit', check_string('units'))  # единицы измерения
         self.description = check_string('description')  # описание параметра по русски
-        self.value = check_value(0, 'value')
+        self.value = param['value']            #check_value(0, 'value')
         self.value_compare = 0
         self.name = check_string('name', 'NoName')
         # на что умножаем число из КАНа

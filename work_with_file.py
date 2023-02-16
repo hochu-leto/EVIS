@@ -26,6 +26,7 @@ par_pick_file = 'parameters.pickle'
 err_file = 'errors.yaml'
 err_pick_file = 'errors.pickle'
 dir_path = str(pathlib.Path.cwd())
+settings_dir = pathlib.Path(dir_path, 'ECU_Settings')
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 nodes_yaml_file = pathlib.Path(dir_path, 'Data', 'all_nodes.yaml')
@@ -280,5 +281,11 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
         adr = cur_p.index << 8 + cur_p.sub_index
         if adr in all_compare_params.keys():
             compare_par = all_compare_params[adr]
-            cur_p.value_compare = compare_par.value_string if compare_par.value_string else float(compare_par.value)
+            # if compare_par.value_string:
+            #     val = compare_par.value_string
+            # elif compare_par.value_table:
+            #     val = compare_par.value_table[int(compare_par.value)]
+            # else:
+            #     val = compare_par.value
+            cur_p.value_compare = compare_par.value      #compare_par.value_string if compare_par.value_string else float(compare_par.value)
     node.has_compare_params = True

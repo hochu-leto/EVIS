@@ -1,4 +1,5 @@
 import datetime
+import pathlib
 import time
 import yaml
 from PyQt6.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
@@ -6,6 +7,7 @@ from PyQt6.QtWidgets import QMessageBox, QDialogButtonBox
 from EVONode import EVONode, invertor_command_dict
 from EVOParametr import readme
 from helper import buf_to_string, find_param, DialogChange
+from work_with_file import settings_dir
 
 
 # поток для сохранения в файл настроек блока
@@ -96,15 +98,16 @@ class SaveToFileThread(QThread):
             readme=readme,
             device=self.node_to_save.to_dict())
 
-        file_name = f'ECU_Settings/{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.yaml'
+        file_name = f'{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.yaml'
+        file_name = pathlib.Path(settings_dir, file_name)
         self.SignalOfReady.emit(95, '', False)
         with open(file_name, 'w', encoding='UTF-8') as file:
             yaml.dump(node_yaml_dict, file,
                       default_flow_style=False,
                       sort_keys=False,
                       allow_unicode=True)
-        # вместо строки ошибки отправляем название файла,куда сохранил настройки
-        self.SignalOfReady.emit(100, file_name, True)
+        # вместо строки ошибки отправляем название файла, куда сохранил настройки
+        self.SignalOfReady.emit(100, str(file_name), True)
 
 
 # поток для опроса параметров и ошибок
@@ -176,7 +179,17 @@ class MainThread(QThread):
                 if self.is_recording:
                     dt = datetime.datetime.now()
                     dt = dt.strftime("%H:%M:%S.%f")
-                    self.record_dict[dt] = {par.name: par.value for par in self.current_params_list}
+                    now_values_dict = {}
+                    for par in self.current_params_list:
+                        if par.value_string:
+                            val = par.value_string
+                        elif par.value_table:
+                            val = par.value_table[int(par.value)]
+                        else:
+                            val = par.value
+                        now_values_dict[par.name] = val
+                    # self.record_dict[dt] = {par.name: par.value for par in self.current_params_list}
+                    self.record_dict[dt] = now_values_dict.copy()
                 else:
                     request_errors()
 
@@ -367,7 +380,7 @@ class SteerMoveThread(QThread):
             current=SteerParametr(name='A1.7 CurrentRMS',
                                   min_value=1, max_value=100),
             serial=SteerParametr(name='B0.9 Serial_Number',
-                                  min_value=1, max_value=1000))
+                                 min_value=1, max_value=1000))
         # словарь с параметрами, которые задаём
         self.parameters_set = dict(
             current=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
@@ -576,7 +589,7 @@ class SteerMoveThread(QThread):
         self.SignalOfProcess.emit(['Страгиваем влево...'], [], int(self.progress))
         min_go = self.min_position / divider
         start_current_left = self.define_current(int(min_go))
-        text = f'Ток страгивания влево на величину {min_go} = {start_current_left}'
+        text = f'Ток страгивания влево на величину {min_go} = {start_current_left}А'
         self.result.append(text)
         print(text)
         self.set_straight()
@@ -584,7 +597,7 @@ class SteerMoveThread(QThread):
         self.SignalOfProcess.emit([text, 'Страгиваем вправо...'], [], int(self.progress))
         min_go = self.max_position / divider
         start_current_right = self.define_current(int(min_go))
-        text = f'Ток страгивания вправо на величину {min_go} = {start_current_right}'
+        text = f'Ток страгивания вправо на величину {min_go} = {start_current_right}А'
         self.result.append(text)
         print(text)
         self.set_straight()
@@ -607,7 +620,7 @@ class SteerMoveThread(QThread):
         self.delta_current = start_current_right / 5
         self.time_for_set = start_current_right / 5
         full_current_right = self.define_current(self.max_position, start_current_right * 1.2)
-        text = f'Еок максимального выворота вправо = {full_current_right}А'
+        text = f'Ток максимального выворота вправо = {full_current_right}А'
         self.result.append(text)
         print(text)
         self.set_straight()
@@ -622,6 +635,8 @@ class SteerMoveThread(QThread):
     def save_to_file(self):
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         serial = self.get_param(self.parameters_get['serial'])
+        if not isinstance(serial, str):
+            serial = int(serial)
         node_yaml_dict = dict(
             date_time=now,
             burr_name=self.node.name,

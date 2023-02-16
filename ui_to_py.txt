@@ -1,5 +1,3 @@
 venv/Scripts/pyuic6 VMU_monitor_v2.ui -o VMU_monitor_ui.py
 venv/Scripts/pyuic6 VMU_monitor_v3.ui -o VMU_monitor_ui.py
-pyinstaller --noconsole --noconfirm -i "icons_speed.ico" Dinostend.py
 pyinstaller --noconsole --noconfirm -i "pictures/EVO_logo.ico" EVIS.py
-pyuic5 Dialog_params.ui -o Dialog_params.py

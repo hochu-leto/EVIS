@@ -104,3 +104,100 @@
   editable: false
   min_value: -327.5
   max_value: 327.5
+падает инвертор:
+- name: UPTIME#Инвертор_МЭИ
+  index: 8192
+  sub_index: 0
+  description: Время работы
+  type: FLOAT
+  value: 9211.7861328125
+  units: s
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647
+- name: DRIVE_STATE#Инвертор_МЭИ
+  index: 8192
+  sub_index: 1
+  description: Состояние
+  type: UNSIGNED16
+  value: 3.0
+  editable: false
+  min_value: 0
+  max_value: 65535
+  value_table:
+    0: STANDBY
+    1: IDLE
+    2: POWERUP
+    3: READY
+    4: PREPARING
+    5: STARTING
+    6: IN_OPERATION
+    7: STOPPING
+    8: POWERDOWN
+    9: CALIBRATING_POS_SENSOR_POWERUP
+    10: CALIBRATING_POS_SENSOR
+    11: EVALUATING_MOTOR
+- name: FAULTS#Инвертор_МЭИ
+  index: 8192
+  sub_index: 2
+  description: Ошибки
+  type: UNSIGNED32
+  value: 0.0
+  editable: false
+  min_value: 0
+  max_value: 4294967295
+  value_table:
+    0: Нет ошибок
+    1: Защита от снижения напряжения в ЗПТ
+    2: Защита от повышения напряжения в ЗПТ
+    4: Фазный сверхток
+    8: Сверхток в обмотке возбуждения
+    16: Сверхток в звене постоянного тока
+    32: Защита драйверов трёхфазного моста
+    64: Защита драйверов регулятора тока обмотки возбуждения
+    128: Температурная защита силовых ключей
+    256: Температурная защита преобразователя
+    512: Температурная защита двигателя
+    1024: Температурная защита обмотки возбуждения
+    2048: Потеря соединения по CAN-шине
+    4096: Ошибка передачи данных по CAN-шине
+    8192: Программная ошибка
+    16384: Аппаратная ошибка
+    32768: Отказ датчика фазного тока
+    65536: Отказ датчика тока возбуждения
+    131072: Отказ датчика тока звена постоянного тока
+    262144: Аварийный останов
+    524288: Ошибка включения контакторов
+    1048576: Ошибка ДПР
+    2097152: Неисправность датчика температуры двигателя
+    4194304: Ошибка размыкания силового контактора (приварились контакты)
+- name: PHA_CURRENT#Инвертор_МЭИ
+  index: 8192
+  sub_index: 7
+  description: Ток фазы А
+  type: FLOAT
+  value: 0.9157209396362305
+  units: A
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647
+- name: PHB_CURRENT#Инвертор_МЭИ
+  index: 8192
+  sub_index: 8
+  description: Ток фазы В
+  type: FLOAT
+  value: 0.18666893243789673
+  units: A
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647
+- name: PHC_CURRENT#Инвертор_МЭИ
+  index: 8192
+  sub_index: 9
+  description: Ток фазы С
+  type: FLOAT
+  value: -5.0723652839660645
+  units: A
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647

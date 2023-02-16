@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import QComboBox, QLabel, QLineEdit, QProgressBar, QSlider,
 
 
 def zero_del(s):
-    return f'{round(s, 5):>8}'.rstrip('0').rstrip('.') if s is not None else 'NaN'
+    return f'{round(s, 5):>8}'.rstrip('0').rstrip('.').strip() if s is not None else 'NaN'
 
 
 class GreenLabel(QLabel):
@@ -58,7 +58,7 @@ class MyComboBox(QComboBox):
         self.isInFocus = False
         super(MyComboBox, self).hidePopup()
 
-    def setText(self, text=None):
+    def set_text(self, text=None):
         if text is not None:
             self.setCurrentText(text)
         if hasattr(self.parametr, 'value_table'):
@@ -77,7 +77,9 @@ class MyEditLine(QLineEdit):
         self.parametr = parametr
         reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
         self.setValidator(QRegularExpressionValidator(reg_ex))
-        self.editingFinished.connect(self.end_edited_handle)
+        # self.editingFinished.connect(self.end_edited_handle)
+        self.returnPressed.connect(self.end_edited_handle)
+        self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
 
     def end_edited_handle(self):
         lst = []
@@ -96,9 +98,9 @@ class MyEditLine(QLineEdit):
         super().focusOutEvent(event)
         self.FocusOutSignal.emit()
 
-    def setText(self, text=None):
-        # if text is not None:
-        #     self.setText(text)
+    def set_text(self, text=None):
+        if text is not None:
+            self.setText(text)
         if hasattr(self.parametr, 'value'):
             if self.parametr.value_string:
                 v_name = self.parametr.value_string

@@ -408,7 +408,7 @@ def let_moment_mpei(window):
                                                     ref_torque.set_value(adapter_vmu, limit_moment)
                                                     if dialog.exec():
                                                         finish()
-    if err:
+    if err and isinstance(err, str):
         QMessageBox.critical(window, "Ошибка ", err,
                              QMessageBox.StandardButton.Ok)
 

@@ -204,13 +204,13 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
                 par.widget = MyComboBox(parametr=par)
                 table.setCellWidget(row, 2, par.widget)
                 items_list.append(par.widget)
-            table.cellWidget(row, 2).setText()
+            table.cellWidget(row, 2).set_text()
         elif par.editable:
             if not isinstance(it, MyEditLine):
                 par.widget = MyEditLine(v_name, parametr=par)
                 table.setCellWidget(row, 2, par.widget)
                 items_list.append(par.widget)
-            table.cellWidget(row, 2).setText()
+            table.cellWidget(row, 2).set_text()
         else:
             value_item = QTableWidgetItem(v_name)
             # if par.editable:

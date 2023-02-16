@@ -75,7 +75,7 @@ from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpe
     check_steering_current, mpei_iso_on, mpei_iso_off
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_pickle_file, save_p_dict_to_yaml_file, \
-    fill_yaml_dict
+    fill_yaml_dict, settings_dir
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
     color_EVO_orange_shine, color_EVO_white
@@ -163,7 +163,7 @@ def record_log():
 
 
 def make_compare_params_list():
-    file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', dir_path,
+    file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', str(settings_dir),
                                             "Файл с настройками блока (*.yaml *.xlsx)")[0]
     if file_name:
         if '.xls' in file_name:
@@ -235,8 +235,7 @@ def set_new_value(param: Parametr, val):
                 new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
             my_label = QLabel()
-
-            if str(val).strip() == new_val:
+            if zero_del(val).strip() == new_val:
                 my_label = GreenLabel()
                 if param.node.save_to_eeprom:
                     param.node.param_was_changed = True
