@@ -11,7 +11,7 @@ A0.Process state:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'ModFlt '
     '1': 'SC1Flt '
     '10': 'UnVoltFlt '
@@ -101,7 +101,7 @@ A1.Position, Load:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'UNDEFINED '
     '1': 'INC-interface '
     '2': 'SSI-interface '
@@ -315,7 +315,7 @@ A3.Ver PO / ADC:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': FORWARD
     '1': 'REAR '
 - address: '0x0021'
@@ -355,7 +355,7 @@ A3.Ver PO / ADC:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': SER_NUM
     '1': DIPSW_1
     '2': FORWARD
@@ -555,7 +555,7 @@ B0.Global configuration&B1.Rezerv Group:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NOT USED '
     '1': '20 kHz '
     '10': '2.0 kHz '
@@ -579,7 +579,7 @@ B0.Global configuration&B1.Rezerv Group:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'UNDEFINED '
     '1': 'LIR '
     '2': 'AUTONICS '
@@ -620,7 +620,7 @@ B0.Global configuration&B1.Rezerv Group:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'U-V DC-MOTOR '
     '1': U-V-W AC 3 PHASE
     '2': REZERV ;
@@ -636,7 +636,7 @@ B0.Global configuration&B1.Rezerv Group:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NOT SELECTED '
     '1': 'KAMAZ '
     '2': 'CAMOZZI '
@@ -664,7 +664,7 @@ B0.Global configuration&B1.Rezerv Group:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NONE '
     '1': 'CAP + GPIO '
     '2': 'QEP '
@@ -813,7 +813,7 @@ B2.CAN_Poppel:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NONE '
     '1': 'RUN_FRWD_STEER '
     '10': 'Rezerv9 '
@@ -891,7 +891,7 @@ B2.CAN_Poppel:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'RUN '
     '1': 'ALARM '
     '10': 'Rezerv10 '
@@ -1076,7 +1076,7 @@ B2.CAN_Poppel:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NORMAL MODE '
     '1': 'INVERS MODE '
 - address: '0x006e'
@@ -1236,7 +1236,7 @@ C0.Connection:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': '2400 BAUD '
     '1': '4800 BAUD '
     '2': '9600 BAUD '
@@ -1440,7 +1440,7 @@ C1.PositionSens:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NORMAL MODE '
     '1': 'INVERS MODE '
 - address: '0x00cd'
@@ -1455,7 +1455,7 @@ C1.PositionSens:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NORMAL MODE '
     '1': 'INVERS MODE '
 - address: '0x00ce'
@@ -1470,7 +1470,7 @@ C1.PositionSens:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NORMAL MODE '
     '1': 'INVERS MODE '
 - address: '0x00cf'
@@ -1485,7 +1485,7 @@ C1.PositionSens:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NO COMMAND '
     '1': RESET INC COUNT
 - address: '0x00d0'
@@ -1524,7 +1524,7 @@ C1.PositionSens:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NORMAL MODE '
     '1': 'INVERS MODE '
 C2.Regulators:
@@ -1816,7 +1816,7 @@ C2.Regulators:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NO '
     '1': 'Trapezium '
     '2': 'S-Ramp '
@@ -2290,7 +2290,7 @@ C4.Protections:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'ModFlt '
     '1': 'SC1Flt '
     '10': 'UnVoltFlt '
@@ -2560,7 +2560,7 @@ C5.CAN:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NONE '
     '1': 'Enabled '
     '10': 'CommandToggle '
@@ -3300,7 +3300,7 @@ D0.Device control:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'STOP '
     '1': 'RUN '
     '2': 'NOT USED '
@@ -3319,7 +3319,7 @@ D0.Device control:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'SCALAR '
     '1': 'CURRENT MODE '
     '2': 'FIND ROTOR POS '
@@ -3387,7 +3387,7 @@ D0.Device control:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'MB CONTROL '
     '1': 'CAN CONTROL '
     '2': 'CAN CTRL_ETT '

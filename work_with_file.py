@@ -1,18 +1,15 @@
 import os
 import pathlib
 import pickle
-import time
 
 import pandas as pd
 import yaml
-from PyQt5.QtWidgets import QMessageBox
-from pandas import ExcelWriter
 
 from EVOErrors import EvoError
 from helper import NewParamsList, get_nearest_lower_value
 from EVONode import EVONode
-from Parametr import Parametr
-from helper import empty_par, TheBestNode
+from EVOParametr import Parametr
+from helper import TheBestNode
 
 value_type_dict = {'UNSIGNED16': 0x2B,
                    'SIGNED16': 0x2B,
@@ -29,6 +26,7 @@ par_pick_file = 'parameters.pickle'
 err_file = 'errors.yaml'
 err_pick_file = 'errors.pickle'
 dir_path = str(pathlib.Path.cwd())
+settings_dir = pathlib.Path(dir_path, 'ECU_Settings')
 vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 nodes_yaml_file = pathlib.Path(dir_path, 'Data', 'all_nodes.yaml')
@@ -70,6 +68,29 @@ def fill_sheet_dict(file_name):
                 sheets_dict[sheet_name] = node_params_dict
     return sheets_dict
 
+
+# можно несколько блоков в одном файле
+def fill_yaml_dict(file_name):
+    with open(file_name, "r", encoding="UTF-8") as stream:
+        try:
+            nodes_list = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+            return
+    node_dict = {}
+    # немного косянул со списком блоков, нужно исправлять сохранение в ямл. А пока так
+    if 'device' in nodes_list.keys():
+        node = nodes_list['device']
+        node_dict[node['name']] = param_dict(node['parameters'])
+    elif 'devices' in nodes_list.keys():
+        # а вот сюда можно запихнуть всю машину с настройками всех блоков
+        for node in nodes_list['devices'].values():
+            node_dict[node['name']] = param_dict(node['parameters'])
+    return node_dict
+
+
+def param_dict(params: dict):
+    return {name_group: [Parametr(p) for p in group] for name_group, group in params.items()}
 
 # =========================================версия для ошибок-объектов и ямл-файлов============================
 # ------------------------------------- заполнение списка с ошибками----------------------------
@@ -151,8 +172,8 @@ def fill_node(node: EVONode):
             t_dir = pathlib.Path(node_dir, Default)
             node.group_params_dict = try_load_pickle('params', t_dir, node)
             node.errors_list = try_load_pickle('errors', t_dir, node)
-            if node.name == 'КВУ_ТТС':
-                node.warnings_list = node.errors_list.copy()
+            # if node.name == 'КВУ_ТТС' and node.errors_list:       кажется, это дублируется ниже
+            #     node.warnings_list = node.errors_list.copy()
             if not node.group_params_dict or not node.errors_list:
                 return False
             f_v = node.firmware_version
@@ -174,7 +195,7 @@ def fill_node(node: EVONode):
                                 node.warnings_list = errors_list.copy()
 
             for group in node.group_params_dict.values():
-                for param in group:
+                for param in group:     # только это не работает для избранного
                     param.node = node
             print(f'для блока {node.name} с версией ПО {node.firmware_version} '
                   f'применяю параметры из папки {param_dir} и ошибки из папки {err_dir}')
@@ -190,53 +211,57 @@ def make_nodes_dict(node_dict):
         full_node = fill_node(node)
         if full_node:
             final_nodes_dict[name] = full_node
-    # надо добавить избранное, если его нет
-    if TheBestNode not in final_nodes_dict.keys():
+
+    node = final_nodes_dict[TheBestNode] = node_dict[TheBestNode]
+    if node.group_params_dict:
+        for group in node.group_params_dict.values():
+            for param in group:
+                node_name_from_param_name = param.name.split('#')[1]
+                try:
+                    n = node_dict[node_name_from_param_name]
+                    param.node = n
+                except KeyError:
+                    print(f'Блок {node_name_from_param_name} в списке блоков не найден')
+                    param.period = 1000
+                    param.value_string = 'Блок не определён'
+    else:
         # и если в избранном нет параметров - добавить Новый список
-        if not node_dict[TheBestNode].group_params_dict:
-            node_dict[TheBestNode].group_params_dict[NewParamsList] = []
-        final_nodes_dict[TheBestNode] = node_dict[TheBestNode]
+        node.group_params_dict[NewParamsList] = []
 
     return final_nodes_dict
 
 
 # =============================================================================================================
 
-
-def save_params_dict_to_file(param_d: dict, file_name: str, sheet_name=None):
-    if sheet_name is None:
-        sheet_name = TheBestNode
-    all_params_list = []
-    param_dict = param_d.copy()
-    for group_name, param_list in param_dict.items():
-        par = empty_par.copy()
-        par['name'] = f'group {group_name}'
-        all_params_list.append(par)
-        for param in param_list:
-            all_params_list.append(param.to_dict().copy())
-
-    df = pd.DataFrame(all_params_list, columns=empty_par.keys())
-    if os.path.exists(file_name):
-        try:
-            ex_wr = ExcelWriter(file_name, mode="a", if_sheet_exists='overlay')
-        except PermissionError:
-            return False
-    else:
-        ex_wr = ExcelWriter(file_name, mode="w")
-
-    with ex_wr as writer:
-        df.to_excel(writer, index=False, sheet_name=sheet_name)
-    return True
-
-
-def save_p_dict_to_file(par_dict: dict):
+def save_p_dict_to_pickle_file(node: EVONode):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
-    file_name = pathlib.Path(data_dir, TheBestNode, Default, par_pick_file)
+    s_num = node.serial_number if node.serial_number else Default
+    file_name = pathlib.Path(data_dir, node.name, s_num, par_pick_file)
     try:
         with open(file_name, 'wb') as f:
-            pickle.dump(par_dict, f)
+            pickle.dump(node.group_params_dict, f)
         if os.path.isfile(nodes_pickle_file):
             os.remove(nodes_pickle_file)
+        return True
+    except PermissionError:
+        return False
+
+
+def save_p_dict_to_yaml_file(node: EVONode):
+    data_dir = pathlib.Path(os.getcwd(), 'Data')
+    s_num = node.serial_number if node.serial_number else Default
+    file_name = pathlib.Path(data_dir, str(node.name), str(s_num), par_file)
+    pickle_params_file = pathlib.Path(data_dir,  str(node.name), str(s_num), par_pick_file)
+    try:
+        with open(file_name, 'w', encoding='UTF-8') as file:
+            yaml.dump(node.groups_to_dict(), file,
+                      default_flow_style=False,
+                      sort_keys=False,
+                      allow_unicode=True)
+        if os.path.isfile(nodes_pickle_file):
+            os.remove(nodes_pickle_file)
+        if os.path.isfile(pickle_params_file):
+            os.remove(pickle_params_file)
         return True
     except PermissionError:
         return False
@@ -246,17 +271,21 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
     all_compare_params = {}
     for group in dict_for_compare.values():
         for par in group.copy():
-            all_compare_params[par.address] = par
+            all_compare_params[par.index << 8 + par.sub_index] = par
     all_current_params = []
     for group in node.group_params_dict.values():
         for p in group:
             all_current_params.append(p)
 
     for cur_p in all_current_params:
-        if cur_p.address in all_compare_params.keys():
-            compare_par = all_compare_params[cur_p.address]
-            cur_p.value_compare = compare_par.value_string if compare_par.value_string else float(compare_par.value)
-            # cur_p.value_compare = compare_par.value if isinstance(compare_par.value, str) else float(compare_par.value)
-            # cur_p.value_compare = compare_par.value
-            # del all_compare_params[cur_p.address]
+        adr = cur_p.index << 8 + cur_p.sub_index
+        if adr in all_compare_params.keys():
+            compare_par = all_compare_params[adr]
+            # if compare_par.value_string:
+            #     val = compare_par.value_string
+            # elif compare_par.value_table:
+            #     val = compare_par.value_table[int(compare_par.value)]
+            # else:
+            #     val = compare_par.value
+            cur_p.value_compare = compare_par.value      #compare_par.value_string if compare_par.value_string else float(compare_par.value)
     node.has_compare_params = True

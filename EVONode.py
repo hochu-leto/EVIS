@@ -2,26 +2,29 @@ import ctypes
 
 import CANAdater
 from EVOErrors import EvoError
-from Parametr import Parametr
+from EVOParametr import Parametr
 from helper import int_to_hex_str
 
 invertor_command_dict = {
     'POWER_ON': (0x200100, "ОСТОРОЖНО!!! Высокое напряжение ВКЛЮЧЕНО!",
                  'Уверен, что нужно принудительно включить ВЫСОКОЕ напряжение?'),
+    'POWER_ON_SILENT': (0x200100, "", ''),
     'POWER_OFF': (0x200101, "Высокое напряжение выключено!", ''),
     'RESET_DEVICE': (0x200200, "Инвертор перезагружен", 'Полностью перезагрузить инвертор?'),
     'RESET_PARAMETERS': (0x200201, "Параметры инвертора сброшены на заводские настройки",
                          'Сбросить инвертор на заводские настройки?'),
     'APPLY_PARAMETERS': (0x200202, "Текущие параметры сохранены в ЕЕПРОМ Инвертора", ''),
     'BEGIN_POSITION_SENSOR_CALIBRATION': (0x200203, "Идёт калибровка Инвертора",
-                                          'Перед калибровкой проверь что:\n'
-                                          ' - стояночный тормоз отпущен\n'
-                                          ' - приводная ось вывешена\n'
+                                          'Перед калибровкой проверь что:'
+                                          ' - стояночный тормоз отпущен'
+                                          ' - приводная ось вывешена'
                                           ' - высокое напряжение ВЫКЛЮЧЕНО',),
     'INVERT_ROTATION': (0x200204, "Направление вращения двигателя инвертировано",
-                        'Перед инверсией проверь что:\n'
+                        'Перед инверсией проверь что:'
                         ' - высокое напряжение ВЫКЛЮЧЕНО',),
-    'RESET_FAULTS': (0x200205, "Ошибки Инвертора сброшены", '')}
+    'RESET_FAULTS': (0x200205, "Ошибки Инвертора сброшены", ''),
+    'ISOLATION_MONITORING_OFF': (0x200211, "Контроль изоляции ОТКЛЮЧЕН", ''),
+    'ISOLATION_MONITORING_ON': (0x200210, "Контроль изоляции ВКЛЮЧЕН", '')}
 
 '''
 '''
@@ -39,6 +42,8 @@ empty_node = {
     'errors_list': [],
     'group_nods_list': []
 }
+
+exit_list = ['name', 'serial_number', 'firmware_version', 'request_id', 'answer_id', 'protocol']
 
 
 class EVONode:
@@ -201,67 +206,12 @@ class EVONode:
             ans = adr.get_value(adapter)
             print(ans, adr.value_string, end=' ')
             if adr.value_string:
-                num += adr.value_string
+                if adr.value_string != num:
+                    num += adr.value_string
             elif not isinstance(ans, str):
                 num += str(ans).rstrip('0').rstrip('.')
         print(num)
         return int(num) if num.isdigit() else ''.join([s for s in num if s.isprintable()])
-
-        serial = self.get_val(self.request_serial_number, adapter) if self.request_serial_number else 777
-        if self.name == 'Инвертор_МЭИ':  # Бега костыль
-            serial = check_printable(serial)
-        else:
-            if isinstance(serial, str):
-                if self.string_from_can:
-                    serial = ''
-                    for s in self.string_from_can:
-                        if s.isprintable():
-                            serial += s
-                    self.string_from_can = ''
-                else:
-                    serial = ''
-
-        self.serial_number = serial
-        # print(f'{self.name} - {serial=}')
-        return self.serial_number
-
-    # Потому-то кому-то приспичило передавать серийник в чарах
-    # пока никому не приспичило передавать серийник по нескольким адресам и сейчас это затычка для ТТС,
-    # но вообще неплохо бы сделать эту функцию наподобие опроса ошибок по нескольким адресам,
-    # другое дело как чары парусить, наверное, это должно быть либо в ответе от блока либо в типе параметра
-    def get_serial_for_ttc(self, adapter: CANAdater):
-        serial_ascii_address_lst = [0x218001,
-                                    0x218002,
-                                    0x218003,
-                                    0x218004]
-
-        ser = ''
-        for adr in serial_ascii_address_lst:
-            ge = self.get_val(adr, adapter)
-            i = 0
-            while isinstance(ge, str):
-                ge = self.get_val(adr, adapter)
-                i += 1
-                if i > 10:
-                    return ''
-
-            ser += check_printable(ge)
-
-        self.serial_number = ser
-        return int(self.serial_number) if ser else ser
-
-    # функция НЕ РАБОТАЕТ
-    def get_firmware_version(self, adapter: CANAdater):
-        if self.firmware_version:
-            return self.firmware_version
-        f_list = self.get_val(self.request_firmware_version, adapter) if self.request_firmware_version else 0
-        if isinstance(f_list, str):
-            if self.string_from_can:
-                f_list = self.string_from_can
-
-        self.firmware_version = f_list
-        print(f'{self.name} - {f_list=}')
-        return self.firmware_version
 
     def cut_firmware(self):
         if isinstance(self.firmware_version, int):
@@ -280,6 +230,7 @@ class EVONode:
 
     def check_errors(self, adapter: CANAdater, false_if_war=True):
         #  на выходе - список текущих ошибок
+        # тоже херня надо переходить на параметры, которые при опросе выдают свои ошибки
         if false_if_war:
             r_request = self.error_request.copy()
             s_list = self.errors_list.copy()
@@ -291,12 +242,11 @@ class EVONode:
 
         if not r_request or not s_list:
             return current_list
-        err_dict = {v.value: v for v in s_list}
+
         big_error = 0
         j = 0
         for adr in r_request:
             error = self.get_val(adr, adapter)
-            # print(hex(adr), error)
             if isinstance(error, int):
                 if error <= 128:
                     big_error += error << j * 8
@@ -307,13 +257,17 @@ class EVONode:
             j += 1
 
         if big_error:
+            err_dict = {v.value: v for v in s_list}
+
             if self.name == 'КВУ_ТТС':
                 if big_error in err_dict.keys():  # космический костыль
                     current_list.add(err_dict[big_error])
                 else:
-                    e = EvoError()
-                    e.name = f'Неизвестная ошибка ({big_error})'
-                    current_list.add(e)
+                    err_name = f'Неизвестная ошибка ({big_error})'
+                    if err_name not in [er.name for er in current_list]:
+                        e = EvoError()
+                        e.name = err_name
+                        current_list.add(e)
             else:
                 for e_num, e_obj in err_dict.items():
                     if big_error & e_num:
@@ -321,7 +275,7 @@ class EVONode:
         return current_list
 
     def erase_errors(self, adapter: CANAdater):
-        #  ошибки должны быть объектами
+        # полная хрень. удаление ошибок - это должен быть параметр, который умеет отсылаться
         if self.error_erase['address']:
             self.send_val(self.error_erase['address'], adapter, self.error_erase['value'])
             self.current_errors_list.clear()
@@ -335,6 +289,19 @@ class EVONode:
             self.string_from_can += chr(byte)
         s = self.string_from_can.strip().rstrip('0')
         return int(s) if s.isdigit() else s
+
+    def to_dict(self):
+        exit_dict = {ke: self.__getattribute__(ke) for ke in exit_list}
+        if self.current_errors_list:
+            exit_dict['current_errors_list'] = [er.name for er in self.current_errors_list]
+        if self.current_warnings_list:
+            exit_dict['current_warnings_list'] = [wr.name for wr in self.current_warnings_list]
+        exit_dict['parameters'] = self.groups_to_dict()
+        return exit_dict
+
+    def groups_to_dict(self):
+        return {group: [par.to_dict() for par in params]
+                for group, params in self.group_params_dict.items()}
 
 
 def check_printable(lst):

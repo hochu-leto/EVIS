@@ -6,7 +6,7 @@
 from pprint import pprint
 from sys import platform
 
-from PyQt5.QtWidgets import QMessageBox, QApplication, QMainWindow
+from PyQt6.QtWidgets import QApplication, QMessageBox
 
 import AdapterCAN
 # from kvaser_power import Kvaser
@@ -21,6 +21,7 @@ class CANAdapter:
         self.id_nodes_dict = {}  # словарь блоков, где ключ - айди обращения к блоку, а значение - объект адаптера
         self.is_busy = False
         self.adapters_dict = {}  # словарь адаптеров,где ключ - цифра битрейта, а значение - объект адаптера
+        self.can_bitrate = CANMarathon.can_bitrate
         # self.find_adapters()
 
     def find_adapters(self):
@@ -39,7 +40,7 @@ class CANAdapter:
         if not self.adapters_dict:
             if QApplication.instance() is None:
                 app = QApplication([])
-            QMessageBox.critical(None, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.Ok)
+            QMessageBox.critical(None, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.StandardButton.Ok)
             return False
         return True
 

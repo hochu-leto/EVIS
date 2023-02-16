@@ -11,7 +11,7 @@ A0.Process state:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'ModFlt '
     '1': 'SC1Flt '
     '10': 'UnVoltFlt '
@@ -247,7 +247,7 @@ A3.Ver PO / ADC:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': FORWARD
     '1': 'REAR '
 - address: '0x0021'
@@ -287,7 +287,7 @@ A3.Ver PO / ADC:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': SER_NUM
     '1': DIPSW_1
     '2': FORWARD
@@ -415,7 +415,7 @@ B0.Global configuration&B1.Rezerv Group:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NOT USED '
     '1': '20 kHz '
     '10': '2.0 kHz '
@@ -536,7 +536,7 @@ B2.CAN_BURR30:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NONE '
     '1': 'RUN_FRWD_STEER '
     '10': 'Rezerv9 '
@@ -614,7 +614,7 @@ B2.CAN_BURR30:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'Enabled '
     '1': 'Alarm '
     '10': 'Rezerv9 '
@@ -801,7 +801,7 @@ B2.CAN_BURR30:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NORMAL MODE '
     '1': 'INVERS MODE '
 - address: '0x006e'
@@ -890,7 +890,7 @@ B3.WORK_TIME:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'ВЫКЛЮЧЕНО '
     '1': 'ВКЛЮЧЕНО '
 - address: '0x0079'
@@ -965,7 +965,7 @@ B3.WORK_TIME:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'НЕТ КОМАНДЫ '
     '1': 'ЗАДАТЬ '
 C0.Connection:
@@ -1005,7 +1005,7 @@ C0.Connection:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': '2400 BAUD '
     '1': '4800 BAUD '
     '2': '9600 BAUD '
@@ -1184,7 +1184,7 @@ C0.Connection:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': '125 '
     '1': '250 '
     '2': '500 '
@@ -1213,7 +1213,7 @@ C1.PositionSens:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'NORMAL MODE '
     '1': 'INVERS MODE '
 - address: '0x00f0'
@@ -1228,7 +1228,7 @@ C1.PositionSens:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'ВЫКЛЮЧЕНО '
     '1': 'ВКЛЮЧЕНО '
 - address: '0x00f1'
@@ -1822,7 +1822,7 @@ C4.Protections&C5.CAN:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'ModFlt '
     '1': 'SC1Flt '
     '10': 'UnVoltFlt '
@@ -2237,7 +2237,7 @@ D0.Device control:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'STOP '
     '1': 'RUN '
     '2': 'NOT USED '
@@ -2256,7 +2256,7 @@ D0.Device control:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'SCALAR '
     '1': 'CURRENT MODE '
     '2': 'FIND ROTOR POS '
@@ -2324,7 +2324,7 @@ D0.Device control:
   size: 2.0
   type: SIGNED16
   unit: .nan
-  values_table:
+  value_table:
     '0': 'MB CONTROL '
     '1': 'CAN CONTROL '
     '2': 'CAN CTRL_ETT '
