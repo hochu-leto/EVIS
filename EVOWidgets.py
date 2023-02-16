@@ -97,8 +97,8 @@ class MyEditLine(QLineEdit):
         self.FocusOutSignal.emit()
 
     def setText(self, text=None):
-        if text is not None:
-            self.setText(text)
+        # if text is not None:
+        #     self.setText(text)
         if hasattr(self.parametr, 'value'):
             if self.parametr.value_string:
                 v_name = self.parametr.value_string
