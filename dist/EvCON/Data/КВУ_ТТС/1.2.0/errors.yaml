@@ -1,0 +1,708 @@
+- code: 1536
+  critical: false
+  description_error: Ошибка на одном из пинов, относящихся к управлению световым оборудованием
+  level: 0
+  name: lights_iolib
+  name_error: Пин светового оборудования
+  value_error: 1536
+- code: 1792
+  critical: false
+  description_error: Ошибка CRC при чтении параметра из EEPROM
+  level: 0
+  name: eeprom_crc
+  name_error: EEPROM CRC
+  value_error: 1792
+- code: 1793
+  critical: false
+  description_error: Ошибка io_library при взаимодействии с EEPROM
+  level: 0
+  name: eeprom_iolib
+  name_error: EEPROM iolib
+  value_error: 1793
+- code: 1794
+  critical: false
+  description_error: Обнаружен nullptr при взаимодействии с EEPROM
+  level: 0
+  name: eeprom_nullptr
+  name_error: EEPROM nullptr
+  value_error: 1794
+- code: 1827
+  critical: true
+  description_error: Сразу после включения КВУ происходит чтение всех параметров из
+    EEPROM. Данная ошибка возникает, если этот процесс  продолжается более 500мс,
+    что трактуется как зависание.
+  level: 2
+  name: eeprom_init_timeout
+  name_error: EEPROM таймаут
+  value_error: 1827
+- code: 1796
+  critical: false
+  description_error: После записи каждого параметра производится проверка записанного
+    значения (верификации)
+  level: 0
+  name: eeprom_verification
+  name_error: EEPROM ошибка верификации
+  value_error: 1796
+- code: 2336
+  critical: true
+  description_error: КВУ не детектирует на шине CAN1 сообщения от передней рулевой
+    рейки (CAN ID с SA 0x8F)
+  level: 2
+  name: steering_front_offline
+  name_error: Передняя рулевая рейка оффлайн
+  value_error: 2336
+- code: 2337
+  critical: true
+  description_error: В сообщении STEERING_FRONT_FEEDBACK (CAN ID 0x18F) получен соответствующий
+    флаг
+  level: 2
+  name: steering_front_fault
+  name_error: Критическая ошибка на передней рулевой рейке
+  value_error: 2337
+- code: 2306
+  critical: false
+  description_error: В сообщении STEERING_FRONT_FEEDBACK (CAN ID 0x18F) получен соответствующий
+    флаг
+  level: 0
+  name: steering_front_warning
+  name_error: Некритическая ошибка на передней рулевой рейке
+  value_error: 2306
+- code: 2307
+  critical: false
+  description_error: В сообщении STEERING_FRONT_FEEDBACK (CAN ID 0x18F) получен соответствующий
+    флаг
+  level: 0
+  name: steering_front_overheat
+  name_error: Перегрев передней рулевой рейки
+  value_error: 2307
+- code: 2592
+  critical: true
+  description_error: КВУ не детектирует на шине CAN1 сообщения от задней рулевой рейки
+    (CAN ID с SA 0x90)
+  level: 2
+  name: steering_rear_offline
+  name_error: Задняя рулевая рейка оффлайн
+  value_error: 2592
+- code: 2593
+  critical: true
+  description_error: В сообщении STEERING_REAR_FEEDBACK (CAN ID 0x190) получен соответствующий
+    флаг
+  level: 2
+  name: steering_rear_fault
+  name_error: Критическая ошибка на задней рулевой рейке
+  value_error: 2593
+- code: 2562
+  critical: false
+  description_error: В сообщении STEERING_REAR_FEEDBACK (CAN ID 0x190) получен соответствующий
+    флаг
+  level: 0
+  name: steering_rear_warning
+  name_error: Некритическая ошибка на задней рулевой рейке
+  value_error: 2562
+- code: 2563
+  critical: false
+  description_error: В сообщении STEERING_REAR_FEEDBACK (CAN ID 0x190) получен соответствующий
+    флаг
+  level: 0
+  name: steering_rear_overheat
+  name_error: Перегрев задней рулевой рейки
+  value_error: 2563
+- code: 3328
+  critical: false
+  description_error: Ошибка io_library при чтении данных с датчика ABS
+  level: 0
+  name: abs_fl_iolib
+  name_error: ABS FL iolib
+  value_error: 3328
+- code: 3329
+  critical: false
+  description_error: Задетектирован обрыв датчика ABS
+  level: 0
+  name: abs_fl_wiring
+  name_error: ABS FL подключение
+  value_error: 3329
+- code: 3330
+  critical: false
+  description_error: В течение одной минуты превышен некритический порог ошибочных
+    данных с датчика ABS
+  level: 0
+  name: abs_fl_warning
+  name_error: ABS FL некритические невалидные данные
+  value_error: 3330
+- code: 3331
+  critical: false
+  description_error: В течение одной минуты превышен критический порог ошибочных данных
+    с датчика ABS
+  level: 0
+  name: abs_fl_fault
+  name_error: ABS FL критические невалидные данные
+  value_error: 3331
+- code: 3332
+  critical: false
+  description_error: Ошибка io_library при чтении данных с датчика ABS
+  level: 0
+  name: abs_fr_iolib
+  name_error: ABS FR iolib
+  value_error: 3332
+- code: 3333
+  critical: false
+  description_error: Задетектирован обрыв датчика ABS
+  level: 0
+  name: abs_fr_wiring
+  name_error: ABS FR подключение
+  value_error: 3333
+- code: 3334
+  critical: false
+  description_error: В течение одной минуты превышен некритический порог ошибочных
+    данных с датчика ABS
+  level: 0
+  name: abs_fr_warning
+  name_error: ABS FR некритические невалидные данные
+  value_error: 3334
+- code: 3335
+  critical: false
+  description_error: В течение одной минуты превышен критический порог ошибочных данных
+    с датчика ABS
+  level: 0
+  name: abs_fr_fault
+  name_error: ABS FR критические невалидные данные
+  value_error: 3335
+- code: 3336
+  critical: false
+  description_error: Ошибка io_library при чтении данных с датчика ABS
+  level: 0
+  name: abs_rl_iolib
+  name_error: ABS RL iolib
+  value_error: 3336
+- code: 3337
+  critical: false
+  description_error: Задетектирован обрыв датчика ABS
+  level: 0
+  name: abs_rl_wiring
+  name_error: ABS RL подключение
+  value_error: 3337
+- code: 3338
+  critical: false
+  description_error: В течение одной минуты превышен некритический порог ошибочных
+    данных с датчика ABS
+  level: 0
+  name: abs_rl_warning
+  name_error: ABS RL некритические невалидные данные
+  value_error: 3338
+- code: 3339
+  critical: false
+  description_error: В течение одной минуты превышен критический порог ошибочных данных
+    с датчика ABS
+  level: 0
+  name: abs_rl_fault
+  name_error: ABS RL критические невалидные данные
+  value_error: 3339
+- code: 3340
+  critical: false
+  description_error: Ошибка io_library при чтении данных с датчика ABS
+  level: 0
+  name: abs_rr_iolib
+  name_error: ABS RR iolib
+  value_error: 3340
+- code: 3341
+  critical: false
+  description_error: Задетектирован обрыв датчика ABS
+  level: 0
+  name: abs_rr_wiring
+  name_error: ABS RR подключение
+  value_error: 3341
+- code: 3342
+  critical: false
+  description_error: В течение одной минуты превышен некритический порог ошибочных
+    данных с датчика ABS
+  level: 0
+  name: abs_rr_warning
+  name_error: ABS RR некритические невалидные данные
+  value_error: 3342
+- code: 3343
+  critical: false
+  description_error: В течение одной минуты превышен критический порог ошибочных данных
+    с датчика ABS
+  level: 0
+  name: abs_rr_fault
+  name_error: ABS RR критические невалидные данные
+  value_error: 3343
+- code: 3616
+  critical: true
+  description_error: Кнопка нажата, либо задетектирован обрыв
+  level: 2
+  name: di_red_button
+  name_error: Кнопка "Стоп КВУ"
+  value_error: 3616
+- code: 3585
+  critical: false
+  level: 0
+  name: di_antifreeze_sensor
+  name_error: Низкий уровень охлаждающей жидкости
+  value_error: 3585
+- code: 3618
+  critical: true
+  level: 2
+  name: di_brake_fluid_sensor
+  name_error: Низкий уровень тормозной жидкости
+  value_error: 3618
+- code: 3872
+  critical: true
+  description_error: Внутренняя критическая ошибка io_library
+  level: 2
+  name: iolib_fatal
+  name_error: IOLIB ошибка
+  value_error: 3872
+- code: 3841
+  critical: false
+  description_error: Внутренняя некритическая ошибка io_library
+  level: 0
+  name: iolib_non_fatal
+  name_error: IOLIB предупреждение
+  value_error: 3841
+- code: 3874
+  critical: true
+  description_error: Ошибка FPU в io_library
+  level: 2
+  name: iolib_fpu
+  name_error: IOLIB FPU
+  value_error: 3874
+- code: 3843
+  critical: false
+  description_error: Ошибка CFG FLASH в io_library
+  level: 0
+  name: iolib_cfg_flash
+  name_error: IOLIB CFG FLASH
+  value_error: 3843
+- code: 3844
+  critical: false
+  description_error: Ошибка FLASH в io_library
+  level: 0
+  name: iolib_flash
+  name_error: IOLIB FLASH
+  value_error: 3844
+- code: 3845
+  critical: false
+  description_error: Ошибка RAM в io_library
+  level: 0
+  name: iolib_ram
+  name_error: IOLIB RAM
+  value_error: 3845
+- code: 4128
+  critical: true
+  description_error: КВУ не детектирует на шине CAN2 сообщения от зарядного устройства
+    (CAN ID с SA 0xE5) при подключенной зарядной  вилке
+  level: 2
+  name: charger_offline
+  name_error: ЗУ не в сети
+  value_error: 4128
+- code: 4099
+  critical: false
+  description_error: КВУ не детектирует на шине CAN2 сообщения от BMS (CAN ID с SA
+    0xF4)
+  level: 0
+  name: bms_offline
+  name_error: BMS не в сети
+  value_error: 4099
+- code: 4100
+  critical: false
+  description_error: В сообщении от зарядного устройства (CAN ID 0x18FF50E5) получен
+    соответствующий флаг
+  level: 0
+  name: charger_hardware
+  name_error: Ошибка Hardware на ЗУ
+  value_error: 4100
+- code: 4101
+  critical: false
+  description_error: В сообщении от ЗУ (CAN ID 0x18FF50E5) получен соответствующий
+    флаг
+  level: 0
+  name: charger_overheat
+  name_error: Перегрев на зарядном устройстве
+  value_error: 4101
+- code: 4102
+  critical: false
+  description_error: В сообщении от ЗУ (CAN ID 0x18FF50E5) получен соответствующий
+    флаг
+  level: 0
+  name: charger_input_voltage
+  name_error: Ошибка по входному напряжению на зарядном устройстве
+  value_error: 4102
+- code: 4103
+  critical: false
+  description_error: В сообщении от ЗУ (CAN ID 0x18FF50E5) получен соответствующий
+    флаг
+  level: 0
+  name: charger_communication
+  name_error: Потеря связи на зарядном устройстве
+  value_error: 4103
+- code: 4136
+  critical: true
+  description_error: "В сообщении от BMS (CAN ID 0x2A0) получен один из флагов:\n\
+    \ - критическая ошибка\n - короткое замыкание\n - ошибка шунта\n - шунт оффлайн"
+  level: 2
+  name: bms_fault
+  name_error: Критическая ошибка BMS
+  value_error: 4136
+- code: 4352
+  critical: false
+  description_error: Ошибка io_library либо задетектированы ошибки подключения пинов
+    управления
+  level: 0
+  name: suspension_iolib_or_wiring
+  name_error: Подключение пневмоподвески
+  value_error: 4352
+- code: 4353
+  critical: false
+  description_error: Давление в одной из подушек вышло за установленные пределы
+  level: 0
+  name: suspension_pressure_limit
+  name_error: Давление в пневмоподвеске
+  value_error: 4353
+- code: 4354
+  critical: false
+  description_error: Задетектировано неисполнение изменения высоты на одной из подушек
+  level: 0
+  name: suspension_timeout
+  name_error: Таймаут исполнения пневмоподвески
+  value_error: 4354
+- code: 4608
+  critical: false
+  description_error: Ошибка io_library либо подключения пина измерения напряжения
+    на шине 24В
+  level: 0
+  name: voltage_mon_24_iolib_or_wiring
+  name_error: Мониторинг напряжения 24В - IOLIB
+  value_error: 4608
+- code: 4609
+  critical: false
+  description_error: Реальное напряжение ниже минимального порогового
+  level: 0
+  name: voltage_mon_24_undervoltage
+  name_error: Мониторинг напряжения 24В - пониженное напряжение
+  value_error: 4609
+- code: 4610
+  critical: false
+  description_error: Реальное напряжение выше максимального порогового
+  level: 0
+  name: voltage_mon_24_overvoltage
+  name_error: Мониторинг напряжения 24В - превышенное напряжение
+  value_error: 4610
+- code: 4612
+  critical: false
+  description_error: Ошибка io_library либо подключения пина измерения напряжения
+    на шине 12В
+  level: 0
+  name: voltage_mon_12_iolib_or_wiring
+  name_error: Мониторинг напряжения 12В - IOLIB
+  value_error: 4612
+- code: 4613
+  critical: false
+  description_error: Реальное напряжение ниже минимального порогового
+  level: 0
+  name: voltage_mon_12_undervoltage
+  name_error: Мониторинг напряжения 12В - пониженное напряжение
+  value_error: 4613
+- code: 4614
+  critical: false
+  description_error: Реальное напряжение выше максимального порогового
+  level: 0
+  name: voltage_mon_12_overvoltage
+  name_error: Мониторинг напряжения 12В - превышенное напряжение
+  value_error: 4614
+- code: 4896
+  critical: true
+  description_error: КВУ не детектирует на шине CAN1 сообщения от ПСТЭД (CAN ID с
+    SA 0x81)
+  level: 2
+  name: psted_offline
+  name_error: ПСТЭД не в сети
+  value_error: 4896
+- code: 4897
+  critical: true
+  description_error: Выставляется на основании флагов HW_DRIVER_PHASE, HW_FLUX, CUR_SENSOR_PHASE,
+    CUR_SENSOR_VOZB и CUR_SENSOR_HV, полученных в сообщении от ПСТЭД (CAN ID 0x481)
+  level: 2
+  name: psted_hardware_fault
+  name_error: Hardware ошибка ПСТЭД
+  value_error: 4897
+- code: 4898
+  critical: true
+  description_error: Выставляется на основании соответствующего флага, полученного
+    в сообщении от ПСТЭД (CAN ID 0x481)
+  level: 2
+  name: psted_emergency_stop
+  name_error: Аварийная остановка ПСТЭД
+  value_error: 4898
+- code: 4899
+  critical: true
+  description_error: Выставляется на основании флагов TEMP_MOSFET, TEMP_INVERTOR,
+    TEMP_MOTOR и TEMP_FLUXCOIL, полученных в сообщении от  ПСТЭД (CAN ID 0x481)
+  level: 2
+  name: psted_overheat_critical
+  name_error: Критический перегрев ПСТЭД
+  value_error: 4899
+- code: 4900
+  critical: true
+  description_error: Выставляется на основании флагов LOW_HV, HIGH_HV, OVERCURRENT_HV.
+    OVERCURRENT_PHASE, OVERCURRENT_VOZB и LOW_24V, полученных в сообщении от ПСТЭД
+    (CAN ID 0x481)
+  level: 2
+  name: psted_phys_limits
+  name_error: Превышение физических параметров на ПСТЭД
+  value_error: 4900
+- code: 4901
+  critical: true
+  description_error: Выставляется на основании соответствующего флага, полученного
+    в сообщении от ПСТЭД (CAN ID 0x481)
+  level: 2
+  name: psted_contactor_fault
+  name_error: Ошибка контактора ПСТЭД
+  value_error: 4901
+- code: 4902
+  critical: true
+  description_error: Выставляется на основании флагов SOFTWARE, PARAM_READ и INCORRECT_CONFIG,
+    полученных в сообщении от ПСТЭД  (CAN ID 0x481)
+  level: 2
+  name: psted_software_and_config
+  name_error: Ошибка конфигурации ПСТЭД
+  value_error: 4902
+- code: 4903
+  critical: true
+  description_error: Выставляется на основании соответствующего флага, полученного
+    в сообщении от ПСТЭД (CAN ID 0x481)
+  level: 2
+  name: psted_precharge_fault
+  name_error: Ошибка предзаряда ПСТЭД
+  value_error: 4903
+- code: 4906
+  critical: true
+  description_error: Выставляется на основании флагов POS_SENSOR, CAN_RX и CAN_TX,
+    полученных в сообщении от ПСТЭД (CAN ID 0x481)
+  level: 2
+  name: psted_other_errors
+  name_error: Другая ошибка ПСТЭД
+  value_error: 4906
+- code: 4880
+  critical: false
+  description_error: Выставляется на основании соответствующего флага, полученного
+    в сообщении от ПСТЭД (CAN ID 0x481)
+  level: 0
+  name: psted_contactor_warning
+  name_error: Предупреждение контактора ПСТЭД
+  value_error: 4880
+- code: 4881
+  critical: false
+  description_error: Выставляется на основании флагов MOTOR_OVERHEAT, FLUX_COIL_OVERHEAT
+    и INVERTOR_OVERHEAT, полученных в сообщении от  ПСТЭД (CAN ID 0x481)
+  level: 0
+  name: psted_overheat_non_critical
+  name_error: Некритический перегрев ПСТЭД
+  value_error: 4881
+- code: 4882
+  critical: false
+  description_error: Выставляется на основании флага POS_SENSOR_NOISE, полученного
+    в сообщении от ПСТЭД (CAN ID 0x481)
+  level: 0
+  name: psted_sensor_warning
+  name_error: Предупреждение сенсора ПСТЭД
+  value_error: 4882
+- code: 4883
+  critical: false
+  description_error: Выставляется на основании флагов LOW_HV и HIGH_HV, полученных
+    в сообщении от ПСТЭД (CAN ID 0x481)
+  level: 0
+  name: psted_high_voltage
+  name_error: Предупреждение высокого напряжения ПСТЭД
+  value_error: 4883
+- code: 4884
+  critical: false
+  description_error: Выставляется на основании флага INITIALISATION, полученного в
+    сообщении от ПСТЭД (CAN ID 0x481), либо любого из  битов последнего байта этого
+    сообщения
+  level: 0
+  name: psted_other_warnings
+  name_error: Другое предупреждение ПСТЭД
+  value_error: 4884
+- code: 4885
+  critical: false
+  description_error: Выставляется по флагу в сообщении от BMS (CAN ID 0x2A0). При
+    детекции этой ошибки снимается момент на ПСТЭД.
+  level: 0
+  name: psted_bms_undervoltage
+  name_error: Низкое напряжение ПСТЭД
+  value_error: 4885
+- code: 4886
+  critical: false
+  description_error: Выставляется на основании соответствующего флага, полученного
+    в сообщении от ПСТЭД (CAN ID 0x381)
+  level: 0
+  name: psted_isolation_fault
+  name_error: Ошибка изоляции ПСТЭД
+  value_error: 4886
+- code: 5120
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "реле массы"
+  level: 0
+  name: mass_relay_iolib
+  name_error: Ошибка пина "реле массы"
+  value_error: 5120
+- code: 5121
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "выключение БКУ"
+  level: 0
+  name: bku_turnoff_iolib
+  name_error: Ошибка пина "выключение БКУ"
+  value_error: 5121
+- code: 5408
+  critical: true
+  description_error: КВУ находится в состоянии Armed и при этом не детектирует на
+    шине CAN2 сообщение BKU_MAIN_CMD (PGN 0xFF81) ни от  БКУ (CAN ID с SA 0xA5), ни
+    от джойстика (CAN ID с SA 0xA4)
+  level: 2
+  name: autopilot_offline
+  name_error: БКУ и джойстик не шлют управляющее сообщение в Armed
+  value_error: 5408
+- code: 6144
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "вентилятор охлаждения"
+  level: 0
+  name: cool_fan_iolib
+  name_error: Ошибка пина "вентилятор охлаждения"
+  value_error: 6144
+- code: 6145
+  critical: false
+  description_error: Возникает при настройке пороговой температуры включения вентилятора
+    ниже его выключения
+  level: 0
+  name: cool_fan_settings
+  name_error: Неправильные настройки вентилятора
+  value_error: 6145
+- code: 6688
+  critical: true
+  description_error: Ошибка io_library либо подключения пина "терминал 15"
+  level: 2
+  name: t15_terminal_iolib
+  name_error: Ошибка пина "терминал 15"
+  value_error: 6688
+- code: 6944
+  critical: true
+  description_error: Ошибка io_library либо подключения пина
+  level: 2
+  name: do_parking_brake
+  name_error: Ошибка пина "парковочный тормоз"
+  value_error: 6944
+- code: 6945
+  critical: true
+  description_error: Ошибка io_library либо подключения пина "разрешение зарядки"
+  level: 2
+  name: do_cp_signal
+  name_error: Ошибка пина "разрешение зарядки"
+  value_error: 6945
+- code: 6946
+  critical: true
+  description_error: Ошибка io_library либо подключения пина "старт ПСТЭД"
+  level: 2
+  name: do_start_psted_signal
+  name_error: Ошибка пина "старт ПСТЭД"
+  value_error: 6946
+- code: 6915
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "клапан нагнетания пневмо
+    FL".  Также из-за особенностей подключения эта ошибка детектируется в процессе  управления
+    пневмопдвеской тумблерами в 4м блоке.
+  level: 0
+  name: do_susp_valve_up_fl
+  name_error: Ошибка пина "клапан нагнетания пневмо FL"
+  value_error: 6915
+- code: 6916
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "клапан нагнетания пневмо
+    FR" Также из-за особенностей подключения эта ошибка детектируется в процессе  управления
+    пневмопдвеской тумблерами в 4м блоке.
+  level: 0
+  name: do_susp_valve_up_fr
+  name_error: Ошибка пина "клапан нагнетания пневмо FR"
+  value_error: 6916
+- code: 6917
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "клапан нагнетания пневмо
+    RL" Также из-за особенностей подключения эта ошибка детектируется в процессе  управления
+    пневмопдвеской тумблерами в 4м блоке.
+  level: 0
+  name: do_susp_valve_up_rl
+  name_error: Ошибка пина "клапан нагнетания пневмо RL"
+  value_error: 6917
+- code: 6918
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "клапан нагнетания пневмо
+    RR" Также из-за особенностей подключения эта ошибка детектируется в процессе  управления
+    пневмопдвеской тумблерами в 4м блоке.
+  level: 0
+  name: do_susp_valve_up_rr
+  name_error: Ошибка пина "клапан нагнетания пневмо RR"
+  value_error: 6918
+- code: 6919
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "клапан стравливания
+    пневмо FL" Также из-за особенностей подключения эта ошибка детектируется в процессе  управления
+    пневмопдвеской тумблерами в 4м блоке.
+  level: 0
+  name: do_susp_valve_down_fl
+  name_error: Ошибка пина "клапан стравливания пневмо FL"
+  value_error: 6919
+- code: 6920
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "клапан стравливания
+    пневмо FR" Также из-за особенностей подключения эта ошибка детектируется в процессе  управления
+    пневмопдвеской тумблерами в 4м блоке.
+  level: 0
+  name: do_susp_valve_down_fr
+  name_error: Ошибка пина "клапан стравливания пневмо FR"
+  value_error: 6920
+- code: 6921
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "клапан стравливания
+    пневмо RL" Также из-за особенностей подключения эта ошибка детектируется в процессе  управления
+    пневмопдвеской тумблерами в 4м блоке.
+  level: 0
+  name: do_susp_valve_down_rl
+  name_error: Ошибка пина "клапан стравливания пневмо RL"
+  value_error: 6921
+- code: 6922
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "клапан стравливания
+    пневмо RR" Также из-за особенностей подключения эта ошибка детектируется в процессе  управления
+    пневмопдвеской тумблерами в 4м блоке.
+  level: 0
+  name: do_susp_valve_down_rr
+  name_error: Ошибка пина "клапан стравливания пневмо RR"
+  value_error: 6922
+- code: 6955
+  critical: true
+  description_error: Ошибка io_library либо подключения пина "помпа тормоза"
+  level: 2
+  name: do_brake_pump
+  name_error: Ошибка пина "помпа тормоза"
+  value_error: 6955
+- code: 6956
+  critical: true
+  description_error: Ошибка io_library либо подключения пина "клапаны 1 и 8 тормоза"
+  level: 2
+  name: do_brake_valve_1_8
+  name_error: Ошибка пина "клапаны 1 и 8 тормоза"
+  value_error: 6956
+- code: 6957
+  critical: true
+  description_error: Ошибка io_library либо подключения пина "клапаны 2 и 9 тормоза"
+  level: 2
+  name: do_brake_valve_2_9
+  name_error: Ошибка пина "клапаны 2 и 9 тормоза"
+  value_error: 6957
+- code: 6926
+  critical: false
+  description_error: Ошибка io_library либо подключения пина "светодиод статуса зарядки"
+  level: 0
+  name: do_charge_state_led
+  name_error: Ошибка пина "светодиод статуса зарядки"
+  value_error: 6926
