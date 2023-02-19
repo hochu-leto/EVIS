@@ -1012,7 +1012,7 @@ def set_theme(theme_str=''):
 
 if __name__ == '__main__':
     start_time = time.perf_counter()
-    app = QApplication([])
+    app = QApplications([])
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
     splash.show()
@@ -1105,5 +1105,4 @@ if __name__ == '__main__':
         app.exec()  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# на изменяемые параметры - всегда виджет
 #
