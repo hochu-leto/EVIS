@@ -49,18 +49,17 @@
 """
 import datetime
 import pickle
+import random
 import sys
 import time
-from pprint import pprint
 
 import pandas as pd
-import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu
+    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QVBoxLayout, QPushButton, QWidget
 import pathlib
-
+import qrainbowstyle
 from qt_material import apply_stylesheet, list_themes, QtStyleTools
 
 import VMU_monitor_ui
@@ -68,13 +67,13 @@ from CANAdater import CANAdapter
 from EVOErrors import EvoError
 from EVONode import EVONode
 from EVOWidgets import GreenLabel, RedLabel, zero_del
-from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
+from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread
 from EVOParametr import Parametr, type_values
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled, \
-    check_steering_current, mpei_iso_on, mpei_iso_off
+    check_steering_current
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
-    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_pickle_file, save_p_dict_to_yaml_file, \
+    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_yaml_file, \
     fill_yaml_dict, settings_dir
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
@@ -1010,9 +1009,33 @@ def set_theme(theme_str=''):
                                       'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
 
 
+class MyWidget(QWidget):
+    def __init__(self):
+        QWidget.__init__(self)
+
+        self.hello = ["Hallo Welt", "你好，世界", "Hei maailma",
+                      "Hola Mundo", "Привет мир"]
+
+        self.button = QPushButton("Click me!")
+        self.text = QLabel("Hello World")
+        self.text.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.text)
+        self.layout.addWidget(self.button)
+        self.setLayout(self.layout)
+
+        # Connecting the signal
+        self.button.clicked.connect(self.magic)
+
+    @pyqtSlot()
+    def magic(self):
+        self.text.setText(random.choice(self.hello))
+
+
 if __name__ == '__main__':
     start_time = time.perf_counter()
-    app = QApplications([])
+    app = QApplication(sys.argv)
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
     splash.show()
@@ -1102,7 +1125,7 @@ if __name__ == '__main__':
         window.show()  # Показываем окно
         splash.finish(window)  # Убираем заставку
         print(time.perf_counter() - start_time)
-        app.exec()  # и запускаем приложение
+        sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
 #
