@@ -110,7 +110,7 @@ class Parametr:
         self.editable = True if check_string('editable') else False
         self.units = check_string('unit', check_string('units'))  # единицы измерения
         self.description = check_string('description')  # описание параметра по русски
-        self.value = param['value']            #check_value(0, 'value')
+        self.value = param['value'] if 'value' in param.keys() and param['value'] is not None else 0
         self.value_compare = 0
         self.name = check_string('name', 'NoName')
         # на что умножаем число из КАНа
@@ -141,7 +141,8 @@ class Parametr:
         value_type = type_values[self.type]['type']
         MSB = ((self.index & 0xFF00) >> 8)
         LSB = self.index & 0xFF
-        value = float_to_int(self.value) if self.type == 'FLOAT' else int(self.value)
+        value = float_to_int(self.value) if self.type == 'FLOAT' else int(self.value) \
+            if self.value and not isinstance(self.value, str) else 0
         data = [value & 0xFF,
                 (value & 0xFF00) >> 8,
                 (value & 0xFF0000) >> 16,

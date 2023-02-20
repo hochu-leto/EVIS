@@ -1,4 +1,3 @@
-from pprint import pprint
 from tkinter import filedialog as fd
 
 import pandas as pd
@@ -29,6 +28,5 @@ for er in err_list:
             e['critical'] = True
             e['name_error'] = er['name_error'].replace('"', '').replace("'", '').strip()
             e_list.append(e)
-            pprint(e['name_error'])
 with open(f'errors_{prev_node_name}.yaml', 'w', encoding='UTF-8') as file:
     documents = yaml.dump(e_list, file, allow_unicode=True)

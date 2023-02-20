@@ -1,4 +1,3 @@
-from pprint import pprint
 import pandas
 from tkinter import filedialog as fd
 import yaml

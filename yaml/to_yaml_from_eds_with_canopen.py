@@ -1,4 +1,3 @@
-from pprint import pprint
 
 import canopen
 from tkinter import filedialog as fd

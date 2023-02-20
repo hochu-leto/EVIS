@@ -862,7 +862,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         msg.setText("Вы уверены, что хотите закрыть приложение?")
 
         buttonAceptar = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
-        msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)  # buttonCancelar =
+        msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)
         msg.setDefaultButton(buttonAceptar)
         msg.exec()
 
@@ -1007,30 +1007,6 @@ def set_theme(theme_str=''):
     c_style_sheet = app.styleSheet()
     app.setStyleSheet(c_style_sheet + 'GreenLabel {background-color: rgba(0, 200, 0, 50);} '
                                       'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
-
-
-class MyWidget(QWidget):
-    def __init__(self):
-        QWidget.__init__(self)
-
-        self.hello = ["Hallo Welt", "你好，世界", "Hei maailma",
-                      "Hola Mundo", "Привет мир"]
-
-        self.button = QPushButton("Click me!")
-        self.text = QLabel("Hello World")
-        self.text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
-        self.setLayout(self.layout)
-
-        # Connecting the signal
-        self.button.clicked.connect(self.magic)
-
-    @pyqtSlot()
-    def magic(self):
-        self.text.setText(random.choice(self.hello))
 
 
 if __name__ == '__main__':
