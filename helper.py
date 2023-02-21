@@ -172,6 +172,7 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
     show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
     show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
     show_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+    show_table.setColumnWidth(2, 150)
     return items_list
 
 
@@ -180,7 +181,6 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
     row = 0
     for par in params_list:
         it = table.cellWidget(row, 2)
-        # if isinstance(it, MyComboBox) \
         if hasattr(it, 'isInFocus') \
                 and it.isInFocus:
             continue
@@ -190,12 +190,15 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
         elif isinstance(par.value, str):
             v_name = par.value
         elif par.value_table:
-            k = int(par.value)
-            if k in par.value_table:
-                value_in_dict = True
-                v_name = par.value_table[k]
+            if par.value is not None:
+                k = int(par.value)
+                if k in par.value_table:
+                    value_in_dict = True
+                    v_name = par.value_table[k]
+                else:
+                    v_name = f'{k} нет в словаре'
             else:
-                v_name = f'{k} нет в словаре'
+                v_name = f'Нет ответа'
         else:
             v_name = zero_del(par.value)
 

@@ -51,7 +51,6 @@ import datetime
 import pickle
 import sys
 import time
-from pprint import pprint
 
 import pandas as pd
 import qrainbowstyle
@@ -68,13 +67,13 @@ from CANAdater import CANAdapter
 from EVOErrors import EvoError
 from EVONode import EVONode
 from EVOWidgets import GreenLabel, RedLabel, zero_del
-from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread, SleepThread
+from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread
 from EVOParametr import Parametr, type_values
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled, \
-    check_steering_current, mpei_iso_on, mpei_iso_off
+    check_steering_current
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
-    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_pickle_file, save_p_dict_to_yaml_file, \
+    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_yaml_file, \
     fill_yaml_dict, settings_dir
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
@@ -863,7 +862,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         msg.setText("Вы уверены, что хотите закрыть приложение?")
 
         buttonAceptar = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
-        msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)  # buttonCancelar =
+        msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)
         msg.setDefaultButton(buttonAceptar)
         msg.exec()
 
@@ -1012,7 +1011,7 @@ def set_theme(theme_str=''):
 
 if __name__ == '__main__':
     start_time = time.perf_counter()
-    app = QApplication([])
+    app = QApplication(sys.argv)
     splash = QSplashScreen()
     splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
     splash.show()
@@ -1102,8 +1101,7 @@ if __name__ == '__main__':
         window.show()  # Показываем окно
         splash.finish(window)  # Убираем заставку
         print(time.perf_counter() - start_time)
-        app.exec()  # и запускаем приложение
+        sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# на изменяемые параметры - всегда виджет
 #

@@ -50,8 +50,6 @@ complete_dict = {0x0: 'CI_TR_COMPLETE_OK – последняя передача
                  0x2: 'CI_TR_INCOMPLETE – контроллер передает кадр в сеть',
                  0x3: 'CI_TR_DELAY'}
 
-from pprint import pprint
-
 
 class CANMarathon(AdapterCAN):
     BCI_125K_bt0 = 0x03
@@ -123,7 +121,6 @@ class CANMarathon(AdapterCAN):
         except Exception as e:
             print('CiOpen do not work')
             # logging.
-            pprint(e)
             exit()
         # else:
         #     print('в CiOpen так ' + str(result))
@@ -134,7 +131,6 @@ class CANMarathon(AdapterCAN):
                                             self.BCI_bt0, self.BCI_ALL_bt1)
             except Exception as e:
                 print('CiSetBaud do not work')
-                pprint(e)
                 exit()
             # else:
             #     print(' в CiSetBaud так ' + str(result))
@@ -144,7 +140,6 @@ class CANMarathon(AdapterCAN):
                     result = self.lib.CiStart(self.can_canal_number)
                 except Exception as e:
                     print('CiStart do not work')
-                    pprint(e)
                     exit()
                 # else:
                 #     print('  в CiStart так ' + str(result))
@@ -165,7 +160,6 @@ class CANMarathon(AdapterCAN):
             result = self.lib.CiStop(self.can_canal_number)
         except Exception as e:
             print('CiStop do not work')
-            pprint(e)
             exit()
         # else:
         #     print('      в CiStop так ' + str(result))
@@ -174,7 +168,7 @@ class CANMarathon(AdapterCAN):
             result = self.lib.CiClose(self.can_canal_number)
         except Exception as e:
             print('CiClose do not work')
-            pprint(e)
+            
             exit()
         # else:
         #     print('       в CiClose так ' + str(result))
@@ -230,7 +224,7 @@ class CANMarathon(AdapterCAN):
             err = ctypes.c_int16(err).value
         except Exception as e:
             print('CiTransmit do not work')
-            pprint(e)
+            
             exit()
         else:
             print('   в CiTransmit так ' + str(err))
@@ -243,7 +237,7 @@ class CANMarathon(AdapterCAN):
                     err = ctypes.c_int16(err).value
                 except Exception as e:
                     print('CiTransmit do not work')
-                    pprint(e)
+                    
                     exit()
                 else:
                     print(f'   в CiTrStat так {complete_dict[err]}, осталось кадров на передачу {trqcnt.value} ')
@@ -272,7 +266,7 @@ class CANMarathon(AdapterCAN):
             result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 10)
         except Exception as e:
             print('CiWaitEvent do not work')
-            pprint(e)
+            
             exit()
         result = ctypes.c_int16(result).value
 
@@ -289,7 +283,7 @@ class CANMarathon(AdapterCAN):
                 result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer_a), 1000)
             except Exception as e:
                 print('CiRead do not work')
-                pprint(e)
+                
                 exit()
             result = ctypes.c_int16(result).value
             if result >= 0:
@@ -305,7 +299,7 @@ class CANMarathon(AdapterCAN):
                         self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
                     except Exception as e:
                         print('CiRcQueCancel do not work')
-                        pprint(e)
+                        
                         exit()
                     return time_data_dict
                 else:
@@ -356,7 +350,7 @@ class CANMarathon(AdapterCAN):
                 transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(buffer))
             except Exception as e:
                 print('CiTransmit do not work')
-                pprint(e)
+                
                 exit()
             # else:
             #     print('   в CiTransmit так ' + str(transmit_ok))
@@ -380,7 +374,7 @@ class CANMarathon(AdapterCAN):
             self.lib.msg_zero(ctypes.pointer(buffer))
         except Exception as e:
             print('msg_zero do not work')
-            pprint(e)
+            
             exit()
         # else:
         #     print('    в msg_zero так ' + str(result))
@@ -393,7 +387,7 @@ class CANMarathon(AdapterCAN):
                 result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
             except Exception as e:
                 print('CiRcQueCancel do not work')
-                pprint(e)
+                
                 exit()
             # else:
             #     print('     в CiRcQueCancel так ' + str(result))
@@ -402,7 +396,7 @@ class CANMarathon(AdapterCAN):
                 result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 100 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
-                pprint(e)
+                
                 exit()
             # else:
             #     print('      в CiWaitEvent так ' + str(result))
@@ -415,7 +409,7 @@ class CANMarathon(AdapterCAN):
                     result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), 1)
                 except Exception as e:
                     print('CiRead do not work')
-                    pprint(e)
+                    
                     exit()
                 # else:
                 #     print('       в CiRead так ' + str(result))
@@ -492,7 +486,7 @@ class CANMarathon(AdapterCAN):
                 transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(bf))
             except Exception as e:
                 print('CiTransmit do not work')
-                pprint(e)
+                
                 exit()
 
             if transmit_ok < 0:
@@ -518,7 +512,7 @@ class CANMarathon(AdapterCAN):
                     result = self.lib.CiWaitEvent(ctypes.pointer(self.cw), 1, 500)  # timeout = 100 миллисекунд
                 except Exception as e:
                     print('CiWaitEvent do not work')
-                    pprint(e)
+                    
                     exit()
                 # количество кадров в приемной очереди стало больше или равно значению порога
                 if result > 0 and self.cw[0].wflags & 0x01:
@@ -536,7 +530,7 @@ class CANMarathon(AdapterCAN):
                         result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer_a), 100)
                     except Exception as e:
                         print('CiRead do not work')
-                        pprint(e)
+                        
                         exit()
                     # успешное выполнение, количество прочитанных фреймов
                     if result >= 0:
@@ -561,7 +555,6 @@ class CANMarathon(AdapterCAN):
             # if len(exit_list) > l_byte - 1:
         print()
         print(f'Было отправлено {frame_counter} фреймов, принято {len(exit_list)} байт, возвращаю ')
-        pprint(exit_list)
         if not err:
             return exit_list
 
@@ -621,7 +614,7 @@ class CANMarathon(AdapterCAN):
                 transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(buffer))
             except Exception as e:
                 print('CiTransmit do not work')
-                pprint(e)
+                
                 exit()
             # else:
             #     print('   в CiTransmit ' + str(transmit_ok))
@@ -645,7 +638,7 @@ class CANMarathon(AdapterCAN):
                 result = self.lib.msg_zero(ctypes.pointer(buffer))
             except Exception as e:
                 print('msg_zero do not work')
-                pprint(e)
+                
                 exit()
             # else:
             #     print('    в msg_zero так ' + str(result))
@@ -662,7 +655,7 @@ class CANMarathon(AdapterCAN):
                     result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
                 except Exception as e:
                     print('CiRcQueCancel do not work')
-                    pprint(e)
+                    
                     exit()
                 # else:
                 #     print('     в CiRcQueCancel так ' + str(result))
@@ -672,7 +665,7 @@ class CANMarathon(AdapterCAN):
                     result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 1000)  # timeout = 1000 миллисекунд
                 except Exception as e:
                     print('CiWaitEvent do not work')
-                    pprint(e)
+                    
                     exit()
                 # else:
                 #     print('      в CiWaitEvent так ' + str(result))
@@ -685,7 +678,7 @@ class CANMarathon(AdapterCAN):
                         result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), 1)
                     except Exception as e:
                         print('CiRead do not work')
-                        pprint(e)
+                        
                         exit()
                     # else:
                     #     print('       в CiRead так ' + str(result))
@@ -741,7 +734,7 @@ class CANMarathon(AdapterCAN):
                 result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
             except Exception as e:
                 print('CiRcQueCancel do not work')
-                pprint(e)
+                
                 exit()
             # else:
             #     print('     в CiRcQueCancel так ' + str(result))
@@ -750,7 +743,7 @@ class CANMarathon(AdapterCAN):
                 result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 100)  # timeout = 300 миллисекунд
             except Exception as e:
                 print('CiWaitEvent do not work')
-                pprint(e)
+                
                 exit()
             # else:
             #     print('      в CiWaitEvent так ' + str(result))
@@ -763,7 +756,7 @@ class CANMarathon(AdapterCAN):
                     result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), 1)
                 except Exception as e:
                     print('CiRead do not work')
-                    pprint(e)
+                    
                     exit()
                 # else:
                 #     print('       в CiRead так ' + str(result))
@@ -807,13 +800,13 @@ class CANMarathon(AdapterCAN):
                     result = self.lib.CiRcQueCancel(self.can_canal_number, ctypes.pointer(create_unicode_buffer(10)))
                 except Exception as e:
                     print('CiRcQueCancel do not work')
-                    pprint(e)
+                    
                     exit()
                 try:
                     result = self.lib.CiWaitEvent(ctypes.pointer(cw), 1, 50)  # timeout = 30 миллисекунд
                 except Exception as e:
                     print('CiWaitEvent do not work')
-                    pprint(e)
+                    
                     exit()
                 if result > 0 and cw[0].wflags & 0x01:
                     # и тогда читаем этот кадр из очереди
@@ -821,7 +814,7 @@ class CANMarathon(AdapterCAN):
                         result = self.lib.CiRead(self.can_canal_number, ctypes.pointer(buffer), 1)
                     except Exception as e:
                         print('CiRead do not work')
-                        pprint(e)
+                        
                         exit()
                     if result >= 0:
                         print(hex(buffer.id), end='    ')

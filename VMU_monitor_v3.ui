@@ -77,7 +77,7 @@
      <widget class="QTabWidget" name="main_tab">
       <property name="font">
        <font>
-        <family>Old English Text MT</family>
+        <family>Segoe UI</family>
        </font>
       </property>
       <property name="currentIndex">
@@ -147,6 +147,11 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+           </font>
+          </property>
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
           </property>
@@ -167,6 +172,7 @@
              </property>
              <property name="font">
               <font>
+               <family>Segoe UI</family>
                <pointsize>10</pointsize>
                <kerning>true</kerning>
               </font>
@@ -189,6 +195,7 @@
              </property>
              <property name="font">
               <font>
+               <family>Segoe UI</family>
                <pointsize>12</pointsize>
                <weight>50</weight>
                <bold>false</bold>
@@ -216,6 +223,7 @@
              </property>
              <property name="font">
               <font>
+               <family>Segoe UI</family>
                <pointsize>10</pointsize>
                <kerning>true</kerning>
               </font>
@@ -239,6 +247,11 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+           </font>
+          </property>
           <property name="title">
            <string>Аварии</string>
           </property>
@@ -250,6 +263,11 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+              </font>
              </property>
             </widget>
            </item>
@@ -281,6 +299,7 @@
           </property>
           <property name="font">
            <font>
+            <family>Segoe UI</family>
             <pointsize>10</pointsize>
             <kerning>true</kerning>
            </font>
@@ -297,6 +316,11 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+           </font>
           </property>
           <property name="title">
            <string>Кнопки</string>
@@ -330,6 +354,7 @@
              </property>
              <property name="font">
               <font>
+               <family>Segoe UI</family>
                <pointsize>10</pointsize>
                <weight>50</weight>
                <bold>false</bold>
@@ -366,6 +391,7 @@
              </property>
              <property name="font">
               <font>
+               <family>Segoe UI</family>
                <pointsize>10</pointsize>
                <kerning>true</kerning>
               </font>
@@ -392,6 +418,7 @@
              </property>
              <property name="font">
               <font>
+               <family>Segoe UI</family>
                <pointsize>10</pointsize>
                <kerning>true</kerning>
               </font>
@@ -421,6 +448,7 @@
              </property>
              <property name="font">
               <font>
+               <family>Segoe UI</family>
                <pointsize>10</pointsize>
                <kerning>true</kerning>
               </font>
@@ -450,6 +478,7 @@
              </property>
              <property name="font">
               <font>
+               <family>Segoe UI</family>
                <pointsize>10</pointsize>
                <kerning>true</kerning>
               </font>
@@ -473,6 +502,11 @@
           <column>
            <property name="text">
             <string notr="true">1</string>
+           </property>
+           <property name="font">
+            <font>
+             <family>MS Shell Dlg 2</family>
+            </font>
            </property>
           </column>
          </widget>
@@ -531,6 +565,7 @@
           </property>
           <property name="font">
            <font>
+            <family>Segoe UI</family>
             <pointsize>10</pointsize>
             <kerning>true</kerning>
            </font>

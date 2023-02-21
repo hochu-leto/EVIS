@@ -77,7 +77,6 @@ class MyEditLine(QLineEdit):
         self.parametr = parametr
         reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
         self.setValidator(QRegularExpressionValidator(reg_ex))
-        # self.editingFinished.connect(self.end_edited_handle)
         self.returnPressed.connect(self.end_edited_handle)
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
 
@@ -107,11 +106,14 @@ class MyEditLine(QLineEdit):
             elif isinstance(self.parametr.value, str):
                 v_name = self.parametr.value
             elif self.parametr.value_table:
-                k = int(self.parametr.value)
-                if k in self.parametr.value_table:
-                    v_name = self.parametr.value_table[k]
+                if self.parametr.value is not None:
+                    k = int(self.parametr.value)
+                    if k in self.parametr.value_table:
+                        v_name = self.parametr.value_table[k]
+                    else:
+                        v_name = f'{k} нет в словаре'
                 else:
-                    v_name = f'{k} нет в словаре'
+                    v_name = f'Нет ответа'
             else:
                 v_name = zero_del(self.parametr.value)
             self.setText(v_name)

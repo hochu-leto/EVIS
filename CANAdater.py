@@ -3,7 +3,6 @@
 (пока только МАРАФОН и Квасер) и определяет скорости кан-шин, к которым они подключены.
 Нормально работает пока только с марафоном
 '''
-from pprint import pprint
 from sys import platform
 
 from PyQt6.QtWidgets import QApplication, QMessageBox
