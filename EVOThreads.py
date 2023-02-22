@@ -219,7 +219,6 @@ class MainThread(QThread):
         node = self.current_nodes_dict['Инвертор_МЭИ']
         # передавать надо исключительно в первый кан
         # есть же функция определения адаптера для блока, следует здесь использовать её
-        #
         if node.request_id in self.adapter.id_nodes_dict.keys():
             adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
             if self.isRunning():

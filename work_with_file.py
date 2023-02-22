@@ -92,9 +92,11 @@ def fill_yaml_dict(file_name):
 def param_dict(params: dict):
     return {name_group: [Parametr(p) for p in group] for name_group, group in params.items()}
 
+
 # =========================================версия для ошибок-объектов и ямл-файлов============================
 # ------------------------------------- заполнение списка с ошибками----------------------------
 def fill_err_list_from_yaml(file, node):
+    canopen_error = None
     with open(file, "r", encoding="UTF-8") as stream:
         try:
             canopen_error = yaml.safe_load(stream)
@@ -108,6 +110,7 @@ def fill_err_list_from_yaml(file, node):
 
 # ------------------------------------- заполнения словаря с группами параметров -----------------------------
 def fill_par_dict_from_yaml(file, node):
+    canopen_params = None
     with open(file, "r", encoding="UTF-8") as stream:
         try:
             canopen_params = yaml.safe_load(stream)
