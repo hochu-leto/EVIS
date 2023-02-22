@@ -1,0 +1,1608 @@
+передняя рулевая:
+- name: A3.1 WheelTyp#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: Текущая ось по итогам А3.4
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32768
+  max_value: 1.0
+  value_table:
+    0: FORWARD
+    1: 'REAR '
+- name: A0.2 SetSteerPos#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: Задание реечной позиции -1000...+1000
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A0.3 ActSteerPos#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: Актуальная реечная позиция -1000...+1000
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A1.7 CurrentRMS#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0
+  units: A
+  multiplier: 0.1
+  editable: false
+  min_value: 0
+  max_value: 6553.5
+- name: A1.8 Torque#Рулевая_перед_Томск
+  index: 0
+  sub_index: 0
+  description: МОМЕНТ Нм * 100
+  type: SIGNED16
+  value: 0
+  units: kNm
+  multiplier: 0.01
+  editable: false
+  min_value: -327.5
+  max_value: 327.5
+задняя рулевая:
+- name: A3.1 WheelTyp#Рулевая_зад_Томск
+  index: 32
+  sub_index: 0
+  description: Текущая ось по итогам А3.4
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32768
+  max_value: 1.0
+  value_table:
+    0: FORWARD
+    1: 'REAR '
+- name: A0.2 SetSteerPos#Рулевая_зад_Томск
+  index: 2
+  sub_index: 0
+  description: Задание реечной позиции -1000...+1000
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A0.3 ActSteerPos#Рулевая_зад_Томск
+  index: 3
+  sub_index: 0
+  description: Актуальная реечная позиция -1000...+1000
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A1.7 CurrentRMS#Рулевая_зад_Томск
+  index: 18
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0
+  units: A
+  multiplier: 0.1
+  editable: false
+  min_value: 0
+  max_value: 6553.5
+- name: A1.8 Torque#Рулевая_зад_Томск
+  index: 19
+  sub_index: 0
+  description: МОМЕНТ Нм * 100
+  type: SIGNED16
+  value: 0
+  units: kNm
+  multiplier: 0.01
+  editable: false
+  min_value: -327.5
+  max_value: 327.5
+падает инвертор:
+- name: UPTIME#Инвертор_МЭИ
+  index: 8192
+  sub_index: 0
+  description: Время работы
+  type: FLOAT
+  value: 9211.7861328125
+  units: s
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647
+- name: DRIVE_STATE#Инвертор_МЭИ
+  index: 8192
+  sub_index: 1
+  description: Состояние
+  type: UNSIGNED16
+  value: 3.0
+  editable: false
+  min_value: 0
+  max_value: 65535
+  value_table:
+    0: STANDBY
+    1: IDLE
+    2: POWERUP
+    3: READY
+    4: PREPARING
+    5: STARTING
+    6: IN_OPERATION
+    7: STOPPING
+    8: POWERDOWN
+    9: CALIBRATING_POS_SENSOR_POWERUP
+    10: CALIBRATING_POS_SENSOR
+    11: EVALUATING_MOTOR
+- name: FAULTS#Инвертор_МЭИ
+  index: 8192
+  sub_index: 2
+  description: Ошибки
+  type: UNSIGNED32
+  value: 0.0
+  editable: false
+  min_value: 0
+  max_value: 4294967295
+  value_table:
+    0: Нет ошибок
+    1: Защита от снижения напряжения в ЗПТ
+    2: Защита от повышения напряжения в ЗПТ
+    4: Фазный сверхток
+    8: Сверхток в обмотке возбуждения
+    16: Сверхток в звене постоянного тока
+    32: Защита драйверов трёхфазного моста
+    64: Защита драйверов регулятора тока обмотки возбуждения
+    128: Температурная защита силовых ключей
+    256: Температурная защита преобразователя
+    512: Температурная защита двигателя
+    1024: Температурная защита обмотки возбуждения
+    2048: Потеря соединения по CAN-шине
+    4096: Ошибка передачи данных по CAN-шине
+    8192: Программная ошибка
+    16384: Аппаратная ошибка
+    32768: Отказ датчика фазного тока
+    65536: Отказ датчика тока возбуждения
+    131072: Отказ датчика тока звена постоянного тока
+    262144: Аварийный останов
+    524288: Ошибка включения контакторов
+    1048576: Ошибка ДПР
+    2097152: Неисправность датчика температуры двигателя
+    4194304: Ошибка размыкания силового контактора (приварились контакты)
+- name: PHA_CURRENT#Инвертор_МЭИ
+  index: 8192
+  sub_index: 7
+  description: Ток фазы А
+  type: FLOAT
+  value: 0.9157209396362305
+  units: A
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647
+- name: PHB_CURRENT#Инвертор_МЭИ
+  index: 8192
+  sub_index: 8
+  description: Ток фазы В
+  type: FLOAT
+  value: 0.18666893243789673
+  units: A
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647
+- name: PHC_CURRENT#Инвертор_МЭИ
+  index: 8192
+  sub_index: 9
+  description: Ток фазы С
+  type: FLOAT
+  value: -5.0723652839660645
+  units: A
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647
+Задний левый пневмобаллон:
+- name: OUTPUTS_SERVICE_MODE#КВУ_ТТС
+  index: 8448
+  sub_index: 3
+  description: 'Включение сервисного режима работы следующих дискретных выходов
+    КВУ:  "Парковочный тормоз"  "Разрешение зарядки"  "Старт ПСТЭД"  "Пневмоподвеска
+    нагнетание 1"  "Пневмоподвеска нагнетание 2"  "Пневмоподвеска нагнетание 3"  "Пневмоподвеска
+    нагнетание 4"  "Пневмоподвеска сброс 1"  "Пневмоподвеска сброс 2"  "Пневмоподвеска
+    сброс 3"  "Пневмоподвеска сброс 4"  "Гидравлический тормоз. Помпа"  "Гидравлический
+    тормоз. Клапаны 1,8"  "Гидравлический тормоз. Клапаны 2,9"  "Статус зарядки"'
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+- name: SUSPENSION_CUR_PRESSURE_RR#КВУ_ТТС
+  index: 8496
+  sub_index: 9
+  description: Текущее давление в подушке RR
+  type: UNSIGNED16
+  value: 1025
+  units: мбар
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+- name: SUSPENSION_CUR_RAW_HEIGHT_RR#КВУ_ТТС
+  index: 8496
+  sub_index: 14
+  description: Текущая высота на подушке RR (сырое значение с датчика)
+  type: SIGNED16
+  value: 106
+  units: мм
+  editable: false
+  min_value: -32768.0
+  max_value: 32767.0
+- name: DO_STATUS_SUSP_VALVE_UP_4#КВУ_ТТС
+  index: 8562
+  sub_index: 7
+  description: IOLIB-статус дискретного выхода "Пневмоподвеска нагнетание 4".
+    Расшифровка указана в iolib_errors.yaml
+  type: UNSIGNED16
+  value: 0
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+  value_table:
+    0: OK
+    2: BUSY
+    3: UNKNOWN
+    5: DRV_SAFETY_CONF_NOT_CONFIG
+    6: INVALID_SAFETY_CONFIG
+    7: DRV_SAFETY_CYCLE_RUNNING
+    10: OPEN_LOAD
+    11: SHORT_GND
+    12: SHORT_BAT
+    13: OPEN_LOAD_OR_SHORT_BAT
+    14: INVALID_VOLTAGE
+    15: NO_DIAG
+    16: STARTUP
+    17: SAFE_STATE
+    18: REFERENCE
+    19: SAFETY_SWITCH_DISABLED
+    20: FET_PROT_ACTIVE
+    21: FET_PROT_PERMANENT
+    22: FET_PROT_REENABLE
+    23: FET_PROT_WAIT
+    24: FET_PROT_NOT_ACTIVE
+    25: RESOLVING
+    26: RESOLVING_FAILED
+    30: NULL_POINTER
+    31: INVALID_PARAMETER
+    32: CHANNEL_BUSY
+    33: CHANNEL_NOT_CONFIGURED
+    34: INVALID_CHANNEL_ID
+    35: INVALID_LIMITS
+    36: PERIODIC_NOT_CONFIGURED
+    37: CH_CAPABILITY
+    38: DRIVER_NOT_INITIALIZED
+    39: INVALID_OPERATION
+    40: CAN_OVERFLOW
+    41: CAN_WRONG_HANDLE
+    42: CAN_MAX_MO_REACHED
+    43: CAN_MAX_HANDLES_REACHED
+    44: CAN_FIFO_FULL
+    45: CAN_OLD_DATA
+    46: CAN_ERROR_PASSIVE
+    47: CAN_BUS_OFF
+    48: CAN_ERROR_WARNING
+    49: CAN_TIMEOUT
+    60: EEPROM_RANGE
+    70: UART_BUFFER_FULL
+    71: UART_BUFFER_EMPTY
+    72: UART_OVERFLOW
+    73: UART_PARITY
+    74: UART_FRAMING
+    101: PWD_NOT_FINISHED
+    102: PWD_OVERFLOW
+    104: PWD_CURRENT_THRESH_HIGH
+    105: PWD_CURRENT_THRESH_LOW
+    146: CM_CALIBRATION
+    200: FPGA_NOT_INITIALIZED
+    201: FPGA_TIMEOUT
+    202: FPGA_CRC_ERROR
+    203: FPGA_VERSION
+    240: WD_RANGE
+    241: WD_INITIALIZATION
+    242: WD_PRECISION
+    243: WD_ACTIVATION
+    244: WD_TRIGGER
+    245: WD_SAFE_LOCK
+    246: WD_DEBUGGING_PREPARED
+    247: WD_SELF_MONITORING
+    248: WD_VICE_VERSA_MONITORING
+    249: WD_STATUS_INVALID
+    250: RTC_CLOCK_INTEGRITY_FAILED
+    260: LIN_BIT
+    261: LIN_PHYSICAL_BUS
+    262: LIN_CHECKSUM
+    263: LIN_INCONSISTENT_SYNCH_FIELD
+    264: LIN_NO_RESPONSE
+    265: LIN_FRAMING
+    266: LIN_OVERRUN
+    267: LIN_PARITY
+    268: LIN_TIMEOUT
+    269: FLASH_WRONG_DEVICE_ID
+    270: FLASH_BLANK_CHECK_FAILED
+    271: FLASH_OP_FAILED
+    272: FLASH_OP_TIMEOUT
+    282: INVALID_VARIANT
+    283: INVALID_PROD_DATA
+    284: INVALID_PIN_CONFIG
+    285: INVALID_SERIAL_NUMBER
+    286: CORE_TEST_FAILED
+    287: ERROR_PIN_TEST_TIMEOUT
+    288: ERROR_PIN_TEST_FAILED
+    289: INTERNAL_MEM_FAILED
+    290: INVALID_ESM_INIT_STATUS
+    292: INTERNAL_CSM
+    300: ETH_INIT_FAIL
+    301: ETH_INIT_TIMEOUT
+    302: ETH_DEINIT_TIMEOUT
+    303: ETH_MAC_INVALID
+    304: ETH_READ_FAIL
+    305: ETH_WRITE_FAIL
+    306: ETH_NO_LINK
+    307: ETH_MDIO_TIMEOUT
+    308: ETH_MDIO_READ
+    310: DOWNLOAD_NO_REQ
+    311: DOWNLOAD_TIMEOUT
+    312: DOWNLOAD_HANDSHAKE
+    320: SHM_INTEGRITY
+    330: MPU_REGION_ENABLED
+    331: MPU_REGION_DISABLED
+    340: OPTION_NOT_SUPPORTED
+    440: UDP_NOMORESOCKETS
+    442: UDP_OVERFLOW
+    443: UDP_WRONG_HANDLE
+    444: SOCKET_NOT_INITIALIZED
+    445: WRONG_ADDRESS
+    446: UDP_INVALID_BUFFER
+    447: UDP_WRONG_PORT
+    449: UDP_ARP_RECEIVED</data>
+- name: DO_STATUS_SUSP_VALVE_DOWN_4#КВУ_ТТС
+  index: 8562
+  sub_index: 11
+  description: IOLIB-статус дискретного выхода "Пневмоподвеска сброс 4". Расшифровка
+    указана в iolib_errors.yaml
+  type: UNSIGNED16
+  value: 0
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+  value_table:
+    0: OK
+    2: BUSY
+    3: UNKNOWN
+    5: DRV_SAFETY_CONF_NOT_CONFIG
+    6: INVALID_SAFETY_CONFIG
+    7: DRV_SAFETY_CYCLE_RUNNING
+    10: OPEN_LOAD
+    11: SHORT_GND
+    12: SHORT_BAT
+    13: OPEN_LOAD_OR_SHORT_BAT
+    14: INVALID_VOLTAGE
+    15: NO_DIAG
+    16: STARTUP
+    17: SAFE_STATE
+    18: REFERENCE
+    19: SAFETY_SWITCH_DISABLED
+    20: FET_PROT_ACTIVE
+    21: FET_PROT_PERMANENT
+    22: FET_PROT_REENABLE
+    23: FET_PROT_WAIT
+    24: FET_PROT_NOT_ACTIVE
+    25: RESOLVING
+    26: RESOLVING_FAILED
+    30: NULL_POINTER
+    31: INVALID_PARAMETER
+    32: CHANNEL_BUSY
+    33: CHANNEL_NOT_CONFIGURED
+    34: INVALID_CHANNEL_ID
+    35: INVALID_LIMITS
+    36: PERIODIC_NOT_CONFIGURED
+    37: CH_CAPABILITY
+    38: DRIVER_NOT_INITIALIZED
+    39: INVALID_OPERATION
+    40: CAN_OVERFLOW
+    41: CAN_WRONG_HANDLE
+    42: CAN_MAX_MO_REACHED
+    43: CAN_MAX_HANDLES_REACHED
+    44: CAN_FIFO_FULL
+    45: CAN_OLD_DATA
+    46: CAN_ERROR_PASSIVE
+    47: CAN_BUS_OFF
+    48: CAN_ERROR_WARNING
+    49: CAN_TIMEOUT
+    60: EEPROM_RANGE
+    70: UART_BUFFER_FULL
+    71: UART_BUFFER_EMPTY
+    72: UART_OVERFLOW
+    73: UART_PARITY
+    74: UART_FRAMING
+    101: PWD_NOT_FINISHED
+    102: PWD_OVERFLOW
+    104: PWD_CURRENT_THRESH_HIGH
+    105: PWD_CURRENT_THRESH_LOW
+    146: CM_CALIBRATION
+    200: FPGA_NOT_INITIALIZED
+    201: FPGA_TIMEOUT
+    202: FPGA_CRC_ERROR
+    203: FPGA_VERSION
+    240: WD_RANGE
+    241: WD_INITIALIZATION
+    242: WD_PRECISION
+    243: WD_ACTIVATION
+    244: WD_TRIGGER
+    245: WD_SAFE_LOCK
+    246: WD_DEBUGGING_PREPARED
+    247: WD_SELF_MONITORING
+    248: WD_VICE_VERSA_MONITORING
+    249: WD_STATUS_INVALID
+    250: RTC_CLOCK_INTEGRITY_FAILED
+    260: LIN_BIT
+    261: LIN_PHYSICAL_BUS
+    262: LIN_CHECKSUM
+    263: LIN_INCONSISTENT_SYNCH_FIELD
+    264: LIN_NO_RESPONSE
+    265: LIN_FRAMING
+    266: LIN_OVERRUN
+    267: LIN_PARITY
+    268: LIN_TIMEOUT
+    269: FLASH_WRONG_DEVICE_ID
+    270: FLASH_BLANK_CHECK_FAILED
+    271: FLASH_OP_FAILED
+    272: FLASH_OP_TIMEOUT
+    282: INVALID_VARIANT
+    283: INVALID_PROD_DATA
+    284: INVALID_PIN_CONFIG
+    285: INVALID_SERIAL_NUMBER
+    286: CORE_TEST_FAILED
+    287: ERROR_PIN_TEST_TIMEOUT
+    288: ERROR_PIN_TEST_FAILED
+    289: INTERNAL_MEM_FAILED
+    290: INVALID_ESM_INIT_STATUS
+    292: INTERNAL_CSM
+    300: ETH_INIT_FAIL
+    301: ETH_INIT_TIMEOUT
+    302: ETH_DEINIT_TIMEOUT
+    303: ETH_MAC_INVALID
+    304: ETH_READ_FAIL
+    305: ETH_WRITE_FAIL
+    306: ETH_NO_LINK
+    307: ETH_MDIO_TIMEOUT
+    308: ETH_MDIO_READ
+    310: DOWNLOAD_NO_REQ
+    311: DOWNLOAD_TIMEOUT
+    312: DOWNLOAD_HANDSHAKE
+    320: SHM_INTEGRITY
+    330: MPU_REGION_ENABLED
+    331: MPU_REGION_DISABLED
+    340: OPTION_NOT_SUPPORTED
+    440: UDP_NOMORESOCKETS
+    442: UDP_OVERFLOW
+    443: UDP_WRONG_HANDLE
+    444: SOCKET_NOT_INITIALIZED
+    445: WRONG_ADDRESS
+    446: UDP_INVALID_BUFFER
+    447: UDP_WRONG_PORT
+    449: UDP_ARP_RECEIVED</data>
+- name: DO_SERVICE_CMD_SUSP_VALVE_UP_4#КВУ_ТТС
+  index: 8563
+  sub_index: 7
+  description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    нагнетание RR".
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+- name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_4#КВУ_ТТС
+  index: 8563
+  sub_index: 11
+  description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    сброс RR".
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+Передний правый пневмобаллон:
+- name: OUTPUTS_SERVICE_MODE#КВУ_ТТС
+  index: 8448
+  sub_index: 3
+  description: 'Включение сервисного режима работы следующих дискретных выходов
+    КВУ:  "Парковочный тормоз"  "Разрешение зарядки"  "Старт ПСТЭД"  "Пневмоподвеска
+    нагнетание 1"  "Пневмоподвеска нагнетание 2"  "Пневмоподвеска нагнетание 3"  "Пневмоподвеска
+    нагнетание 4"  "Пневмоподвеска сброс 1"  "Пневмоподвеска сброс 2"  "Пневмоподвеска
+    сброс 3"  "Пневмоподвеска сброс 4"  "Гидравлический тормоз. Помпа"  "Гидравлический
+    тормоз. Клапаны 1,8"  "Гидравлический тормоз. Клапаны 2,9"  "Статус зарядки"'
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+- name: SUSPENSION_CUR_PRESSURE_FR#КВУ_ТТС
+  index: 8496
+  sub_index: 7
+  description: Текущее давление в подушке FR
+  type: UNSIGNED16
+  value: 2309
+  units: мбар
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+- name: SUSPENSION_CUR_RAW_HEIGHT_FR#КВУ_ТТС
+  index: 8496
+  sub_index: 12
+  description: Текущая высота на подушке FR (сырое значение с датчика)
+  type: SIGNED16
+  value: 110
+  units: мм
+  editable: false
+  min_value: -32768.0
+  max_value: 32767.0
+- name: DO_STATUS_SUSP_VALVE_UP_2#КВУ_ТТС
+  index: 8562
+  sub_index: 5
+  description: IOLIB-статус дискретного выхода "Пневмоподвеска нагнетание 2".
+    Расшифровка указана в iolib_errors.yaml
+  type: UNSIGNED16
+  value: 0
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+  value_table:
+    0: OK
+    2: BUSY
+    3: UNKNOWN
+    5: DRV_SAFETY_CONF_NOT_CONFIG
+    6: INVALID_SAFETY_CONFIG
+    7: DRV_SAFETY_CYCLE_RUNNING
+    10: OPEN_LOAD
+    11: SHORT_GND
+    12: SHORT_BAT
+    13: OPEN_LOAD_OR_SHORT_BAT
+    14: INVALID_VOLTAGE
+    15: NO_DIAG
+    16: STARTUP
+    17: SAFE_STATE
+    18: REFERENCE
+    19: SAFETY_SWITCH_DISABLED
+    20: FET_PROT_ACTIVE
+    21: FET_PROT_PERMANENT
+    22: FET_PROT_REENABLE
+    23: FET_PROT_WAIT
+    24: FET_PROT_NOT_ACTIVE
+    25: RESOLVING
+    26: RESOLVING_FAILED
+    30: NULL_POINTER
+    31: INVALID_PARAMETER
+    32: CHANNEL_BUSY
+    33: CHANNEL_NOT_CONFIGURED
+    34: INVALID_CHANNEL_ID
+    35: INVALID_LIMITS
+    36: PERIODIC_NOT_CONFIGURED
+    37: CH_CAPABILITY
+    38: DRIVER_NOT_INITIALIZED
+    39: INVALID_OPERATION
+    40: CAN_OVERFLOW
+    41: CAN_WRONG_HANDLE
+    42: CAN_MAX_MO_REACHED
+    43: CAN_MAX_HANDLES_REACHED
+    44: CAN_FIFO_FULL
+    45: CAN_OLD_DATA
+    46: CAN_ERROR_PASSIVE
+    47: CAN_BUS_OFF
+    48: CAN_ERROR_WARNING
+    49: CAN_TIMEOUT
+    60: EEPROM_RANGE
+    70: UART_BUFFER_FULL
+    71: UART_BUFFER_EMPTY
+    72: UART_OVERFLOW
+    73: UART_PARITY
+    74: UART_FRAMING
+    101: PWD_NOT_FINISHED
+    102: PWD_OVERFLOW
+    104: PWD_CURRENT_THRESH_HIGH
+    105: PWD_CURRENT_THRESH_LOW
+    146: CM_CALIBRATION
+    200: FPGA_NOT_INITIALIZED
+    201: FPGA_TIMEOUT
+    202: FPGA_CRC_ERROR
+    203: FPGA_VERSION
+    240: WD_RANGE
+    241: WD_INITIALIZATION
+    242: WD_PRECISION
+    243: WD_ACTIVATION
+    244: WD_TRIGGER
+    245: WD_SAFE_LOCK
+    246: WD_DEBUGGING_PREPARED
+    247: WD_SELF_MONITORING
+    248: WD_VICE_VERSA_MONITORING
+    249: WD_STATUS_INVALID
+    250: RTC_CLOCK_INTEGRITY_FAILED
+    260: LIN_BIT
+    261: LIN_PHYSICAL_BUS
+    262: LIN_CHECKSUM
+    263: LIN_INCONSISTENT_SYNCH_FIELD
+    264: LIN_NO_RESPONSE
+    265: LIN_FRAMING
+    266: LIN_OVERRUN
+    267: LIN_PARITY
+    268: LIN_TIMEOUT
+    269: FLASH_WRONG_DEVICE_ID
+    270: FLASH_BLANK_CHECK_FAILED
+    271: FLASH_OP_FAILED
+    272: FLASH_OP_TIMEOUT
+    282: INVALID_VARIANT
+    283: INVALID_PROD_DATA
+    284: INVALID_PIN_CONFIG
+    285: INVALID_SERIAL_NUMBER
+    286: CORE_TEST_FAILED
+    287: ERROR_PIN_TEST_TIMEOUT
+    288: ERROR_PIN_TEST_FAILED
+    289: INTERNAL_MEM_FAILED
+    290: INVALID_ESM_INIT_STATUS
+    292: INTERNAL_CSM
+    300: ETH_INIT_FAIL
+    301: ETH_INIT_TIMEOUT
+    302: ETH_DEINIT_TIMEOUT
+    303: ETH_MAC_INVALID
+    304: ETH_READ_FAIL
+    305: ETH_WRITE_FAIL
+    306: ETH_NO_LINK
+    307: ETH_MDIO_TIMEOUT
+    308: ETH_MDIO_READ
+    310: DOWNLOAD_NO_REQ
+    311: DOWNLOAD_TIMEOUT
+    312: DOWNLOAD_HANDSHAKE
+    320: SHM_INTEGRITY
+    330: MPU_REGION_ENABLED
+    331: MPU_REGION_DISABLED
+    340: OPTION_NOT_SUPPORTED
+    440: UDP_NOMORESOCKETS
+    442: UDP_OVERFLOW
+    443: UDP_WRONG_HANDLE
+    444: SOCKET_NOT_INITIALIZED
+    445: WRONG_ADDRESS
+    446: UDP_INVALID_BUFFER
+    447: UDP_WRONG_PORT
+    449: UDP_ARP_RECEIVED</data>
+- name: DO_STATUS_SUSP_VALVE_DOWN_2#КВУ_ТТС
+  index: 8562
+  sub_index: 9
+  description: IOLIB-статус дискретного выхода "Пневмоподвеска сброс 2". Расшифровка
+    указана в iolib_errors.yaml
+  type: UNSIGNED16
+  value: 0
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+  value_table:
+    0: OK
+    2: BUSY
+    3: UNKNOWN
+    5: DRV_SAFETY_CONF_NOT_CONFIG
+    6: INVALID_SAFETY_CONFIG
+    7: DRV_SAFETY_CYCLE_RUNNING
+    10: OPEN_LOAD
+    11: SHORT_GND
+    12: SHORT_BAT
+    13: OPEN_LOAD_OR_SHORT_BAT
+    14: INVALID_VOLTAGE
+    15: NO_DIAG
+    16: STARTUP
+    17: SAFE_STATE
+    18: REFERENCE
+    19: SAFETY_SWITCH_DISABLED
+    20: FET_PROT_ACTIVE
+    21: FET_PROT_PERMANENT
+    22: FET_PROT_REENABLE
+    23: FET_PROT_WAIT
+    24: FET_PROT_NOT_ACTIVE
+    25: RESOLVING
+    26: RESOLVING_FAILED
+    30: NULL_POINTER
+    31: INVALID_PARAMETER
+    32: CHANNEL_BUSY
+    33: CHANNEL_NOT_CONFIGURED
+    34: INVALID_CHANNEL_ID
+    35: INVALID_LIMITS
+    36: PERIODIC_NOT_CONFIGURED
+    37: CH_CAPABILITY
+    38: DRIVER_NOT_INITIALIZED
+    39: INVALID_OPERATION
+    40: CAN_OVERFLOW
+    41: CAN_WRONG_HANDLE
+    42: CAN_MAX_MO_REACHED
+    43: CAN_MAX_HANDLES_REACHED
+    44: CAN_FIFO_FULL
+    45: CAN_OLD_DATA
+    46: CAN_ERROR_PASSIVE
+    47: CAN_BUS_OFF
+    48: CAN_ERROR_WARNING
+    49: CAN_TIMEOUT
+    60: EEPROM_RANGE
+    70: UART_BUFFER_FULL
+    71: UART_BUFFER_EMPTY
+    72: UART_OVERFLOW
+    73: UART_PARITY
+    74: UART_FRAMING
+    101: PWD_NOT_FINISHED
+    102: PWD_OVERFLOW
+    104: PWD_CURRENT_THRESH_HIGH
+    105: PWD_CURRENT_THRESH_LOW
+    146: CM_CALIBRATION
+    200: FPGA_NOT_INITIALIZED
+    201: FPGA_TIMEOUT
+    202: FPGA_CRC_ERROR
+    203: FPGA_VERSION
+    240: WD_RANGE
+    241: WD_INITIALIZATION
+    242: WD_PRECISION
+    243: WD_ACTIVATION
+    244: WD_TRIGGER
+    245: WD_SAFE_LOCK
+    246: WD_DEBUGGING_PREPARED
+    247: WD_SELF_MONITORING
+    248: WD_VICE_VERSA_MONITORING
+    249: WD_STATUS_INVALID
+    250: RTC_CLOCK_INTEGRITY_FAILED
+    260: LIN_BIT
+    261: LIN_PHYSICAL_BUS
+    262: LIN_CHECKSUM
+    263: LIN_INCONSISTENT_SYNCH_FIELD
+    264: LIN_NO_RESPONSE
+    265: LIN_FRAMING
+    266: LIN_OVERRUN
+    267: LIN_PARITY
+    268: LIN_TIMEOUT
+    269: FLASH_WRONG_DEVICE_ID
+    270: FLASH_BLANK_CHECK_FAILED
+    271: FLASH_OP_FAILED
+    272: FLASH_OP_TIMEOUT
+    282: INVALID_VARIANT
+    283: INVALID_PROD_DATA
+    284: INVALID_PIN_CONFIG
+    285: INVALID_SERIAL_NUMBER
+    286: CORE_TEST_FAILED
+    287: ERROR_PIN_TEST_TIMEOUT
+    288: ERROR_PIN_TEST_FAILED
+    289: INTERNAL_MEM_FAILED
+    290: INVALID_ESM_INIT_STATUS
+    292: INTERNAL_CSM
+    300: ETH_INIT_FAIL
+    301: ETH_INIT_TIMEOUT
+    302: ETH_DEINIT_TIMEOUT
+    303: ETH_MAC_INVALID
+    304: ETH_READ_FAIL
+    305: ETH_WRITE_FAIL
+    306: ETH_NO_LINK
+    307: ETH_MDIO_TIMEOUT
+    308: ETH_MDIO_READ
+    310: DOWNLOAD_NO_REQ
+    311: DOWNLOAD_TIMEOUT
+    312: DOWNLOAD_HANDSHAKE
+    320: SHM_INTEGRITY
+    330: MPU_REGION_ENABLED
+    331: MPU_REGION_DISABLED
+    340: OPTION_NOT_SUPPORTED
+    440: UDP_NOMORESOCKETS
+    442: UDP_OVERFLOW
+    443: UDP_WRONG_HANDLE
+    444: SOCKET_NOT_INITIALIZED
+    445: WRONG_ADDRESS
+    446: UDP_INVALID_BUFFER
+    447: UDP_WRONG_PORT
+    449: UDP_ARP_RECEIVED</data>
+- name: DO_SERVICE_CMD_SUSP_VALVE_UP_2#КВУ_ТТС
+  index: 8563
+  sub_index: 5
+  description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    нагнетание FR".
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+- name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_2#КВУ_ТТС
+  index: 8563
+  sub_index: 9
+  description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    сброс FR".
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+Передний левый пневмобаллон:
+- name: OUTPUTS_SERVICE_MODE#КВУ_ТТС
+  index: 8448
+  sub_index: 3
+  description: 'Включение сервисного режима работы следующих дискретных выходов
+    КВУ:  "Парковочный тормоз"  "Разрешение зарядки"  "Старт ПСТЭД"  "Пневмоподвеска
+    нагнетание 1"  "Пневмоподвеска нагнетание 2"  "Пневмоподвеска нагнетание 3"  "Пневмоподвеска
+    нагнетание 4"  "Пневмоподвеска сброс 1"  "Пневмоподвеска сброс 2"  "Пневмоподвеска
+    сброс 3"  "Пневмоподвеска сброс 4"  "Гидравлический тормоз. Помпа"  "Гидравлический
+    тормоз. Клапаны 1,8"  "Гидравлический тормоз. Клапаны 2,9"  "Статус зарядки"'
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+- name: SUSPENSION_CUR_PRESSURE_FL#КВУ_ТТС
+  index: 8496
+  sub_index: 6
+  description: Текущее давление в подушке FL
+  type: UNSIGNED16
+  value: 1616
+  units: мбар
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+- name: SUSPENSION_CUR_RAW_HEIGHT_FL#КВУ_ТТС
+  index: 8496
+  sub_index: 11
+  description: Текущая высота на подушке FL (сырое значение с датчика)
+  type: SIGNED16
+  value: 112
+  units: мм
+  editable: false
+  min_value: -32768.0
+  max_value: 32767.0
+- name: DO_STATUS_SUSP_VALVE_UP_1#КВУ_ТТС
+  index: 8562
+  sub_index: 4
+  description: IOLIB-статус дискретного выхода "Пневмоподвеска нагнетание 1".
+    Расшифровка указана в iolib_errors.yaml
+  type: UNSIGNED16
+  value: 0
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+  value_table:
+    0: OK
+    2: BUSY
+    3: UNKNOWN
+    5: DRV_SAFETY_CONF_NOT_CONFIG
+    6: INVALID_SAFETY_CONFIG
+    7: DRV_SAFETY_CYCLE_RUNNING
+    10: OPEN_LOAD
+    11: SHORT_GND
+    12: SHORT_BAT
+    13: OPEN_LOAD_OR_SHORT_BAT
+    14: INVALID_VOLTAGE
+    15: NO_DIAG
+    16: STARTUP
+    17: SAFE_STATE
+    18: REFERENCE
+    19: SAFETY_SWITCH_DISABLED
+    20: FET_PROT_ACTIVE
+    21: FET_PROT_PERMANENT
+    22: FET_PROT_REENABLE
+    23: FET_PROT_WAIT
+    24: FET_PROT_NOT_ACTIVE
+    25: RESOLVING
+    26: RESOLVING_FAILED
+    30: NULL_POINTER
+    31: INVALID_PARAMETER
+    32: CHANNEL_BUSY
+    33: CHANNEL_NOT_CONFIGURED
+    34: INVALID_CHANNEL_ID
+    35: INVALID_LIMITS
+    36: PERIODIC_NOT_CONFIGURED
+    37: CH_CAPABILITY
+    38: DRIVER_NOT_INITIALIZED
+    39: INVALID_OPERATION
+    40: CAN_OVERFLOW
+    41: CAN_WRONG_HANDLE
+    42: CAN_MAX_MO_REACHED
+    43: CAN_MAX_HANDLES_REACHED
+    44: CAN_FIFO_FULL
+    45: CAN_OLD_DATA
+    46: CAN_ERROR_PASSIVE
+    47: CAN_BUS_OFF
+    48: CAN_ERROR_WARNING
+    49: CAN_TIMEOUT
+    60: EEPROM_RANGE
+    70: UART_BUFFER_FULL
+    71: UART_BUFFER_EMPTY
+    72: UART_OVERFLOW
+    73: UART_PARITY
+    74: UART_FRAMING
+    101: PWD_NOT_FINISHED
+    102: PWD_OVERFLOW
+    104: PWD_CURRENT_THRESH_HIGH
+    105: PWD_CURRENT_THRESH_LOW
+    146: CM_CALIBRATION
+    200: FPGA_NOT_INITIALIZED
+    201: FPGA_TIMEOUT
+    202: FPGA_CRC_ERROR
+    203: FPGA_VERSION
+    240: WD_RANGE
+    241: WD_INITIALIZATION
+    242: WD_PRECISION
+    243: WD_ACTIVATION
+    244: WD_TRIGGER
+    245: WD_SAFE_LOCK
+    246: WD_DEBUGGING_PREPARED
+    247: WD_SELF_MONITORING
+    248: WD_VICE_VERSA_MONITORING
+    249: WD_STATUS_INVALID
+    250: RTC_CLOCK_INTEGRITY_FAILED
+    260: LIN_BIT
+    261: LIN_PHYSICAL_BUS
+    262: LIN_CHECKSUM
+    263: LIN_INCONSISTENT_SYNCH_FIELD
+    264: LIN_NO_RESPONSE
+    265: LIN_FRAMING
+    266: LIN_OVERRUN
+    267: LIN_PARITY
+    268: LIN_TIMEOUT
+    269: FLASH_WRONG_DEVICE_ID
+    270: FLASH_BLANK_CHECK_FAILED
+    271: FLASH_OP_FAILED
+    272: FLASH_OP_TIMEOUT
+    282: INVALID_VARIANT
+    283: INVALID_PROD_DATA
+    284: INVALID_PIN_CONFIG
+    285: INVALID_SERIAL_NUMBER
+    286: CORE_TEST_FAILED
+    287: ERROR_PIN_TEST_TIMEOUT
+    288: ERROR_PIN_TEST_FAILED
+    289: INTERNAL_MEM_FAILED
+    290: INVALID_ESM_INIT_STATUS
+    292: INTERNAL_CSM
+    300: ETH_INIT_FAIL
+    301: ETH_INIT_TIMEOUT
+    302: ETH_DEINIT_TIMEOUT
+    303: ETH_MAC_INVALID
+    304: ETH_READ_FAIL
+    305: ETH_WRITE_FAIL
+    306: ETH_NO_LINK
+    307: ETH_MDIO_TIMEOUT
+    308: ETH_MDIO_READ
+    310: DOWNLOAD_NO_REQ
+    311: DOWNLOAD_TIMEOUT
+    312: DOWNLOAD_HANDSHAKE
+    320: SHM_INTEGRITY
+    330: MPU_REGION_ENABLED
+    331: MPU_REGION_DISABLED
+    340: OPTION_NOT_SUPPORTED
+    440: UDP_NOMORESOCKETS
+    442: UDP_OVERFLOW
+    443: UDP_WRONG_HANDLE
+    444: SOCKET_NOT_INITIALIZED
+    445: WRONG_ADDRESS
+    446: UDP_INVALID_BUFFER
+    447: UDP_WRONG_PORT
+    449: UDP_ARP_RECEIVED</data>
+- name: DO_STATUS_SUSP_VALVE_DOWN_1#КВУ_ТТС
+  index: 8562
+  sub_index: 8
+  description: IOLIB-статус дискретного выхода "Пневмоподвеска сброс 1". Расшифровка
+    указана в iolib_errors.yaml
+  type: UNSIGNED16
+  value: 0
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+  value_table:
+    0: OK
+    2: BUSY
+    3: UNKNOWN
+    5: DRV_SAFETY_CONF_NOT_CONFIG
+    6: INVALID_SAFETY_CONFIG
+    7: DRV_SAFETY_CYCLE_RUNNING
+    10: OPEN_LOAD
+    11: SHORT_GND
+    12: SHORT_BAT
+    13: OPEN_LOAD_OR_SHORT_BAT
+    14: INVALID_VOLTAGE
+    15: NO_DIAG
+    16: STARTUP
+    17: SAFE_STATE
+    18: REFERENCE
+    19: SAFETY_SWITCH_DISABLED
+    20: FET_PROT_ACTIVE
+    21: FET_PROT_PERMANENT
+    22: FET_PROT_REENABLE
+    23: FET_PROT_WAIT
+    24: FET_PROT_NOT_ACTIVE
+    25: RESOLVING
+    26: RESOLVING_FAILED
+    30: NULL_POINTER
+    31: INVALID_PARAMETER
+    32: CHANNEL_BUSY
+    33: CHANNEL_NOT_CONFIGURED
+    34: INVALID_CHANNEL_ID
+    35: INVALID_LIMITS
+    36: PERIODIC_NOT_CONFIGURED
+    37: CH_CAPABILITY
+    38: DRIVER_NOT_INITIALIZED
+    39: INVALID_OPERATION
+    40: CAN_OVERFLOW
+    41: CAN_WRONG_HANDLE
+    42: CAN_MAX_MO_REACHED
+    43: CAN_MAX_HANDLES_REACHED
+    44: CAN_FIFO_FULL
+    45: CAN_OLD_DATA
+    46: CAN_ERROR_PASSIVE
+    47: CAN_BUS_OFF
+    48: CAN_ERROR_WARNING
+    49: CAN_TIMEOUT
+    60: EEPROM_RANGE
+    70: UART_BUFFER_FULL
+    71: UART_BUFFER_EMPTY
+    72: UART_OVERFLOW
+    73: UART_PARITY
+    74: UART_FRAMING
+    101: PWD_NOT_FINISHED
+    102: PWD_OVERFLOW
+    104: PWD_CURRENT_THRESH_HIGH
+    105: PWD_CURRENT_THRESH_LOW
+    146: CM_CALIBRATION
+    200: FPGA_NOT_INITIALIZED
+    201: FPGA_TIMEOUT
+    202: FPGA_CRC_ERROR
+    203: FPGA_VERSION
+    240: WD_RANGE
+    241: WD_INITIALIZATION
+    242: WD_PRECISION
+    243: WD_ACTIVATION
+    244: WD_TRIGGER
+    245: WD_SAFE_LOCK
+    246: WD_DEBUGGING_PREPARED
+    247: WD_SELF_MONITORING
+    248: WD_VICE_VERSA_MONITORING
+    249: WD_STATUS_INVALID
+    250: RTC_CLOCK_INTEGRITY_FAILED
+    260: LIN_BIT
+    261: LIN_PHYSICAL_BUS
+    262: LIN_CHECKSUM
+    263: LIN_INCONSISTENT_SYNCH_FIELD
+    264: LIN_NO_RESPONSE
+    265: LIN_FRAMING
+    266: LIN_OVERRUN
+    267: LIN_PARITY
+    268: LIN_TIMEOUT
+    269: FLASH_WRONG_DEVICE_ID
+    270: FLASH_BLANK_CHECK_FAILED
+    271: FLASH_OP_FAILED
+    272: FLASH_OP_TIMEOUT
+    282: INVALID_VARIANT
+    283: INVALID_PROD_DATA
+    284: INVALID_PIN_CONFIG
+    285: INVALID_SERIAL_NUMBER
+    286: CORE_TEST_FAILED
+    287: ERROR_PIN_TEST_TIMEOUT
+    288: ERROR_PIN_TEST_FAILED
+    289: INTERNAL_MEM_FAILED
+    290: INVALID_ESM_INIT_STATUS
+    292: INTERNAL_CSM
+    300: ETH_INIT_FAIL
+    301: ETH_INIT_TIMEOUT
+    302: ETH_DEINIT_TIMEOUT
+    303: ETH_MAC_INVALID
+    304: ETH_READ_FAIL
+    305: ETH_WRITE_FAIL
+    306: ETH_NO_LINK
+    307: ETH_MDIO_TIMEOUT
+    308: ETH_MDIO_READ
+    310: DOWNLOAD_NO_REQ
+    311: DOWNLOAD_TIMEOUT
+    312: DOWNLOAD_HANDSHAKE
+    320: SHM_INTEGRITY
+    330: MPU_REGION_ENABLED
+    331: MPU_REGION_DISABLED
+    340: OPTION_NOT_SUPPORTED
+    440: UDP_NOMORESOCKETS
+    442: UDP_OVERFLOW
+    443: UDP_WRONG_HANDLE
+    444: SOCKET_NOT_INITIALIZED
+    445: WRONG_ADDRESS
+    446: UDP_INVALID_BUFFER
+    447: UDP_WRONG_PORT
+    449: UDP_ARP_RECEIVED</data>
+- name: DO_SERVICE_CMD_SUSP_VALVE_UP_1#КВУ_ТТС
+  index: 8563
+  sub_index: 4
+  description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    нагнетание "FL".
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+- name: DO_SERVICE_CMD_SUSP_VALVE_DOWN_1#КВУ_ТТС
+  index: 8563
+  sub_index: 8
+  description: Командное значение в сервисном режиме для дискретного выхода "Пневмоподвеска
+    сброс FL".
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+Ручной режим мотор и рейки:
+- name: MANUAL_CONTROL#КВУ_ТТС
+  index: 8448
+  sub_index: 1
+  description: Включение ручного режима управления
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+  value_table:
+    0: Отключен
+    1: Включен
+- name: PSTED_MANUAL_CONTROL_REF_TORQUE#КВУ_ТТС
+  index: 8456
+  sub_index: 16
+  description: Желаемый момент двигателя в ручном режиме управления
+  type: SIGNED16
+  value: 0
+  units: '%'
+  multiplier: 0.00305
+  editable: true
+  min_value: -32768.0
+  max_value: 32767.0
+- name: STEERING_FRONT_MANUAL_CONTROL_CMD#КВУ_ТТС
+  index: 8464
+  sub_index: 1
+  description: Желаемое положение передней рулевой рейки в ручном режиме управления,
+  type: SIGNED16
+  value: 0
+  units: '[-30000..30000]'
+  editable: true
+  min_value: -30000.0
+  max_value: 30000.0
+- name: STEERING_REAR_MANUAL_CONTROL_CMD#КВУ_ТТС
+  index: 8464
+  sub_index: 2
+  description: Желаемое положение задней рулевой рейки в ручном режиме управления,
+  type: SIGNED16
+  value: 0
+  units: '[-30000..30000]'
+  editable: true
+  min_value: -30000.0
+  max_value: 30000.0
+- name: FROM_STEERING_FRONT_POSITION#КВУ_ТТС
+  index: 8465
+  sub_index: 4
+  description: Текущее положение передней рулевой рейки, получаемое с рейки
+  type: SIGNED16
+  value: -6
+  units: '[-1000..1000]'
+  editable: false
+  min_value: -1000.0
+  max_value: 1000.0
+- name: FROM_STEERING_REAR_POSITION#КВУ_ТТС
+  index: 8466
+  sub_index: 4
+  description: Текущее положение задней рулевой рейки, получаемое с рейки
+  type: SIGNED16
+  value: 28
+  units: '[-1000..1000]'
+  editable: false
+  min_value: -1000.0
+  max_value: 1000.0
+- name: FROM_PSTED_MOTOR_SPEED#КВУ_ТТС
+  index: 8456
+  sub_index: 3
+  description: Текущая скорость вращения двигателя, полученная от ПСТЭД
+  type: SIGNED16
+  value: 0
+  units: об/мин
+  multiplier: 0.24415
+  editable: false
+  min_value: -32768.0
+  max_value: 32767.0
+Дискретный тормоз кву ттс:
+- name: DO_STATE_BRAKE_PUMP#КВУ_ТТС
+  index: 8564
+  sub_index: 12
+  description: Команда, подаваемая на дискретный выход "Гидравлический тормоз.
+    Помпа" в обычном (не сервисном) режиме.
+  type: UNSIGNED8
+  value: 0
+  editable: false
+  min_value: 0
+  max_value: 255.0
+- name: DO_STATE_BRAKE_VALVE_1_8#КВУ_ТТС
+  index: 8564
+  sub_index: 13
+  description: Команда, подаваемая на дискретный выход "Гидравлический тормоз.
+    Клапаны 1,8" в обычном (не сервисном) режиме.
+  type: UNSIGNED8
+  value: 0
+  editable: false
+  min_value: 0
+  max_value: 255.0
+- name: DO_STATE_BRAKE_VALVE_2_9#КВУ_ТТС
+  index: 8564
+  sub_index: 14
+  description: Команда, подаваемая на дискретный выход "Гидравлический тормоз.
+    Клапаны 2,9" в обычном (не сервисном) режиме.
+  type: UNSIGNED8
+  value: 0
+  editable: false
+  min_value: 0
+  max_value: 255.0
+- name: DISCRETE_BRAKE_ACCUM_TIMEOUT#КВУ_ТТС
+  index: 8518
+  sub_index: 1
+  description: Время накачки давления в контур для осуществления торможения
+  type: UNSIGNED16
+  value: 1000
+  units: мс
+  editable: true
+  min_value: 0
+  max_value: 65535.0
+- name: DISCRETE_BRAKE_PROCESS_TIMEOUT#КВУ_ТТС
+  index: 8518
+  sub_index: 2
+  description: Время удержания давления в контуре. Включает в себя DISCRETE_BRAKE_ACCUM_TIMEOUT
+  type: UNSIGNED16
+  value: 4000
+  units: мс
+  editable: true
+  min_value: 0
+  max_value: 65535.0
+- name: DISCRETE_BRAKE_MANUAL_CONTROL_CMD#КВУ_ТТС
+  index: 8518
+  sub_index: 3
+  description: Команда на включение гидравлического тормоза в ручном режиме управления
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+- name: MANUAL_CONTROL#КВУ_ТТС
+  index: 8448
+  sub_index: 1
+  description: Включение ручного режима управления
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+  value_table:
+    0: Отключен
+    1: Включен
+- name: DO_SERVICE_CMD_BRAKE_PUMP#КВУ_ТТС
+  index: 8563
+  sub_index: 12
+  description: Командное значение в сервисном режиме для дискретного выхода "Гидравлический
+    тормоз. Помпа".
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+- name: DO_SERVICE_CMD_BRAKE_VALVE_1_8#КВУ_ТТС
+  index: 8563
+  sub_index: 13
+  description: Командное значение в сервисном режиме для дискретного выхода "Гидравлический
+    тормоз. Клапаны 1,8".
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+- name: DO_SERVICE_CMD_BRAKE_VALVE_2_9#КВУ_ТТС
+  index: 8563
+  sub_index: 14
+  description: Командное значение в сервисном режиме для дискретного выхода "Гидравлический
+    тормоз. Клапаны 2,9".
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0
+  max_value: 255.0
+Инфо по блокам:
+- name: DEVICE NAME#Инвертор_МЭИ
+  index: 4104
+  sub_index: 0
+  description: Имя устройства
+  type: VISIBLE_STRING
+  value: SRMD
+  editable: false
+  period: 500
+  min_value: 0
+  max_value: 255.0
+- name: SOFTWARE VERSION#Инвертор_МЭИ
+  index: 24575
+  sub_index: 0
+  description: Версия ПО
+  type: UNSIGNED32
+  value: 22092
+  editable: false
+  min_value: 0
+  max_value: 4294967295.0
+- name: BUILD CONFIGURATION#Инвертор_МЭИ
+  index: 24575
+  sub_index: 1
+  description: Версия сборки
+  type: VISIBLE_STRING
+  value: RevE
+  editable: false
+  period: 500
+  min_value: 0
+  max_value: 255.0
+- name: DEVICE_NAME#КВУ_ТТС
+  index: 4104
+  sub_index: 0
+  description: Имя устройства
+  type: VISIBLE_STRING
+  value: VMU_N1
+  editable: false
+  period: 500
+  min_value: 0
+  max_value: 255.0
+- name: DEVICE_HARDWARE_VERSION#КВУ_ТТС
+  index: 4105
+  sub_index: 0
+  description: Версия аппаратного обеспечения
+  type: VISIBLE_STRING
+  value: 2.0.0
+  editable: false
+  period: 500
+  min_value: 0
+  max_value: 255.0
+- name: DEVICE_SOFTWARE_VERSION#КВУ_ТТС
+  index: 4106
+  sub_index: 0
+  description: Версия программного обеспечения
+  type: VISIBLE_STRING
+  value: 1.3.0
+  editable: false
+  period: 500
+  min_value: 0
+  max_value: 255.0
+- name: USER_DATA_0#КВУ_ТТС
+  index: 8577
+  sub_index: 1
+  description: Регистр пользовательских данных 0
+  type: UNSIGNED32
+  value: 18
+  editable: true
+  min_value: 0
+  max_value: 4294967295.0
+- name: A3.0 Car number#Рулевая_зад_Томск
+  index: 31
+  sub_index: 0
+  type: SIGNED16
+  value: 0
+  editable: false
+  min_value: -32750.0
+  max_value: 32750.0
+- name: B0.9 Serial_Number#Рулевая_зад_Томск
+  index: 69
+  sub_index: 0
+  description: Серийный номер блока
+  type: UNSIGNED16
+  value: 36
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+- name: B0.10 Product_Date#Рулевая_зад_Томск
+  index: 70
+  sub_index: 0
+  description: Дата выпуска
+  type: DATE
+  value: 20.12.2022
+  editable: false
+  min_value: 0
+  max_value: 4294967295.0
+- name: A3.11.VER_PO#Рулевая_зад_Томск
+  index: 42
+  sub_index: 0
+  description: Версия ПО
+  type: UNSIGNED16
+  value: 55
+  editable: false
+  min_value: -32750.0
+  max_value: 32750.0
+- name: A3.1 WheelTyp#Рулевая_зад_Томск
+  index: 32
+  sub_index: 0
+  description: Текущая ось по итогам А3.4
+  type: SIGNED16
+  value: 1
+  editable: true
+  min_value: -32768.0
+  max_value: 1.0
+  value_table:
+    0: FORWARD
+    1: REAR
+- name: A3.0 Car number#Рулевая_перед_Томск
+  index: 31
+  sub_index: 0
+  type: SIGNED16
+  value: 0
+  editable: false
+  min_value: -32750.0
+  max_value: 32750.0
+- name: A3.1 WheelTyp#Рулевая_перед_Томск
+  index: 32
+  sub_index: 0
+  description: Текущая ось по итогам А3.4
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32768.0
+  max_value: 1.0
+  value_table:
+    0: FORWARD
+    1: REAR
+- name: B0.9 Serial_Number#Рулевая_перед_Томск
+  index: 69
+  sub_index: 0
+  description: Серийный номер блока
+  type: UNSIGNED16
+  value: 39
+  editable: false
+  min_value: 0
+  max_value: 65535.0
+- name: B0.10 Product_Date#Рулевая_перед_Томск
+  index: 70
+  sub_index: 0
+  description: Дата выпуска
+  type: DATE
+  value: 20.12.2022
+  editable: false
+  min_value: 0
+  max_value: 4294967295.0
+- name: A3.11.VER_PO#Рулевая_перед_Томск
+  index: 42
+  sub_index: 0
+  description: Версия ПО
+  type: UNSIGNED16
+  value: 55
+  editable: false
+  min_value: -32750.0
+  max_value: 32750.0
+- name: serial#ТАБ
+  index: 12287
+  sub_index: 0
+  type: VISIBLE_STRING
+  value: 5750_x0000__x0000__x0000__x0000__x0000__x0000__x0000__x0000__x0000__x0000__x0000__x0000__x0000_
+  editable: false
+  period: 500
+  min_value: 0
+  max_value: 255.0
+- name: Device Type#ТАБ
+  index: 4096
+  sub_index: 0
+  type: UNSIGNED32
+  value: 418
+  editable: false
+  min_value: 0
+  max_value: 4294967295.0
+- name: Manufacturer Device Name#ТАБ
+  index: 4104
+  sub_index: 0
+  type: VISIBLE_STRING
+  value: BMS Man NG_x0000__x0000_
+  editable: false
+  period: 500
+  min_value: 0
+  max_value: 255.0
+- name: Manufacturer Hardware Version#ТАБ
+  index: 4105
+  sub_index: 0
+  type: VISIBLE_STRING
+  value: 2.1_x0000__x0000__x0000__x0000__x0000__x0000__x0000__x0000_
+  editable: false
+  period: 500
+  min_value: 0
+  max_value: 255.0
+- name: Manufacturer Software Version#ТАБ
+  index: 4106
+  sub_index: 0
+  type: VISIBLE_STRING
+  value: 1.58.3_x0000__x0000__x0000__x0000__x0000_
+  editable: false
+  period: 500
+  min_value: 0
+  max_value: 255.0
+Токи реек:
+- name: A0.2 SetSteerPos#Рулевая_зад_Томск
+  index: 2
+  sub_index: 0
+  description: Задание реечной позиции -1000...+1000
+  type: SIGNED16
+  value: -1
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A0.3 ActSteerPos#Рулевая_зад_Томск
+  index: 3
+  sub_index: 0
+  description: Актуальная реечная позиция -1000...+1000
+  type: SIGNED16
+  value: 28
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A1.7 CurrentRMS#Рулевая_зад_Томск
+  index: 18
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0
+  units: A
+  editable: false
+  min_value: 0
+  max_value: 6553.5
+- name: A0.2 SetSteerPos#Рулевая_перед_Томск
+  index: 2
+  sub_index: 0
+  description: Задание реечной позиции -1000...+1000
+  type: SIGNED16
+  value: -6
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A0.3 ActSteerPos#Рулевая_перед_Томск
+  index: 3
+  sub_index: 0
+  description: Актуальная реечная позиция -1000...+1000
+  type: SIGNED16
+  value: -6
+  editable: true
+  min_value: -32767.0
+  max_value: 32767.0
+- name: A1.7 CurrentRMS#Рулевая_перед_Томск
+  index: 18
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0
+  units: A
+  editable: false
+  min_value: 0
+  max_value: 6553.5
+напряжение и ток ТАБ:
+- name: Current#ТАБ
+  index: 16896
+  sub_index: 2
+  type: SIGNED16
+  value: 0
+  editable: true
+  min_value: -32768.0
+  max_value: 32767.0
+- name: UPTIME#Инвертор_МЭИ
+  index: 8192
+  sub_index: 0
+  description: Время работы
+  type: FLOAT
+  value: 330.2030029296875
+  units: s
+  editable: false
+  min_value: -2147483648.0
+  max_value: 2147483647.0
+- name: DC_VOLTAGE#Инвертор_МЭИ
+  index: 8192
+  sub_index: 3
+  description: Напряжение ЗПТ
+  type: FLOAT
+  value: 355.3110046386719
+  units: V
+  editable: false
+  min_value: -2147483648.0
+  max_value: 2147483647.0
+- name: Voltage#ТАБ
+  index: 16496
+  sub_index: 4
+  type: FLOAT
+  value: 358.0082092285156
+  editable: true
+  min_value: -2147483648.0
+  max_value: 2147483647.0

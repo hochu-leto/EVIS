@@ -1,0 +1,3221 @@
+date_time: 2023-02-21_15-20-22
+readme:
+  required_fields:
+    name: Содержит имя параметра
+    index: Определяет адрес параметра в словаре Canopen устройства, либо адресс ячейки
+      памяти для рулевых блоков
+    sub_index: Определяет адрес параметра в словаре Canopen устройства, для рулевых
+      блоков не используется
+    type: Определяет тип данных параметра, возможные значения "BOOLEAN", "SIGNED8",
+      "SIGNED16", "SIGNED32", "SIGNED64", "UNSIGNED8", "UNSIGNED16", "UNSIGNED32",
+      "FLOAT", "VISIBLE_STRING", "OCTET_STRING", "UNICODE_STRING", "TIME_OF_DAY",
+      "TIME_DIFFERENCE", "DOMAIN"
+  optional_fields:
+    editable: 'Указывает возможно ли изменение параметра или только для просмотра,возможные
+      значения: True, False'
+    description: Содержит подробное описание параметра
+    offset: Смещение для перевода полученного integer-значения в дробное по формуле
+      value = (raw_value * multiplier) - offset.Указывается только для физических
+      величин, которые нуждаются в конвертации. Если значение 0, то может не указываться
+    multiplier: Множитель для перевода полученного integer-значения в дробное по формуле
+      value = (raw_value * multiplier) - offset. Указывается только для физических
+      величин, которые нуждаются в конвертации. Если значение 1, то может не указываться
+    eeprom: Наличие поля показывает, что этот параметр сохраняется в энергонезависимую
+      память. Запись и чтение осуществляются по запросам со стороны пользователя.
+      При включении КВУ чтение параметров из EEPROM происходит автоматически
+    value: Предназначено для сохранения актуального значения параметра при выгрузке
+      конфигурации из блокав файл и обратно
+    units: Единицы измерения
+    value_table: Расшифровка возможных значений в поле 'value'
+    period: Периодичность опроса параметра, от 1 до 1000, чем меньше, чем чаще опрашивается
+    min_value: Минимально возможное значение параметра, при отсутствии заданной величины
+      принимается равному минимальному значению согласно типу параметра
+    max_value: Максимально возможное значение параметра, при отсутствии заданной величины
+      принимается равному Максимальному значению согласно типу параметра
+    widget: 'Отображение величины параметра в диагностической программе, при отсутствии
+      отображается в виде цифр, возможные значения: для не редактируемых: "BAR", для
+      редактируемых: "BUTTON", "SLIDER", "SWITCH"'
+device:
+  name: ТАБ
+  serial_number: '000015'
+  firmware_version: 1.58.3
+  request_id: 1568
+  answer_id: 1440
+  protocol: CANOpen
+  current_errors_list:
+  - “Need acknowledgement”
+  parameters:
+    Identity&Pre-defined Error Field&Consumer Heartbeat Time&Server SDO Parameter&Client SDO 1 Parameter:
+    - name: Vendor ID
+      index: 4120
+      sub_index: 1
+      type: UNSIGNED32
+      value: 706
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: Product Code
+      index: 4120
+      sub_index: 2
+      type: UNSIGNED32
+      value: 401
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: Revision Number
+      index: 4120
+      sub_index: 3
+      type: UNSIGNED32
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: Serial Number
+      index: 4120
+      sub_index: 4
+      type: UNSIGNED32
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: Number of Errors
+      index: 4099
+      sub_index: 0
+      type: UNSIGNED8
+      value: 1
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Standard Error Field
+      index: 4099
+      sub_index: 1
+      type: UNSIGNED32
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: Consumer Heartbeat Time
+      index: 4118
+      sub_index: 2
+      type: UNSIGNED32
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: COB ID Client to Server (Receive SDO)
+      index: 4608
+      sub_index: 1
+      type: UNSIGNED32
+      value: 3104
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: COB ID Server to Client (Transmit SDO)
+      index: 4608
+      sub_index: 2
+      type: UNSIGNED32
+      value: 2976
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: COB ID Client to Server (Transmit SDO)
+      index: 4736
+      sub_index: 1
+      type: UNSIGNED32
+      value: 3104
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: COB ID Server to Client (Receive SDO)
+      index: 4736
+      sub_index: 2
+      type: UNSIGNED32
+      value: 2976
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Node ID of the SDO Server
+      index: 4736
+      sub_index: 3
+      type: UNSIGNED8
+      value: 10
+      editable: true
+      min_value: 0
+      max_value: 255
+    batteryOvercurrent:
+    - name: CurrentChargeMax
+      index: 8704
+      sub_index: 1
+      type: FLOAT
+      value: 50.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CurrentChargeTolerant
+      index: 8704
+      sub_index: 2
+      type: FLOAT
+      value: 45.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CurrentLoadMax
+      index: 8704
+      sub_index: 3
+      type: FLOAT
+      value: 200.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CurrentLoadTolerant
+      index: 8704
+      sub_index: 4
+      type: FLOAT
+      value: 150.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    fs:
+    - name: Mounted
+      index: 16528
+      sub_index: 1
+      type: UNSIGNED16
+      value: 1.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: CapacityMByte
+      index: 16528
+      sub_index: 2
+      type: UNSIGNED16
+      value: 15324.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: AvailableMByte
+      index: 16528
+      sub_index: 3
+      type: UNSIGNED16
+      value: 14382.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: Inserted
+      index: 16528
+      sub_index: 4
+      type: UNSIGNED16
+      value: 1.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: MountError
+      index: 16528
+      sub_index: 5
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: FsError
+      index: 16528
+      sub_index: 6
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    pdo:
+    - name: DiscreteInputs
+      index: 16896
+      sub_index: 1
+      type: UNSIGNED8
+      value: 1.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Current
+      index: 16896
+      sub_index: 2
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: InternalState
+      index: 16896
+      sub_index: 3
+      type: UNSIGNED32
+      value: 63963180.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: ErrorsReg1
+      index: 16896
+      sub_index: 4
+      type: UNSIGNED32
+      value: 16384.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: CellMinimumTemperature
+      index: 16896
+      sub_index: 5
+      type: SIGNED8
+      value: 18.0
+      editable: true
+      min_value: -128
+      max_value: 127
+    - name: CellMaximumTemperature
+      index: 16896
+      sub_index: 6
+      type: SIGNED8
+      value: 20.0
+      editable: true
+      min_value: -128
+      max_value: 127
+    - name: Soc
+      index: 16896
+      sub_index: 7
+      type: UNSIGNED8
+      value: 39.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Voltage
+      index: 16896
+      sub_index: 8
+      type: UNSIGNED16
+      value: 3529.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: HYGCI_Counter
+      index: 16896
+      sub_index: 9
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: HYGCI_Status
+      index: 16896
+      sub_index: 10
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: HYGCI_Voltage
+      index: 16896
+      sub_index: 11
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: HYGCI_Current
+      index: 16896
+      sub_index: 12
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: HYGCI_Temperature
+      index: 16896
+      sub_index: 13
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Crown_A2
+      index: 16896
+      sub_index: 14
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Crown_A1
+      index: 16896
+      sub_index: 15
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Crown_Relay
+      index: 16896
+      sub_index: 16
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Crown_NewRelay
+      index: 16896
+      sub_index: 17
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: HYGCI_Feedback
+      index: 16896
+      sub_index: 18
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: HYGCI_Heartbeat
+      index: 16896
+      sub_index: 19
+      type: UNSIGNED8
+      value: 5
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Combilift_Soc
+      index: 16896
+      sub_index: 20
+      type: UNSIGNED16
+      value: 39.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Combilift_Voltage
+      index: 16896
+      sub_index: 21
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Combilift_Current
+      index: 16896
+      sub_index: 22
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Combilift_Temperature
+      index: 16896
+      sub_index: 23
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Combilift_Status
+      index: 16896
+      sub_index: 24
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Combilift_Counter
+      index: 16896
+      sub_index: 25
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Combilift_Feedback
+      index: 16896
+      sub_index: 26
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Shunt_Counter
+      index: 16896
+      sub_index: 27
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Shunt_Errors
+      index: 16896
+      sub_index: 28
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Shunt_Current
+      index: 16896
+      sub_index: 29
+      type: SIGNED32
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Shunt_Temperature
+      index: 16896
+      sub_index: 30
+      type: SIGNED8
+      value: 0.0
+      editable: true
+      min_value: -128
+      max_value: 127
+    - name: Shunt_CounterSlow
+      index: 16896
+      sub_index: 31
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Shunt_CurrentMean
+      index: 16896
+      sub_index: 32
+      type: SIGNED32
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: HYGCI_MaximumDischargeCurrent
+      index: 16896
+      sub_index: 33
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: HYGCI_MaximumChargeCurrent
+      index: 16896
+      sub_index: 34
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: HYGCI_MinimumVoltage
+      index: 16896
+      sub_index: 35
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: HYGCI_MaximumVoltage
+      index: 16896
+      sub_index: 36
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: HYGCI_ThermalDerate
+      index: 16896
+      sub_index: 37
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: HYGCI_Temperature8
+      index: 16896
+      sub_index: 38
+      type: SIGNED8
+      value: 0.0
+      editable: true
+      min_value: -128
+      max_value: 127
+    - name: Spirit_Counter
+      index: 16896
+      sub_index: 39
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_Status
+      index: 16896
+      sub_index: 40
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_Voltage
+      index: 16896
+      sub_index: 41
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Spirit_Current
+      index: 16896
+      sub_index: 42
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Spirit_Temperature
+      index: 16896
+      sub_index: 43
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Spirit_CellCount
+      index: 16896
+      sub_index: 44
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_Flags
+      index: 16896
+      sub_index: 45
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_EffectiveCapacity
+      index: 16896
+      sub_index: 46
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Spirit_Energy
+      index: 16896
+      sub_index: 47
+      type: UNSIGNED32
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Spirit_MinCellVoltage
+      index: 16896
+      sub_index: 48
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Spirit_MaxCellVoltage
+      index: 16896
+      sub_index: 49
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Spirit_MinCellNumber
+      index: 16896
+      sub_index: 50
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_MaxCellNumber
+      index: 16896
+      sub_index: 51
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_MaxLogicTemperature
+      index: 16896
+      sub_index: 52
+      type: SIGNED8
+      value: 0.0
+      editable: true
+      min_value: -128
+      max_value: 127
+    - name: Spirit_ContactorTemperature
+      index: 16896
+      sub_index: 53
+      type: SIGNED8
+      value: 0.0
+      editable: true
+      min_value: -128
+      max_value: 127
+    - name: MicroPower_Control0
+      index: 16896
+      sub_index: 54
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: MicroPower_Control1
+      index: 16896
+      sub_index: 55
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: MicroPower_Control2
+      index: 16896
+      sub_index: 56
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: MicroPower_Voltage
+      index: 16896
+      sub_index: 57
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: MicroPower_Current
+      index: 16896
+      sub_index: 58
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: MicroPower_Power
+      index: 16896
+      sub_index: 59
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: MicroPower_Info
+      index: 16896
+      sub_index: 60
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: MicroPower_Derate
+      index: 16896
+      sub_index: 61
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: MicroPower_Warning
+      index: 16896
+      sub_index: 62
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: MicroPower_Error
+      index: 16896
+      sub_index: 63
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: MicroPower_ChargingCurrent
+      index: 16896
+      sub_index: 64
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Bassi_Current
+      index: 16896
+      sub_index: 65
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_Voltage
+      index: 16896
+      sub_index: 66
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_Status
+      index: 16896
+      sub_index: 67
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Bassi_Reserved1
+      index: 16896
+      sub_index: 68
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_MaxDischargeCurrent
+      index: 16896
+      sub_index: 69
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_ChargeCurrent
+      index: 16896
+      sub_index: 70
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_MinVoltage
+      index: 16896
+      sub_index: 71
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_MaxVoltage
+      index: 16896
+      sub_index: 72
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_ChargerID
+      index: 16896
+      sub_index: 73
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Bassi_Counter
+      index: 16896
+      sub_index: 74
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Bassi_Version
+      index: 16896
+      sub_index: 75
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_Reserved2
+      index: 16896
+      sub_index: 76
+      type: UNSIGNED32
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Bassi_Code
+      index: 16896
+      sub_index: 77
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Bassi_Exception
+      index: 16896
+      sub_index: 78
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Bassi_ActualVoltage
+      index: 16896
+      sub_index: 79
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_ActualCurrent
+      index: 16896
+      sub_index: 80
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_Capacity
+      index: 16896
+      sub_index: 81
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_Temperature
+      index: 16896
+      sub_index: 82
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Bassi_ChargingTime
+      index: 16896
+      sub_index: 83
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_Reserved3
+      index: 16896
+      sub_index: 84
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Bassi_Reserved4
+      index: 16896
+      sub_index: 85
+      type: UNSIGNED32
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Bassi_ErrorCode
+      index: 16896
+      sub_index: 86
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_Reserved5
+      index: 16896
+      sub_index: 87
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_Reserved6
+      index: 16896
+      sub_index: 88
+      type: UNSIGNED32
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: ErrorsReg2
+      index: 16896
+      sub_index: 89
+      type: UNSIGNED32
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Zik_Status
+      index: 16896
+      sub_index: 90
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Zik_BatteryVoltage
+      index: 16896
+      sub_index: 91
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Zik_BatteryCurrent
+      index: 16896
+      sub_index: 92
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Zik_SupercapacitorVoltage
+      index: 16896
+      sub_index: 93
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Zik_Faults
+      index: 16896
+      sub_index: 94
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Zik_MinVoltage
+      index: 16896
+      sub_index: 95
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Zik_MaxVoltage
+      index: 16896
+      sub_index: 96
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Zik_MinTemperature
+      index: 16896
+      sub_index: 97
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Zik_MaxTemperature
+      index: 16896
+      sub_index: 98
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Zik_SupercapacitorTemperature
+      index: 16896
+      sub_index: 99
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Spirit_Config1
+      index: 16896
+      sub_index: 100
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_Config2
+      index: 16896
+      sub_index: 101
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_TruckStatus
+      index: 16896
+      sub_index: 102
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_ChargerStatus
+      index: 16896
+      sub_index: 103
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Spirit_WaitTimeSec
+      index: 16896
+      sub_index: 104
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_Soc
+      index: 16896
+      sub_index: 105
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_Soh
+      index: 16896
+      sub_index: 106
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_Ewcode
+      index: 16896
+      sub_index: 107
+      type: UNSIGNED32
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Fronius_Imeas0
+      index: 16896
+      sub_index: 108
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Fronius_Umeas0
+      index: 16896
+      sub_index: 109
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Fronius_Temp
+      index: 16896
+      sub_index: 110
+      type: SIGNED8
+      value: 0.0
+      editable: true
+      min_value: -128
+      max_value: 127
+    - name: Fronius_Iset0
+      index: 16896
+      sub_index: 111
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Fronius_Uset0
+      index: 16896
+      sub_index: 112
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Fronius_Status
+      index: 16896
+      sub_index: 113
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_ChargerStatus
+      index: 16896
+      sub_index: 114
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_ChargerImeas0
+      index: 16896
+      sub_index: 115
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Fronius_ChargerUmeas0
+      index: 16896
+      sub_index: 116
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Fronius_Imeas1
+      index: 16896
+      sub_index: 117
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_Umeas1
+      index: 16896
+      sub_index: 118
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_Iset1
+      index: 16896
+      sub_index: 119
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_Uset1
+      index: 16896
+      sub_index: 120
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_ChargerImeas1
+      index: 16896
+      sub_index: 121
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    - name: Fronius_ChargerUmeas1
+      index: 16896
+      sub_index: 122
+      type: UNSIGNED8
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 255
+    selectedCellResistance:
+    - name: selectedCellResistance 1
+      index: 16485
+      sub_index: 1
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 2
+      index: 16485
+      sub_index: 2
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 3
+      index: 16485
+      sub_index: 3
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 4
+      index: 16485
+      sub_index: 4
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 5
+      index: 16485
+      sub_index: 5
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 6
+      index: 16485
+      sub_index: 6
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 7
+      index: 16485
+      sub_index: 7
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 8
+      index: 16485
+      sub_index: 8
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 9
+      index: 16485
+      sub_index: 9
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 10
+      index: 16485
+      sub_index: 10
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 11
+      index: 16485
+      sub_index: 11
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 12
+      index: 16485
+      sub_index: 12
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 13
+      index: 16485
+      sub_index: 13
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 14
+      index: 16485
+      sub_index: 14
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 15
+      index: 16485
+      sub_index: 15
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 16
+      index: 16485
+      sub_index: 16
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 17
+      index: 16485
+      sub_index: 17
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 18
+      index: 16485
+      sub_index: 18
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 19
+      index: 16485
+      sub_index: 19
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellResistance 20
+      index: 16485
+      sub_index: 20
+      type: FLOAT
+      value: 0.0005000000237487257
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    selectedCellSoc:
+    - name: selectedCellSoc 1
+      index: 16484
+      sub_index: 1
+      type: FLOAT
+      value: 39.79848098754883
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 2
+      index: 16484
+      sub_index: 2
+      type: FLOAT
+      value: 40.02521514892578
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 3
+      index: 16484
+      sub_index: 3
+      type: FLOAT
+      value: 39.985721588134766
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 4
+      index: 16484
+      sub_index: 4
+      type: FLOAT
+      value: 40.549949645996094
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 5
+      index: 16484
+      sub_index: 5
+      type: FLOAT
+      value: 40.18809127807617
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 6
+      index: 16484
+      sub_index: 6
+      type: FLOAT
+      value: 42.71968460083008
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 7
+      index: 16484
+      sub_index: 7
+      type: FLOAT
+      value: 40.42734146118164
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 8
+      index: 16484
+      sub_index: 8
+      type: FLOAT
+      value: 41.39139175415039
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 9
+      index: 16484
+      sub_index: 9
+      type: FLOAT
+      value: 40.978939056396484
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 10
+      index: 16484
+      sub_index: 10
+      type: FLOAT
+      value: 42.00381851196289
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 11
+      index: 16484
+      sub_index: 11
+      type: FLOAT
+      value: 40.3453254699707
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 12
+      index: 16484
+      sub_index: 12
+      type: FLOAT
+      value: 40.5008659362793
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 13
+      index: 16484
+      sub_index: 13
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 14
+      index: 16484
+      sub_index: 14
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 15
+      index: 16484
+      sub_index: 15
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 16
+      index: 16484
+      sub_index: 16
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 17
+      index: 16484
+      sub_index: 17
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 18
+      index: 16484
+      sub_index: 18
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 19
+      index: 16484
+      sub_index: 19
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellSoc 20
+      index: 16484
+      sub_index: 20
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    selectedCellState:
+    - name: selectedCellState 1
+      index: 16481
+      sub_index: 1
+      type: UNSIGNED16
+      value: 35.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 2
+      index: 16481
+      sub_index: 2
+      type: UNSIGNED16
+      value: 35.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 3
+      index: 16481
+      sub_index: 3
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 4
+      index: 16481
+      sub_index: 4
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 5
+      index: 16481
+      sub_index: 5
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 6
+      index: 16481
+      sub_index: 6
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 7
+      index: 16481
+      sub_index: 7
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 8
+      index: 16481
+      sub_index: 8
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 9
+      index: 16481
+      sub_index: 9
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 10
+      index: 16481
+      sub_index: 10
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 11
+      index: 16481
+      sub_index: 11
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 12
+      index: 16481
+      sub_index: 12
+      type: UNSIGNED16
+      value: 33.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 13
+      index: 16481
+      sub_index: 13
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 14
+      index: 16481
+      sub_index: 14
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 15
+      index: 16481
+      sub_index: 15
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 16
+      index: 16481
+      sub_index: 16
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 17
+      index: 16481
+      sub_index: 17
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 18
+      index: 16481
+      sub_index: 18
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 19
+      index: 16481
+      sub_index: 19
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: selectedCellState 20
+      index: 16481
+      sub_index: 20
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    selectedCellTemperature:
+    - name: selectedCellTemperature 1
+      index: 16483
+      sub_index: 1
+      type: FLOAT
+      value: 19.14177131652832
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 2
+      index: 16483
+      sub_index: 2
+      type: FLOAT
+      value: 18.48860740661621
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 3
+      index: 16483
+      sub_index: 3
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 4
+      index: 16483
+      sub_index: 4
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 5
+      index: 16483
+      sub_index: 5
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 6
+      index: 16483
+      sub_index: 6
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 7
+      index: 16483
+      sub_index: 7
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 8
+      index: 16483
+      sub_index: 8
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 9
+      index: 16483
+      sub_index: 9
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 10
+      index: 16483
+      sub_index: 10
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 11
+      index: 16483
+      sub_index: 11
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 12
+      index: 16483
+      sub_index: 12
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 13
+      index: 16483
+      sub_index: 13
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 14
+      index: 16483
+      sub_index: 14
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 15
+      index: 16483
+      sub_index: 15
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 16
+      index: 16483
+      sub_index: 16
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 17
+      index: 16483
+      sub_index: 17
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 18
+      index: 16483
+      sub_index: 18
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 19
+      index: 16483
+      sub_index: 19
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellTemperature 20
+      index: 16483
+      sub_index: 20
+      type: FLOAT
+      value: .nan
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    selectedCellVoltage:
+    - name: selectedCellVoltage 1
+      index: 16482
+      sub_index: 1
+      type: FLOAT
+      value: 3.2730000019073486
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 2
+      index: 16482
+      sub_index: 2
+      type: FLOAT
+      value: 3.2730000019073486
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 3
+      index: 16482
+      sub_index: 3
+      type: FLOAT
+      value: 3.2730000019073486
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 4
+      index: 16482
+      sub_index: 4
+      type: FLOAT
+      value: 3.2714998722076416
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 5
+      index: 16482
+      sub_index: 5
+      type: FLOAT
+      value: 3.2714998722076416
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 6
+      index: 16482
+      sub_index: 6
+      type: FLOAT
+      value: 3.2730000019073486
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 7
+      index: 16482
+      sub_index: 7
+      type: FLOAT
+      value: 3.2714998722076416
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 8
+      index: 16482
+      sub_index: 8
+      type: FLOAT
+      value: 3.2730000019073486
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 9
+      index: 16482
+      sub_index: 9
+      type: FLOAT
+      value: 3.2714998722076416
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 10
+      index: 16482
+      sub_index: 10
+      type: FLOAT
+      value: 3.2699999809265137
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 11
+      index: 16482
+      sub_index: 11
+      type: FLOAT
+      value: 3.2714998722076416
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 12
+      index: 16482
+      sub_index: 12
+      type: FLOAT
+      value: 3.2699999809265137
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 13
+      index: 16482
+      sub_index: 13
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 14
+      index: 16482
+      sub_index: 14
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 15
+      index: 16482
+      sub_index: 15
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 16
+      index: 16482
+      sub_index: 16
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 17
+      index: 16482
+      sub_index: 17
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 18
+      index: 16482
+      sub_index: 18
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 19
+      index: 16482
+      sub_index: 19
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: selectedCellVoltage 20
+      index: 16482
+      sub_index: 20
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    selectedLogic:
+    - name: Number
+      index: 16480
+      sub_index: 1
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: State
+      index: 16480
+      sub_index: 2
+      type: UNSIGNED16
+      value: 55.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: Temperature
+      index: 16480
+      sub_index: 3
+      type: FLOAT
+      value: 25.67999267578125
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Balancing
+      index: 16480
+      sub_index: 4
+      type: UNSIGNED32
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: BoardVersion
+      index: 16480
+      sub_index: 5
+      type: UNSIGNED16
+      value: 512.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: SoftwareVersion
+      index: 16480
+      sub_index: 6
+      type: UNSIGNED32
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: CellNumber
+      index: 16480
+      sub_index: 7
+      type: UNSIGNED16
+      value: 12.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: Serial
+      index: 16480
+      sub_index: 8
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    softwareSignals:
+    - name: BatteryCover
+      index: 20736
+      sub_index: 1
+      type: SIGNED16
+      value: -1
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: ChargerConnected
+      index: 20736
+      sub_index: 2
+      type: SIGNED16
+      value: -1
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: PowerDownRequest
+      index: 20736
+      sub_index: 3
+      type: SIGNED16
+      value: -1
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: InhibitCharging
+      index: 20736
+      sub_index: 4
+      type: SIGNED16
+      value: -1
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: InhibitDischarging
+      index: 20736
+      sub_index: 5
+      type: SIGNED16
+      value: -1
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: ChargingContactorFeedback
+      index: 20736
+      sub_index: 6
+      type: SIGNED16
+      value: -1
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: DischargingContactorFeedback
+      index: 20736
+      sub_index: 7
+      type: SIGNED16
+      value: -1
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    System Main:
+    - name: Soc
+      index: 16496
+      sub_index: 1
+      type: FLOAT
+      value: 39.090389251708984
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: LogicCount
+      index: 16496
+      sub_index: 2
+      type: UNSIGNED16
+      value: 9.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CellCount
+      index: 16496
+      sub_index: 3
+      type: UNSIGNED16
+      value: 108.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Voltage
+      index: 16496
+      sub_index: 4
+      type: FLOAT
+      value: 352.99652099609375
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Resistance
+      index: 16496
+      sub_index: 5
+      type: FLOAT
+      value: 0.054000020027160645
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Capacity
+      index: 16496
+      sub_index: 6
+      type: FLOAT
+      value: 105.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: BalancingEfficiency
+      index: 16496
+      sub_index: 7
+      type: FLOAT
+      value: 96.37080383300781
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Soh
+      index: 16496
+      sub_index: 8
+      type: FLOAT
+      value: 100.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: DischargeRatioAh
+      index: 16496
+      sub_index: 9
+      type: FLOAT
+      value: 19.246732711791992
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: LogicMinimumTemperature
+      index: 16496
+      sub_index: 10
+      type: FLOAT
+      value: 21.75
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: LogicMinimumTemperatureLogicIndex
+      index: 16496
+      sub_index: 11
+      type: UNSIGNED16
+      value: 1.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: LogicMaximumTemperature
+      index: 16496
+      sub_index: 12
+      type: FLOAT
+      value: 29.05999755859375
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: LogicMaximumTemperatureLogicIndex
+      index: 16496
+      sub_index: 13
+      type: UNSIGNED16
+      value: 4.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: LogicCommandRate
+      index: 16496
+      sub_index: 14
+      type: FLOAT
+      value: 37.52735137939453
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CellMinimumTemperature
+      index: 16496
+      sub_index: 15
+      type: FLOAT
+      value: 18.40506362915039
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CellMinimumTemperatureLogicIndex
+      index: 16496
+      sub_index: 16
+      type: UNSIGNED16
+      value: 7.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CellMinimumTemperatureCellIndex
+      index: 16496
+      sub_index: 17
+      type: UNSIGNED16
+      value: 1.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CellMaximumTemperature
+      index: 16496
+      sub_index: 18
+      type: FLOAT
+      value: 19.551898956298828
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CellMaximumTemperatureLogicIndex
+      index: 16496
+      sub_index: 19
+      type: UNSIGNED16
+      value: 1.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CellMaximumTemperatureCellIndex
+      index: 16496
+      sub_index: 20
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CellMinimumVoltage
+      index: 16496
+      sub_index: 21
+      type: FLOAT
+      value: 3.2624998092651367
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CellMinimumVoltageLogicIndex
+      index: 16496
+      sub_index: 22
+      type: UNSIGNED16
+      value: 8.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CellMinimumVoltageCellIndex
+      index: 16496
+      sub_index: 23
+      type: UNSIGNED16
+      value: 6.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CellMaximumVoltage
+      index: 16496
+      sub_index: 24
+      type: FLOAT
+      value: 3.2730000019073486
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CellMaximumVoltageLogicIndex
+      index: 16496
+      sub_index: 25
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CellMaximumVoltageCellIndex
+      index: 16496
+      sub_index: 26
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Error
+      index: 16496
+      sub_index: 27
+      type: UNSIGNED16
+      value: 1.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    System Online:
+    - name: J1939_Voltage
+      index: 16496
+      sub_index: 28
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: J1939_Current
+      index: 16496
+      sub_index: 29
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: J1939_Status
+      index: 16496
+      sub_index: 30
+      type: UNSIGNED16
+      value: 12.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Eltek_Status
+      index: 16496
+      sub_index: 31
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Eltek_InputCurrent
+      index: 16496
+      sub_index: 32
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Eltek_OutputCurrent
+      index: 16496
+      sub_index: 33
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Eltek_InputVoltage
+      index: 16496
+      sub_index: 34
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Eltek_OutputVoltage
+      index: 16496
+      sub_index: 35
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Eltek_InputFrequency
+      index: 16496
+      sub_index: 36
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Eltek_PrimTemperature
+      index: 16496
+      sub_index: 37
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Eltek_SecTemperature
+      index: 16496
+      sub_index: 38
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: Eltek_AvailablePower
+      index: 16496
+      sub_index: 39
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Eltek_MaxPower
+      index: 16496
+      sub_index: 40
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Eltek_Errors
+      index: 16496
+      sub_index: 41
+      type: UNSIGNED32
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: SunnyIsland_Voltage
+      index: 16496
+      sub_index: 42
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: SunnyIsland_Current
+      index: 16496
+      sub_index: 43
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: SunnyIsland_Temperature
+      index: 16496
+      sub_index: 44
+      type: SIGNED16
+      value: 0.0
+      editable: true
+      min_value: -32768
+      max_value: 32767
+    - name: SunnyIsland_Soc
+      index: 16496
+      sub_index: 45
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: SunnyIsland_Soh
+      index: 16496
+      sub_index: 46
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: SunnyIsland_Mode
+      index: 16496
+      sub_index: 47
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: SunnyIsland_State
+      index: 16496
+      sub_index: 48
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: SunnyIsland_Error
+      index: 16496
+      sub_index: 49
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: SunnyIsland_ChargeVoltage
+      index: 16496
+      sub_index: 50
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Wifi_Connected
+      index: 16496
+      sub_index: 51
+      type: UNSIGNED16
+      value: 1.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Wifi_Ip
+      index: 16496
+      sub_index: 52
+      type: VISIBLE_STRING
+      value: 192.168.37.125
+      editable: false
+      period: 500
+      min_value: 0
+      max_value: 255
+    - name: Wifi_Mac
+      index: 16496
+      sub_index: 53
+      type: VISIBLE_STRING
+      value: B4:52:A9:D4
+      editable: false
+      period: 500
+      min_value: 0
+      max_value: 255
+    - name: State
+      index: 16496
+      sub_index: 54
+      type: UNSIGNED16
+      value: 3.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Duration
+      index: 16496
+      sub_index: 55
+      type: UNSIGNED32
+      value: 99314.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Crown_Online
+      index: 16496
+      sub_index: 56
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: InstantCapacity
+      index: 16496
+      sub_index: 57
+      type: FLOAT
+      value: 105.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CoulombCounterPlus
+      index: 16496
+      sub_index: 58
+      type: FLOAT
+      value: 49.52115249633789
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CoulombCounterMinus
+      index: 16496
+      sub_index: 59
+      type: FLOAT
+      value: 5.8195390701293945
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Ethernet_Ip
+      index: 16496
+      sub_index: 60
+      type: VISIBLE_STRING
+      value: 192.168.0.100
+      editable: false
+      period: 500
+      min_value: 0
+      max_value: 255
+    - name: Ethernet_Netmask
+      index: 16496
+      sub_index: 61
+      type: VISIBLE_STRING
+      value: 255.255.0.0
+      editable: false
+      period: 500
+      min_value: 0
+      max_value: 255
+    - name: Ethernet_Gateway
+      index: 16496
+      sub_index: 62
+      type: VISIBLE_STRING
+      value: 192.168.0.1
+      editable: false
+      period: 500
+      min_value: 0
+      max_value: 255
+    - name: CurrentZeroLevel
+      index: 16496
+      sub_index: 63
+      type: FLOAT
+      value: 2.5022637844085693
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: HYG_Feedback
+      index: 16496
+      sub_index: 64
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: HYG_Online
+      index: 16496
+      sub_index: 65
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Indication_Status
+      index: 16496
+      sub_index: 66
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Indication_Efficiency
+      index: 16496
+      sub_index: 67
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Combilift_Feedback
+      index: 16496
+      sub_index: 68
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Combilift_Online
+      index: 16496
+      sub_index: 69
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: UPS_Online
+      index: 16496
+      sub_index: 70
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    System Sensors:
+    - name: CurrentSensor_Value
+      index: 16496
+      sub_index: 71
+      type: FLOAT
+      value: 2.4962637424468994
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CurrentSensor_Zero
+      index: 16496
+      sub_index: 72
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CurrentSensorAux_Value
+      index: 16496
+      sub_index: 73
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: CurrentSensorAux_Zero
+      index: 16496
+      sub_index: 74
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: OpenBLT_Indication
+      index: 16496
+      sub_index: 75
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Shunt_Online
+      index: 16496
+      sub_index: 76
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Spirit_Online
+      index: 16496
+      sub_index: 77
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Trolleybus_ChargerOnline
+      index: 16496
+      sub_index: 78
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Trolleybus_TrolleybusOnline
+      index: 16496
+      sub_index: 79
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: ChargeLimit_Current
+      index: 16496
+      sub_index: 80
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: DischargeLimit_Current
+      index: 16496
+      sub_index: 81
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: MicroPower_Online
+      index: 16496
+      sub_index: 82
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: SPE_Online
+      index: 16496
+      sub_index: 83
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: SPE_Voltage
+      index: 16496
+      sub_index: 84
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: SPE_Current
+      index: 16496
+      sub_index: 85
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Bassi_Online
+      index: 16496
+      sub_index: 86
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Display_Status
+      index: 16496
+      sub_index: 87
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Display_Efficiency
+      index: 16496
+      sub_index: 88
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: OpenBLT_Display
+      index: 16496
+      sub_index: 89
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    System Other&energy:
+    - name: OpenBLT_Logic
+      index: 16496
+      sub_index: 90
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Wifi_Fw
+      index: 16496
+      sub_index: 91
+      type: UNSIGNED32
+      value: 16908290.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Wifi_Phy
+      index: 16496
+      sub_index: 92
+      type: UNSIGNED32
+      value: 16778007.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Wifi_Nwp
+      index: 16496
+      sub_index: 93
+      type: UNSIGNED32
+      value: 33685505.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Wifi_Rom
+      index: 16496
+      sub_index: 94
+      type: UNSIGNED16
+      value: 13107.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Wifi_Status
+      index: 16496
+      sub_index: 95
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CurrentSystem
+      index: 16496
+      sub_index: 96
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: PowerMonitor_Version
+      index: 16496
+      sub_index: 97
+      type: UNSIGNED32
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Balancing
+      index: 16496
+      sub_index: 98
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: MainX_Online
+      index: 16496
+      sub_index: 99
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Atib_OutputVoltage
+      index: 16496
+      sub_index: 100
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Atib_OutputCurrent
+      index: 16496
+      sub_index: 101
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Atib_Status
+      index: 16496
+      sub_index: 102
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Atib_Online
+      index: 16496
+      sub_index: 103
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Fronius_Online
+      index: 16496
+      sub_index: 104
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: Fronius_ChargerCurrent
+      index: 16496
+      sub_index: 105
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Fronius_ChargerVoltage
+      index: 16496
+      sub_index: 106
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Fronius_ChargerStatus
+      index: 16496
+      sub_index: 107
+      type: UNSIGNED16
+      value: 0.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: CurrentAuxZeroLevel
+      index: 16496
+      sub_index: 108
+      type: FLOAT
+      value: 0.0
+      editable: true
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Plus
+      index: 16512
+      sub_index: 1
+      type: FLOAT
+      value: 63988.32421875
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Minus
+      index: 16512
+      sub_index: 2
+      type: FLOAT
+      value: 16778.7578125
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: Balance
+      index: 16512
+      sub_index: 3
+      type: FLOAT
+      value: 341.2486267089844
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    watch:
+    - name: Device Type
+      index: 4096
+      sub_index: 0
+      type: UNSIGNED32
+      value: 418
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: Error Register
+      index: 4097
+      sub_index: 0
+      type: UNSIGNED8
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 255
+    - name: SYNC COB ID
+      index: 4101
+      sub_index: 0
+      type: UNSIGNED32
+      value: 128
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Communication Cycle Period
+      index: 4102
+      sub_index: 0
+      type: UNSIGNED32
+      value: 1000000
+      editable: true
+      min_value: 0
+      max_value: 4294967295
+    - name: Manufacturer Device Name
+      index: 4104
+      sub_index: 0
+      type: VISIBLE_STRING
+      value: BMS Main NG
+      editable: false
+      min_value: 0
+      max_value: 255
+    - name: Manufacturer Hardware Version
+      index: 4105
+      sub_index: 0
+      type: VISIBLE_STRING
+      value: '2.0'
+      editable: false
+      min_value: 0
+      max_value: 255
+    - name: Manufacturer Software Version
+      index: 4106
+      sub_index: 0
+      type: VISIBLE_STRING
+      value: 1.0.0
+      editable: false
+      min_value: 0
+      max_value: 255
+    - name: Producer Heartbeat Time
+      index: 4119
+      sub_index: 0
+      type: UNSIGNED16
+      value: 500.0
+      editable: true
+      min_value: 0
+      max_value: 65535
+    - name: serial
+      index: 12287
+      sub_index: 0
+      type: VISIBLE_STRING
+      value: '000001'
+      editable: false
+      min_value: 0
+      max_value: 255
+    - name: discreteInputs
+      index: 16384
+      sub_index: 0
+      type: UNSIGNED16
+      value: 1.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: current
+      index: 16400
+      sub_index: 0
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: temperature
+      index: 16401
+      sub_index: 0
+      type: FLOAT
+      value: 66.55036926269531
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: humidity
+      index: 16402
+      sub_index: 0
+      type: FLOAT
+      value: 50.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: currentAux
+      index: 16403
+      sub_index: 0
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: currentFinal
+      index: 16404
+      sub_index: 0
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: temperature2
+      index: 16405
+      sub_index: 0
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: voltage12V
+      index: 16410
+      sub_index: 0
+      type: FLOAT
+      value: 0.0
+      editable: false
+      min_value: -2147483648
+      max_value: 2147483647
+    - name: errorsReg1
+      index: 16416
+      sub_index: 0
+      type: UNSIGNED32
+      value: 16384.0
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: errorsReg2
+      index: 16417
+      sub_index: 0
+      type: UNSIGNED32
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: internalState
+      index: 16432
+      sub_index: 0
+      type: UNSIGNED32
+      value: 63963180.0
+      editable: false
+      min_value: 0
+      max_value: 4294967295
+    - name: discreteOutputs
+      index: 16448
+      sub_index: 0
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: relays
+      index: 16464
+      sub_index: 0
+      type: UNSIGNED16
+      value: 1.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: feedbacks
+      index: 16465
+      sub_index: 0
+      type: UNSIGNED16
+      value: 0.0
+      editable: false
+      min_value: 0
+      max_value: 65535
+    - name: time
+      index: 16640
+      sub_index: 0
+      type: VISIBLE_STRING
+      value: '204112249860'
+      editable: false
+      period: 500
+      min_value: 0
+      max_value: 255
