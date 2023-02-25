@@ -534,7 +534,6 @@ class SteerMoveThread(QThread):
         cur = self.set_current(current)
         if move and cur:
             current_set_time = current_time = start_time = time.perf_counter()
-            # new_delta = old_delta = 0
             # а дальше смотрим за текущими параметрами пока не вышло время
 
             while time.perf_counter() < start_time + self.time_for_moving:

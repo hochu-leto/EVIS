@@ -197,6 +197,7 @@ def mpei_calibrate(window):
                           text='Команда на калибровку отправлена',
                           table=list(wait_thread.imp_par_set))
     dialog.setWindowTitle('Калибровка Инвертора МЭИ')
+    dialog.setMinimumWidth(int(window.width() * 0.7))
 
     wait_thread.SignalOfProcess.connect(check_dialog_mess)
 
@@ -259,6 +260,8 @@ def suspension_to_zero(window):
         dialog = DialogChange(text='Команда на установку отправлена',
                               table=list(wait_thread.imp_par_set))
         dialog.setWindowTitle(tit)
+        dialog.setMinimumWidth(int(window.width() * 0.7))
+
 
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.wait_time = 20  # время в секундах для установки подвески
@@ -289,23 +292,23 @@ def let_moment_mpei(window):
         # выставляю стандартные значения параметров
         ref_torque.set_value(adapter_vmu, 0)
         man_control.set_value(adapter_vmu, 0)
-        is_motor_max.set_value(adapter_inv, standart_current)
-        speed_max.set_value(adapter_inv, standart_speed)
-        voltage = high_voltage.get_value(adapter_inv)
+        is_motor_max.set_value(adapter_inv, standard_current)
+        speed_max.set_value(adapter_inv, standard_speed)
+        # voltage = high_voltage.get_value(adapter_inv)
         # тушу высокое и сохраняю их в еепром
         window.thread.invertor_command('POWER_OFF', True)
         save_to_eeprom_mpei(window, node_inv, adapter_inv)
         # снова поднимаю высокое
-        if not isinstance(voltage, str) and voltage > 300:
-            window.thread.invertor_command('POWER_ON_SILENT', True)
+        # if not isinstance(voltage, str) and voltage > 300:
+        #     window.thread.invertor_command('POWER_ON_SILENT', True)
 
     # стандартные значения инвертора
-    standart_current = 270
-    standart_speed = 8000
+    standard_current = 270
+    standard_speed = 8000
     # ограничения по инвертору
     limit_current = 130  # меньше 100А не крутится
-    limit_moment = 10
-    limit_speed = 1200
+    limit_moment = 10   # при 3% может не закрутиться, поэтому 10%
+    limit_speed = 1200  # ограничение скорости, больше - страшно
     # определяю рабочие блоки из общего списка
     if 'Инвертор_МЭИ' not in window.thread.current_nodes_dict.keys() or \
             'КВУ_ТТС' not in window.thread.current_nodes_dict.keys():
@@ -351,7 +354,9 @@ def let_moment_mpei(window):
                 dialog = DialogChange(text='Команда на вращение отправлена',
                                       table=list(wait_thread.imp_par_set))
                 dialog.setWindowTitle(tit)
+                dialog.setMinimumWidth(int(window.width() * 0.7))
                 dialog.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).hide()
+                dialog.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setText('СТОП')
                 wait_thread.SignalOfProcess.connect(dialog.change_mess)
                 wait_thread.FinishedSignal.connect(finish)
                 wait_thread.wait_time = 10  # время в секундах для вращения
@@ -389,13 +394,13 @@ def let_moment_mpei(window):
                                     else:  # если передача прошла успешно
                                         if QMessageBox.information(window,
                                                                    "Информация",
-                                                                   '<b>Включи</b> ВЫСОКОЕ напряжение\n'
-                                                                   '     и нажми ОК\n'
                                                                    '     <b>ОСТОРОЖНО!!!!</b>\n'
                                                                    'Сейчас мотор начнёт вращаться',
                                                                    QMessageBox.StandardButton.Ok,
                                                                    QMessageBox.StandardButton.Cancel) == \
                                                 QMessageBox.StandardButton.Ok:
+                                            window.thread.invertor_command('POWER_ON_SILENT', True)
+                                            time.sleep(0.5)
                                             err = high_voltage.get_value(adapter_inv)
                                             if isinstance(err, str):
                                                 err = f'Некорректный ответ от инвертора\n{err}'
@@ -477,6 +482,9 @@ def check_steering_current(window):
                               table=steer.params_for_view, process=steer.progress)
         dialog.setWindowTitle('Определение токов рейки')
         dialog.setMinimumWidth(int(window.width() * 0.7))
+        dialog.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).hide()
+        dialog.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setText('СТОП')
+
         steer.SignalOfProcess.connect(dialog.change_mess)
         if QMessageBox.information(window, "Информация",
                                    f'Всё готово для определения токов рейки <b>{current_steer.name}.</b>\n'

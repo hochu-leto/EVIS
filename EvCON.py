@@ -846,7 +846,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 msg.setDefaultButton(buttonAceptar)
                 msg.exec()
                 if msg.clickedButton() == buttonAceptar:
-                    save_to_eeprom(node)
+                    save_to_eeprom(self, node)
 
         if TheBestNode in self.thread.current_nodes_dict.keys():
             user_node_dict = self.thread.current_nodes_dict[TheBestNode].group_params_dict
@@ -1013,7 +1013,8 @@ if __name__ == '__main__':
     start_time = time.perf_counter()
     app = QApplication(sys.argv)
     splash = QSplashScreen()
-    splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
+    # splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
+    splash.setPixmap(QPixmap('pictures/EVO-EvCON.jpg'))
     splash.show()
     window = VMUMonitorApp()
     window.label.setPixmap(QPixmap('pictures/grafic.png'))
@@ -1104,4 +1105,12 @@ if __name__ == '__main__':
         sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-#
+# цветомузыка
+# кнопка сохранить всё в гит
+# падает при сохранении в еепром на выходе
+# делаем два виджета бар и слайдер вместо дескрипшина, а его в тултипс
+# сохранение настроек параметра в ямл файл(и удаление пикл)
+# при обновлении проги должны добавляться только новые папки, старые параметры не трогаем
+# вывести окно сравнения различающихся параметров, которые можно менять при заливке других настроек
+# виджеты с частыми параметрами в окно управление
+# делаем графики
