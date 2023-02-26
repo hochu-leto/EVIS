@@ -71,7 +71,8 @@ from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread
 from EVOParametr import Parametr, type_values
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_toggled, \
-    check_steering_current
+    check_steering_current, multyvibrator
+from menu_items import change_min, change_period, change_max, set_slider, set_bar
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_yaml_file, \
     fill_yaml_dict, settings_dir
@@ -319,7 +320,7 @@ def add_param_to_the_best_node(current_param):
     text = f'добавлен в блок {TheBestNode}'
     # если Новый список есть в Избранном
     rowcount = window.nodes_tree.topLevelItemCount() - 1
-    best_node_item = window.nodes_tree.topLevelItem(rowcount)
+    best_node_item = window.nodes_tree.topLevelItem(rowcount)   # это очень плохо
     result = True
     if NewParamsList in user_node.group_params_dict.keys():
         if remove_param_from_the_best_node(new_param):
@@ -366,6 +367,7 @@ def paint_cells(parametr, color):
         c_item = window.vmu_param_table.item(c_row, i)
         try:
             c_item.setBackground(color)
+            # здесь можно вставить виджет редлейбл чтоб в других темах ыло видно
         except AttributeError:
             print('Ячейка отсутствует', i)
 
@@ -902,6 +904,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         all_items_menu_dict = dict([
             ('Добавить в Избранное', add_param_to_the_best_node),
             ('Удалить из Избранного', add_param_to_the_best_node),
+            ('Слайдер', set_slider),
+            ('Цветная полоса', set_bar),
             ('Задать период опроса', change_period),
             ('Установить максимум', change_max),
             ('Установить минимум', change_min)
@@ -912,60 +916,15 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         else:
             del all_items_menu_dict['Удалить из Избранного']
 
+        if not parametr.editable:
+            del all_items_menu_dict['Слайдер']
+
         items = {menu.addAction(u'' + item): value for item, value in all_items_menu_dict.items()}
 
         action = menu.exec(self.vmu_param_table.mapToGlobal(pos))
         # Display the data text of the selected row
         if action:
             res = items[action](parametr)
-
-
-def change_period(param):
-    print(f'Меняю период параметра {param.name}')
-    dialog = DialogChange(label=f'Измени период опроса для параметра {param.name} (1-1000)', value=str(param.period))
-    reg_ex = QRegularExpression("^([1-9][0-9]{0,2}|1000)$")
-    dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
-    if dialog.exec() == QDialog.DialogCode.Accepted:
-        val = dialog.lineEdit.text()
-        if val:
-            param.period = int(val)
-
-
-def change_max(param):
-    print(f'Задаю максимум для параметра {param.name}')
-    dialog = DialogChange(label=f'Измени максимальное значение для {param.name}', value=str(param.max_value))
-    reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
-    dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
-    if dialog.exec() == QDialog.DialogCode.Accepted:
-        val = dialog.lineEdit.text()
-        if val:
-            val = float(val)
-            if val > type_values[param.type]['max'] or \
-                    val < param.min_value or \
-                    val < param.value:
-                val = param.max_value
-            param.max_value = val
-
-
-def change_min(param):
-    print(f'Задаю минимум для параметра {param.name}')
-    dialog = DialogChange(label=f'Измени минимальное значение для {param.name}', value=str(param.min_value))
-    reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
-    dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
-    if dialog.exec() == QDialog.DialogCode.Accepted:
-        val = dialog.lineEdit.text()
-        if val:
-            val = float(val)
-            if val < type_values[param.type]['min'] or \
-                    val > param.max_value or \
-                    val > param.value:
-                val = param.min_value
-            param.min_value = val
-
-
-@pyqtSlot(str)
-def set_log_lbl(s: str):
-    window.log_lbl.setText(s.replace('\n', ''))
 
 
 def change_theme():
@@ -1070,7 +1029,7 @@ if __name__ == '__main__':
     window.rear_light_rbtn.clicked.connect(lambda: rb_toggled(window))
     window.low_beam_rbtn.clicked.connect(lambda: rb_toggled(window))
     window.high_beam_rbtn.clicked.connect(lambda: rb_toggled(window))
-    window.flash_light_btn.clicked.connect(lambda: rb_toggled(window))
+    window.flash_light_btn.clicked.connect(lambda: multyvibrator(window))
     window.light_box.setEnabled(False)
 
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне

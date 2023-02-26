@@ -441,7 +441,7 @@ def rb_toggled(window):
 
 
 def multyvibrator(window):
-    @pyqtSlot
+    @pyqtSlot(list, list, int)
     def log_set(l1, l2, it):
         if it is not None:
             window.log_lbl.setText(f'Моргнули фарами {it} раз')

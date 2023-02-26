@@ -1,5 +1,5 @@
 """
-всякие вспомогательные функции
+Всякие вспомогательные функции
 """
 import struct
 import traceback
@@ -132,26 +132,25 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         if par.editable:
             lb = GreenLabel()
             lb.setText(name)
+            lb.setToolTip(description)
             show_table.setCellWidget(row, 0, lb)
         else:
             name_item = QTableWidgetItem(name)
             name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            name_item.setToolTip(description)
             show_table.setItem(row, 0, name_item)
 
         desc_item = QTableWidgetItem(description)
         # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
+        desc_item.setToolTip(description)
         show_table.setItem(row, 1, desc_item)
-
-        # desc_item = MyEditLine(description, par)
-        # desc_item.FocusInSignal.connect(focus_in)
-        # desc_item.FocusOutSignal.connect(focus_out)
-        # # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-        # # desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
-        # show_table.setCellWidget(row, 1, desc_item)
 
         value_item = QTableWidgetItem('')
         value_item.setFlags(value_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        color_opacity = int((150 / 1000) * abs(par.period)) + 3
+        value_item.setBackground(QColor(0, 255, 255, color_opacity))
+        value_item.setToolTip(f'{par.min_value}...{par.max_value}')
         show_table.setItem(row, 2, value_item)
 
         compare_item = QTableWidgetItem(compare)
@@ -215,19 +214,11 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
                 items_list.append(par.widget)
             table.cellWidget(row, 2).set_text()
         else:
-            value_item = QTableWidgetItem(v_name)
-            # if par.editable:
-            #     flags = (value_item.flags() | Qt.ItemFlag.ItemIsEditable)
-            # else:
-            flags = value_item.flags() & ~Qt.ItemFlag.ItemIsEditable
-            value_item.setFlags(flags)
-            # подкрашиваем в голубой в зависимости от периода опроса
-            color_opacity = int((150 / 1000) * abs(par.period)) + 3
-            value_item.setBackground(QColor(0, 255, 255, color_opacity))
-            table.setItem(row, 2, value_item)
+            table.item(row, 2).setText(v_name)
 
         if has_compare_params:
             compare_name = table.item(row, 3).text()
+            # здесь тоже неплохо бы делат цветную метку, но я так всё утоплю в метках
             color_ = color_EVO_red_dark if v_name.strip() != compare_name.strip() else color_EVO_white
             table.item(row, 3).setBackground(color_)
         row += 1
@@ -351,6 +342,7 @@ def dw2float(dw_array):
         else ((dw & 0x7FFFFF) << 1)  # Мантисса
     m1 = m * (2 ** (-23))  # Мантисса в float
     return s * m1 * (2 ** (e - 127))
+
 
 #
 # пока просто не нужный код, может, потом пригодится

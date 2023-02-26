@@ -2,7 +2,7 @@
 тот самый объект параметра, который имеет все нужные поля, умеет запрашивать своё значение и записывать в блок нужное
 """
 import ctypes
-from copy import deepcopy, copy
+from copy import copy
 
 import CANAdater
 from helper import bytes_to_float, int_to_hex_str, float_to_int, empty_par

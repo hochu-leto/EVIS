@@ -28,6 +28,7 @@ class MyComboBox(QComboBox):
     def __init__(self, parent=None, parametr=None):
         super(MyComboBox, self).__init__(parent)
         self.parametr = parametr
+        self.setToolTip(str(parametr.value))
         self.currentIndexChanged.connect(self.item_selected_handle)
         if hasattr(self.parametr, 'value_table'):
             v_list = list(self.parametr.value_table.values())
@@ -79,6 +80,7 @@ class MyEditLine(QLineEdit):
         self.setValidator(QRegularExpressionValidator(reg_ex))
         self.returnPressed.connect(self.end_edited_handle)
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.setToolTip(f'{parametr.min_value}...{parametr.max_value}')
 
     def end_edited_handle(self):
         lst = []
