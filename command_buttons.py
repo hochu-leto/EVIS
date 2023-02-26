@@ -1,6 +1,6 @@
 import time
 
-from PyQt6.QtCore import pyqtSlot, QTimer, QEventLoop
+from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QMessageBox, QDialogButtonBox
 
 import CANAdater
@@ -21,7 +21,7 @@ wait_thread = WaitCanAnswerThread()
 sleep_thread = SleepThread(3)
 light_id_vmu = 0x18FF82A5
 
-light_commamd_dict = dict(
+light_command_dict = dict(
     off_rbtn=[0b00000000, 0b00000000],
     left_side_rbtn=[0b00000001, 0b00000000],
     right_side_rbtn=[0b00000100, 0b00000000],
@@ -30,6 +30,13 @@ light_commamd_dict = dict(
     low_beam_rbtn=[0b00000000, 0b00000001],
     high_beam_rbtn=[0b00000000, 0b00000100],
 )
+
+
+class PDOCommand:
+
+    def __init__(self, id_command: int, data: list):
+        self.id = id_command
+        self.data = data
 
 
 def warning_dialog(title: str, warn_str: str):
@@ -262,7 +269,6 @@ def suspension_to_zero(window):
         dialog.setWindowTitle(tit)
         dialog.setMinimumWidth(int(window.width() * 0.7))
 
-
         wait_thread.SignalOfProcess.connect(dialog.change_mess)
         wait_thread.wait_time = 20  # время в секундах для установки подвески
         wait_thread.req_delay = 50  # время в миллисекундах на опрос параметров
@@ -307,7 +313,7 @@ def let_moment_mpei(window):
     standard_speed = 8000
     # ограничения по инвертору
     limit_current = 130  # меньше 100А не крутится
-    limit_moment = 10   # при 3% может не закрутиться, поэтому 10%
+    limit_moment = 10  # при 3% может не закрутиться, поэтому 10%
     limit_speed = 1200  # ограничение скорости, больше - страшно
     # определяю рабочие блоки из общего списка
     if 'Инвертор_МЭИ' not in window.thread.current_nodes_dict.keys() or \
@@ -418,20 +424,44 @@ def let_moment_mpei(window):
                              QMessageBox.StandardButton.Ok)
 
 
-def rb_togled(window):
+def rb_toggled(window):
     rb_name = window.sender().objectName()
     print(rb_name)
-    if rb_name not in light_commamd_dict.keys():
+    if rb_name not in light_command_dict.keys():
         return
     adapter = adapter_for_node(window.thread.adapter, value=250)
     if adapter:
-        light_on = adapter.can_write(light_id_vmu, light_commamd_dict[rb_name])
+        light_on = adapter.can_write(light_id_vmu, light_command_dict[rb_name])
         if light_on:
             QMessageBox.critical(window, "Ошибка ", f'Команда не отправлена\n{light_on}',
                                  QMessageBox.StandardButton.Ok)
             window.log_lbl.setText(light_on.replace('\n', ''))
     else:
         QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
+
+
+def multyvibrator(window):
+    @pyqtSlot
+    def log_set(l1, l2, it):
+        if it is not None:
+            window.log_lbl.setText(f'Моргнули фарами {it} раз')
+
+    if wait_thread.isRunning():
+        wait_thread.wait()
+        wait_thread.quit()
+    else:
+        adapter = adapter_for_node(window.thread.adapter, value=250)
+        if adapter:
+            low_beam = PDOCommand(light_id_vmu, light_command_dict['low_beam_rbtn'])
+            off_light = PDOCommand(light_id_vmu, light_command_dict['off_rbtn'])
+            wait_thread.req_delay = 500
+            wait_thread.wait_time = 120
+            wait_thread.adapter = adapter
+            wait_thread.command_list = [low_beam, off_light] * 200
+            wait_thread.SignalOfProcess.commect(log_set)
+            wait_thread.start()
+        else:
+            QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
 
 
 def adapter_for_node(ad: CANAdater, value=None) -> CANAdater:

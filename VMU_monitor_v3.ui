@@ -731,6 +731,19 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="flash_light_btn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Моргаем</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>

@@ -5,7 +5,7 @@ import yaml
 from PyQt6.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
 from PyQt6.QtWidgets import QMessageBox, QDialogButtonBox
 from EVONode import EVONode, invertor_command_dict
-from EVOParametr import readme
+from EVOParametr import readme, Parametr
 from helper import buf_to_string, find_param, DialogChange
 from work_with_file import settings_dir
 
@@ -273,6 +273,7 @@ class WaitCanAnswerThread(QThread):
         self.max_err = 20
         self.req_delay = 100
         self.imp_par_set = set()
+        self.command_list = []
         self.FinishedSignal.emit()
 
     def run(self):
@@ -308,6 +309,24 @@ class WaitCanAnswerThread(QThread):
             if self.imp_par_set:
                 try:
                     list(self.imp_par_set)[self.iter].get_value(self.adapter)
+                    self.iter += 1
+                except IndexError:
+                    self.iter = 0
+            elif self.command_list:
+                try:
+                    it = list(self.command_list)[self.iter]
+                    if isinstance(it, Parametr):
+                        it.set_value(self.adapter, it.value)
+                    # elif isinstance(it, PDOCommand): это было бы правильнее
+                    else:
+                        try:
+                            self.adapter.can_write(it.id, it.data)
+                            self.SignalOfProcess.emit(answer, list(self.imp_par_set), self.iter)
+                        except Exception as e:
+                            self.err_count += 1
+                            print(f'Что-то пошло не по плану - ошибка {e}')
+                    # else:
+                    #     print('В списке неправильная команда')
                     self.iter += 1
                 except IndexError:
                     self.iter = 0

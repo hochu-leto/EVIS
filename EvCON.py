@@ -70,7 +70,7 @@ from EVOWidgets import GreenLabel, RedLabel, zero_del
 from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread
 from EVOParametr import Parametr, type_values
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
-    mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_togled, \
+    mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_toggled, \
     check_steering_current
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_yaml_file, \
@@ -1063,13 +1063,14 @@ if __name__ == '__main__':
     window.search_btn.clicked.connect(search_param)
     window.save_to_file_btn.setEnabled(False)
     # ----------------------------- сигналы от радио кнопок
-    window.off_rbtn.clicked.connect(lambda: rb_togled(window))
-    window.left_side_rbtn.clicked.connect(lambda: rb_togled(window))
-    window.right_side_rbtn.clicked.connect(lambda: rb_togled(window))
-    window.stop_light_rbtn.clicked.connect(lambda: rb_togled(window))
-    window.rear_light_rbtn.clicked.connect(lambda: rb_togled(window))
-    window.low_beam_rbtn.clicked.connect(lambda: rb_togled(window))
-    window.high_beam_rbtn.clicked.connect(lambda: rb_togled(window))
+    window.off_rbtn.clicked.connect(lambda: rb_toggled(window))
+    window.left_side_rbtn.clicked.connect(lambda: rb_toggled(window))
+    window.right_side_rbtn.clicked.connect(lambda: rb_toggled(window))
+    window.stop_light_rbtn.clicked.connect(lambda: rb_toggled(window))
+    window.rear_light_rbtn.clicked.connect(lambda: rb_toggled(window))
+    window.low_beam_rbtn.clicked.connect(lambda: rb_toggled(window))
+    window.high_beam_rbtn.clicked.connect(lambda: rb_toggled(window))
+    window.flash_light_btn.clicked.connect(lambda: rb_toggled(window))
     window.light_box.setEnabled(False)
 
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
