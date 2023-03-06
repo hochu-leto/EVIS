@@ -48,20 +48,21 @@ def change_limit(param):
     max_lbl = QtWidgets.QLabel(value_changer_dialog)
     # max_lbl.setObjectName("max_lbl")
     max_lbl.setText('Задай максимальное значение параметра')
-    max_line_edit = QtWidgets.QLineEdit(value_changer_dialog)
-    max_line_edit.setObjectName("max_line_edit")
-    max_line_edit.setText(str(param.max_value))
-    max_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
+    value_changer_dialog.max_line_edit = QtWidgets.QLineEdit(value_changer_dialog)
+    # max_line_edit.setObjectName("max_line_edit")
+    value_changer_dialog.max_line_edit.setText(str(param.max_value))
+    value_changer_dialog.max_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
 
     min_lbl = QtWidgets.QLabel(value_changer_dialog)
     # min_lbl.setObjectName("min_lbl")
     min_lbl.setText('Задай минимальное значение параметра')
-    min_line_edit = QtWidgets.QLineEdit(value_changer_dialog)
-    min_line_edit.setObjectName("min_line_edit")
-    min_line_edit.setText(str(param.min_value))
-    min_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
+    value_changer_dialog.min_line_edit = QtWidgets.QLineEdit(value_changer_dialog)
+    # min_line_edit.setObjectName("min_line_edit")
+    value_changer_dialog.min_line_edit.setText(str(param.min_value))
+    value_changer_dialog.min_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
 
-    value_changer_dialog.set_widgets(widgets_list=[max_lbl, max_line_edit, min_lbl, min_line_edit])
+    value_changer_dialog.set_widgets(widgets_list=[max_lbl, value_changer_dialog.max_line_edit,
+                                                   min_lbl, value_changer_dialog.min_line_edit])
 
     if value_changer_dialog.exec() == QDialog.DialogCode.Accepted:
         min_val = value_changer_dialog.min_line_edit.text()

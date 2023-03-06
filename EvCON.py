@@ -408,29 +408,22 @@ def add_param_to_the_best_node(current_param):
 
 def set_bar(param):
     if param.widget != 'MyColorBar':
+        if param.min_value == type_values[param.type]['min'] \
+                and param.max_value == type_values[param.type]['max']:
+            change_limit(param)
         param.widget = 'MyColorBar'
         wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
-        # widget = MyColorBar(window.vmu_param_table, parametr=param)
-        # row = window.thread.current_params_list.index(param)
-        # window.vmu_param_table.setCellWidget(row, 1, widget)
     else:
         set_text_description(param)
 
 
-#  надо продумать как в онлайне добавлять виджеты к параметру,
-#  чтоб они изменялись во время опроса и чтоб при загрузке списка параметров,
-#  если эти виджеты уже установлены, они тоже должны быть.
-#  Также продумать ка при изменении минимума или максимума изображение виджета также менялось
-
-
 def set_slider(param):
     if param.widget != 'MySlider':
+        if param.min_value == type_values[param.type]['min'] \
+                and param.max_value == type_values[param.type]['max']:
+            change_limit(param)
         param.widget = 'MySlider'
         wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
-        # widget = MySlider(window.vmu_param_table, parametr=param)
-        # row = window.thread.current_params_list.index(param)
-        # window.vmu_param_table.item(row, 1).setText('')
-        # window.vmu_param_table.setCellWidget(row, 1, widget)
     else:
         set_text_description(param)
 
@@ -1093,8 +1086,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             ('Удалить из Избранного', add_param_to_the_best_node),
             ('Задать период опроса', change_period),
             ('Установить пределы', change_limit),
-            ('Установить максимум', change_max),
-            ('Установить минимум', change_min)
+            # ('Установить максимум', change_max),
+            # ('Установить минимум', change_min)
         ])
 
         if check_param_in_the_best_node(parametr):
