@@ -190,10 +190,10 @@ class EVONode:
         if isinstance(value, str):
             return value  # если вернул строку, значит, проблема
         else:
-            print('Answer ')
-            for i in value:
-                print(hex(i), end=' ')
-            print()
+            # print('Answer ')
+            # for i in value:
+            #     print(hex(i), end=' ')
+            # print()
             return ''  # если пусто, значит, норм ушла
 
     def get_data(self, adapter: CANAdater, address_list=None):

@@ -1,8 +1,10 @@
+from PyQt6 import QtWidgets
 from PyQt6.QtCore import QRegularExpression
 from PyQt6.QtGui import QRegularExpressionValidator
 from PyQt6.QtWidgets import QDialog
 
 from EVOParametr import type_values
+from EVOWidgets import MyColorBar
 from helper import DialogChange
 
 
@@ -38,6 +40,48 @@ def change_max(param):
             param.max_value = val
 
 
+def change_limit(param):
+    print(f'Задаю пределы для параметра {param.name}')
+    value_changer_dialog = DialogChange()
+
+    reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+    max_lbl = QtWidgets.QLabel(value_changer_dialog)
+    # max_lbl.setObjectName("max_lbl")
+    max_lbl.setText('Задай максимальное значение параметра')
+    max_line_edit = QtWidgets.QLineEdit(value_changer_dialog)
+    max_line_edit.setObjectName("max_line_edit")
+    max_line_edit.setText(str(param.max_value))
+    max_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
+
+    min_lbl = QtWidgets.QLabel(value_changer_dialog)
+    # min_lbl.setObjectName("min_lbl")
+    min_lbl.setText('Задай минимальное значение параметра')
+    min_line_edit = QtWidgets.QLineEdit(value_changer_dialog)
+    min_line_edit.setObjectName("min_line_edit")
+    min_line_edit.setText(str(param.min_value))
+    min_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
+
+    value_changer_dialog.set_widgets(widgets_list=[max_lbl, max_line_edit, min_lbl, min_line_edit])
+
+    if value_changer_dialog.exec() == QDialog.DialogCode.Accepted:
+        min_val = value_changer_dialog.min_line_edit.text()
+        if min_val:
+            val = float(min_val)
+            if val < type_values[param.type]['min'] or \
+                    val > param.max_value or \
+                    val > param.value:
+                val = param.min_value
+            param.min_value = val
+        max_val = value_changer_dialog.max_line_edit.text()
+        if max_val:
+            val = float(max_val)
+            if val > type_values[param.type]['max'] or \
+                    val < param.min_value or \
+                    val < param.value:
+                val = param.max_value
+            param.max_value = val
+
+
 def change_period(param):
     print(f'Меняю период параметра {param.name}')
     dialog = DialogChange(label=f'Измени период опроса для параметра {param.name} (1-1000)', value=str(param.period))
@@ -48,14 +92,3 @@ def change_period(param):
         if val:
             param.period = int(val)
 
-
-#  надо продумать как в онлайне добавлять виджеты к параметру,
-#  чтоб они изменялись во время опроса и чтоб при загрузке списка параметров,
-#  если эти  виджеты уже установлены, они тоже должны быть.
-#  Также продумать ка при изменении минимума или максимума изображение виджета также менялось
-def set_slider(param):
-    pass
-
-
-def set_bar(param):
-    pass

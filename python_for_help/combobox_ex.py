@@ -64,7 +64,7 @@ class Window(QMainWindow):
 
     # method for widgets
     def UiComponents(self):
-        # creating a combo box widget
+        # creating aghfk.py combo box widget
         self.combo_box = MyComboBox(self)
 
         # setting geometry of combo box

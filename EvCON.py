@@ -57,7 +57,7 @@ import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu
+    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidgetItem, QTableWidget
 import pathlib
 
 from qt_material import apply_stylesheet, list_themes, QtStyleTools
@@ -66,25 +66,50 @@ import VMU_monitor_ui
 from CANAdater import CANAdapter
 from EVOErrors import EvoError
 from EVONode import EVONode
-from EVOWidgets import GreenLabel, RedLabel, zero_del
+from EVOWidgets import GreenLabel, RedLabel, zero_del, color_EVO_red_dark, color_EVO_white, color_EVO_orange_shine
 from EVOThreads import SaveToFileThread, MainThread, WaitCanAnswerThread
 from EVOParametr import Parametr, type_values
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_toggled, \
     check_steering_current, multyvibrator
-from menu_items import change_min, change_period, change_max, set_slider, set_bar
+from menu_items import change_min, change_period, change_max, change_limit
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
     vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_yaml_file, \
-    fill_yaml_dict, settings_dir
+    fill_yaml_dict, settings_dir, save_diff
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode, easter_egg, color_EVO_red_dark, \
-    color_EVO_orange_shine, color_EVO_white
+    show_new_vmu_params, find_param, TheBestNode, easter_egg
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
 extra = {  # Density Scale
     'density_scale': '-2', }
+
+
+def set_focus(param):
+    row = window.thread.current_params_list.index(param)
+    widget = window.vmu_param_table.cellWidget(row, 2)
+    if widget:
+        widget.isInFocus = True
+
+
+@pyqtSlot()
+def show_value(param):
+    row = window.thread.current_params_list.index(param)
+    widget = window.vmu_param_table.cellWidget(row, 2)
+    if widget:
+        widget.set_text()
+    else:
+        window.vmu_param_table.item(row, 2).setText(zero_del(param.value))
+
+
+def wrapper_show_empty(params_list: list, param_table: QTableWidget, has_compare=False):
+    slider_list = show_empty_params_list(params_list, show_table=param_table,
+                                         has_compare=has_compare)
+    for slider in slider_list:
+        slider.ValueChanged.connect(lambda: show_value(slider.parametr))
+        slider.sliderPressed.connect(lambda: set_focus(slider.parametr))
+        slider.ValueSelected.connect(change_value)
 
 
 def search_param():
@@ -162,7 +187,7 @@ def record_log():
                                     QMessageBox.StandardButton.Ok)
 
 
-def make_compare_params_list():
+def make_compare():
     file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', str(settings_dir),
                                             "Файл с настройками блока (*.yaml *.xlsx)")[0]
     if file_name:
@@ -171,29 +196,47 @@ def make_compare_params_list():
         elif '.yaml' in file_name:
             compare_nodes_dict = fill_yaml_dict(file_name)
         else:
+            QMessageBox.information(window, 'Ошибка', 'Выбран неправильный файл'
+                                                      'настройки могут быть в *.yaml или в *.xlsx файлах',
+                                    QMessageBox.StandardButton.Ok)
             window.log_lbl.setText('Выбран неправильный файл')
             return False
-        comp_node_name = ''
         if compare_nodes_dict:
-            for cur_node in window.thread.current_nodes_dict.values():
-                # как минимум, два варианта что этот блок присутствует
-                #  - если имя страницы, он же ключ у словаря из файла совпадает с имеющимся сейчас блоком
-                #  - если список параметров, хотя бы частично, совпадает со списком параметров имеющегося блока
-                if cur_node.name in compare_nodes_dict.keys():
-                    fill_compare_values(cur_node, compare_nodes_dict[cur_node.name])
-                    comp_node_name += cur_node.name + ', '
-                else:
+            node = None
+            # как минимум, два варианта, что этот блок присутствует
+            #  - если имя блока, он же ключ у словаря из файла совпадает с имеющимся сейчас блоком
+            for node_name in compare_nodes_dict.keys():
+                if node_name in window.thread.current_nodes_dict.keys():
+                    node = window.thread.current_nodes_dict[node_name]
+                    fill_compare_values(node, compare_nodes_dict[node_name])
+                    break
+            #  - если список параметров, хотя бы частично, совпадает со списком параметров имеющегося блока
+            if node is None:
+                for node_ in window.thread.current_nodes_dict.values():
                     for comp_params_dict in compare_nodes_dict.values():
-                        if set(cur_node.group_params_dict.keys()) & set(comp_params_dict.keys()):
-                            fill_compare_values(cur_node, comp_params_dict)
-                            comp_node_name += cur_node.name + ', '
+                        # если есть пересечение списков
+                        if set(node_.group_params_dict.keys()) & set(comp_params_dict.keys()):
+                            node = node_
+                            fill_compare_values(node, comp_params_dict)
                             break
-        show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
-                               has_compare=window.thread.current_node.has_compare_params)
-        if comp_node_name:
-            window.log_lbl.setText(f'Загружены параметры сравнения для блока {comp_node_name}')
-        else:
-            window.log_lbl.setText(f'Не найден блок для загруженных параметров')
+            if node is not None:
+                if window.thread.isRunning():
+                    window.connect_to_node()
+                window.tr.adapter = can_adapter
+                window.tr.node_to_save = node
+                window.tr.SignalOfReady.disconnect()
+                window.tr.SignalOfReady.connect(window.progress_bar_silent)
+                # запускаем параллельный поток сохранения
+                window.tr.start()
+            else:
+                QMessageBox.information(window, 'Нет совпадений', 'В выбранном файле нет совпадений параметров'
+                                                                  ' ни с одним из подключенных блоков',
+                                        QMessageBox.StandardButton.Ok)
+                window.log_lbl.setText('Нет совпадений с текущими блоками')
+                return False
+        wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table,
+                           has_compare=window.thread.current_node.has_compare_params)
+
     else:
         window.log_lbl.setText('Файл не выбран')
         return False
@@ -202,12 +245,17 @@ def make_compare_params_list():
 @pyqtSlot(list)
 def change_value(lst):
     # принимает список из двух элементов, первый - Parametr(), второй - новое значение для него
-    if not window.vmu_param_table.currentItem():
-        return
+    # if not window.vmu_param_table.currentItem():
+    #     return
     info_m, lab = 'От виджета пришёл пустой список', None
     if lst:
         parametr = lst[0]
         new_value = lst[1]
+        if not window.vmu_param_table.currentItem():
+            row = window.thread.current_params_list.index(parametr)
+            # window.vmu_param_table.setCurrentIndex(row)
+            window.vmu_param_table.setCurrentCell(row, 2)
+            # window.vmu_param_table.setCurrentItem()
         info_m, lab = set_new_value(parametr, new_value)
     info_and_widget(info_m, lab)
 
@@ -258,13 +306,17 @@ def set_new_value(param: Parametr, val):
             info_m = f'Подключение прервано, \nДля изменения параметра\nтребуется подключение к ВАТС'
     except ValueError:
         info_m = 'Параметр должен быть числом'
+    row = window.thread.current_params_list.index(param)
+    widget = window.vmu_param_table.cellWidget(row, 2)
+    if widget:
+        widget.isInFocus = False
     return info_m, my_label
 
 
 def info_and_widget(info_m='', my_lab=None):
     if info_m:
         QMessageBox.information(window, "Информация", info_m, QMessageBox.StandardButton.Ok)
-    if my_lab:
+    if window.vmu_param_table.currentItem() and my_lab:
         try:
             c_row = window.vmu_param_table.currentItem().row()
             c_next_col = window.vmu_param_table.columnCount() - 1
@@ -320,7 +372,7 @@ def add_param_to_the_best_node(current_param):
     text = f'добавлен в блок {TheBestNode}'
     # если Новый список есть в Избранном
     rowcount = window.nodes_tree.topLevelItemCount() - 1
-    best_node_item = window.nodes_tree.topLevelItem(rowcount)   # это очень плохо
+    best_node_item = window.nodes_tree.topLevelItem(rowcount)  # это очень плохо
     result = True
     if NewParamsList in user_node.group_params_dict.keys():
         if remove_param_from_the_best_node(new_param):
@@ -354,6 +406,46 @@ def add_param_to_the_best_node(current_param):
     return result
 
 
+def set_bar(param):
+    if param.widget != 'MyColorBar':
+        param.widget = 'MyColorBar'
+        wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
+        # widget = MyColorBar(window.vmu_param_table, parametr=param)
+        # row = window.thread.current_params_list.index(param)
+        # window.vmu_param_table.setCellWidget(row, 1, widget)
+    else:
+        set_text_description(param)
+
+
+#  надо продумать как в онлайне добавлять виджеты к параметру,
+#  чтоб они изменялись во время опроса и чтоб при загрузке списка параметров,
+#  если эти виджеты уже установлены, они тоже должны быть.
+#  Также продумать ка при изменении минимума или максимума изображение виджета также менялось
+
+
+def set_slider(param):
+    if param.widget != 'MySlider':
+        param.widget = 'MySlider'
+        wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
+        # widget = MySlider(window.vmu_param_table, parametr=param)
+        # row = window.thread.current_params_list.index(param)
+        # window.vmu_param_table.item(row, 1).setText('')
+        # window.vmu_param_table.setCellWidget(row, 1, widget)
+    else:
+        set_text_description(param)
+
+
+def set_text_description(param):
+    param.widget = 'Text'
+    row = window.thread.current_params_list.index(param)
+    window.vmu_param_table.removeCellWidget(row, 1)
+    desc_item = QTableWidgetItem(param.description)
+    # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+    desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
+    desc_item.setToolTip(param.description)
+    window.vmu_param_table.setItem(row, 1, desc_item)
+
+
 def paint_cells(parametr, color):
     if window.thread.current_params_list == \
             window.thread.current_nodes_dict[TheBestNode].group_params_dict[NewParamsList]:
@@ -367,7 +459,7 @@ def paint_cells(parametr, color):
         c_item = window.vmu_param_table.item(c_row, i)
         try:
             c_item.setBackground(color)
-            # здесь можно вставить виджет редлейбл чтоб в других темах ыло видно
+            # здесь можно вставить виджет редлейбл чтоб в других темах было видно
         except AttributeError:
             print('Ячейка отсутствует', i)
 
@@ -386,7 +478,7 @@ def remove_param_from_the_best_node(parametr):
         user_node.group_params_dict[NewParamsList].remove(par)
         # если юзер сейчас в Новом списке, обновляю вид таблицы
         if window.thread.current_node == user_node:
-            show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
+            wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
         if window.thread.isFinished() and was_run:
             window.connect_to_node()
     return result
@@ -446,7 +538,7 @@ def show_error(item, column):
             current_err.err_tree_item = item
 
             if window.thread.current_node == user_node:
-                show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table)
+                wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
             window.nodes_tree.setCurrentItem(item)
         else:
             # кажется, это не работает, нужно проверить, да ЭТО НЕ РАБОТАЕТ
@@ -475,10 +567,10 @@ def params_list_changed(item=None, column=None):  # если в левом ок�
     if window.thread.isRunning():
         is_run = True
         window.connect_to_node()
-    # отображаем имя блока, ерийник и всё такое и обновляю список параметров в окошке справа
+    # отображаем имя блока, серийник и всё такое и обновляю список параметров в окошке справа
     window.show_node_name(window.thread.current_node)
-    show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
-                           has_compare=window.thread.current_node.has_compare_params)
+    wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table,
+                       has_compare=window.thread.current_node.has_compare_params)
     if is_run and window.thread.isFinished():
         window.connect_to_node()
     return True
@@ -558,7 +650,7 @@ def save_to_file_pressed():  # если нужно записать текущи
     window.tr.node_to_save = window.thread.current_node
     window.save_to_file_btn.setText(f'Сохраняются настройки блока:\n {window.tr.node_to_save.name}')
     # запускаем параллельный поток сохранения
-    window.tr.run()
+    window.tr.start()
 
 
 class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
@@ -615,7 +707,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 can_adapter.close_canal_can()
             if err == 'Адаптер не подключен':
                 can_adapter.isDefined = False
-        elif not list_of_params:  # ошибок нет - всё хорошо
+        elif not list_of_params and self.thread.current_params_list:  # ошибок нет - всё хорошо
             # показываем свежие обновлённые параметры
             widgets_list = show_new_vmu_params(params_list=self.thread.current_params_list,
                                                table=self.vmu_param_table,
@@ -671,6 +763,101 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             cur_item = self.errors_tree.topLevelItem(0)
         if cur_item.childCount():
             self.errors_tree.setCurrentItem(cur_item)
+
+    @pyqtSlot(int, str, bool)
+    def progress_bar_silent(self, percent: int, err: str, is_finished: bool):
+        # рисуем змейку прогресса
+        self.node_nsme_pbar.setValue(percent)
+        # выходим из потока если есть строка ошибки или файл сохранён
+        if is_finished or err:
+            self.tr.quit()
+            self.tr.wait()
+            if is_finished:
+                node = self.tr.node_to_save
+                ex_word_list = ['System']
+                diff_ = [p for group in node.group_params_dict.values() for p in group
+                         if p.editable and p.value != p.value_compare]
+                diff_list = [p for p in diff_ for ex in ex_word_list
+                             if ex not in p.name and ex not in p.description]
+                if diff_list:
+                    dialog = DialogChange(text='Нужно чётко понимать, что автоматическая загрузка параметров из файла'
+                                               ' НИКАК не проверяет, что эти параметры верные и '
+                                               'загрузит ВСЕ различающиеся значения.\n'
+                                               ' Только при полной уверенности, что ничего не сломается'
+                                               ' можно нажимать кнопку "Принять ВСЕ настройки из файла" '
+                                               'В противном случае лучше нажать "Поменяю настройки сам" и изменить'
+                                               ' только нужные параметры', table=diff_list,
+                                          compare=True)
+                    dialog.setWindowTitle(f'Разные значения параметров блока {node.name}')
+                    dialog.setMinimumWidth(int(window.width() * 0.8))
+                    dialog.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setText('Поменяю настройки сам')
+                    dialog.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setText(
+                        'Принять ВСЕ настройки из файла')
+                    dialog.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
+                    dialog.change_mess(list_of_params=diff_list)
+                    if dialog.exec():
+                        # пересохранение файла с настройками
+                        settings = pathlib.Path(err)
+                        now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                        old_dir = pathlib.Path(settings_dir, f'{node.name}_{now}')
+                        old_dir.mkdir()
+                        old_set = pathlib.Path(old_dir, 'old_settings.yaml')
+                        settings.rename(old_set)
+                        # сохранение дифференса
+                        diff_file = pathlib.Path(old_dir, 'difference.yaml')
+                        save_diff(diff_list, diff_file)
+                        # заливка всех настроек из файла
+                        err_param_dict = {}
+                        for par in diff_list:
+                            try:
+                                float(par.value_compare)
+                                attempt = par.set_value(self.tr.adapter, par.value_compare)
+                                if attempt:
+                                    err_param_dict[par] = f'Не удалось установить значение {par.value_compare} ' \
+                                                          f'для параметра {par.name} ошибка - {attempt}'
+                            except ValueError:
+                                err_param_dict[par] = f'Несоответствие типа параметра {par.name},' \
+                                                      f'значение {par.value_compare} его тип {type(par.value_compare)}'
+                        for par in diff_list:
+                            par.get_value(self.tr.adapter)
+                            if par.value != par.value_compare:
+                                err_param_dict[par] = f'Не удалось установить параметр {par.name} ' \
+                                                      f'Задавали значение {par.value_compare} ' \
+                                                      f'По факту значение {par.value}'
+                        if err_param_dict:
+                            # сохранение файла несохранённых параметров
+                            err_file = pathlib.Path(old_dir, 'wrong_set.yaml')
+                            save_diff(list(err_param_dict.keys()), err_file,
+                                      description='Это параметры, которые не удалось загрузить в блок')
+                            # лучше дать ссылки на файлы
+                            dialog1 = DialogChange(text='Не все параметры удалось записать. \nНа всякий случай '
+                                                        f'старые настройки блока в файле \n{old_set} \n'
+                                                        f' различия в файле  \n{diff_file} \n'
+                                                        f' параметры, которые не удалось загрузить в блок, в файле  \n'
+                                                        f'{err_file} \nчтоб новые настройки сохранились'
+                                                        f' нужно нажать \n "Сохранить в ЕЕПРОМ"',
+                                                   table=list(err_param_dict.keys()), compare=True)
+                            dialog1.setWindowTitle('Есть проблемки')
+                            dialog1.setMinimumWidth(int(window.width() * 0.8))
+                            dialog1.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).hide()
+                            dialog1.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setText('Печально')
+                            dialog1.change_mess(list_of_params=list(err_param_dict.keys()),
+                                                text=list(err_param_dict.values()))
+                            dialog1.exec()
+                        # предупреждение, что старые настройки в файле ерр,
+                        # дифференс в файле дифф
+                        # надо нажать сохранить в еепром
+                        else:
+                            QMessageBox.information(window, "Готово",
+                                                    f'Поздравляю, <b>старые настройки</b> блока в файле  \n{old_set} \n'
+                                                    f' <b>различия</b> в файле  \n{diff_file} \n'
+                                                    f'чтоб новые настройки сохранились'
+                                                    f' нужно нажать <b>"Сохранить в ЕЕПРОМ"</b>',
+                                                    QMessageBox.StandardButton.Ok)
+            self.node_nsme_pbar.setValue(0)
+            self.connect_to_node()
+            self.tr.SignalOfReady.disconnect()
+            self.tr.SignalOfReady.connect(self.progress_bar_fulling)
 
     @pyqtSlot(int, str, bool)
     def progress_bar_fulling(self, percent: int, err: str, is_finished: bool):
@@ -843,11 +1030,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                             f" но они не сохранены в EEPROM,\n"
                             f" нужно ли их сохранить в память?")
 
-                buttonAceptar = msg.addButton("Сохранить", QMessageBox.ButtonRole.YesRole)
+                buttonAccept = msg.addButton("Сохранить", QMessageBox.ButtonRole.YesRole)
                 msg.addButton("Не сохранять", QMessageBox.ButtonRole.RejectRole)
-                msg.setDefaultButton(buttonAceptar)
+                msg.setDefaultButton(buttonAccept)
                 msg.exec()
-                if msg.clickedButton() == buttonAceptar:
+                if msg.clickedButton() == buttonAccept:
                     save_to_eeprom(self, node)
 
         if TheBestNode in self.thread.current_nodes_dict.keys():
@@ -863,12 +1050,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         msg.setIcon(QMessageBox.Icon.Question)
         msg.setText("Вы уверены, что хотите закрыть приложение?")
 
-        buttonAceptar = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
+        buttonAccept = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
         msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)
-        msg.setDefaultButton(buttonAceptar)
+        msg.setDefaultButton(buttonAccept)
         msg.exec()
 
-        if msg.clickedButton() == buttonAceptar:
+        if msg.clickedButton() == buttonAccept:
             with open(stylesheet_file, 'w+') as f:
                 f.write(self.current_theme)
             if self.thread.isRunning():
@@ -904,9 +1091,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         all_items_menu_dict = dict([
             ('Добавить в Избранное', add_param_to_the_best_node),
             ('Удалить из Избранного', add_param_to_the_best_node),
-            ('Слайдер', set_slider),
-            ('Цветная полоса', set_bar),
             ('Задать период опроса', change_period),
+            ('Установить пределы', change_limit),
             ('Установить максимум', change_max),
             ('Установить минимум', change_min)
         ])
@@ -916,8 +1102,19 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         else:
             del all_items_menu_dict['Удалить из Избранного']
 
-        if not parametr.editable:
-            del all_items_menu_dict['Слайдер']
+        match parametr.widget:
+            case 'Text':
+                if not parametr.value_table:
+                    all_items_menu_dict['Линейный индикатор'] = set_bar
+                    if parametr.editable:
+                        all_items_menu_dict['Слайдер'] = set_slider
+            case 'MyColorBar':
+                all_items_menu_dict['Описание'] = set_text_description
+                if parametr.editable:
+                    all_items_menu_dict['Слайдер'] = set_slider
+            case 'MySlider':
+                all_items_menu_dict['Линейный индикатор'] = set_bar
+                all_items_menu_dict['Описание'] = set_text_description
 
         items = {menu.addAction(u'' + item): value for item, value in all_items_menu_dict.items()}
 
@@ -1016,7 +1213,8 @@ if __name__ == '__main__':
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(lambda: save_to_eeprom(window))
     window.reset_faults.clicked.connect(erase_errors)
-    window.compare_btn.clicked.connect(make_compare_params_list)
+    # window.compare_btn.clicked.connect(make_compare_params_list)
+    window.compare_btn.clicked.connect(make_compare)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.log_record_btn.clicked.connect(record_log)
     window.search_btn.clicked.connect(search_param)
@@ -1029,7 +1227,7 @@ if __name__ == '__main__':
     window.rear_light_rbtn.clicked.connect(lambda: rb_toggled(window))
     window.low_beam_rbtn.clicked.connect(lambda: rb_toggled(window))
     window.high_beam_rbtn.clicked.connect(lambda: rb_toggled(window))
-    window.flash_light_btn.clicked.connect(lambda: multyvibrator(window))
+    window.flash_light_checkBox.clicked.connect(lambda: multyvibrator(window))
     window.light_box.setEnabled(False)
 
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
@@ -1061,16 +1259,14 @@ if __name__ == '__main__':
 
         window.show()  # Показываем окно
         splash.finish(window)  # Убираем заставку
-        print(time.perf_counter() - start_time)
         sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# цветомузыка
+# не обновляется все значения параметров если фокус в одном из виджетов
 # кнопка сохранить всё в гит
-# падает при сохранении в еепром на выходе
-# делаем два виджета бар и слайдер вместо дескрипшина, а его в тултипс
 # сохранение настроек параметра в ямл файл(и удаление пикл)
 # при обновлении проги должны добавляться только новые папки, старые параметры не трогаем
 # вывести окно сравнения различающихся параметров, которые можно менять при заливке других настроек
 # виджеты с частыми параметрами в окно управление
+# цветомузыка
 # делаем графики

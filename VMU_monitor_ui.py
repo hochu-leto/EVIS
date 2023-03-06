@@ -418,14 +418,9 @@ class Ui_MainWindow(object):
         self.high_beam_rbtn.setSizePolicy(sizePolicy)
         self.high_beam_rbtn.setObjectName("high_beam_rbtn")
         self.verticalLayout.addWidget(self.high_beam_rbtn)
-        self.flash_light_btn = QtWidgets.QPushButton(parent=self.light_box)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.flash_light_btn.sizePolicy().hasHeightForWidth())
-        self.flash_light_btn.setSizePolicy(sizePolicy)
-        self.flash_light_btn.setObjectName("flash_light_btn")
-        self.verticalLayout.addWidget(self.flash_light_btn)
+        self.flash_light_checkBox = QtWidgets.QCheckBox(parent=self.light_box)
+        self.flash_light_checkBox.setObjectName("flash_light_checkBox")
+        self.verticalLayout.addWidget(self.flash_light_checkBox)
         self.gridLayout_6.addWidget(self.light_box, 0, 4, 1, 1)
         self.invertor_mpei_box = QtWidgets.QGroupBox(parent=self.management_tab)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
@@ -653,7 +648,8 @@ class Ui_MainWindow(object):
         self.high_beam_rbtn.setText(_translate("MainWindow", "Дальний\n"
 "  свет\n"
 "(ещё нет)"))
-        self.flash_light_btn.setText(_translate("MainWindow", "Моргаем"))
+        self.flash_light_checkBox.setText(_translate("MainWindow", "Моргаем\n"
+"ближним"))
         self.invertor_mpei_box.setTitle(_translate("MainWindow", "Инвертор МЭИ"))
         self.reset_param_btn.setText(_translate("MainWindow", "Сброс на\n"
 " заводские\n"

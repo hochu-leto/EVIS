@@ -1,3 +1,4 @@
+import datetime
 import os
 import pathlib
 import pickle
@@ -31,6 +32,22 @@ vmu_param_file = 'table_for_params_new_VMU.xlsx'
 vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
 nodes_yaml_file = pathlib.Path(dir_path, 'Data', 'all_nodes.yaml')
 nodes_pickle_file = pathlib.Path(dir_path, 'Data', 'all_nodes.pickle')
+
+
+def save_diff(diff, file_name, description=''):
+    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    node_yaml_dict = dict(
+        date_time=now,
+        description='Разница между текущими параметрами из блока и настройками из файла перед сохранением настроек в '
+                    'блок ' + description,
+        difference={p.name: dict(current_value=p.value,
+                                 value_from_file=p.value_compare) for p in diff})
+
+    with open(file_name, 'w', encoding='UTF-8') as file:
+        yaml.dump(node_yaml_dict, file,
+                  default_flow_style=False,
+                  sort_keys=False,
+                  allow_unicode=True)
 
 
 # ------------------------------------- заполнение словаря для сравнения----------------------------
@@ -198,7 +215,7 @@ def fill_node(node: EVONode):
                                 node.warnings_list = errors_list.copy()
 
             for group in node.group_params_dict.values():
-                for param in group:     # только это не работает для избранного
+                for param in group:  # только это не работает для избранного
                     param.node = node
             print(f'для блока {node.name} с версией ПО {node.firmware_version} '
                   f'применяю параметры из папки {param_dir} и ошибки из папки {err_dir}')
@@ -254,7 +271,7 @@ def save_p_dict_to_yaml_file(node: EVONode):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
     s_num = node.serial_number if node.serial_number else Default
     file_name = pathlib.Path(data_dir, str(node.name), str(s_num), par_file)
-    pickle_params_file = pathlib.Path(data_dir,  str(node.name), str(s_num), par_pick_file)
+    pickle_params_file = pathlib.Path(data_dir, str(node.name), str(s_num), par_pick_file)
     try:
         with open(file_name, 'w', encoding='UTF-8') as file:
             yaml.dump(node.groups_to_dict(), file,
@@ -290,5 +307,5 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
             #     val = compare_par.value_table[int(compare_par.value)]
             # else:
             #     val = compare_par.value
-            cur_p.value_compare = compare_par.value      #compare_par.value_string if compare_par.value_string else float(compare_par.value)
+            cur_p.value_compare = compare_par.value  # compare_par.value_string if compare_par.value_string else float(compare_par.value)
     node.has_compare_params = True

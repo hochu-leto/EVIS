@@ -207,13 +207,13 @@ class CANMarathon(AdapterCAN):
         buffer = self.Buffer()
         buffer.id = ctypes.c_uint32(can_id)
         buffer.len = len(message)
-        print(f'Отправляю   {hex(buffer.id)}  {buffer.len}  ', end=' ')
+        # print(f'Отправляю   {hex(buffer.id)}  {buffer.len}  ', end=' ')
         j = 0
         for i in message:
-            print(hex(i), end=' ')
+            # print(hex(i), end=' ')
             buffer.data[j] = ctypes.c_uint8(i)
             j += 1
-        print()
+        # print()
         if can_id > 0xFFF:
             self.lib.msg_seteff(ctypes.pointer(buffer))
 
@@ -224,10 +224,13 @@ class CANMarathon(AdapterCAN):
             err = ctypes.c_int16(err).value
         except Exception as e:
             print('CiTransmit do not work')
-            
-            exit()
+            self.close_canal_can()
+            return 'can_write CiTransmit do not work'
+
+            # exit()
         else:
-            print('   в CiTransmit так ' + str(err))
+            pass
+            # print('   в CiTransmit так ' + str(err))
 
         if not err:
             trqcnt = ctypes.c_int16(20)
@@ -237,10 +240,13 @@ class CANMarathon(AdapterCAN):
                     err = ctypes.c_int16(err).value
                 except Exception as e:
                     print('CiTransmit do not work')
-                    
-                    exit()
+                    self.close_canal_can()
+                    return 'can_write CiTransmit do not work'
+
+                    # exit()
                 else:
-                    print(f'   в CiTrStat так {complete_dict[err]}, осталось кадров на передачу {trqcnt.value} ')
+                    pass
+                    # print(f'   в CiTrStat так {complete_dict[err]}, осталось кадров на передачу {trqcnt.value} ')
                 if not trqcnt.value and not err:
                     return ''
             err = 65535 - 2  # надо исправлять это безобразие
@@ -350,8 +356,10 @@ class CANMarathon(AdapterCAN):
                 transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(buffer))
             except Exception as e:
                 print('CiTransmit do not work')
-                
-                exit()
+                self.close_canal_can()
+                return 'can_request CiTransmit do not work'
+
+                # exit()
             # else:
             #     print('   в CiTransmit так ' + str(transmit_ok))
             if transmit_ok == 0:
@@ -467,10 +475,10 @@ class CANMarathon(AdapterCAN):
         # из первого фрейма с ответом 0х41 и делим на 7 значащих байт в следующих фреймов + 1 про запас
         for frame_counter in range((l_byte // 7) + 1):
             bf = self.long_buffer_70 if frame_counter % 2 else self.long_buffer_60
-            print()
-            print(f'отправляю {hex(bf.id)} ', end='   ')
-            for i in bf.data:
-                print(hex(i), end=' ')
+            # print()
+            # print(f'отправляю {hex(bf.id)} ', end='   ')
+            # for i in bf.data:
+                # print(hex(i), end=' ')
             ''' _s16 CiTransmit(_u8 chan, canmsg_t * mbuf)
                 Отправляет кадр в сеть через очередь на отправку.
                 Если очередь на передачу не пуста, то кадр помещается в конец очереди, возвращается код
@@ -486,8 +494,10 @@ class CANMarathon(AdapterCAN):
                 transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(bf))
             except Exception as e:
                 print('CiTransmit do not work')
-                
-                exit()
+                print(e)
+                self.close_canal_can()
+                return 'can_request_long CiTransmit do not work'
+                # self.canal_open()
 
             if transmit_ok < 0:
                 self.close_canal_can()
@@ -613,7 +623,7 @@ class CANMarathon(AdapterCAN):
             try:
                 transmit_ok = self.lib.CiTransmit(self.can_canal_number, ctypes.pointer(buffer))
             except Exception as e:
-                print('CiTransmit do not work')
+                print('can_request_many CiTransmit do not work')
                 
                 exit()
             # else:
