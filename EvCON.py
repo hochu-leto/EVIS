@@ -75,7 +75,7 @@ from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpe
 from menu_items import change_period, change_limit
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, WORK_DIR, \
     NODES_PICKLE_FILE, NODES_YAML_FILE, save_p_dict_to_yaml_file, \
-    fill_yaml_dict, SETTINGS_DIR, save_diff
+    fill_yaml_dict, SETTINGS_DIR, save_diff, add_parametr_to_yaml_file
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg
 
@@ -412,6 +412,7 @@ def set_bar(param):
                 and param.max_value == type_values[param.type]['max']:
             change_limit(param)
         param.widget = 'MyColorBar'
+        add_parametr_to_yaml_file(parametr=param)
         wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
     else:
         set_text_description(param)
@@ -423,6 +424,7 @@ def set_slider(param):
                 and param.max_value == type_values[param.type]['max']:
             change_limit(param)
         param.widget = 'MySlider'
+        add_parametr_to_yaml_file(parametr=param)
         wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
     else:
         set_text_description(param)
@@ -430,6 +432,7 @@ def set_slider(param):
 
 def set_text_description(param):
     param.widget = 'Text'
+    add_parametr_to_yaml_file(parametr=param)
     row = window.thread.current_params_list.index(param)
     window.vmu_param_table.removeCellWidget(row, 1)
     desc_item = QTableWidgetItem(param.description)

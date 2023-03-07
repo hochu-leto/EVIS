@@ -145,11 +145,14 @@ def fill_par_dict_from_yaml(file, node, user_params_file=None):
         for p in group_params:
             par = p.copy()
             for user_p in user_params_list:
-                if p['name'].strip == user_p['name']:
+                print(p['name'].strip(), user_p['name'].strip(), p['name'].strip() == user_p['name'].strip())
+                print(type(p), type(user_p))
+                if p['name'].strip() == user_p['name'].strip():
                     par = user_p.copy()
+                    user_params_list.remove(user_p)
                     break
-            param_list.append(Parametr(par, node=node))
-        node_params_dict[group] = param_list
+            param_list.append(Parametr(par.copy(), node=node))
+        node_params_dict[group] = param_list.copy()
     return node_params_dict
 
 
@@ -313,22 +316,24 @@ def add_parametr_to_yaml_file(parametr: Parametr):
     node_dir = pathlib.Path(data_dir, str(parametr.node.name))
     file_name = pathlib.Path(node_dir, USER_PARAMETERS_FILE)
     try:
-        with open(file_name, 'w+', encoding='UTF-8') as file:
+        with open(file_name, 'r', encoding='UTF-8') as file:
             try:
                 params_list = yaml.safe_load(file) or []
             except yaml.YAMLError as exc:
                 print(exc)
-            if params_list:
-                new_param_list = [param for param in params_list if param['name'] != parametr.name]
-                new_param_list.append(parametr.to_dict())
-            else:
-                new_param_list = [parametr.to_dict()]
+
+        if params_list:
+            new_param_list = [param for param in params_list if param['name'] != parametr.name]
+            new_param_list.append(parametr.to_dict())
+        else:
+            new_param_list = [parametr.to_dict()]
+
+        with open(file_name, 'w', encoding='UTF-8') as file:
             yaml.dump(new_param_list, file,
                       default_flow_style=False,
                       sort_keys=False,
                       allow_unicode=True)
-        if os.path.isfile(NODES_PICKLE_FILE):
-            os.remove(NODES_PICKLE_FILE)
+
         delete_node_parameters_pickle(node_directory=node_dir)
         return True
     except PermissionError:
@@ -337,6 +342,9 @@ def add_parametr_to_yaml_file(parametr: Parametr):
 
 def delete_node_parameters_pickle(node_directory):
     result = [os.path.join(dp, f) for dp, dn, filenames in os.walk(str(node_directory))
-              for f in filenames if os.path.splitext(f)[1] == PARAMETERS_PICKLE_FILE]
+              for f in filenames if f == PARAMETERS_PICKLE_FILE]
     for file in result:
         os.remove(file)
+
+    if os.path.isfile(NODES_PICKLE_FILE):
+        os.remove(NODES_PICKLE_FILE)

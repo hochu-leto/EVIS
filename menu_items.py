@@ -15,18 +15,14 @@ def change_limit(param):
 
     reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
     max_lbl = QtWidgets.QLabel(value_changer_dialog)
-    # max_lbl.setObjectName("max_lbl")
     max_lbl.setText('Задай максимальное значение параметра')
     value_changer_dialog.max_line_edit = QtWidgets.QLineEdit(value_changer_dialog)
-    # max_line_edit.setObjectName("max_line_edit")
     value_changer_dialog.max_line_edit.setText(str(param.max_value))
     value_changer_dialog.max_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
 
     min_lbl = QtWidgets.QLabel(value_changer_dialog)
-    # min_lbl.setObjectName("min_lbl")
     min_lbl.setText('Задай минимальное значение параметра')
     value_changer_dialog.min_line_edit = QtWidgets.QLineEdit(value_changer_dialog)
-    # min_line_edit.setObjectName("min_line_edit")
     value_changer_dialog.min_line_edit.setText(str(param.min_value))
     value_changer_dialog.min_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
 
@@ -62,4 +58,5 @@ def change_period(param):
         val = dialog.lineEdit.text()
         if val:
             param.period = int(val)
+        add_parametr_to_yaml_file(parametr=param)
 

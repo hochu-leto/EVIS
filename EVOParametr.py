@@ -44,7 +44,7 @@ readme = dict(
 # список полей параметра, который будем запихивать в файл. Можно выбрать не все поля
 # возможно, здесь и следует задавать дефолтные значения полей,
 # которые нужно игнорировать при записи в файл
-exit_list = ['name', 'index', 'sub_index', 'description', 'type', 'value', 'units',
+exit_list = ['name', 'index', 'sub_index', 'description', 'type', 'value', 'units', 'widget',
              'multiplier', 'editable', 'offset', 'period', 'min_value', 'max_value', 'value_table']
 
 type_values = {
@@ -80,11 +80,10 @@ class Parametr:
         if param is None:
             param = empty_par
 
-        def check_value(value, name: str):
+        def check_value(name: str, value=0.0):
             v = value if name not in list(param.keys()) \
-                         or not param[name] \
+                         or param[name] is None \
                          or str(param[name]) == 'nan' \
-                         or param[name] == 0 \
                 else (param[name] if not isinstance(param[name], str)
                       else (param[name] if param[name].isdigit()
                             else value))
@@ -100,8 +99,8 @@ class Parametr:
         # но чтоб принимал все предыдущие варианты, превращая их в стандартные, примерно как сейчас в scale
         address = check_string('address', '0x0')
         if len(address) < 4:
-            self.index = check_value(0, 'index')
-            self.sub_index = check_value(0, 'sub_index')
+            self.index = int(check_value('index'))
+            self.sub_index = int(check_value('sub_index'))
 
         elif 4 <= len(address) < 7:
             # MODBUS
@@ -121,16 +120,16 @@ class Parametr:
         self.value_compare = 0
         self.name = check_string('name', 'NoName')
         # на что умножаем число из КАНа
-        degree = check_value(0, 'degree')
-        scale = float(check_value(10 ** degree, 'scale'))
-        self.multiplier = float(check_value(float(check_value(1 / scale, 'mult')), 'multiplier'))
+        degree = check_value('degree')
+        scale = float(check_value('scale', 10 ** degree))
+        self.multiplier = float(check_value('multiplier', float(check_value('mult', 1 / scale))))
         # вычитаем это из полученного выше числа
-        self.offset = float(check_value(float(check_value(0, 'offset')), 'scaleB'))
-        period = int(check_value(1, 'period'))  # период опроса параметра 1=каждый цикл 1000=очень редко
+        self.offset = float(check_value('scaleB', float(check_value('offset'))))
+        period = int(check_value('period', 1))  # период опроса параметра 1=каждый цикл 1000=очень редко
         self.period = 1000 if period > 1001 else period  # проверять горячие буквы, что входят в
         # статические параметры, чтоб период был = 1001
-        self.min_value = check_value(type_values[self.type]['min'], 'min_value')
-        self.max_value = check_value(type_values[self.type]['max'], 'max_value')
+        self.min_value = check_value('min_value', type_values[self.type]['min'])
+        self.max_value = check_value('max_value', type_values[self.type]['max'])
         valueS_table = check_string('values_table', check_string('value_dict'))
         v_table = valueS_table if valueS_table else check_string('value_table')
         self.value_table = {int(k): v for k, v in v_table.items()} if isinstance(v_table, dict) \
@@ -278,6 +277,8 @@ class Parametr:
             del exit_dict['multiplier']
         if exit_dict['period'] == 1:
             del exit_dict['period']
+        if exit_dict['widget'] == 'Text':
+            del exit_dict['widget']
         return exit_dict
 
     def string_from_can(self, value):
