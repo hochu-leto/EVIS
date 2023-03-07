@@ -596,3 +596,52 @@ def dw2float(dw_array):
 #         window.log_lbl.setText('Файл не выбран')
 #         return False
 
+#
+# def change_min(param):
+#     print(f'Задаю минимум для параметра {param.name}')
+#     dialog = DialogChange(label=f'Измени минимальное значение для {param.name}', value=str(param.min_value))
+#     reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+#     dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+#     if dialog.exec() == QDialog.DialogCode.Accepted:
+#         val = dialog.lineEdit.text()
+#         if val:
+#             val = float(val)
+#             if val < type_values[param.type]['min'] or \
+#                     val > param.max_value or \
+#                     val > param.value:
+#                 val = param.min_value
+#             param.min_value = val
+#
+#
+# def change_max(param):
+#     print(f'Задаю максимум для параметра {param.name}')
+#     dialog = DialogChange(label=f'Измени максимальное значение для {param.name}', value=str(param.max_value))
+#     reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+#     dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+#     if dialog.exec() == QDialog.DialogCode.Accepted:
+#         val = dialog.lineEdit.text()
+#         if val:
+#             val = float(val)
+#             if val > type_values[param.type]['max'] or \
+#                     val < param.min_value or \
+#                     val < param.value:
+#                 val = param.max_value
+#             param.max_value = val
+#
+
+
+
+# def save_p_dict_to_pickle_file(node: EVONode):
+#     data_dir = pathlib.Path(os.getcwd(), 'Data')
+#     s_num = node.serial_number if node.serial_number else DEFAULT_DIR
+#     file_name = pathlib.Path(data_dir, node.name, s_num, PARAMETERS_PICKLE_FILE)
+#     try:
+#         with open(file_name, 'wb') as f:
+#             pickle.dump(node.group_params_dict, f)
+#         if os.path.isfile(NODES_PICKLE_FILE):
+#             os.remove(NODES_PICKLE_FILE)
+#         return True
+#     except PermissionError:
+#         return False
+#
+#

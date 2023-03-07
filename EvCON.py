@@ -72,10 +72,10 @@ from EVOParametr import Parametr, type_values
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_toggled, \
     check_steering_current, multyvibrator
-from menu_items import change_min, change_period, change_max, change_limit
-from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, dir_path, \
-    vmu_param_file, nodes_pickle_file, nodes_yaml_file, save_p_dict_to_yaml_file, \
-    fill_yaml_dict, settings_dir, save_diff
+from menu_items import change_period, change_limit
+from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, WORK_DIR, \
+    NODES_PICKLE_FILE, NODES_YAML_FILE, save_p_dict_to_yaml_file, \
+    fill_yaml_dict, SETTINGS_DIR, save_diff
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
     show_new_vmu_params, find_param, TheBestNode, easter_egg
 
@@ -176,7 +176,7 @@ def record_log():
         if window.thread.record_dict:
             file_name = window.nodes_tree.currentItem().text(0).replace('.', '_')
             now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            file_name = pathlib.Path(dir_path, 'ECU_Records', f'{file_name}_{now}.xlsx')
+            file_name = pathlib.Path(WORK_DIR, 'ECU_Records', f'{file_name}_{now}.xlsx')
             df = pd.DataFrame(window.thread.record_dict)
             df_t = df.transpose()
             window.thread.record_dict.clear()
@@ -188,7 +188,7 @@ def record_log():
 
 
 def make_compare():
-    file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', str(settings_dir),
+    file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', str(SETTINGS_DIR),
                                             "Файл с настройками блока (*.yaml *.xlsx)")[0]
     if file_name:
         if '.xls' in file_name:
@@ -792,7 +792,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                         # пересохранение файла с настройками
                         settings = pathlib.Path(err)
                         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                        old_dir = pathlib.Path(settings_dir, f'{node.name}_{now}')
+                        old_dir = pathlib.Path(SETTINGS_DIR, f'{node.name}_{now}')
                         old_dir.mkdir()
                         old_set = pathlib.Path(old_dir, 'old_settings.yaml')
                         settings.rename(old_set)
@@ -919,7 +919,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                         user_node.group_params_dict[NewParamsList] = user_node.group_params_dict[val].copy()
                         # а  список изменённый удаляем
                         del user_node.group_params_dict[val]
-                        err_mess = f'Сохранить не удалось\n {vmu_param_file.name} открыт в другой программе'
+                        err_mess = f'Сохранить не удалось\n файл открыт в другой программе'
                 else:
                     err_mess = 'Некорректное имя списка'
             else:
@@ -1169,7 +1169,7 @@ if __name__ == '__main__':
     window.label.setPixmap(QPixmap('pictures/grafic.png'))
     # window.setWindowTitle('Electric Vehicle Information System')
     window.setWindowTitle('Electrical vehicle CONtrol')
-    stylesheet_file = pathlib.Path(dir_path, 'Data', 'EVOStyleSheet.txt')
+    stylesheet_file = pathlib.Path(WORK_DIR, 'Data', 'EVOStyleSheet.txt')
 
     window.main_tab.currentChanged.connect(window.change_tab)
     # ============================== подключаю сигналы нажатия на окошки============
@@ -1225,11 +1225,11 @@ if __name__ == '__main__':
 
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:
-        with open(nodes_pickle_file, 'rb') as f:
+        with open(NODES_PICKLE_FILE, 'rb') as f:
             node_dict = pickle.load(f)
     except FileNotFoundError:
-        node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(nodes_yaml_file))
-        with open(nodes_pickle_file, 'wb') as f:
+        node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(NODES_YAML_FILE))
+        with open(NODES_PICKLE_FILE, 'wb') as f:
             pickle.dump(node_dict, f)
 
     try:

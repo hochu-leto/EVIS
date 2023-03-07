@@ -60,13 +60,20 @@ type_values = {
 }
 
 
+class ColorGap:
+    def __init__(self, gap_min=-2147483648, gap_max=2147483648, color=None):
+        self.color = color
+        self.max = gap_max
+        self.min = gap_min
+
+
 # слоты для ускорения работы
 class Parametr:
     __slots__ = ('value', 'name',
                  'type', 'sub_index', 'index',
                  'editable', 'units', 'description',
                  'multiplier', 'offset', 'period', 'editable',
-                 'min_value', 'max_value', 'widget', 'node', 'eeprom',
+                 'min_value', 'max_value', 'widget', 'node', 'eeprom', 'gaps_list',
                  'req_list', 'set_list', 'value_compare', 'value_table', 'value_string')
 
     def __init__(self, param=None, node=None):
@@ -129,12 +136,26 @@ class Parametr:
         self.value_table = {int(k): v for k, v in v_table.items()} if isinstance(v_table, dict) \
             else {int(val.split(':')[0]): val.split(':')[1]
                   for val in v_table.split(',')} if v_table else {}
-        self.widget = 'Text'
+        self.widget = check_string('widget', 'Text')
         self.node = node
         self.req_list = []
         self.set_list = []
         self.value_string = ''
         self.eeprom = True if 'eeprom' in param.keys() and param['eeprom'] is not False else False
+        # хрен его знает как запердолить сюда список гэпов цветных
+        self.gaps_list = [self.make_gap(g) for g in param['gaps']] \
+            if 'gaps' in param.keys() and isinstance(param['gaps'], list) else []
+
+    def make_gap(self, gap_dict=None):
+        # минимальные проверки, возможно, нужно их делать более строгими
+        if gap_dict is None or not isinstance(gap_dict, dict):
+            gap_dict = {}
+
+        g_min = gap_dict['min'] if 'min' in gap_dict.keys() and gap_dict['min'] is not None else self.min_value
+        g_max = gap_dict['max'] if 'max' in gap_dict.keys() and gap_dict['max'] is not None else self.max_value
+        g_color = gap_dict['color'] if 'color' in gap_dict.keys() else None
+
+        return ColorGap(g_min, g_max, g_color)
 
     # формирует посылку в зависимости от протокола
     def get_list(self):
@@ -158,7 +179,7 @@ class Parametr:
     def set_value(self, adapter: CANAdater, value):
         value += self.offset
         value /= self.multiplier
-        if 'Рулевая' in self.node.name:     # У томска проблемы с типом переменных
+        if 'Рулевая' in self.node.name:  # У томска проблемы с типом переменных
             self.value = value
         else:
             self.value = (value if value < self.max_value else self.max_value) \

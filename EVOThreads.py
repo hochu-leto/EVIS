@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QMessageBox
 from EVONode import EVONode, invertor_command_dict
 from EVOParametr import readme, Parametr
 from helper import buf_to_string, find_param, DialogChange
-from work_with_file import settings_dir
+from work_with_file import SETTINGS_DIR
 
 
 # поток для сохранения в файл настроек блока
@@ -108,7 +108,7 @@ class SaveToFileThread(QThread):
             device=self.node_to_save.to_dict())
 
         file_name = f'{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.yaml'
-        file_name = pathlib.Path(settings_dir, file_name)
+        file_name = pathlib.Path(SETTINGS_DIR, file_name)
         self.SignalOfReady.emit(95, '', False)
         with open(file_name, 'w', encoding='UTF-8') as file:
             yaml.dump(node_yaml_dict, file,

@@ -6,38 +6,7 @@ from PyQt6.QtWidgets import QDialog
 from EVOParametr import type_values
 from EVOWidgets import MyColorBar
 from helper import DialogChange
-
-
-def change_min(param):
-    print(f'Задаю минимум для параметра {param.name}')
-    dialog = DialogChange(label=f'Измени минимальное значение для {param.name}', value=str(param.min_value))
-    reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
-    dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
-    if dialog.exec() == QDialog.DialogCode.Accepted:
-        val = dialog.lineEdit.text()
-        if val:
-            val = float(val)
-            if val < type_values[param.type]['min'] or \
-                    val > param.max_value or \
-                    val > param.value:
-                val = param.min_value
-            param.min_value = val
-
-
-def change_max(param):
-    print(f'Задаю максимум для параметра {param.name}')
-    dialog = DialogChange(label=f'Измени максимальное значение для {param.name}', value=str(param.max_value))
-    reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
-    dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
-    if dialog.exec() == QDialog.DialogCode.Accepted:
-        val = dialog.lineEdit.text()
-        if val:
-            val = float(val)
-            if val > type_values[param.type]['max'] or \
-                    val < param.min_value or \
-                    val < param.value:
-                val = param.max_value
-            param.max_value = val
+from work_with_file import add_parametr_to_yaml_file
 
 
 def change_limit(param):
@@ -81,6 +50,7 @@ def change_limit(param):
                     val < param.value:
                 val = param.max_value
             param.max_value = val
+        add_parametr_to_yaml_file(parametr=param)
 
 
 def change_period(param):

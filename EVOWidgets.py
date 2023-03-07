@@ -131,13 +131,6 @@ class MyEditLine(QLineEdit):
             self.setText(v_name)
 
 
-class ColorGap:
-    def __init__(self, gap_min=-2147483648, gap_max=2147483648, color=color_EVO_white):
-        self.color = color
-        self.max = gap_max
-        self.min = gap_min
-
-
 class MyColorBar(QProgressBar):
     full_bar = 1000
 
