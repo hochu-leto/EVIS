@@ -313,31 +313,38 @@ def fill_compare_values(node: EVONode, dict_for_compare: dict):
 # ============================== добавление пользовательского параметра в ямл ========================================
 def add_parametr_to_yaml_file(parametr: Parametr):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
-    node_dir = pathlib.Path(data_dir, str(parametr.node.name))
-    file_name = pathlib.Path(node_dir, USER_PARAMETERS_FILE)
+    node_name = parametr.node.name if '#' not in parametr.name else TheBestNode
+    node_dir = TheBestNode
+    dirs_list = get_immediate_subdirectories(data_dir)
+
+    for node_dir in dirs_list:
+        if node_dir in node_name:
+            break
+
+    file_name = pathlib.Path(data_dir, node_dir, USER_PARAMETERS_FILE)
     try:
         with open(file_name, 'r', encoding='UTF-8') as file:
             try:
                 params_list = yaml.safe_load(file) or []
             except yaml.YAMLError as exc:
                 print(exc)
+    except FileNotFoundError:
+        params_list = []
 
-        if params_list:
-            new_param_list = [param for param in params_list if param['name'] != parametr.name]
-            new_param_list.append(parametr.to_dict())
-        else:
-            new_param_list = [parametr.to_dict()]
+    if params_list:
+        new_param_list = [param for param in params_list.copy() if param['name'] != parametr.name]
+        new_param_list.append(parametr.to_dict())
+    else:
+        new_param_list = [parametr.to_dict()]
 
-        with open(file_name, 'w', encoding='UTF-8') as file:
-            yaml.dump(new_param_list, file,
-                      default_flow_style=False,
-                      sort_keys=False,
-                      allow_unicode=True)
+    with open(file_name, 'w', encoding='UTF-8') as file:
+        yaml.dump(new_param_list, file,
+                  default_flow_style=False,
+                  sort_keys=False,
+                  allow_unicode=True)
 
-        delete_node_parameters_pickle(node_directory=node_dir)
-        return True
-    except PermissionError:
-        return False
+    delete_node_parameters_pickle(node_directory=pathlib.Path(data_dir, node_dir))
+    return True
 
 
 def delete_node_parameters_pickle(node_directory):

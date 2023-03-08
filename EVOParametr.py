@@ -122,7 +122,7 @@ class Parametr:
         # на что умножаем число из КАНа
         degree = check_value('degree')
         scale = float(check_value('scale', 10 ** degree))
-        self.multiplier = float(check_value('multiplier', float(check_value('mult', 1 / scale))))
+        self.multiplier = float(check_value('multiplier', float(check_value('mult', 1 / (scale or 1)))))
         # вычитаем это из полученного выше числа
         self.offset = float(check_value('scaleB', float(check_value('offset'))))
         period = int(check_value('period', 1))  # период опроса параметра 1=каждый цикл 1000=очень редко

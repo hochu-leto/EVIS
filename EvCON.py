@@ -57,7 +57,8 @@ import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidgetItem, QTableWidget
+    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidgetItem, QTableWidget, \
+    QLineEdit
 import pathlib
 
 from qt_material import apply_stylesheet, list_themes, QtStyleTools
@@ -72,7 +73,6 @@ from EVOParametr import Parametr, type_values
 from command_buttons import suspension_to_zero, mpei_invert, mpei_calibrate, mpei_power_on, mpei_power_off, \
     mpei_reset_device, mpei_reset_params, joystick_bind, load_from_eeprom, save_to_eeprom, let_moment_mpei, rb_toggled, \
     check_steering_current, multyvibrator
-from menu_items import change_period, change_limit
 from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict_from_yaml, make_nodes_dict, WORK_DIR, \
     NODES_PICKLE_FILE, NODES_YAML_FILE, save_p_dict_to_yaml_file, \
     fill_yaml_dict, SETTINGS_DIR, save_diff, add_parametr_to_yaml_file
@@ -99,6 +99,7 @@ def show_value(param):
     widget = window.vmu_param_table.cellWidget(row, 2)
     if widget:
         widget.set_text()
+        print(param.name, widget.isInFocus)
     else:
         window.vmu_param_table.item(row, 2).setText(zero_del(param.value))
 
@@ -406,10 +407,63 @@ def add_param_to_the_best_node(current_param):
     return result
 
 
+def change_limit(param):
+    print(f'Задаю пределы для параметра {param.name}')
+    value_changer_dialog = DialogChange()
+
+    reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+    max_lbl = QLabel(value_changer_dialog)
+    max_lbl.setText('Задай максимальное значение параметра')
+    value_changer_dialog.max_line_edit = QLineEdit(value_changer_dialog)
+    value_changer_dialog.max_line_edit.setText(str(param.max_value))
+    value_changer_dialog.max_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
+
+    min_lbl = QLabel(value_changer_dialog)
+    min_lbl.setText('Задай минимальное значение параметра')
+    value_changer_dialog.min_line_edit = QLineEdit(value_changer_dialog)
+    value_changer_dialog.min_line_edit.setText(str(param.min_value))
+    value_changer_dialog.min_line_edit.setValidator(QRegularExpressionValidator(reg_ex))
+
+    value_changer_dialog.set_widgets(widgets_list=[max_lbl, value_changer_dialog.max_line_edit,
+                                                   min_lbl, value_changer_dialog.min_line_edit])
+
+    if value_changer_dialog.exec() == QDialog.DialogCode.Accepted:
+        min_val = value_changer_dialog.min_line_edit.text()
+        if min_val:
+            val = float(min_val)
+            if val < type_values[param.type]['min'] or \
+                    val > param.max_value or \
+                    val > param.value:
+                val = param.min_value
+            param.min_value = val
+        max_val = value_changer_dialog.max_line_edit.text()
+        if max_val:
+            val = float(max_val)
+            if val > type_values[param.type]['max'] or \
+                    val < param.min_value or \
+                    val < param.value:
+                val = param.max_value
+            param.max_value = val
+        add_parametr_to_yaml_file(parametr=param)
+        wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
+
+
+def change_period(param):
+    print(f'Меняю период параметра {param.name}')
+    dialog = DialogChange(label=f'Измени период опроса для параметра {param.name} (1-1000)', value=str(param.period))
+    reg_ex = QRegularExpression("^([1-9][0-9]{0,2}|1000)$")
+    dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+    if dialog.exec() == QDialog.DialogCode.Accepted:
+        val = dialog.lineEdit.text()
+        if val:
+            param.period = int(val)
+        add_parametr_to_yaml_file(parametr=param)
+
+
 def set_bar(param):
     if param.widget != 'MyColorBar':
-        if param.min_value == type_values[param.type]['min'] \
-                and param.max_value == type_values[param.type]['max']:
+        if float(param.min_value) == float(type_values[param.type]['min']) \
+                and float(param.max_value) == float(type_values[param.type]['max']):
             change_limit(param)
         param.widget = 'MyColorBar'
         add_parametr_to_yaml_file(parametr=param)
@@ -420,8 +474,8 @@ def set_bar(param):
 
 def set_slider(param):
     if param.widget != 'MySlider':
-        if param.min_value == type_values[param.type]['min'] \
-                and param.max_value == type_values[param.type]['max']:
+        if float(param.min_value) == float(type_values[param.type]['min']) \
+                and float(param.max_value) == float(type_values[param.type]['max']):
             change_limit(param)
         param.widget = 'MySlider'
         add_parametr_to_yaml_file(parametr=param)
@@ -433,13 +487,7 @@ def set_slider(param):
 def set_text_description(param):
     param.widget = 'Text'
     add_parametr_to_yaml_file(parametr=param)
-    row = window.thread.current_params_list.index(param)
-    window.vmu_param_table.removeCellWidget(row, 1)
-    desc_item = QTableWidgetItem(param.description)
-    # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-    desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
-    desc_item.setToolTip(param.description)
-    window.vmu_param_table.setItem(row, 1, desc_item)
+    wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
 
 
 def paint_cells(parametr, color):

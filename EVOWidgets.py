@@ -193,7 +193,6 @@ class MySlider(QSlider):
     def set_new_value(self):
         lst = []
         if self.parametr is not None:
-            print(self.value(), self.multiplier)
             value = float(self.value() * self.multiplier)
             lst = [self.parametr, value]
         self.ValueSelected.emit(lst)

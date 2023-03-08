@@ -99,13 +99,11 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
     items_list = []
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
-    row = 0
     headers_list = ['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность']
     show_table.setColumnCount(len(headers_list))
     show_table.setHorizontalHeaderLabels(headers_list)
 
-    # пока отображаю только три атрибута + само значение отображается позже
-    for par in list_of_params:
+    for row, par in enumerate(list_of_params):
         name = par.name
         unit = par.units
         description = par.description
@@ -162,8 +160,6 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
-        row += 1
-
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
     show_table.setColumnHidden(show_table.columnCount() - 2, not has_compare)
@@ -177,13 +173,15 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 
 def show_new_vmu_params(params_list, table, has_compare_params=False):
     items_list = []
-    row = 0
-    for par in params_list:
+    # row = 0
+    for row, par in enumerate(params_list):
         it = table.cellWidget(row, 2)
         if hasattr(it, 'isInFocus') \
                 and it.isInFocus:
-            row += 1
+            # row += 1
             continue
+        # if par.editable and table.cellWidget(row, 2).isInFocus:
+        #     continue
         value_in_dict = False
         if par.value_string:
             v_name = par.value_string
@@ -223,10 +221,10 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
             color_ = color_EVO_red_dark if v_name.strip() != compare_name.strip() else color_EVO_white
             table.item(row, 3).setBackground(color_)
 
-        if not par.widget == 'Text':
+        if par.widget != 'Text':
             table.cellWidget(row, 1).set_value()
 
-        row += 1
+        # row += 1
     return items_list
 
 
