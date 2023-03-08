@@ -1,0 +1,41 @@
+- name: A0.2 SetSteerPos
+  index: 2
+  sub_index: 0
+  description: Задание реечной позиции -1000...+1000
+  type: SIGNED16
+  value: 0
+  widget: MySlider
+  editable: true
+  min_value: -1000.0
+  max_value: 1000.0
+- name: A0.3 ActSteerPos
+  index: 3
+  sub_index: 0
+  description: Актуальная реечная позиция -1000...+1000
+  type: SIGNED16
+  value: 0
+  widget: MyColorBar
+  editable: true
+  min_value: -1000.0
+  max_value: 1000.0
+- name: A1.7 CurrentRMS
+  index: 18
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0
+  units: A
+  widget: MyColorBar
+  multiplier: 0.1
+  editable: false
+  min_value: 0.0
+  max_value: 655.0
+- name: A0.8 ErrPositAbs
+  index: 8
+  sub_index: 0
+  description: ОШИБКА ПО ПОЛОЖЕНИЮ В МЕТКАХ ДАТЧИКА РУЛЕВОЙ РЕЙКИ
+  type: SIGNED32
+  value: 0
+  editable: false
+  min_value: -2147483648.0
+  max_value: 2147483648.0

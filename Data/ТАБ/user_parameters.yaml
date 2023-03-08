@@ -1,0 +1,9 @@
+- name: current
+  index: 16400
+  sub_index: 0
+  type: FLOAT
+  value: 0.0
+  widget: MyColorBar
+  editable: false
+  min_value: -10000.0
+  max_value: 10000.0

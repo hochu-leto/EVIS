@@ -1,0 +1,10 @@
+- name: TEMP_HEATSINK
+  index: 20480
+  sub_index: 4
+  type: FLOAT
+  value: 0
+  units: °C
+  widget: MyColorBar
+  editable: false
+  min_value: -50.0
+  max_value: 200.0

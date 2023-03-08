@@ -1,0 +1,154 @@
+- name: STEERING_FRONT_MANUAL_CONTROL_CMD
+  index: 8464
+  sub_index: 1
+  description: Желаемое положение передней рулевой рейки в ручном режиме управления,
+  type: SIGNED16
+  value: 0
+  units: '[-30000..30000]'
+  widget: MySlider
+  editable: true
+  min_value: -30000.0
+  max_value: 30000.0
+- name: FROM_STEERING_FRONT_POSITION
+  index: 8465
+  sub_index: 4
+  description: Текущее положение передней рулевой рейки, получаемое с рейки
+  type: SIGNED16
+  value: 0
+  units: '[-1000..1000]'
+  widget: MyColorBar
+  editable: false
+  min_value: -1000.0
+  max_value: 1000.0
+- name: ABS_FAULT_COUNT_THRESHOLD
+  index: 8544
+  sub_index: 6
+  description: Количество ошибок датчика на одном колесе, задетектированных в течение
+    одной минуты, при котором выставляется  критическая ошибка.
+  type: UNSIGNED16
+  value: 0
+  widget: MySlider
+  editable: true
+  min_value: 0.0
+  max_value: 10000.0
+  eeprom: true
+- name: STEERING_FRONT_MANUAL_CONTROL_CMD#КВУ_ТТС
+  index: 8464
+  sub_index: 1
+  description: Желаемое положение передней рулевой рейки в ручном режиме управления,
+  type: SIGNED16
+  value: 0
+  units: '[-30000..30000]'
+  widget: MySlider
+  editable: true
+  min_value: -30000.0
+  max_value: 30000.0
+- name: STEERING_REAR_MANUAL_CONTROL_CMD#КВУ_ТТС
+  index: 8464
+  sub_index: 2
+  description: Желаемое положение задней рулевой рейки в ручном режиме управления,
+  type: SIGNED16
+  value: 0
+  units: '[-30000..30000]'
+  widget: MySlider
+  editable: true
+  min_value: -30000.0
+  max_value: 30000.0
+- name: FROM_STEERING_REAR_POSITION#КВУ_ТТС
+  index: 8466
+  sub_index: 4
+  description: Текущее положение задней рулевой рейки, получаемое с рейки
+  type: SIGNED16
+  value: 28
+  units: '[-1000..1000]'
+  widget: MyColorBar
+  editable: false
+  min_value: -1000.0
+  max_value: 1000.0
+- name: FROM_PSTED_MOTOR_SPEED#КВУ_ТТС
+  index: 8456
+  sub_index: 3
+  description: Текущая скорость вращения двигателя, полученная от ПСТЭД
+  type: SIGNED16
+  value: 0
+  units: об/мин
+  widget: MyColorBar
+  multiplier: 0.24415
+  editable: false
+  min_value: -10000.0
+  max_value: 10000.0
+- name: FROM_STEERING_FRONT_POSITION#КВУ_ТТС
+  index: 8465
+  sub_index: 4
+  description: Текущее положение передней рулевой рейки, получаемое с рейки
+  type: SIGNED16
+  value: -6
+  units: '[-1000..1000]'
+  widget: MyColorBar
+  editable: false
+  min_value: -1000.0
+  max_value: 1000.0
+- name: MANUAL_CONTROL#КВУ_ТТС
+  index: 8448
+  sub_index: 1
+  description: Включение ручного режима управления
+  type: UNSIGNED8
+  value: 0
+  editable: true
+  min_value: 0.0
+  max_value: 1.0
+  value_table:
+    0: Отключен
+    1: Включен
+- name: PSTED_MANUAL_CONTROL_REF_TORQUE#КВУ_ТТС
+  index: 8456
+  sub_index: 16
+  description: Желаемый момент двигателя в ручном режиме управления
+  type: SIGNED16
+  value: 0
+  units: '%'
+  widget: MyColorBar
+  multiplier: 0.00305
+  editable: true
+  min_value: -1000.0
+  max_value: 1000.0
+- name: FROM_STEERING_FRONT_ERRORS
+  index: 8465
+  sub_index: 6
+  description: Подробное описание ошибки задней рулевой рейки бит 0 - Авария модуля
+    бит 1 - Короткое замыкание на выходе бит 2 - Авария датчика положения/калибровки
+    бит 3 - Перегрев силового радиатора бит 4 - Перенапряжение Udc бит 5 - Пониженное
+    напряжение Udc бит 6 - Длительная токовая перегрузка бит 7 - Неправильная полярность
+    DC-мотора
+  type: UNSIGNED8
+  value: 0
+  widget: MyColorBar
+  editable: false
+  min_value: 0.0
+  max_value: 15.0
+- name: FROM_STEERING_REAR_ERRORS
+  index: 8466
+  sub_index: 6
+  description: Подробное описание ошибки задней рулевой рейки бит 0 - Авария модуля
+    бит 1 - Короткое замыкание на выходе бит 2 - Авария датчика положения/калибровки
+    бит 3 - Перегрев силового радиатора бит 4 - Перенапряжение Udc бит 5 - Пониженное
+    напряжение Udc бит 6 - Длительная токовая перегрузка бит 7 - Неправильная полярность
+    DC-мотора
+  type: UNSIGNED8
+  value: 0
+  widget: MyColorBar
+  editable: false
+  min_value: 0.0
+  max_value: 15.0
+- name: ABS_WHEEL_FREQ_FL
+  index: 8544
+  sub_index: 13
+  description: Частота вращения колеса "Переднее левое"
+  type: SIGNED16
+  value: 0
+  units: Гц
+  widget: MyColorBar
+  multiplier: 0.002
+  editable: false
+  min_value: -0.0
+  max_value: 40.0
