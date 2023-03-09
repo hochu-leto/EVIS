@@ -159,7 +159,8 @@ class MyColorBar(QProgressBar):
 class MySlider(QSlider):
     full_bar = 1000
     ValueSelected = pyqtSignal(list)
-    ValueChanged = pyqtSignal()
+    ValueChanged = pyqtSignal(object)
+    SliderHold = pyqtSignal(object)
 
     def __init__(self, parent=None, parametr=None):
         super(QSlider, self).__init__(parent)
@@ -171,6 +172,7 @@ class MySlider(QSlider):
         self.setOrientation(Qt.Orientation.Horizontal)
         self.set_value()
         self.sliderReleased.connect(self.set_new_value)
+        self.sliderPressed.connect(self.slider_press_handle)
         self.valueChanged.connect(self.value_changed_handle)
 
     def set_value(self, value=None):
@@ -188,7 +190,10 @@ class MySlider(QSlider):
 
     def value_changed_handle(self):
         self.parametr.value = self.value() * self.multiplier
-        self.ValueChanged.emit()
+        self.ValueChanged.emit(self.parametr)
+
+    def slider_press_handle(self):
+        self.SliderHold.emit(self.parametr)
 
     def set_new_value(self):
         lst = []

@@ -152,3 +152,52 @@
   editable: false
   min_value: -0.0
   max_value: 40.0
+- name: ABS_WHEEL_TICKS
+  index: 8544
+  sub_index: 1
+  description: Количество зубцов на измерительном колесе, которое считывает энкодер
+  type: UNSIGNED8
+  value: 0
+  widget: MySlider
+  editable: true
+  min_value: 0.0
+  max_value: 255.0
+  eeprom: true
+- name: ABS_WHEEL_MIN_SPEED_THRESHOLD
+  index: 8544
+  sub_index: 3
+  description: Пороговая скорость колес, используемая для детекции ошибок датчиков
+    АБС
+  type: SIGNED16
+  value: 0
+  units: об/мин
+  widget: MySlider
+  multiplier: 0.24410000000000004
+  editable: true
+  min_value: -0.0
+  max_value: 1000.0
+  eeprom: true
+- name: ABS_WARNING_COUNT_THRESHOLD
+  index: 8544
+  sub_index: 5
+  description: Количество ошибок датчика на одном колесе, задетектированных в течение
+    одной минуты, при котором выставляется  предупреждение.
+  type: UNSIGNED16
+  value: 0
+  widget: MySlider
+  editable: true
+  min_value: 0.0
+  max_value: 6000.0
+  eeprom: true
+- name: ABS_FILTER_FACTOR
+  index: 8544
+  sub_index: 11
+  description: Коэффициент фильтрации датчиков ABS
+  type: UNSIGNED8
+  value: 0
+  widget: MySlider
+  multiplier: 0.0039
+  editable: true
+  min_value: 0.0
+  max_value: 255.0
+  eeprom: true

@@ -61,6 +61,7 @@ from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetI
     QLineEdit
 import pathlib
 
+from pyqtgraph import PlotWidget
 from qt_material import apply_stylesheet, list_themes, QtStyleTools
 
 import VMU_monitor_ui
@@ -85,7 +86,7 @@ wait_thread = WaitCanAnswerThread()
 extra = {  # Density Scale
     'density_scale': '-2', }
 
-
+@pyqtSlot(object)
 def set_focus(param):
     row = window.thread.current_params_list.index(param)
     widget = window.vmu_param_table.cellWidget(row, 2)
@@ -93,13 +94,12 @@ def set_focus(param):
         widget.isInFocus = True
 
 
-@pyqtSlot()
+@pyqtSlot(object)
 def show_value(param):
     row = window.thread.current_params_list.index(param)
     widget = window.vmu_param_table.cellWidget(row, 2)
     if widget:
         widget.set_text()
-        print(param.name, widget.isInFocus)
     else:
         window.vmu_param_table.item(row, 2).setText(zero_del(param.value))
 
@@ -108,8 +108,8 @@ def wrapper_show_empty(params_list: list, param_table: QTableWidget, has_compare
     slider_list = show_empty_params_list(params_list, show_table=param_table,
                                          has_compare=has_compare)
     for slider in slider_list:
-        slider.ValueChanged.connect(lambda: show_value(slider.parametr))
-        slider.sliderPressed.connect(lambda: set_focus(slider.parametr))
+        slider.ValueChanged.connect(show_value)
+        slider.SliderHold.connect(set_focus)
         slider.ValueSelected.connect(change_value)
 
 
@@ -237,7 +237,6 @@ def make_compare():
                 return False
         wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table,
                            has_compare=window.thread.current_node.has_compare_params)
-
     else:
         window.log_lbl.setText('Файл не выбран')
         return False
@@ -246,17 +245,15 @@ def make_compare():
 @pyqtSlot(list)
 def change_value(lst):
     # принимает список из двух элементов, первый - Parametr(), второй - новое значение для него
-    # if not window.vmu_param_table.currentItem():
-    #     return
+    # пора бы переделать под object, new_value
+
     info_m, lab = 'От виджета пришёл пустой список', None
     if lst:
         parametr = lst[0]
         new_value = lst[1]
         if not window.vmu_param_table.currentItem():
             row = window.thread.current_params_list.index(parametr)
-            # window.vmu_param_table.setCurrentIndex(row)
             window.vmu_param_table.setCurrentCell(row, 2)
-            # window.vmu_param_table.setCurrentItem()
         info_m, lab = set_new_value(parametr, new_value)
     info_and_widget(info_m, lab)
 
@@ -1273,6 +1270,11 @@ if __name__ == '__main__':
     window.high_beam_rbtn.clicked.connect(lambda: rb_toggled(window))
     window.flash_light_checkBox.clicked.connect(lambda: multyvibrator(window))
     window.light_box.setEnabled(False)
+    # ----------------------------------- подготовка под графики ------------------------------------------------
+    window.label.deleteLater()
+    window.graphWidget = PlotWidget()
+    window.gridLayout_5.addWidget(window.graphWidget, 0, 0, 1, 1)
+
 
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:
@@ -1313,4 +1315,7 @@ if __name__ == '__main__':
 # вывести окно сравнения различающихся параметров, которые можно менять при заливке других настроек
 # виджеты с частыми параметрами в окно управление
 # цветомузыка
+# научиться парсить текстовые настройки ТАБ
+# научиться парсить настройки старого КВУ
+# когда сохраняется файл, давать не него ссылку
 # делаем графики

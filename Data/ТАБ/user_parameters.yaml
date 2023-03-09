@@ -2,8 +2,17 @@
   index: 16400
   sub_index: 0
   type: FLOAT
-  value: 0.0
+  value: -2.070058584213257
   widget: MyColorBar
   editable: false
-  min_value: -10000.0
-  max_value: 10000.0
+  min_value: -100.0
+  max_value: 100.0
+- name: Number
+  index: 16480
+  sub_index: 1
+  type: UNSIGNED16
+  value: 0.0
+  widget: MySlider
+  editable: true
+  min_value: 0.0
+  max_value: 15.0

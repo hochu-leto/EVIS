@@ -39,3 +39,15 @@
   editable: false
   min_value: -2147483648.0
   max_value: 2147483648.0
+- name: B2.17 MAX_POS
+  index: 102
+  sub_index: 0
+  description: Величина рабочей зоны перемещения рейки +- в % относительно всего допустимого
+    хода
+  type: UNSIGNED16
+  value: 99.0
+  units: '%'
+  widget: MySlider
+  editable: true
+  min_value: 0.0
+  max_value: 99.0
