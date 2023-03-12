@@ -732,22 +732,27 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         # Если функция вернула строку, значит проблемы с подключением,
         # останавливаем поток
         # Также можно будет в дальнейшем использовать случай, если в списке есть ещё что-то
-        if list_of_params and isinstance(list_of_params[0], str):
-            err = str(list_of_params[0])
-            if self.thread.isRunning():
-                # останавливаем запись лога
-                if self.thread.is_recording:
-                    record_log()
-                # останавливаем поток
-                self.thread.quit()
-                self.thread.wait()
-                # выкидываем ошибку
-                QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.StandardButton.Ok)
-            self.connect_btn.setText("Подключиться")
-            if can_adapter.isDefined:
-                can_adapter.close_canal_can()
-            if err == 'Адаптер не подключен':
-                can_adapter.isDefined = False
+        if list_of_params:
+            if isinstance(list_of_params[0], str):
+                err = str(list_of_params[0])
+                if self.thread.isRunning():
+                    # останавливаем запись лога
+                    if self.thread.is_recording:
+                        record_log()
+                    # останавливаем поток
+                    self.thread.quit()
+                    self.thread.wait()
+                    # выкидываем ошибку
+                    QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.StandardButton.Ok)
+                self.connect_btn.setText("Подключиться")
+                if can_adapter.isDefined:
+                    can_adapter.close_canal_can()
+                if err == 'Адаптер не подключен':
+                    can_adapter.isDefined = False
+            else:
+                # здесь должна быть функция отрисовки графиков
+                pass
+
         elif not list_of_params and self.thread.current_params_list:  # ошибок нет - всё хорошо
             # показываем свежие обновлённые параметры
             widgets_list = show_new_vmu_params(params_list=self.thread.current_params_list,
@@ -1115,11 +1120,20 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 print('Поток остановлен')
             print('Вкладка управление')
         elif self.main_tab.currentWidget() == self.params_tab:
+            params_list_changed()
+            self.thread.make_plot = []
             self.connect_to_node()
             print('Вкладка параметры, поток запущен')
+            for p in self.thread.current_params_list:
+                print(p.name)
         elif self.main_tab.currentWidget() == self.grafics_tab:
-
+            self.thread.make_plot = [True]
+            self.thread.current_params_list = self.thread.current_params_list[:4]
+            if self.thread.isFinished():
+                self.connect_to_node()
             print('Графики не готовы')
+            for p in self.thread.current_params_list:
+                print(p.name)
         else:
             print('Неизвестное состояние')
 

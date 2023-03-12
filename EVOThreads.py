@@ -140,6 +140,7 @@ class MainThread(QThread):
         self.max_errors = 3
         self.current_nodes_dict = {}
         self.parent = parent
+        self.make_plot = []
 
     def run(self):
         def emitting(ans_list):
@@ -167,7 +168,7 @@ class MainThread(QThread):
                     self.params_counter += 1
                     if self.params_counter >= len(self.current_params_list):
                         self.params_counter = 0
-                        emitting([])
+                        emitting(self.make_plot)
                         return
                     current_param = self.current_params_list[self.params_counter]
 
@@ -185,7 +186,7 @@ class MainThread(QThread):
             self.params_counter += 1
             if self.params_counter >= len(self.current_params_list):
                 self.params_counter = 0
-                emitting([])
+                emitting(self.make_plot)
                 if self.is_recording:
                     dt = datetime.datetime.now()
                     dt = dt.strftime("%H:%M:%S.%f")
@@ -199,7 +200,7 @@ class MainThread(QThread):
                             val = par.value
                         now_values_dict[par.name] = val
                     self.record_dict[dt] = now_values_dict.copy()
-                else:
+                elif not self.make_plot:
                     request_errors()
 
         def request_errors():
