@@ -3,6 +3,9 @@ import sys
 import pyqtgraph.examples
 from PyQt6.QtWidgets import QApplication
 from numpy.random import randint
+from time import perf_counter
+import numpy as np
+import pyqtgraph as pg
 
 # pyqtgraph.examples.run()
 
@@ -10,16 +13,8 @@ from numpy.random import randint
 Various methods of drawing scrolling plots.
 """
 
-from time import perf_counter
 
-import numpy as np
-
-import pyqtgraph as pg
-#
-# win = pg.GraphicsLayoutWidget(show=True)
-# win.setWindowTitle('pyqtgraph example: Scrolling Plots')
-
-# 3) Plot in chunks, adding one new plot curve for every 100 samples
+# Plot in chunks, adding one new plot curve for every 100 samples
 chunkSize = 100
 # Remove chunks after we have 10
 maxChunks = 10
@@ -49,8 +44,9 @@ def update3(params: list):
         # когда количество кривых кратно количеству 100
         # добавляется новая пачка кривых в список
         curve = []
-        for _ in params:
-            curve.append(plotWidget.plot())
+        legend.clear()
+        for num in range(len(params)):
+            curve.append(plotWidget.plot(name=f'param{num}'))
         curves.append(curve)
         # из старого массива достаём последний элемент
         last_x = x[-1]
@@ -96,6 +92,8 @@ if __name__ == '__main__':
     y = np.zeros((chunkSize + 1, len(parameters)))
     plotWidget = pg.plot(title="GeeksCoders.com")
     plotWidget.setXRange(- chunkSize / 10, 0)
+
+    legend = plotWidget.addLegend()
     timer = pg.QtCore.QTimer()
     timer.timeout.connect(update)
     timer.start(10)

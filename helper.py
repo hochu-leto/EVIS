@@ -173,15 +173,11 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 
 def show_new_vmu_params(params_list, table, has_compare_params=False):
     items_list = []
-    # row = 0
     for row, par in enumerate(params_list):
         it = table.cellWidget(row, 2)
         if hasattr(it, 'isInFocus') \
                 and it.isInFocus:
-            # row += 1
             continue
-        # if par.editable and table.cellWidget(row, 2).isInFocus:
-        #     continue
         value_in_dict = False
         if par.value_string:
             v_name = par.value_string
@@ -224,7 +220,6 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
         if par.widget != 'Text':
             table.cellWidget(row, 1).set_value()
 
-        # row += 1
     return items_list
 
 

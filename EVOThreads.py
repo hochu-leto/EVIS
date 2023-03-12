@@ -198,7 +198,6 @@ class MainThread(QThread):
                         else:
                             val = par.value
                         now_values_dict[par.name] = val
-                    # self.record_dict[dt] = {par.name: par.value for par in self.current_params_list}
                     self.record_dict[dt] = now_values_dict.copy()
                 else:
                     request_errors()
