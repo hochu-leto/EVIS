@@ -64,18 +64,6 @@
   editable: false
   min_value: -50.0
   max_value: 200.0
-- name: DCLINK_CONTACTOR_HOLDUP
-  index: 8451
-  sub_index: 2
-  description: Время выдержки от срабатывания основного контактора до отключения зарядного
-    контактора
-  type: UNSIGNED32
-  value: 0
-  units: ms
-  widget: MySlider
-  editable: true
-  min_value: 0.0
-  max_value: 10000.0
 - name: DCLINK_CHARGE_THRESHOLD
   index: 8451
   sub_index: 0
@@ -175,3 +163,14 @@
   editable: true
   min_value: -2147483648.0
   max_value: 2147483647.0
+- name: DCLINK_CONTACTOR_HOLDUP
+  index: 8451
+  sub_index: 2
+  description: Время выдержки от срабатывания основного контактора до отключения зарядного
+    контактора
+  type: UNSIGNED32
+  value: 5550.0
+  units: ms
+  editable: true
+  min_value: 0.0
+  max_value: 10000.0

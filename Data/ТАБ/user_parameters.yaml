@@ -1,12 +1,3 @@
-- name: current
-  index: 16400
-  sub_index: 0
-  type: FLOAT
-  value: -2.070058584213257
-  widget: MyColorBar
-  editable: false
-  min_value: -100.0
-  max_value: 100.0
 - name: Number
   index: 16480
   sub_index: 1
@@ -16,3 +7,12 @@
   editable: true
   min_value: 0.0
   max_value: 15.0
+- name: current
+  index: 16400
+  sub_index: 0
+  type: FLOAT
+  value: -0.0
+  widget: MyColorBar
+  editable: false
+  min_value: -100.0
+  max_value: 10.0

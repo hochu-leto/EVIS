@@ -1117,8 +1117,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         elif self.main_tab.currentWidget() == self.params_tab:
             self.connect_to_node()
             print('Вкладка параметры, поток запущен')
-        # elif self.main_tab.currentWidget() == self.grafics_tab:
-        #     print('Графики не готовы')
+        elif self.main_tab.currentWidget() == self.grafics_tab:
+
+            print('Графики не готовы')
         else:
             print('Неизвестное состояние')
 
@@ -1134,8 +1135,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             ('Удалить из Избранного', add_param_to_the_best_node),
             ('Задать период опроса', change_period),
             ('Установить пределы', change_limit),
-            # ('Установить максимум', change_max),
-            # ('Установить минимум', change_min)
         ])
 
         if check_param_in_the_best_node(parametr):
@@ -1162,7 +1161,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         action = menu.exec(self.vmu_param_table.mapToGlobal(pos))
         # Display the data text of the selected row
         if action:
-            res = items[action](parametr)
+            items[action](parametr)
 
 
 def change_theme():
@@ -1254,7 +1253,6 @@ if __name__ == '__main__':
     window.connect_btn.clicked.connect(window.connect_to_node)
     window.save_eeprom_btn.clicked.connect(lambda: save_to_eeprom(window))
     window.reset_faults.clicked.connect(erase_errors)
-    # window.compare_btn.clicked.connect(make_compare_params_list)
     window.compare_btn.clicked.connect(make_compare)
     window.save_to_file_btn.clicked.connect(save_to_file_pressed)
     window.log_record_btn.clicked.connect(record_log)
