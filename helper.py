@@ -3,10 +3,14 @@
 """
 import struct
 import traceback
+from time import perf_counter
+
+import numpy
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
     QCheckBox, QWidget
+from pyqtgraph import PlotWidget, mkPen
 
 import my_dialog
 from EVOWidgets import GreenLabel, MyComboBox, MyEditLine, zero_del, MyColorBar, MySlider, color_EVO_red_dark, \
@@ -213,7 +217,7 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
 
         if has_compare_params:
             compare_name = table.item(row, 3).text()
-            # здесь тоже неплохо бы делат цветную метку, но я так всё утоплю в метках
+            # здесь тоже неплохо бы делать цветную метку, но я так всё утоплю в метках
             color_ = color_EVO_red_dark if v_name.strip() != compare_name.strip() else color_EVO_white
             table.item(row, 3).setBackground(color_)
 
@@ -223,10 +227,82 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
     return items_list
 
 
+def draw_plots(plot_widget: PlotWidget, params_list: list):
+    pass
+
+
+class EVOGraph:
+    chunkSize = 100
+    maxChunks = 10
+    pens = [mkPen(color=(0, 255, 0)), mkPen(color=(255, 0, 0)), mkPen(color=(0, 0, 255)),
+            mkPen(color=(0, 255, 255)), mkPen(color=(255, 255, 0)), mkPen(color=(255, 0, 255))]
+
+    def __init__(self, plot_widget: PlotWidget, params_list: list):
+        self.widget = plot_widget
+        self.legend = self.widget.addLegend()
+        self.widget.setXRange(- self.chunkSize / 10, 0)
+        self.params_list = params_list
+        self.data_x = numpy.zeros((self.chunkSize + 1))
+        self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
+        self.counter = 0
+        self.curves = []
+        self.startTime = perf_counter()
+
+    def update_plots(self):
+        now = perf_counter()
+        # пробегаемся по списку со всеми кривыми
+        # и задаём им позицию х - чтоб весь график сдвинулся влево
+        for curs in self.curves:
+            for c in curs:
+                c.setPos(-(now - self.startTime), 0)
+
+        i = self.counter % self.chunkSize
+        # я так и не понимаю зачем создаётся новый массив в 100 элементов
+        # как понял, потому что 400 элементов это тяжело
+        # и сохраняются в памяти только последние 100
+        if i == 0:
+            # когда количество кривых кратно количеству 100
+            # добавляется новая пачка кривых в список
+            curve = []
+            self.legend.clear()
+            for parametr in self.params_list:
+                curve.append(self.widget.plot(name=parametr.name))
+            self.curves.append(curve)
+            # из старого массива достаём последний элемент
+            last_x = self.data_x[-1]
+            last_y = self.data_y[-1]
+            # создаём новый массив причём для всех графиков
+            self.data_x = numpy.zeros((self.chunkSize + 1))
+            self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
+            # и впихиваем в него на первую позицию последний элемент старого массива
+            self.data_x[0] = last_x
+            self.data_y[0] = last_y
+
+            # если количество кусков больше 10, удаляем до 10
+            while len(self.curves) > self.maxChunks:
+                c = self.curves.pop(0)
+                for cc in c:
+                    self.widget.removeItem(cc)
+        else:
+            # если сейчас не 100я кривая, то берём последний
+            curve = self.curves[-1]
+
+        self.data_x[i + 1] = now - self.startTime
+
+        for indx, par in enumerate(self.params_list):
+            self.data_y[i + 1, indx] = par.value
+            crv = curve[indx]
+            crv.setData(x=self.data_x[:i + 2], y=self.data_y[:i + 2, indx],
+                        pen=self.pens[indx])
+        self.counter += 1
+
+    pass
+
+
 class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
     def __init__(self, label=None, value=None, table=None, compare=False, radio_btn=None,
-                 text=None, process=None, widgets_list=None, check_boxes=None):
+                 text=None, process=None, check_boxes=None):
         super().__init__()
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
@@ -288,6 +364,7 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
             if isinstance(widget, QWidget):
                 self.gridLayout.addWidget(widget, i + 1, 0)
             i += 1
+
     def c_boxes(self, state):
         for check in self.check_box_list:
             if not check.isChecked():

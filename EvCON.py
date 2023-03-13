@@ -78,13 +78,14 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     NODES_PICKLE_FILE, NODES_YAML_FILE, save_p_dict_to_yaml_file, \
     fill_yaml_dict, SETTINGS_DIR, save_diff, add_parametr_to_yaml_file
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode, easter_egg
+    show_new_vmu_params, find_param, TheBestNode, easter_egg, draw_plots, EVOGraph
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
 wait_thread = WaitCanAnswerThread()
 extra = {  # Density Scale
     'density_scale': '-2', }
+
 
 @pyqtSlot(object)
 def set_focus(param):
@@ -705,6 +706,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
+        self.graphWidget = None
+        self.graphics = None
         self.all_params_dict = {}
         self.setupUi(self)
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
@@ -751,8 +754,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                     can_adapter.isDefined = False
             else:
                 # здесь должна быть функция отрисовки графиков
-                pass
-
+                # по идее, в текущем листе уже должно быть только 4 первых параметра
+                self.graphics.update_plots()
         elif not list_of_params and self.thread.current_params_list:  # ошибок нет - всё хорошо
             # показываем свежие обновлённые параметры
             widgets_list = show_new_vmu_params(params_list=self.thread.current_params_list,
@@ -1114,6 +1117,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             event.ignore()
 
     def change_tab(self):
+        # возможно, следует убивать графики в других вкладках
         if self.main_tab.currentWidget() == self.management_tab:
             if self.thread.isRunning():
                 self.connect_to_node()
@@ -1132,6 +1136,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             if self.thread.isFinished():
                 self.connect_to_node()
             print('Графики не готовы')
+            self.graphics = EVOGraph(plot_widget=self.graphWidget, params_list=self.thread.current_params_list)
             for p in self.thread.current_params_list:
                 print(p.name)
         else:
@@ -1286,7 +1291,6 @@ if __name__ == '__main__':
     window.label.deleteLater()
     window.graphWidget = PlotWidget()
     window.gridLayout_5.addWidget(window.graphWidget, 0, 0, 1, 1)
-
 
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:
