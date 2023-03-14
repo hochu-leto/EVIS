@@ -1,15 +1,20 @@
 """
-всякие вспомогательные функции
+Всякие вспомогательные функции
 """
 import struct
 import traceback
+from time import perf_counter
+
+import numpy
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
-    QCheckBox
+    QCheckBox, QWidget
+from pyqtgraph import PlotWidget, mkPen
 
 import my_dialog
-from EVOWidgets import GreenLabel, MyComboBox, MyEditLine, zero_del
+from EVOWidgets import GreenLabel, MyComboBox, MyEditLine, zero_del, MyColorBar, MySlider, color_EVO_red_dark, \
+    color_EVO_white
 
 TheBestNode = 'Избранное'
 NewParamsList = 'Новый список'
@@ -52,15 +57,6 @@ example_par = {'name': 'fghjk',
                'size': 'nan',
                'degree': 3,
                'value_table': '1: dvfvdhfh, 2:ygsksu, 5:uvcjvacj, 111:bhjbhjhj'}
-color_EVO_red = QColor(222, 73, 14)
-color_EVO_green = QColor(0, 254, 0, 80)
-color_EVO_red_dark = QColor(234, 76, 76, 80)
-color_EVO_orange = QColor(241, 91, 34)
-color_EVO_orange_shine = QColor(255, 184, 65, 80)
-color_EVO_white = QColor(255, 254, 254, 80)
-color_EVO_gray = QColor(98, 104, 116, 80)
-color_EVO_graphite2 = QColor(54, 60, 70, 80)
-color_EVO_raven = QColor(188, 125, 136, 80)
 
 
 def buf_to_string(buf):
@@ -107,13 +103,11 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
     items_list = []
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
-    row = 0
     headers_list = ['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность']
     show_table.setColumnCount(len(headers_list))
     show_table.setHorizontalHeaderLabels(headers_list)
 
-    # пока отображаю только три атрибута + само значение отображается позже
-    for par in list_of_params:
+    for row, par in enumerate(list_of_params):
         name = par.name
         unit = par.units
         description = par.description
@@ -132,26 +126,33 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         if par.editable:
             lb = GreenLabel()
             lb.setText(name)
+            lb.setToolTip(description)
             show_table.setCellWidget(row, 0, lb)
         else:
             name_item = QTableWidgetItem(name)
             name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            name_item.setToolTip(description)
             show_table.setItem(row, 0, name_item)
 
-        desc_item = QTableWidgetItem(description)
-        # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-        desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
-        show_table.setItem(row, 1, desc_item)
-
-        # desc_item = MyEditLine(description, par)
-        # desc_item.FocusInSignal.connect(focus_in)
-        # desc_item.FocusOutSignal.connect(focus_out)
-        # # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-        # # desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
-        # show_table.setCellWidget(row, 1, desc_item)
+        match par.widget:
+            case 'MyColorBar':
+                show_table.setCellWidget(row, 1, MyColorBar(parametr=par))
+            case 'MySlider':
+                widget = MySlider(parametr=par)
+                show_table.setCellWidget(row, 1, widget)
+                items_list.append(widget)
+            case _:
+                desc_item = QTableWidgetItem(description)
+                # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
+                desc_item.setToolTip(description)
+                show_table.setItem(row, 1, desc_item)
 
         value_item = QTableWidgetItem('')
         value_item.setFlags(value_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        color_opacity = int((150 / 1000) * abs(par.period)) + 3
+        value_item.setBackground(QColor(0, 255, 255, color_opacity))
+        value_item.setToolTip(f'{par.min_value}...{par.max_value}')
         show_table.setItem(row, 2, value_item)
 
         compare_item = QTableWidgetItem(compare)
@@ -163,8 +164,6 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         show_table.setItem(row, show_table.columnCount() - 1, unit_item)
 
-        row += 1
-
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
     show_table.setColumnHidden(show_table.columnCount() - 2, not has_compare)
@@ -172,14 +171,13 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
     show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
     show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
     show_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
-    show_table.setColumnWidth(2, 180)
+    show_table.setColumnWidth(2, 150)
     return items_list
 
 
 def show_new_vmu_params(params_list, table, has_compare_params=False):
     items_list = []
-    row = 0
-    for par in params_list:
+    for row, par in enumerate(params_list):
         it = table.cellWidget(row, 2)
         if hasattr(it, 'isInFocus') \
                 and it.isInFocus:
@@ -204,36 +202,107 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
 
         if value_in_dict and par.editable:
             if not isinstance(it, MyComboBox):
-                par.widget = MyComboBox(parametr=par)
-                table.setCellWidget(row, 2, par.widget)
-                items_list.append(par.widget)
+                widget_ = MyComboBox(parametr=par)
+                table.setCellWidget(row, 2, widget_)
+                items_list.append(widget_)
             table.cellWidget(row, 2).set_text()
         elif par.editable:
             if not isinstance(it, MyEditLine):
-                par.widget = MyEditLine(v_name, parametr=par)
-                table.setCellWidget(row, 2, par.widget)
-                items_list.append(par.widget)
+                widget_ = MyEditLine(v_name, parametr=par)
+                table.setCellWidget(row, 2, widget_)
+                items_list.append(widget_)
             table.cellWidget(row, 2).set_text()
         else:
-            value_item = QTableWidgetItem(v_name)
-            flags = value_item.flags() & ~Qt.ItemFlag.ItemIsEditable
-            value_item.setFlags(flags)
-            # подкрашиваем в голубой в зависимости от периода опроса
-            color_opacity = int((150 / 1000) * abs(par.period)) + 3
-            value_item.setBackground(QColor(0, 255, 255, color_opacity))
-            table.setItem(row, 2, value_item)
+            table.item(row, 2).setText(v_name)
 
         if has_compare_params:
             compare_name = table.item(row, 3).text()
+            # здесь тоже неплохо бы делать цветную метку, но я так всё утоплю в метках
             color_ = color_EVO_red_dark if v_name.strip() != compare_name.strip() else color_EVO_white
             table.item(row, 3).setBackground(color_)
-        row += 1
+
+        if par.widget != 'Text':
+            table.cellWidget(row, 1).set_value()
+
     return items_list
+
+
+class EVOGraph:
+    chunkSize = 100
+    maxChunks = 10
+    pens = [mkPen(color=(0, 255, 0)), mkPen(color=(255, 0, 0)), mkPen(color=(0, 0, 255)),
+            mkPen(color=(0, 255, 255)), mkPen(color=(255, 255, 0)), mkPen(color=(255, 0, 255))]
+
+    def __init__(self, plot_widget: PlotWidget, params_list: list):
+        self.widget = plot_widget
+        self.legend = self.widget.addLegend()
+        self.widget.showGrid(x=True, y=True)
+        self.widget.enableAutoRange('y', 0.95)
+        self.widget.setXRange(- self.chunkSize / 10, 0)
+        self.params_list = params_list
+        self.data_x = numpy.zeros((self.chunkSize + 1))
+        self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
+        for i, param in enumerate(self.params_list):
+            self.data_y[-1, i] = param.value
+        self.counter = 0
+        self.curves = []
+        self.startTime = perf_counter()
+
+    def update_plots(self):
+        now = perf_counter()
+        # пробегаемся по списку со всеми кривыми
+        # и задаём им позицию х - чтоб весь график сдвинулся влево
+        for curs in self.curves:
+            for c in curs:
+                c.setPos(-(now - self.startTime), 0)
+
+        i = self.counter % self.chunkSize
+        # я так и не понимаю зачем создаётся новый массив в 100 элементов
+        # как понял, потому что 400 элементов это тяжело
+        # и сохраняются в памяти только последние 100
+        if i == 0:
+            # когда количество кривых кратно количеству 100
+            # добавляется новая пачка кривых в список
+            curve = []
+            self.legend.clear()
+            for parametr in self.params_list:
+                curve.append(self.widget.plot(name=parametr.name))
+            self.curves.append(curve)
+            # из старого массива достаём последний элемент
+            last_x = self.data_x[-1]
+            last_y = self.data_y[-1]
+            # создаём новый массив причём для всех графиков
+            self.data_x = numpy.zeros((self.chunkSize + 1))
+            self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
+            # и впихиваем в него на первую позицию последний элемент старого массива
+            self.data_x[0] = last_x
+            self.data_y[0] = last_y
+
+            # если количество кусков больше 10, удаляем до 10
+            while len(self.curves) > self.maxChunks:
+                c = self.curves.pop(0)
+                for cc in c:
+                    self.widget.removeItem(cc)
+        else:
+            # если сейчас не 100я кривая, то берём последний
+            curve = self.curves[-1]
+
+        self.data_x[i + 1] = now - self.startTime
+
+        for indx, par in enumerate(self.params_list):
+            self.data_y[i + 1, indx] = par.value
+            crv = curve[indx]
+            crv.setData(x=self.data_x[:i + 2], y=self.data_y[:i + 2, indx],
+                        pen=self.pens[indx])
+        self.counter += 1
+
+    pass
 
 
 class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
-    def __init__(self, label=None, value=None, table=None, radio_btn=None, text=None, process=None, check_boxes=None):
+    def __init__(self, label=None, value=None, table=None, compare=False, radio_btn=None,
+                 text=None, process=None, check_boxes=None):
         super().__init__()
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
@@ -253,7 +322,7 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
             self.lineEdit.hide()
 
         if table is not None:
-            show_empty_params_list(table, show_table=self.param_table)
+            show_empty_params_list(table, show_table=self.param_table, has_compare=compare)
         else:
             self.param_table.hide()
 
@@ -263,7 +332,7 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         else:
             self.r_btn1.hide()
             self.r_btn2.hide()
-
+        # надо бы его на список переделать?
         if text is not None:
             self.text_browser.setText(text)
         else:
@@ -289,6 +358,13 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
 
         self.adjustSize()
 
+    def set_widgets(self, widgets_list: list):
+        i = 0
+        for widget in widgets_list:
+            if isinstance(widget, QWidget):
+                self.gridLayout.addWidget(widget, i + 1, 0)
+            i += 1
+
     def c_boxes(self, state):
         for check in self.check_box_list:
             if not check.isChecked():
@@ -297,9 +373,9 @@ class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
         self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
 
     @pyqtSlot(list, list, int)
-    def change_mess(self, st=None, list_of_params=None, progress=None):
-        if st and isinstance(st, list):
-            self.text_browser.append('\n'.join(st))
+    def change_mess(self, text=None, list_of_params=None, progress=None):
+        if text and isinstance(text, list):
+            self.text_browser.append('\n'.join(text))
         if list_of_params and isinstance(list_of_params, list):
             show_new_vmu_params(list_of_params, self.param_table)
         if progress and isinstance(progress, int):
@@ -348,6 +424,7 @@ def dw2float(dw_array):
         else ((dw & 0x7FFFFF) << 1)  # Мантисса
     m1 = m * (2 ** (-23))  # Мантисса в float
     return s * m1 * (2 ** (e - 127))
+
 
 #
 # пока просто не нужный код, может, потом пригодится
@@ -550,3 +627,116 @@ def dw2float(dw_array):
 # if abs(old_delta) - self.parameters_get['position'].max_value < \
 #         abs(new_delta) \
 #         <= abs(old_delta) + self.parameters_get['position'].max_value:
+
+
+#
+# def make_compare_params_list():
+#     file_name = QFileDialog.getOpenFileName(window, 'Файл с нужными параметрами', str(settings_dir),
+#                                             "Файл с настройками блока (*.yaml *.xlsx)")[0]
+#     if file_name:
+#         if '.xls' in file_name:
+#             compare_nodes_dict = fill_sheet_dict(file_name)
+#         elif '.yaml' in file_name:
+#             compare_nodes_dict = fill_yaml_dict(file_name)
+#         else:
+#             window.log_lbl.setText('Выбран неправильный файл')
+#             return False
+#         comp_node_name = ''
+#         if compare_nodes_dict:
+#             for cur_node in window.thread.current_nodes_dict.values():
+#                 # как минимум, два варианта что этот блок присутствует
+#                 #  - если имя страницы, он же ключ у словаря из файла совпадает с имеющимся сейчас блоком
+#                 #  - если список параметров, хотя бы частично, совпадает со списком параметров имеющегося блока
+#                 if cur_node.name in compare_nodes_dict.keys():
+#                     fill_compare_values(cur_node, compare_nodes_dict[cur_node.name])
+#                     comp_node_name += cur_node.name + ', '
+#                 else:
+#                     for comp_params_dict in compare_nodes_dict.values():
+#                         if set(cur_node.group_params_dict.keys()) & set(comp_params_dict.keys()):
+#                             fill_compare_values(cur_node, comp_params_dict)
+#                             comp_node_name += cur_node.name + ', '
+#                             break
+#         show_empty_params_list(window.thread.current_params_list, show_table=window.vmu_param_table,
+#                                has_compare=window.thread.current_node.has_compare_params)
+#         if comp_node_name:
+#             window.log_lbl.setText(f'Загружены параметры сравнения для блока {comp_node_name}')
+#         else:
+#             window.log_lbl.setText(f'Не найден блок для загруженных параметров')
+#     else:
+#         window.log_lbl.setText('Файл не выбран')
+#         return False
+
+#
+# def change_min(param):
+#     print(f'Задаю минимум для параметра {param.name}')
+#     dialog = DialogChange(label=f'Измени минимальное значение для {param.name}', value=str(param.min_value))
+#     reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+#     dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+#     if dialog.exec() == QDialog.DialogCode.Accepted:
+#         val = dialog.lineEdit.text()
+#         if val:
+#             val = float(val)
+#             if val < type_values[param.type]['min'] or \
+#                     val > param.max_value or \
+#                     val > param.value:
+#                 val = param.min_value
+#             param.min_value = val
+#
+#
+# def change_max(param):
+#     print(f'Задаю максимум для параметра {param.name}')
+#     dialog = DialogChange(label=f'Измени максимальное значение для {param.name}', value=str(param.max_value))
+#     reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+#     dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+#     if dialog.exec() == QDialog.DialogCode.Accepted:
+#         val = dialog.lineEdit.text()
+#         if val:
+#             val = float(val)
+#             if val > type_values[param.type]['max'] or \
+#                     val < param.min_value or \
+#                     val < param.value:
+#                 val = param.max_value
+#             param.max_value = val
+#
+
+
+
+# def save_p_dict_to_pickle_file(node: EVONode):
+#     data_dir = pathlib.Path(os.getcwd(), 'Data')
+#     s_num = node.serial_number if node.serial_number else DEFAULT_DIR
+#     file_name = pathlib.Path(data_dir, node.name, s_num, PARAMETERS_PICKLE_FILE)
+#     try:
+#         with open(file_name, 'wb') as f:
+#             pickle.dump(node.group_params_dict, f)
+#         if os.path.isfile(NODES_PICKLE_FILE):
+#             os.remove(NODES_PICKLE_FILE)
+#         return True
+#     except PermissionError:
+#         return False
+#
+#
+
+
+# if is_editable:
+#     dialog = DialogChange(label=current_param.name, value=c_text.strip())
+#     reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+#     dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+#     if dialog.exec() == QDialog.DialogCode.Accepted:
+#         val = dialog.lineEdit.text()
+#         info_m, lab = set_new_value(current_param, val)
+#         print(lab, lab.styleSheet())
+# else:
+#     info_m = f'Сейчас этот параметр нельзя изменить\n' \
+#              f'Изменяемые параметры подкрашены зелёным\n' \
+#              f'Также требуется подключение к ВАТС'
+# info_and_widget(info_m, lab)
+#
+# all_compare_params = {}
+#     for group in dict_for_compare.values():
+#         for par in group.copy():
+#             all_compare_params[par.index << 8 + par.sub_index] = par
+
+# all_current_params = []
+#     for group in node.group_params_dict.values():
+#         for p in group:
+#             all_current_params.append(p)

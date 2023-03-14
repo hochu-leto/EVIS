@@ -2,7 +2,7 @@
 тот самый объект параметра, который имеет все нужные поля, умеет запрашивать своё значение и записывать в блок нужное
 """
 import ctypes
-from copy import deepcopy, copy
+from copy import copy
 
 import CANAdater
 from helper import bytes_to_float, int_to_hex_str, float_to_int, empty_par
@@ -44,7 +44,7 @@ readme = dict(
 # список полей параметра, который будем запихивать в файл. Можно выбрать не все поля
 # возможно, здесь и следует задавать дефолтные значения полей,
 # которые нужно игнорировать при записи в файл
-exit_list = ['name', 'index', 'sub_index', 'description', 'type', 'value', 'units',
+exit_list = ['name', 'index', 'sub_index', 'description', 'type', 'value', 'units', 'widget',
              'multiplier', 'editable', 'offset', 'period', 'min_value', 'max_value', 'value_table']
 
 type_values = {
@@ -60,24 +60,30 @@ type_values = {
 }
 
 
+class ColorGap:
+    def __init__(self, gap_min=-2147483648, gap_max=2147483648, color=None):
+        self.color = color
+        self.max = gap_max
+        self.min = gap_min
+
+
 # слоты для ускорения работы
 class Parametr:
     __slots__ = ('value', 'name',
                  'type', 'sub_index', 'index',
                  'editable', 'units', 'description',
                  'multiplier', 'offset', 'period', 'editable',
-                 'min_value', 'max_value', 'widget', 'node', 'eeprom',
+                 'min_value', 'max_value', 'widget', 'node', 'eeprom', 'gaps_list',
                  'req_list', 'set_list', 'value_compare', 'value_table', 'value_string')
 
     def __init__(self, param=None, node=None):
         if param is None:
             param = empty_par
 
-        def check_value(value, name: str):
+        def check_value(name: str, value=0.0):
             v = value if name not in list(param.keys()) \
-                         or not param[name] \
+                         or param[name] is None \
                          or str(param[name]) == 'nan' \
-                         or param[name] == 0 \
                 else (param[name] if not isinstance(param[name], str)
                       else (param[name] if param[name].isdigit()
                             else value))
@@ -93,8 +99,8 @@ class Parametr:
         # но чтоб принимал все предыдущие варианты, превращая их в стандартные, примерно как сейчас в scale
         address = check_string('address', '0x0')
         if len(address) < 4:
-            self.index = check_value(0, 'index')
-            self.sub_index = check_value(0, 'sub_index')
+            self.index = int(check_value('index'))
+            self.sub_index = int(check_value('sub_index'))
 
         elif 4 <= len(address) < 7:
             # MODBUS
@@ -114,27 +120,41 @@ class Parametr:
         self.value_compare = 0
         self.name = check_string('name', 'NoName')
         # на что умножаем число из КАНа
-        degree = check_value(0, 'degree')
-        scale = float(check_value(10 ** degree, 'scale'))
-        self.multiplier = float(check_value(float(check_value(1 / scale, 'mult')), 'multiplier'))
+        degree = check_value('degree')
+        scale = float(check_value('scale', 10 ** degree))
+        self.multiplier = float(check_value('multiplier', float(check_value('mult', 1 / (scale or 1)))))
         # вычитаем это из полученного выше числа
-        self.offset = float(check_value(float(check_value(0, 'offset')), 'scaleB'))
-        period = int(check_value(1, 'period'))  # период опроса параметра 1=каждый цикл 1000=очень редко
+        self.offset = float(check_value('scaleB', float(check_value('offset'))))
+        period = int(check_value('period', 1))  # период опроса параметра 1=каждый цикл 1000=очень редко
         self.period = 1000 if period > 1001 else period  # проверять горячие буквы, что входят в
         # статические параметры, чтоб период был = 1001
-        self.min_value = check_value(type_values[self.type]['min'], 'min_value')
-        self.max_value = check_value(type_values[self.type]['max'], 'max_value')
+        self.min_value = check_value('min_value', type_values[self.type]['min'])
+        self.max_value = check_value('max_value', type_values[self.type]['max'])
         valueS_table = check_string('values_table', check_string('value_dict'))
         v_table = valueS_table if valueS_table else check_string('value_table')
         self.value_table = {int(k): v for k, v in v_table.items()} if isinstance(v_table, dict) \
             else {int(val.split(':')[0]): val.split(':')[1]
                   for val in v_table.split(',')} if v_table else {}
-        self.widget = 'QtWidgets'
+        self.widget = check_string('widget', 'Text')
         self.node = node
         self.req_list = []
         self.set_list = []
         self.value_string = ''
         self.eeprom = True if 'eeprom' in param.keys() and param['eeprom'] is not False else False
+        # хрен его знает как запердолить сюда список гэпов цветных
+        self.gaps_list = [self.make_gap(g) for g in param['gaps']] \
+            if 'gaps' in param.keys() and isinstance(param['gaps'], list) else []
+
+    def make_gap(self, gap_dict=None):
+        # минимальные проверки, возможно, нужно их делать более строгими
+        if gap_dict is None or not isinstance(gap_dict, dict):
+            gap_dict = {}
+
+        g_min = gap_dict['min'] if 'min' in gap_dict.keys() and gap_dict['min'] is not None else self.min_value
+        g_max = gap_dict['max'] if 'max' in gap_dict.keys() and gap_dict['max'] is not None else self.max_value
+        g_color = gap_dict['color'] if 'color' in gap_dict.keys() else None
+
+        return ColorGap(g_min, g_max, g_color)
 
     # формирует посылку в зависимости от протокола
     def get_list(self):
@@ -158,7 +178,7 @@ class Parametr:
     def set_value(self, adapter: CANAdater, value):
         value += self.offset
         value /= self.multiplier
-        if 'Рулевая' in self.node.name:     # У томска проблемы с типом переменных
+        if 'Рулевая' in self.node.name:  # У томска проблемы с типом переменных
             self.value = value
         else:
             self.value = (value if value < self.max_value else self.max_value) \
@@ -257,6 +277,8 @@ class Parametr:
             del exit_dict['multiplier']
         if exit_dict['period'] == 1:
             del exit_dict['period']
+        if exit_dict['widget'] == 'Text':
+            del exit_dict['widget']
         return exit_dict
 
     def string_from_can(self, value):

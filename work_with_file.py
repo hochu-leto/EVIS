@@ -1,3 +1,4 @@
+import datetime
 import os
 import pathlib
 import pickle
@@ -20,26 +21,43 @@ value_type_dict = {'UNSIGNED16': 0x2B,
                    'FLOAT': 0x23}
 
 need_fields = {'name', 'address', 'type'}
-Default = 'Default'
-par_file = 'parameters.yaml'
-par_pick_file = 'parameters.pickle'
-err_file = 'errors.yaml'
-err_pick_file = 'errors.pickle'
-dir_path = str(pathlib.Path.cwd())
-settings_dir = pathlib.Path(dir_path, 'ECU_Settings')
-vmu_param_file = 'table_for_params_new_VMU.xlsx'
-vmu_param_file = pathlib.Path(dir_path, 'Tables', vmu_param_file)
-nodes_yaml_file = pathlib.Path(dir_path, 'Data', 'all_nodes.yaml')
-nodes_pickle_file = pathlib.Path(dir_path, 'Data', 'all_nodes.pickle')
+WORK_DIR = str(pathlib.Path.cwd())
+SETTINGS_DIR = pathlib.Path(WORK_DIR, 'ECU_Settings')
+DEFAULT_DIR = 'Default'
+PARAMETERS_YAML_FILE = 'parameters.yaml'
+USER_PARAMETERS_FILE = 'user_parameters.yaml'
+PARAMETERS_PICKLE_FILE = 'parameters.pickle'
+ERRORS_YAML_FILE = 'errors.yaml'
+ERRORS_PICKLE_FILE = 'errors.pickle'
+NODES_YAML_FILE = pathlib.Path(WORK_DIR, 'Data', 'all_nodes.yaml')
+NODES_PICKLE_FILE = pathlib.Path(WORK_DIR, 'Data', 'all_nodes.pickle')
 
 
-# ------------------------------------- заполнение словаря для сравнения----------------------------
-# можно несколько блоков в одном файле
+# сохранение файла со списком параметров, которые не совпадают
+def save_diff(diff, file_name, description=''):
+    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    node_yaml_dict = dict(
+        date_time=now,
+        description='Разница между текущими параметрами из блока и настройками из файла перед сохранением настроек в '
+                    'блок ' + description,
+        difference={p.name: dict(current_value=p.value,
+                                 value_from_file=p.value_compare) for p in diff})
+
+    with open(file_name, 'w', encoding='UTF-8') as file:
+        yaml.dump(node_yaml_dict, file,
+                  default_flow_style=False,
+                  sort_keys=False,
+                  allow_unicode=True)
+
+
+# ===================================== заполнение словаря для сравнения ====================================
+# ============== теоретически можно несколько блоков в одном файле, но пока не используется =================
+# ------------------------------------- для старых файлов из экселя -----------------------------------------
 def fill_sheet_dict(file_name):
-    #  пока принимает только эксель
     file = pd.ExcelFile(file_name)
     sheets_dict = {}
-
+    # есть возможность добавить несколько листов,
+    # чтоб каждый блок был на своём листе, так можно вообще всю машину загрузить
     for sheet_name in file.sheet_names:
         sheet = file.parse(sheet_name=sheet_name)
         headers = list(sheet.columns.values)
@@ -56,7 +74,6 @@ def fill_sheet_dict(file_name):
                         p_list.clear()
                         prev_group_name = param['name'].replace('group ', '')
                     else:
-                        #  делает словарь только с имя-значение. скорее нужно делать полный параметр а зачем????
                         p = Parametr(param)
                         if isinstance(param['value'], str):
                             p.value_string = param['value']
@@ -69,7 +86,7 @@ def fill_sheet_dict(file_name):
     return sheets_dict
 
 
-# можно несколько блоков в одном файле
+# ------------------------------------------- для новых файлов настроек из ямл -------------------------------------
 def fill_yaml_dict(file_name):
     with open(file_name, "r", encoding="UTF-8") as stream:
         try:
@@ -78,7 +95,7 @@ def fill_yaml_dict(file_name):
             print(exc)
             return
     node_dict = {}
-    # немного косянул со списком блоков, нужно исправлять сохранение в ямл. А пока так
+
     if 'device' in nodes_list.keys():
         node = nodes_list['device']
         node_dict[node['name']] = param_dict(node['parameters'])
@@ -92,31 +109,52 @@ def fill_yaml_dict(file_name):
 def param_dict(params: dict):
     return {name_group: [Parametr(p) for p in group] for name_group, group in params.items()}
 
-# =========================================версия для ошибок-объектов и ямл-файлов============================
-# ------------------------------------- заполнение списка с ошибками----------------------------
+
+# ========== первоначальная загрузка параметров, ошибок и блоков - версия для ошибок-объектов и ямл-файлов ===========
+# ------------------------------------- заполнение списка с ошибками -----------------------------------------
 def fill_err_list_from_yaml(file, node):
     with open(file, "r", encoding="UTF-8") as stream:
         try:
-            canopen_error = yaml.safe_load(stream)
+            canopen_error = yaml.safe_load(stream) or []
         except yaml.YAMLError as exc:
             print(exc)
-    if canopen_error is None:
-        canopen_error = []
     node_err_list = [EvoError(e, node=node) for e in canopen_error]
     return node_err_list
 
 
 # ------------------------------------- заполнения словаря с группами параметров -----------------------------
-def fill_par_dict_from_yaml(file, node):
+def fill_par_dict_from_yaml(file, node, user_params_file=None):
+    try:
+        with open(user_params_file, "r", encoding="UTF-8") as stream:
+            try:
+                user_params_list = yaml.safe_load(stream) or []
+            except yaml.YAMLError as exc:
+                print(exc)
+    except FileNotFoundError:
+        user_params_list = []
+        print('Нет файла с пользовательскими настройками параметров, загружаю стандартные')
+
     with open(file, "r", encoding="UTF-8") as stream:
         try:
-            canopen_params = yaml.safe_load(stream)
+            canopen_params = yaml.safe_load(stream) or {}
         except yaml.YAMLError as exc:
             print(exc)
-    if canopen_params is None:
-        canopen_params = {}
-    node_params_dict = {group: [Parametr(p, node=node) for p in group_params]
-                        for group, group_params in canopen_params.items()}
+
+    node_params_dict = {}
+    # сравниваю, есть ли такой же параметр в пользовательском списке,
+    # если есть, заменяю стандартный параметр на тот, что сохранял пользователь
+    # и превращаю его в Параметр
+    for group, group_params in canopen_params.items():
+        param_list = []
+        for p in group_params:
+            par = p.copy()
+            for user_p in user_params_list:
+                if p['name'].strip() == user_p['name'].strip():
+                    par = user_p.copy()
+                    user_params_list.remove(user_p)
+                    break
+            param_list.append(Parametr(par.copy(), node=node))
+        node_params_dict[group] = param_list.copy()
     return node_params_dict
 
 
@@ -136,30 +174,36 @@ def get_immediate_subdirectories(a_dir):
             if os.path.isdir(os.path.join(a_dir, name))]
 
 
-# ------------------------------------- попытка загрузки пикл, либо сериализация ямл -------------------------------
-def try_load_pickle(f, dir_name, node):
-    if f == 'params':
-        func = fill_par_dict_from_yaml
-        file = par_file
-        p_file = par_pick_file
-    elif f == 'errors':
-        func = fill_err_list_from_yaml
-        file = err_file
-        p_file = err_pick_file
-    else:
-        return False
+# --------------------------- попытка загрузки параметров из пикл, либо сериализация ямл -------------------------------
+def try_load_pickle_parameters(dir_name, node, user_file=None):
     try:
-        with open(pathlib.Path(dir_name, p_file), 'rb') as f:
-            dict_or_list = pickle.load(f)
+        with open(pathlib.Path(dir_name, PARAMETERS_PICKLE_FILE), 'rb') as f:
+            params_dict = pickle.load(f)
     except FileNotFoundError:
         try:
-            dict_or_list = func(pathlib.Path(dir_name, file), node)
-            with open(pathlib.Path(dir_name, p_file), 'wb') as f:
-                pickle.dump(dict_or_list, f)
+            params_dict = fill_par_dict_from_yaml(pathlib.Path(dir_name, PARAMETERS_YAML_FILE), node, user_file)
+            with open(pathlib.Path(dir_name, PARAMETERS_PICKLE_FILE), 'wb') as f:
+                pickle.dump(params_dict, f)
         except FileNotFoundError:
-            print(f'В папке {dir_name} нет списка {f} для блока ', end=' ')
+            print(f'В папке {dir_name} нет списка параметров для блока ')
             return False
-    return dict_or_list
+    return params_dict
+
+
+# --------------------------- попытка загрузки ошибок из пикл, либо сериализация ямл -------------------------------
+def try_load_pickle_errors(dir_name, node):
+    try:
+        with open(pathlib.Path(dir_name, ERRORS_PICKLE_FILE), 'rb') as f:
+            err_list = pickle.load(f)
+    except FileNotFoundError:
+        try:
+            err_list = fill_err_list_from_yaml(pathlib.Path(dir_name, ERRORS_YAML_FILE), node)
+            with open(pathlib.Path(dir_name, ERRORS_PICKLE_FILE), 'wb') as f:
+                pickle.dump(err_list, f)
+        except FileNotFoundError:
+            print(f'В папке {dir_name} нет списка ошибок для блока ', end=' ')
+            return False
+    return err_list
 
 
 # ------------------------------------- сборка блока по объекту -----------------------------
@@ -168,12 +212,11 @@ def fill_node(node: EVONode):
     for directory in get_immediate_subdirectories(data_dir):
         if directory in node.name:
             node_dir = pathlib.Path(data_dir, directory)
-            param_dir = err_dir = Default
-            t_dir = pathlib.Path(node_dir, Default)
-            node.group_params_dict = try_load_pickle('params', t_dir, node)
-            node.errors_list = try_load_pickle('errors', t_dir, node)
-            # if node.name == 'КВУ_ТТС' and node.errors_list:       кажется, это дублируется ниже
-            #     node.warnings_list = node.errors_list.copy()
+            param_dir = err_dir = DEFAULT_DIR
+            t_dir = pathlib.Path(node_dir, DEFAULT_DIR)
+            user_par_file = pathlib.Path(node_dir, USER_PARAMETERS_FILE)
+            node.group_params_dict = try_load_pickle_parameters(t_dir, node, user_par_file)
+            node.errors_list = try_load_pickle_errors(t_dir, node)
             if not node.group_params_dict or not node.errors_list:
                 return False
             f_v = node.firmware_version
@@ -183,11 +226,11 @@ def fill_node(node: EVONode):
                     min_vers = get_nearest_lower_value(version_list, str(f_v))
                     if min_vers:
                         t_dir = pathlib.Path(node_dir, str(min_vers))
-                        params_dict = try_load_pickle('params', t_dir, node)
+                        params_dict = try_load_pickle_parameters(t_dir, node, user_par_file)
                         if params_dict:
                             param_dir = min_vers
                             node.group_params_dict = params_dict.copy()
-                        errors_list = try_load_pickle('errors', t_dir, node)
+                        errors_list = try_load_pickle_errors(t_dir, node)
                         if errors_list:
                             err_dir = min_vers
                             node.errors_list = errors_list.copy()
@@ -195,7 +238,7 @@ def fill_node(node: EVONode):
                                 node.warnings_list = errors_list.copy()
 
             for group in node.group_params_dict.values():
-                for param in group:     # только это не работает для избранного
+                for param in group:  # только это не работает для избранного
                     param.node = node
             print(f'для блока {node.name} с версией ПО {node.firmware_version} '
                   f'применяю параметры из папки {param_dir} и ошибки из папки {err_dir}')
@@ -231,35 +274,20 @@ def make_nodes_dict(node_dict):
     return final_nodes_dict
 
 
-# =============================================================================================================
-
-def save_p_dict_to_pickle_file(node: EVONode):
-    data_dir = pathlib.Path(os.getcwd(), 'Data')
-    s_num = node.serial_number if node.serial_number else Default
-    file_name = pathlib.Path(data_dir, node.name, s_num, par_pick_file)
-    try:
-        with open(file_name, 'wb') as f:
-            pickle.dump(node.group_params_dict, f)
-        if os.path.isfile(nodes_pickle_file):
-            os.remove(nodes_pickle_file)
-        return True
-    except PermissionError:
-        return False
-
-
+# ============================== сохранение Избранного в ямл ===============================================
 def save_p_dict_to_yaml_file(node: EVONode):
     data_dir = pathlib.Path(os.getcwd(), 'Data')
-    s_num = node.serial_number if node.serial_number else Default
-    file_name = pathlib.Path(data_dir, str(node.name), str(s_num), par_file)
-    pickle_params_file = pathlib.Path(data_dir,  str(node.name), str(s_num), par_pick_file)
+    s_num = node.serial_number if node.serial_number else DEFAULT_DIR
+    file_name = pathlib.Path(data_dir, str(node.name), str(s_num), PARAMETERS_YAML_FILE)
+    pickle_params_file = pathlib.Path(data_dir, str(node.name), str(s_num), PARAMETERS_PICKLE_FILE)
     try:
         with open(file_name, 'w', encoding='UTF-8') as file:
             yaml.dump(node.groups_to_dict(), file,
                       default_flow_style=False,
                       sort_keys=False,
                       allow_unicode=True)
-        if os.path.isfile(nodes_pickle_file):
-            os.remove(nodes_pickle_file)
+        if os.path.isfile(NODES_PICKLE_FILE):
+            os.remove(NODES_PICKLE_FILE)
         if os.path.isfile(pickle_params_file):
             os.remove(pickle_params_file)
         return True
@@ -267,25 +295,64 @@ def save_p_dict_to_yaml_file(node: EVONode):
         return False
 
 
+# заполнение для блока параметров для сравнения из списка
 def fill_compare_values(node: EVONode, dict_for_compare: dict):
-    all_compare_params = {}
-    for group in dict_for_compare.values():
-        for par in group.copy():
-            all_compare_params[par.index << 8 + par.sub_index] = par
-    all_current_params = []
-    for group in node.group_params_dict.values():
-        for p in group:
-            all_current_params.append(p)
+    # делаю словарь из списка для сравнения, где ключ - адрес в виде индекс+сабиндекс, а значение - сам параметр
+    all_compare_params = {par.index << 8 + par.sub_index: par
+                          for group in dict_for_compare.values() for par in group.copy()}
+    # список всех параметров блока
+    all_current_params = [p for group in node.group_params_dict.values() for p in group]
 
     for cur_p in all_current_params:
         adr = cur_p.index << 8 + cur_p.sub_index
         if adr in all_compare_params.keys():
             compare_par = all_compare_params[adr]
-            # if compare_par.value_string:
-            #     val = compare_par.value_string
-            # elif compare_par.value_table:
-            #     val = compare_par.value_table[int(compare_par.value)]
-            # else:
-            #     val = compare_par.value
-            cur_p.value_compare = compare_par.value      #compare_par.value_string if compare_par.value_string else float(compare_par.value)
+            cur_p.value_compare = compare_par.value
     node.has_compare_params = True
+
+
+# ============================== добавление пользовательского параметра в ямл ========================================
+def add_parametr_to_yaml_file(parametr: Parametr):
+    data_dir = pathlib.Path(os.getcwd(), 'Data')
+    node_name = parametr.node.name if '#' not in parametr.name else TheBestNode
+    node_dir = TheBestNode
+    dirs_list = get_immediate_subdirectories(data_dir)
+
+    for node_dir in dirs_list:
+        if node_dir in node_name:
+            break
+
+    file_name = pathlib.Path(data_dir, node_dir, USER_PARAMETERS_FILE)
+    try:
+        with open(file_name, 'r', encoding='UTF-8') as file:
+            try:
+                params_list = yaml.safe_load(file) or []
+            except yaml.YAMLError as exc:
+                print(exc)
+    except FileNotFoundError:
+        params_list = []
+
+    if params_list:
+        new_param_list = [param for param in params_list.copy() if param['name'] != parametr.name]
+        new_param_list.append(parametr.to_dict())
+    else:
+        new_param_list = [parametr.to_dict()]
+
+    with open(file_name, 'w', encoding='UTF-8') as file:
+        yaml.dump(new_param_list, file,
+                  default_flow_style=False,
+                  sort_keys=False,
+                  allow_unicode=True)
+
+    delete_node_parameters_pickle(node_directory=pathlib.Path(data_dir, node_dir))
+    return True
+
+
+def delete_node_parameters_pickle(node_directory):
+    result = [os.path.join(dp, f) for dp, dn, filenames in os.walk(str(node_directory))
+              for f in filenames if f == PARAMETERS_PICKLE_FILE]
+    for file in result:
+        os.remove(file)
+
+    if os.path.isfile(NODES_PICKLE_FILE):
+        os.remove(NODES_PICKLE_FILE)

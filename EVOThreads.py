@@ -3,15 +3,15 @@ import pathlib
 import time
 import yaml
 from PyQt6.QtCore import QThread, pyqtSignal, QTimer, QEventLoop
-from PyQt6.QtWidgets import QMessageBox, QDialogButtonBox
+from PyQt6.QtWidgets import QMessageBox
 from EVONode import EVONode, invertor_command_dict
-from EVOParametr import readme
+from EVOParametr import readme, Parametr
 from helper import buf_to_string, find_param, DialogChange
-from work_with_file import settings_dir
+from work_with_file import SETTINGS_DIR
 
 
 # поток для сохранения в файл настроек блока
-# возвращает сигналу о процентах выполнения,
+# возвращает сигнал о процентах выполнения,
 # сигнал ошибки - не пустая строка и сигнал окончания сохранения - булево
 class SaveToFileThread(QThread):
     SignalOfReady = pyqtSignal(int, str, bool)
@@ -19,26 +19,36 @@ class SaveToFileThread(QThread):
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
-    ready_persent = 0
+    ready_percent = 0
     adapter = None
 
-    def __init__(self):
+    def __init__(self, node_for_save=EVONode()):
         super().__init__()
+        self.ms_box = QMessageBox()
+        self.ms_box.setWindowTitle('Сохранение')
+        self.ms_box.setText('Идёт сохранение параметров в файл, ждите')
+        self.group_counter = 0
+        self.params_counter = 0
+        self.errors_counter = 0
+        self.current_parametr = None
+        self.one_parametr_percent = None
         self.max_errors = 30
-        self.node_to_save = EVONode()
+        self.node_to_save = node_for_save
 
     def run(self):
         self.errors_counter = 0
         self.params_counter = 0
         self.group_counter = 0
-        self.ready_persent = 0
+        self.ready_percent = 0
         send_delay = 3  # задержка отправки в кан сообщений
         params_dict = self.node_to_save.group_params_dict.copy()
         # ставлю текущий параметр - самый первый в первом списке параметров
         self.current_params_list = params_dict[list(params_dict.keys())[self.group_counter]]
         self.current_parametr = self.current_params_list[self.params_counter]
         self.one_parametr_percent = 90 / sum([len(group) for group in params_dict.values()])
+        # self.ms_box.exec()
 
+        #  подфункция, конечно же это неправильно. но пока работает, не буду это трогать пока не поумнею
         def check_par():
             param = self.current_parametr.get_value(self.adapter)
             while isinstance(param, str):
@@ -48,7 +58,7 @@ class SaveToFileThread(QThread):
                 if self.errors_counter >= self.max_errors:
                     self.errors_counter = 0
                     self.params_counter = 0
-                    self.SignalOfReady.emit(int(self.ready_persent),
+                    self.SignalOfReady.emit(int(self.ready_percent),
                                             f'{param} \n'
                                             f'поток сохранения прерван,повторите ', False)
                     timer.stop()
@@ -76,13 +86,12 @@ class SaveToFileThread(QThread):
                         timer.stop()
                         self.save_file()
                         return
-                        # catch_empty_params = True
                     else:
                         self.current_params_list = params_dict[list(params_dict.keys())[self.group_counter]]
 
                 self.current_parametr = self.current_params_list[self.params_counter]
-                self.ready_persent += self.one_parametr_percent
-                self.SignalOfReady.emit(int(self.ready_persent), '', False)
+                self.ready_percent += self.one_parametr_percent
+                self.SignalOfReady.emit(int(self.ready_percent), '', False)
 
         timer = QTimer()
         timer.timeout.connect(request_param)
@@ -99,7 +108,7 @@ class SaveToFileThread(QThread):
             device=self.node_to_save.to_dict())
 
         file_name = f'{self.node_to_save.name}_{self.node_to_save.serial_number}_{now}.yaml'
-        file_name = pathlib.Path(settings_dir, file_name)
+        file_name = pathlib.Path(SETTINGS_DIR, file_name)
         self.SignalOfReady.emit(95, '', False)
         with open(file_name, 'w', encoding='UTF-8') as file:
             yaml.dump(node_yaml_dict, file,
@@ -107,6 +116,7 @@ class SaveToFileThread(QThread):
                       sort_keys=False,
                       allow_unicode=True)
         # вместо строки ошибки отправляем название файла, куда сохранил настройки
+        self.ms_box.hide()
         self.SignalOfReady.emit(100, str(file_name), True)
 
 
@@ -130,6 +140,7 @@ class MainThread(QThread):
         self.max_errors = 3
         self.current_nodes_dict = {}
         self.parent = parent
+        self.make_plot = []
 
     def run(self):
         def emitting(ans_list):
@@ -157,7 +168,7 @@ class MainThread(QThread):
                     self.params_counter += 1
                     if self.params_counter >= len(self.current_params_list):
                         self.params_counter = 0
-                        emitting([])
+                        emitting(self.make_plot)
                         return
                     current_param = self.current_params_list[self.params_counter]
 
@@ -175,7 +186,7 @@ class MainThread(QThread):
             self.params_counter += 1
             if self.params_counter >= len(self.current_params_list):
                 self.params_counter = 0
-                emitting([])
+                emitting(self.make_plot)
                 if self.is_recording:
                     dt = datetime.datetime.now()
                     dt = dt.strftime("%H:%M:%S.%f")
@@ -188,9 +199,8 @@ class MainThread(QThread):
                         else:
                             val = par.value
                         now_values_dict[par.name] = val
-                    # self.record_dict[dt] = {par.name: par.value for par in self.current_params_list}
                     self.record_dict[dt] = now_values_dict.copy()
-                else:
+                elif not self.make_plot:
                     request_errors()
 
         def request_errors():
@@ -219,7 +229,6 @@ class MainThread(QThread):
         node = self.current_nodes_dict['Инвертор_МЭИ']
         # передавать надо исключительно в первый кан
         # есть же функция определения адаптера для блока, следует здесь использовать её
-        #
         if node.request_id in self.adapter.id_nodes_dict.keys():
             adapter_can1 = self.adapter.id_nodes_dict[node.request_id]
             if self.isRunning():
@@ -274,6 +283,7 @@ class WaitCanAnswerThread(QThread):
         self.max_err = 20
         self.req_delay = 100
         self.imp_par_set = set()
+        self.command_list = []
         self.FinishedSignal.emit()
 
     def run(self):
@@ -288,14 +298,14 @@ class WaitCanAnswerThread(QThread):
                     self.err_count > self.max_err:
                 self.quit()
                 self.wait()
-                self.SignalOfProcess.emit(['Время закончилось'], list(self.imp_par_set), None)
+                self.SignalOfProcess.emit(['Время закончилось'], list(self.imp_par_set), self.iter)
                 return
-
+            # когда нужно ждать ответ от конкретного адреса, как джойстик или инвертор
             if self.id_for_read:
                 ans = self.adapter.can_read(self.id_for_read)  # приходит список кадров, если всё хорошо
 
                 if isinstance(ans, dict):
-                    for ti, a in ans.items():
+                    for ti, a in ans.items():      # давно было, похоже ключ-это время принятия фрейма
                         print(ti - self.old_ti, buf_to_string(a))
                         self.old_ti = ti
                         byte_a = a[self.answer_byte]
@@ -305,16 +315,33 @@ class WaitCanAnswerThread(QThread):
                 else:
                     print(ans, hex(self.id_for_read))
                     self.err_count += 1
-
+            # случай когда нужно опрашивать параметры из блоков
             if self.imp_par_set:
                 try:
                     list(self.imp_par_set)[self.iter].get_value(self.adapter)
                     self.iter += 1
                 except IndexError:
                     self.iter = 0
+            # противоположный случай, когда нужно задавать параметры с определёнными значениями
+            elif self.command_list:
+                try:
+                    it = list(self.command_list)[self.iter]
+                    if isinstance(it, Parametr):
+                        it.set_value(self.adapter, it.value)
+                    else:
+                        try:
+                            self.adapter.can_write(it.id, it.data)
+                            self.SignalOfProcess.emit([], [], self.iter)
+                        except Exception as e:
+                            self.err_count += 1
+                            print(f'Что-то пошло не по плану - ошибка {e}')
+                    self.iter += 1
+                except IndexError:
+                    self.iter = 0
+            if answer or self.imp_par_set:
+                self.SignalOfProcess.emit(answer, list(self.imp_par_set), None)
 
-            self.SignalOfProcess.emit(answer, list(self.imp_par_set), None)
-
+        request_ans()
         timer = QTimer()
         timer.timeout.connect(request_ans)
         timer.start(self.req_delay)
@@ -535,7 +562,6 @@ class SteerMoveThread(QThread):
         cur = self.set_current(current)
         if move and cur:
             current_set_time = current_time = start_time = time.perf_counter()
-            # new_delta = old_delta = 0
             # а дальше смотрим за текущими параметрами пока не вышло время
 
             while time.perf_counter() < start_time + self.time_for_moving:

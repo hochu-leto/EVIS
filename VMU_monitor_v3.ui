@@ -731,6 +731,14 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QCheckBox" name="flash_light_checkBox">
+             <property name="text">
+              <string>Моргаем
+ближним</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>

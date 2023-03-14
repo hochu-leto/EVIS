@@ -111,10 +111,10 @@ class EVONode:
                             'value': int(check_address('v_errors_erase'))}
 
         if group_par_dict:
-            for group, params_list in group_par_dict:
+            for group, params_list in group_par_dict.items():
                 for param in params_list:
                     if hasattr(param, 'node'):
-                        if param.node.name == 'NoName':
+                        if not param.node or param.node.name == 'NoName':
                             param.node = self
 
         self.group_params_dict = group_par_dict
@@ -190,10 +190,10 @@ class EVONode:
         if isinstance(value, str):
             return value  # если вернул строку, значит, проблема
         else:
-            print('Answer ')
-            for i in value:
-                print(hex(i), end=' ')
-            print()
+            # print('Answer ')
+            # for i in value:
+            #     print(hex(i), end=' ')
+            # print()
             return ''  # если пусто, значит, норм ушла
 
     def get_data(self, adapter: CANAdater, address_list=None):

@@ -1,8 +1,18 @@
 from PyQt6.QtCore import pyqtSignal, QSize, Qt, QPropertyAnimation, QEasingCurve, QObject, QPointF, pyqtProperty, \
     QRegularExpression, QStringListModel
-from PyQt6.QtGui import QPainter, QPalette, QLinearGradient, QGradient, QRegularExpressionValidator
+from PyQt6.QtGui import QPainter, QPalette, QLinearGradient, QGradient, QRegularExpressionValidator, QColor
 from PyQt6.QtWidgets import QComboBox, QLabel, QLineEdit, QProgressBar, QSlider, QDoubleSpinBox, QPushButton, \
     QAbstractButton, QSizePolicy, QListView
+
+color_EVO_red = QColor(222, 73, 14)
+color_EVO_green = QColor(0, 254, 0, 80)
+color_EVO_red_dark = QColor(234, 76, 76, 80)
+color_EVO_orange = QColor(241, 91, 34)
+color_EVO_orange_shine = QColor(255, 184, 65, 80)
+color_EVO_white = QColor(255, 254, 254, 80)
+color_EVO_gray = QColor(98, 104, 116, 80)
+color_EVO_graphite2 = QColor(54, 60, 70, 80)
+color_EVO_raven = QColor(188, 125, 136, 80)
 
 
 def zero_del(s):
@@ -28,6 +38,7 @@ class MyComboBox(QComboBox):
     def __init__(self, parent=None, parametr=None):
         super(MyComboBox, self).__init__(parent)
         self.parametr = parametr
+        self.setToolTip(str(parametr.value))
         self.currentIndexChanged.connect(self.item_selected_handle)
         if hasattr(self.parametr, 'value_table'):
             v_list = list(self.parametr.value_table.values())
@@ -69,7 +80,6 @@ class MyEditLine(QLineEdit):
     ValueSelected = pyqtSignal(list)
     FocusInSignal = pyqtSignal(object)
     FocusOutSignal = pyqtSignal()
-
     isInFocus = False
 
     def __init__(self, parent=None, parametr=None):
@@ -79,12 +89,14 @@ class MyEditLine(QLineEdit):
         self.setValidator(QRegularExpressionValidator(reg_ex))
         self.returnPressed.connect(self.end_edited_handle)
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.setToolTip(f'{parametr.min_value}...{parametr.max_value}')
 
     def end_edited_handle(self):
         lst = []
         if self.parametr is not None:
             value = float(self.text())
             lst = [self.parametr, value]
+        # self.isInFocus = False      # <<<---- проверить
         self.ValueSelected.emit(lst)
 
     def focusInEvent(self, event):
@@ -120,24 +132,75 @@ class MyEditLine(QLineEdit):
 
 
 class MyColorBar(QProgressBar):
+    full_bar = 1000
 
-    def __init__(self, parent=None, parametr=None, max_limit=None, min_limit=None, color_bar=None):
+    def __init__(self, parent=None, parametr=None):
         super(QProgressBar, self).__init__(parent)
         self.parametr = parametr
-        self.max_limit = max_limit
-        self.min_limit = min_limit
-        self.color_bar = color_bar
+        self.multiplier = (self.parametr.max_value - self.parametr.min_value) / self.full_bar
+        self.setMaximum(int(self.parametr.max_value / self.multiplier))
+        self.setMinimum(int(self.parametr.min_value / self.multiplier))
+        self.setToolTip(str(self.parametr.description))
+        self.setTextVisible(False)
+        self.set_value()
+
+    def set_value(self, value=None):
+        value = value or self.parametr.value
+        try:
+            value = float(value) / self.multiplier
+        except ValueError:
+            return
+        except TypeError:
+            return
+        value = self.maximum() if value > self.maximum() else self.minimum() if value < self.minimum() else value
+        self.setValue(int(value))
 
 
-class MySlider(QSlider, QDoubleSpinBox):
+class MySlider(QSlider):
+    full_bar = 1000
+    ValueSelected = pyqtSignal(list)
+    ValueChanged = pyqtSignal(object)
+    SliderHold = pyqtSignal(object)
 
-    def __init__(self, parent=None, parametr=None, max_limit=None, min_limit=None, color_bar=None):
+    def __init__(self, parent=None, parametr=None):
         super(QSlider, self).__init__(parent)
-        super(QDoubleSpinBox, self).__init__(parent)
         self.parametr = parametr
-        self.max_limit = max_limit
-        self.min_limit = min_limit
-        self.color_bar = color_bar
+        self.multiplier = (self.parametr.max_value - self.parametr.min_value) / self.full_bar
+        self.setMaximum(int(self.parametr.max_value / self.multiplier))
+        self.setMinimum(int(self.parametr.min_value / self.multiplier))
+        self.setToolTip(str(self.parametr.description))
+        self.setOrientation(Qt.Orientation.Horizontal)
+        self.set_value()
+        self.sliderReleased.connect(self.set_new_value)
+        self.sliderPressed.connect(self.slider_press_handle)
+        self.valueChanged.connect(self.value_changed_handle)
+
+    def set_value(self, value=None):
+        value = value or self.parametr.value
+        try:
+            value = float(value) / self.multiplier
+        except ValueError:
+            print(Exception, value, type(value))
+            return
+        except TypeError:
+            print(Exception, value, type(value))
+            return
+        value = self.maximum() if value > self.maximum() else self.minimum() if value < self.minimum() else value
+        self.setValue(int(value))
+
+    def value_changed_handle(self):
+        self.parametr.value = self.value() * self.multiplier
+        self.ValueChanged.emit(self.parametr)
+
+    def slider_press_handle(self):
+        self.SliderHold.emit(self.parametr)
+
+    def set_new_value(self):
+        lst = []
+        if self.parametr is not None:
+            value = float(self.value() * self.multiplier)
+            lst = [self.parametr, value]
+        self.ValueSelected.emit(lst)
 
 
 class MyButton(QPushButton):
@@ -199,7 +262,7 @@ class SwitchPrivate(QObject):
 
     def draw(self, painter):
         r = self.mPointer.rect()
-        margin = r.height()/10
+        margin = r.height() / 10
         shadow = self.mPointer.palette().color(QPalette.ColorRole.Dark)
         light = self.mPointer.palette().color(QPalette.ColorRole.Light)
         button = self.mPointer.palette().color(QPalette.ColorRole.Button)
@@ -210,21 +273,19 @@ class SwitchPrivate(QObject):
         self.mGradient.setStart(0, r.height())
         self.mGradient.setFinalStop(0, 0)
         painter.setBrush(self.mGradient)
-        painter.drawRoundedRect(r, r.height()/2, r.height()/2)
+        painter.drawRoundedRect(r, r.height() / 2, r.height() / 2)
 
         self.mGradient.setColorAt(0, shadow.darker(140))
         self.mGradient.setColorAt(1, light.darker(160))
         self.mGradient.setStart(0, 0)
         self.mGradient.setFinalStop(0, r.height())
         painter.setBrush(self.mGradient)
-        painter.drawRoundedRect(r.adjusted(margin, margin, -margin, -margin), r.height()/2, r.height()/2)
+        painter.drawRoundedRect(r.adjusted(margin, margin, -margin, -margin), r.height() / 2, r.height() / 2)
 
         self.mGradient.setColorAt(0, button.darker(130))
         self.mGradient.setColorAt(1, button)
 
         painter.setBrush(self.mGradient)
 
-        x = r.height()/2.0 + self.mPosition*(r.width()-r.height())
-        painter.drawEllipse(QPointF(x, r.height()/2), r.height()/2-margin, r.height()/2-margin)
-
-
+        x = r.height() / 2.0 + self.mPosition * (r.width() - r.height())
+        painter.drawEllipse(QPointF(x, r.height() / 2), r.height() / 2 - margin, r.height() / 2 - margin)

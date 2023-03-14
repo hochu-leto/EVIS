@@ -30,7 +30,7 @@ CONTACTOR:
   type: FLOAT
   unit: V
 - address: '0x210304'
-  description: Максимальное время ожидания паденияния напряжения в ЗПТ до размыкания
+  description: Максимальное время ожидания падения напряжения в ЗПТ до размыкания
     основного контактора
   editable: true
   group: CONTACTOR
