@@ -51,6 +51,8 @@
   name: steering_front_offline
   name_error: Передняя рулевая рейка оффлайн
   value_error: 2336
+  important_parametr: FAULT_CODE, MAINFSM_CURRENT_STATE, STEERING_FRONT_ONLINE, FROM_STEERING_FRONT_ERRORS, FROM_STEERING_FRONT_STATUS
+  check_link: 'https://evocargo.atlassian.net/wiki/spaces/FAQO/pages/788529507/2336'
 - code: 2337
   critical: true
   description_error: В сообщении STEERING_FRONT_FEEDBACK (CAN ID 0x18F) получен соответствующий
@@ -59,6 +61,8 @@
   name: steering_front_fault
   name_error: Критическая ошибка на передней рулевой рейке
   value_error: 2337
+  important_parametr: FAULT_CODE, MAINFSM_CURRENT_STATE, STEERING_FRONT_ONLINE, FROM_STEERING_FRONT_ERRORS, FROM_STEERING_FRONT_STATUS
+  check_link: 'https://evocargo.atlassian.net/wiki/spaces/FAQO/pages/788529507/2337'
 - code: 2306
   critical: false
   description_error: В сообщении STEERING_FRONT_FEEDBACK (CAN ID 0x18F) получен соответствующий
@@ -83,6 +87,8 @@
   name: steering_rear_offline
   name_error: Задняя рулевая рейка оффлайн
   value_error: 2592
+  important_parametr: FAULT_CODE, MAINFSM_CURRENT_STATE, STEERING_REAR_ONLINE, FROM_STEERING_REAR_ERRORS, FROM_STEERING_REAR_STATUS
+  check_link: 'https://evocargo.atlassian.net/wiki/spaces/FAQO/pages/788529507/2592'
 - code: 2593
   critical: true
   description_error: В сообщении STEERING_REAR_FEEDBACK (CAN ID 0x190) получен соответствующий
@@ -91,6 +97,8 @@
   name: steering_rear_fault
   name_error: Критическая ошибка на задней рулевой рейке
   value_error: 2593
+  important_parametr: FAULT_CODE, MAINFSM_CURRENT_STATE, STEERING_REAR_ONLINE, FROM_STEERING_REAR_ERRORS, FROM_STEERING_REAR_STATUS
+  check_link: 'https://evocargo.atlassian.net/wiki/spaces/FAQO/pages/788529507/2593'
 - code: 2562
   critical: false
   description_error: В сообщении STEERING_REAR_FEEDBACK (CAN ID 0x190) получен соответствующий
@@ -234,6 +242,8 @@
   name: di_red_button
   name_error: Кнопка "Стоп КВУ"
   value_error: 3616
+  important_parametr: DI_RED_BUTTON,  FAULT_CODE, MAINFSM_CURRENT_STATE, TO_PSTED_EM_STOP
+  check_link: 'https://evocargo.atlassian.net/wiki/spaces/FAQO/pages/788529507/3616'
 - code: 3585
   critical: false
   level: 0
@@ -246,6 +256,7 @@
   name: di_brake_fluid_sensor
   name_error: Низкий уровень тормозной жидкости
   value_error: 3618
+  check_link: 'https://evocargo.atlassian.net/wiki/spaces/FAQO/pages/788529507/3618'
 - code: 3872
   critical: true
   description_error: Внутренняя критическая ошибка io_library
@@ -434,6 +445,8 @@
   name: psted_emergency_stop
   name_error: Аварийная остановка ПСТЭД
   value_error: 4898
+  important_parametr: DI_RED_BUTTON,  FAULT_CODE, MAINFSM_CURRENT_STATE, TO_PSTED_EM_STOP, FROM_PSTED_STATUS, FROM_PSTED_ERRORS_1, FROM_PSTED_ERRORS_2, FROM_PSTED_WARNINGS
+  check_link: 'https://evocargo.atlassian.net/wiki/spaces/FAQO/pages/788529507/4898'
 - code: 4899
   critical: true
   description_error: Выставляется на основании флагов TEMP_MOSFET, TEMP_INVERTOR,

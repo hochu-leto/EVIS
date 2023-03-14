@@ -1136,8 +1136,8 @@
   type: UNSIGNED8
   value: 0
   editable: true
-  min_value: 0
-  max_value: 255.0
+  min_value: 0.0
+  max_value: 15.0
   value_table:
     0: Отключен
     1: Включен
@@ -1148,10 +1148,11 @@
   type: SIGNED16
   value: 0
   units: '%'
+  widget: MySlider
   multiplier: 0.00305
   editable: true
-  min_value: -32768.0
-  max_value: 32767.0
+  min_value: -100.0
+  max_value: 100.0
 - name: STEERING_FRONT_MANUAL_CONTROL_CMD#КВУ_ТТС
   index: 8464
   sub_index: 1
@@ -1159,6 +1160,7 @@
   type: SIGNED16
   value: 0
   units: '[-30000..30000]'
+  widget: MySlider
   editable: true
   min_value: -30000.0
   max_value: 30000.0
@@ -1169,6 +1171,7 @@
   type: SIGNED16
   value: 0
   units: '[-30000..30000]'
+  widget: MySlider
   editable: true
   min_value: -30000.0
   max_value: 30000.0
@@ -1179,6 +1182,7 @@
   type: SIGNED16
   value: -6
   units: '[-1000..1000]'
+  widget: MyColorBar
   editable: false
   min_value: -1000.0
   max_value: 1000.0
@@ -1189,6 +1193,7 @@
   type: SIGNED16
   value: 28
   units: '[-1000..1000]'
+  widget: MyColorBar
   editable: false
   min_value: -1000.0
   max_value: 1000.0
@@ -1199,10 +1204,11 @@
   type: SIGNED16
   value: 0
   units: об/мин
+  widget: MyColorBar
   multiplier: 0.24415
   editable: false
-  min_value: -32768.0
-  max_value: 32767.0
+  min_value: -10000.0
+  max_value: 10000.0
 Дискретный тормоз кву ттс:
 - name: DO_STATE_BRAKE_PUMP#КВУ_ТТС
   index: 8564
@@ -1211,9 +1217,10 @@
     в обычном (не сервисном) режиме.
   type: UNSIGNED8
   value: 0
+  widget: MyColorBar
   editable: false
-  min_value: 0
-  max_value: 255.0
+  min_value: 0.0
+  max_value: 2.0
 - name: DO_STATE_BRAKE_VALVE_1_8#КВУ_ТТС
   index: 8564
   sub_index: 13
@@ -1221,9 +1228,10 @@
     1,8" в обычном (не сервисном) режиме.
   type: UNSIGNED8
   value: 0
+  widget: MyColorBar
   editable: false
-  min_value: 0
-  max_value: 255.0
+  min_value: 0.0
+  max_value: 2.0
 - name: DO_STATE_BRAKE_VALVE_2_9#КВУ_ТТС
   index: 8564
   sub_index: 14
@@ -1231,9 +1239,10 @@
     2,9" в обычном (не сервисном) режиме.
   type: UNSIGNED8
   value: 0
+  widget: MyColorBar
   editable: false
-  min_value: 0
-  max_value: 255.0
+  min_value: 0.0
+  max_value: 2.0
 - name: DISCRETE_BRAKE_ACCUM_TIMEOUT#КВУ_ТТС
   index: 8518
   sub_index: 1
@@ -1706,3 +1715,44 @@
   editable: false
   min_value: -2147483648
   max_value: 2147483647
+Высота сырая:
+- name: SUSPENSION_CUR_RAW_HEIGHT_FL#КВУ_ТТС
+  index: 8496
+  sub_index: 11
+  description: Текущая высота на подушке FL (сырое значение с датчика)
+  type: SIGNED16
+  value: 131.0
+  units: мм
+  editable: false
+  min_value: -32768
+  max_value: 32767
+- name: SUSPENSION_CUR_RAW_HEIGHT_FR#КВУ_ТТС
+  index: 8496
+  sub_index: 12
+  description: Текущая высота на подушке FR (сырое значение с датчика)
+  type: SIGNED16
+  value: 127.0
+  units: мм
+  editable: false
+  min_value: -32768
+  max_value: 32767
+- name: SUSPENSION_CUR_RAW_HEIGHT_RL#КВУ_ТТС
+  index: 8496
+  sub_index: 13
+  description: Текущая высота на подушке RL (сырое значение с датчика)
+  type: SIGNED16
+  value: 112.0
+  units: мм
+  editable: false
+  min_value: -32768
+  max_value: 32767
+- name: SUSPENSION_CUR_RAW_HEIGHT_RR#КВУ_ТТС
+  index: 8496
+  sub_index: 14
+  description: Текущая высота на подушке RR (сырое значение с датчика)
+  type: SIGNED16
+  value: 110.0
+  units: мм
+  editable: false
+  min_value: -32768
+  max_value: 32767

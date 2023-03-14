@@ -33,6 +33,7 @@ NODES_YAML_FILE = pathlib.Path(WORK_DIR, 'Data', 'all_nodes.yaml')
 NODES_PICKLE_FILE = pathlib.Path(WORK_DIR, 'Data', 'all_nodes.pickle')
 
 
+# сохранение файла со списком параметров, которые не совпадают
 def save_diff(diff, file_name, description=''):
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     node_yaml_dict = dict(
@@ -52,11 +53,11 @@ def save_diff(diff, file_name, description=''):
 # ===================================== заполнение словаря для сравнения ====================================
 # ============== теоретически можно несколько блоков в одном файле, но пока не используется =================
 # ------------------------------------- для старых файлов из экселя -----------------------------------------
-
 def fill_sheet_dict(file_name):
     file = pd.ExcelFile(file_name)
     sheets_dict = {}
-
+    # есть возможность добавить несколько листов,
+    # чтоб каждый блок был на своём листе, так можно вообще всю машину загрузить
     for sheet_name in file.sheet_names:
         sheet = file.parse(sheet_name=sheet_name)
         headers = list(sheet.columns.values)
@@ -140,13 +141,14 @@ def fill_par_dict_from_yaml(file, node, user_params_file=None):
             print(exc)
 
     node_params_dict = {}
+    # сравниваю, есть ли такой же параметр в пользовательском списке,
+    # если есть, заменяю стандартный параметр на тот, что сохранял пользователь
+    # и превращаю его в Параметр
     for group, group_params in canopen_params.items():
         param_list = []
         for p in group_params:
             par = p.copy()
             for user_p in user_params_list:
-                print(p['name'].strip(), user_p['name'].strip(), p['name'].strip() == user_p['name'].strip())
-                print(type(p), type(user_p))
                 if p['name'].strip() == user_p['name'].strip():
                     par = user_p.copy()
                     user_params_list.remove(user_p)
@@ -172,7 +174,7 @@ def get_immediate_subdirectories(a_dir):
             if os.path.isdir(os.path.join(a_dir, name))]
 
 
-# ------------------------------------- попытка загрузки пикл, либо сериализация ямл -------------------------------
+# --------------------------- попытка загрузки параметров из пикл, либо сериализация ямл -------------------------------
 def try_load_pickle_parameters(dir_name, node, user_file=None):
     try:
         with open(pathlib.Path(dir_name, PARAMETERS_PICKLE_FILE), 'rb') as f:
@@ -188,6 +190,7 @@ def try_load_pickle_parameters(dir_name, node, user_file=None):
     return params_dict
 
 
+# --------------------------- попытка загрузки ошибок из пикл, либо сериализация ямл -------------------------------
 def try_load_pickle_errors(dir_name, node):
     try:
         with open(pathlib.Path(dir_name, ERRORS_PICKLE_FILE), 'rb') as f:
@@ -292,15 +295,13 @@ def save_p_dict_to_yaml_file(node: EVONode):
         return False
 
 
+# заполнение для блока параметров для сравнения из списка
 def fill_compare_values(node: EVONode, dict_for_compare: dict):
-    all_compare_params = {}
-    for group in dict_for_compare.values():
-        for par in group.copy():
-            all_compare_params[par.index << 8 + par.sub_index] = par
-    all_current_params = []
-    for group in node.group_params_dict.values():
-        for p in group:
-            all_current_params.append(p)
+    # делаю словарь из списка для сравнения, где ключ - адрес в виде индекс+сабиндекс, а значение - сам параметр
+    all_compare_params = {par.index << 8 + par.sub_index: par
+                          for group in dict_for_compare.values() for par in group.copy()}
+    # список всех параметров блока
+    all_current_params = [p for group in node.group_params_dict.values() for p in group]
 
     for cur_p in all_current_params:
         adr = cur_p.index << 8 + cur_p.sub_index

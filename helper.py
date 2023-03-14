@@ -227,10 +227,6 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
     return items_list
 
 
-def draw_plots(plot_widget: PlotWidget, params_list: list):
-    pass
-
-
 class EVOGraph:
     chunkSize = 100
     maxChunks = 10
@@ -240,10 +236,14 @@ class EVOGraph:
     def __init__(self, plot_widget: PlotWidget, params_list: list):
         self.widget = plot_widget
         self.legend = self.widget.addLegend()
+        self.widget.showGrid(x=True, y=True)
+        self.widget.enableAutoRange('y', 0.95)
         self.widget.setXRange(- self.chunkSize / 10, 0)
         self.params_list = params_list
         self.data_x = numpy.zeros((self.chunkSize + 1))
         self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
+        for i, param in enumerate(self.params_list):
+            self.data_y[-1, i] = param.value
         self.counter = 0
         self.curves = []
         self.startTime = perf_counter()
@@ -715,3 +715,28 @@ def dw2float(dw_array):
 #         return False
 #
 #
+
+
+# if is_editable:
+#     dialog = DialogChange(label=current_param.name, value=c_text.strip())
+#     reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+#     dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
+#     if dialog.exec() == QDialog.DialogCode.Accepted:
+#         val = dialog.lineEdit.text()
+#         info_m, lab = set_new_value(current_param, val)
+#         print(lab, lab.styleSheet())
+# else:
+#     info_m = f'Сейчас этот параметр нельзя изменить\n' \
+#              f'Изменяемые параметры подкрашены зелёным\n' \
+#              f'Также требуется подключение к ВАТС'
+# info_and_widget(info_m, lab)
+#
+# all_compare_params = {}
+#     for group in dict_for_compare.values():
+#         for par in group.copy():
+#             all_compare_params[par.index << 8 + par.sub_index] = par
+
+# all_current_params = []
+#     for group in node.group_params_dict.values():
+#         for p in group:
+#             all_current_params.append(p)

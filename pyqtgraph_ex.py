@@ -7,7 +7,7 @@ from time import perf_counter
 import numpy as np
 import pyqtgraph as pg
 
-# pyqtgraph.examples.run()
+pyqtgraph.examples.run()
 
 """
 Various methods of drawing scrolling plots.

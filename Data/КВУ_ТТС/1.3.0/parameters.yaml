@@ -3938,7 +3938,7 @@ steering_control:
   name: STEERING_REAR_MANUAL_CONTROL_CMD
   type: SIGNED16
   unit: '[-30000..30000]'
-- address: '0x211003'
+- address: '0x211004'
   description: Включение управления задней рулевой рейкой
   editable: true
   eeprom: null

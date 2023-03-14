@@ -9,23 +9,21 @@
     - запросить и удалить ошибки подключенных блоков
     - запросить параметр и изменить параметр
     - сохранение нужного значения параметров в ЕЕПРОМ
-    - сохранять все параметры текущего блока в эксель файл - можно параллельно с основным потоком, но лучше отключаться
+    - сохранять все параметры текущего блока в файл - можно параллельно с основным потоком
     - возможность выбрать параметры из разных блоков и сохранить их в отдельный список и
         хранить пользовательский список параметров в файле - Избранное - Новый список
     - сравнение всех параметров из файла с текущими из блоков
+    - установка для блока всех параметров из файла - ОПАСНО, поэтому прежде сохраняются все текущие настройки в файл
     - поиск по имени и описанию параметра
-    - возможность записи лога текущих параметров из открытого списка и сохранять запись в эксель файл - лог
-    - хранение профилей блока в отдельном файле с названием_блока_версия_ПО в папках с Название_блока
-            в файле список параметров и ошибки. Это позволит оставить пользовательский список Избранное
-    - добавить в параметр поле со словарём значений -
-            если считано подходящее - подставлять значение из словаря (как сохранять??)
-    - сделать ошибки объектами с описанием, ссылками и выводом нужных параметров
-
+    - возможность записи лога текущих параметров из текущего списка и сохранять запись в эксель файл
+    - подгружать списки ошибок и параметров для конкретной версии ПО блока из папки Data,
+        если таких параметров нет, подгружаются параметры из более ранней версии ПО
+    - менять тему оформления
+    - изображать графики параметров - выбираются первые 4 параметра текущего списка
+    - изменять период опроса параметра - для более шустрого опроса других
+    - выставлять виджеты для контроля и управления параметром
 
 следующие шаги
-- графики выбранных текущих параметров
-- виджеты по управлению параметром
-- всплывающее меню при правом щелчке по параметру - Добавить в Избранное и Изменить период
 - автоматическое определение нужного периода опроса параметра и сохранение этого периода в свойства параметра в файл
 - работа в линуксе
 - работа с квайзером
@@ -39,12 +37,6 @@
 - продумать реляционную БД для параметров
 - на отдельном листе управление для этого блока с виджетами типами - слайдеры, кнопки, чекбоксы - по каким адресам,
   название и так далее.
-выводить в соседнем окошке список определённых для этого блока виджетов (слайдеры, кнопки) + количество этих окошек с
-виджетами для каждого блока задаёт пользователь, т.е. он может создать свои нужные виджеты и сохранить их в профиль к
-этому блоки, а при загрузке это должно подгрузится - и стандартные и выбранные для того блока пользователем -
-полагаю отдельный лист Экселя с выбранными параметрами - виджетами
-- ещё кнопка - загрузка параметров из файла - здесь должна быть жёсткая защита - не все редактируемые параметры
- из одного блока можно напрямую заливать в другой. Или их ограничить до минимума или предлагать делать изменение вручную
 
 """
 import datetime
@@ -57,7 +49,7 @@ import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidgetItem, QTableWidget, \
+    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidget, \
     QLineEdit
 import pathlib
 
@@ -78,7 +70,7 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     NODES_PICKLE_FILE, NODES_YAML_FILE, save_p_dict_to_yaml_file, \
     fill_yaml_dict, SETTINGS_DIR, save_diff, add_parametr_to_yaml_file
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode, easter_egg, draw_plots, EVOGraph
+    show_new_vmu_params, find_param, TheBestNode, easter_egg, EVOGraph
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -144,6 +136,7 @@ def search_param():
                     new_par.name += '#' + new_par.node.name
                     p_list.append(new_par)
             window.thread.current_nodes_dict[TheBestNode].group_params_dict[search_text] = p_list.copy()
+            # вот так криво-косо определяю список Избранное в дереве и добавляю туда ещё список с параметрами поиска
             rowcount = window.nodes_tree.topLevelItemCount() - 1
             best_node_item = window.nodes_tree.topLevelItem(rowcount)
             item = QTreeWidgetItem()
@@ -154,7 +147,6 @@ def search_param():
             QMessageBox.critical(window, "Проблема", f'Ни одного параметра с "{search_text}"\n'
                                                      f' в текущих блоках найти не удалось ',
                                  QMessageBox.StandardButton.Ok)
-        # search_bar.close()
         if was_run and window.thread.isFinished():
             window.connect_to_node()
 
@@ -216,7 +208,7 @@ def make_compare():
             if node is None:
                 for node_ in window.thread.current_nodes_dict.values():
                     for comp_params_dict in compare_nodes_dict.values():
-                        # если есть пересечение списков
+                        # если есть пересечение списков по названиям групп параметров
                         if set(node_.group_params_dict.keys()) & set(comp_params_dict.keys()):
                             node = node_
                             fill_compare_values(node, comp_params_dict)
@@ -226,6 +218,10 @@ def make_compare():
                     window.connect_to_node()
                 window.tr.adapter = can_adapter
                 window.tr.node_to_save = node
+                # после того, как определились с блоком для сравнения,
+                # его надо сохранить и вывести окно со сравнением всех параметров,
+                # которые изменяемые и не совпадают
+                # для этого переключаю сигнал окончания сохранения на другую функцию
                 window.tr.SignalOfReady.disconnect()
                 window.tr.SignalOfReady.connect(window.progress_bar_silent)
                 # запускаем параллельный поток сохранения
@@ -247,7 +243,6 @@ def make_compare():
 def change_value(lst):
     # принимает список из двух элементов, первый - Parametr(), второй - новое значение для него
     # пора бы переделать под object, new_value
-
     info_m, lab = 'От виджета пришёл пустой список', None
     if lst:
         parametr = lst[0]
@@ -330,7 +325,6 @@ def info_and_widget(info_m='', my_lab=None):
 def want_to_value_change(c_row, c_col):
     cell = window.vmu_param_table.item(c_row, c_col)
     current_cell = cell if cell else window.vmu_param_table.cellWidget(c_row, c_col)
-    c_text = current_cell.text()
     col_name = window.vmu_param_table.horizontalHeaderItem(c_col).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
     # меняем значение параметра
@@ -338,22 +332,11 @@ def want_to_value_change(c_row, c_col):
         c_flags = current_cell.flags()
         is_editable = True if Qt.ItemFlag.ItemIsEditable & c_flags else False
         info_m, lab = '', None
-        if is_editable:
-            dialog = DialogChange(label=current_param.name, value=c_text.strip())
-            reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
-            dialog.lineEdit.setValidator(QRegularExpressionValidator(reg_ex))
-            if dialog.exec() == QDialog.DialogCode.Accepted:
-                val = dialog.lineEdit.text()
-                info_m, lab = set_new_value(current_param, val)
-                print(lab, lab.styleSheet())
-        else:
+        if not is_editable:
             info_m = f'Сейчас этот параметр нельзя изменить\n' \
                      f'Изменяемые параметры подкрашены зелёным\n' \
                      f'Также требуется подключение к ВАТС'
         info_and_widget(info_m, lab)
-        # сбрасываю фокус с текущей ячейки, чтоб выйти красиво, при запуске потока и
-        # обновлении значения она снова станет редактируемой, пользователь не замечает изменений
-        window.vmu_param_table.item(c_row, c_col).setFlags(c_flags & ~Qt.ItemFlag.ItemIsEditable)
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
     elif col_name == 'ПАРАМЕТР':
@@ -630,8 +613,8 @@ def check_node_online(all_node_dict: dict):
             if nd.request_firmware_version:
                 print(nd.name, 'firmware=  ', end=' ')
                 nd.firmware_version = nd.get_data(can_adapter, nd.request_firmware_version)
-            # тут выясняется, что на старых машинах, где Инвертор_Цикл+ кто-то отвечает по ID Инвертор_МЭИ,
-            # может и китайские рейки, нет особого желания разбираться. Вообщем это костыль, чтоб он не вылазил
+            # тут выясняется, что на старых машинах, где Инвертор_Цикл+ он же отвечает по IDх601, как и Инвертор_МЭИ,
+            # поэтому,там где есть старый ПСТЭД нового Инвертора МЭИ быть не должно
             if 'Инвертор_Цикл+' in nd.name:
                 has_invertor = True
             elif 'Инвертор_МЭИ' in nd.name:
@@ -641,18 +624,17 @@ def check_node_online(all_node_dict: dict):
                 window.susp_zero_btn.setEnabled(True)
                 window.load_from_eeprom_btn.setEnabled(True)
                 window.light_box.setEnabled(True)
-            elif 'Рулевая_зад_Томск' in nd.name:
+            elif 'Рулевая_зад_Томск' in nd.name and nd.serial_number >= 55:
                 window.rear_steer_rbtn.setEnabled(True)
                 window.rear_steer_rbtn.setChecked(True)
                 window.curr_measure_btn.setEnabled(True)
-            elif 'Рулевая_перед_Томск' in nd.name:
+            elif 'Рулевая_перед_Томск' in nd.name and nd.serial_number >= 55:
                 window.front_steer_rbtn.setEnabled(True)
                 window.curr_measure_btn.setEnabled(True)
             exit_dict[nd.name] = nd
-    if has_invertor:
-        if 'Инвертор_МЭИ' in exit_dict.keys():
-            del exit_dict['Инвертор_МЭИ']
-            window.invertor_mpei_box.setEnabled(False)
+    if has_invertor and 'Инвертор_МЭИ' in exit_dict.keys():
+        del exit_dict['Инвертор_МЭИ']
+        window.invertor_mpei_box.setEnabled(False)
     # на случай если только избранное найдено - значит ни один блок не ответил
     if not exit_dict:
         window.front_steer_rbtn.setEnabled(True)
@@ -706,7 +688,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
     def __init__(self):
         super().__init__()
         # Это нужно для инициализации нашего дизайна
-        self.graphWidget = None
+        self.graphWidget = PlotWidget()
         self.graphics = None
         self.all_params_dict = {}
         self.setupUi(self)
@@ -753,7 +735,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 if err == 'Адаптер не подключен':
                     can_adapter.isDefined = False
             else:
-                # здесь должна быть функция отрисовки графиков
+                # вообще можно возвращать даже не список, а переменную
+                # и по её значению уже решать что делать с обновлённым списком параметров
                 # по идее, в текущем листе уже должно быть только 4 первых параметра
                 self.graphics.update_plots()
         elif not list_of_params and self.thread.current_params_list:  # ошибок нет - всё хорошо
@@ -799,7 +782,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                     # если ранее курсор стоял на группе, запоминаю ее
                     if old_item_name == err.name:  # не работает для рулевых - нужно запоминать и имя блока тоже
                         cur_item = child_item
-
                 items.append(item)
 
         if not items:
@@ -813,19 +795,25 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         if cur_item.childCount():
             self.errors_tree.setCurrentItem(cur_item)
 
+    # это сохранение файла перед сравнением его с загруженными параметрами из файла
     @pyqtSlot(int, str, bool)
     def progress_bar_silent(self, percent: int, err: str, is_finished: bool):
         # рисуем змейку прогресса
         self.node_nsme_pbar.setValue(percent)
-        # выходим из потока если есть строка ошибки или файл сохранён
+        # выходим из потока если есть строка ошибки или файл сохранён,
+        # если ошибка сохранения, то просто выходим оставляя блок для ручного изменения параметров
         if is_finished or err:
             self.tr.quit()
             self.tr.wait()
             if is_finished:
+                # в том блоке, который сохраняли, уже есть текущие параметры и параметры для сравнения
+                # value и value_compare соответственно
                 node = self.tr.node_to_save
                 ex_word_list = ['System']
+                # собираю список из тех параметров, которые не совпадают
                 diff_ = [p for group in node.group_params_dict.values() for p in group
                          if p.editable and p.value != p.value_compare]
+                # исключаю слова из запрещённого списка
                 diff_list = [p for p in diff_ for ex in ex_word_list
                              if ex not in p.name and ex not in p.description]
                 if diff_list:
@@ -874,7 +862,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                                                       f'Задавали значение {par.value_compare} ' \
                                                       f'По факту значение {par.value}'
                         if err_param_dict:
-                            # сохранение файла несохранённых параметров
+                            # сохранение в файл параметров, которые не удалось задать
                             err_file = pathlib.Path(old_dir, 'wrong_set.yaml')
                             save_diff(list(err_param_dict.keys()), err_file,
                                       description='Это параметры, которые не удалось загрузить в блок')
@@ -954,17 +942,15 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                     # а Новый список удаляем
                     del user_node.group_params_dict[NewParamsList]
                     # проверяю удалось ли сохранить список
-                    # if save_params_dict_to_file(self.thread.current_node.group_params_dict, vmu_param_file):
-                    # if save_p_dict_to_pickle_file(user_node):
                     if save_p_dict_to_yaml_file(user_node):
                         err_mess = f'{val} успешно сохранён в {TheBestNode}'
                         state = True
-                        # создаём новый итем для дерева
+                        # создаём новый элемент для дерева
                         child_item = QTreeWidgetItem()
                         child_item.setText(0, val)
                         best_node_item = self.nodes_tree.topLevelItem(self.nodes_tree.topLevelItemCount() - 1)
                         best_node_item.addChild(child_item)
-                        # а старый итем стираем
+                        # а старый элемент стираем
                         # может, это и неправильно и надо использовать модель-виев, но я пока не дорос
                         for it in range(best_node_item.childCount()):
                             best_child = best_node_item.child(it)
@@ -973,7 +959,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                                 break
                     else:  # если сохранить не удалось возвращаю Новый список
                         user_node.group_params_dict[NewParamsList] = user_node.group_params_dict[val].copy()
-                        # а  список изменённый удаляем
+                        # а список изменённый удаляем
                         del user_node.group_params_dict[val]
                         err_mess = f'Сохранить не удалось\n файл открыт в другой программе'
                 else:
@@ -1042,9 +1028,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 self.log_lbl.setText('Адаптер не подключен')
                 return
         # если у нас вообще нет адаптеров, надо выходить
-        # наверное, это можно объединить, если вырвали адаптер, список тоже нужно обновлять,\
-        # хотя когда теряем кан-шину также есть смысл обновить список подключенных блоков
-        # надо это добавить!
         if not self.node_list_defined:
             self.log_lbl.setText('Определяются имеющиеся на шине CAN блоки...')
             self.thread.current_nodes_dict, check = check_node_online(self.thread.current_nodes_dict)
@@ -1068,7 +1051,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             can_adapter.close_canal_can()
 
     def closeEvent(self, event):
-        # может, есть смысл сделать из этого функцию, дабы не повторять дважды
 
         for node in self.thread.current_nodes_dict.values():
             if node.param_was_changed:
@@ -1117,25 +1099,30 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             event.ignore()
 
     def change_tab(self):
-        # возможно, следует убивать графики в других вкладках
+        # Вкладка управление
         if self.main_tab.currentWidget() == self.management_tab:
             if self.thread.isRunning():
                 self.connect_to_node()
                 print('Поток остановлен')
             print('Вкладка управление')
+        # Вкладка параметры
         elif self.main_tab.currentWidget() == self.params_tab:
             params_list_changed()
             self.thread.make_plot = []
-            self.connect_to_node()
+            if self.thread.isFinished():
+                self.connect_to_node()
             print('Вкладка параметры, поток запущен')
+            if self.graphics:
+                self.graphics.widget.clear()
             for p in self.thread.current_params_list:
                 print(p.name)
+        # Вкладка Графики
         elif self.main_tab.currentWidget() == self.grafics_tab:
             self.thread.make_plot = [True]
             self.thread.current_params_list = self.thread.current_params_list[:4]
             if self.thread.isFinished():
                 self.connect_to_node()
-            print('Графики не готовы')
+            print('Вкладка Графики')
             self.graphics = EVOGraph(plot_widget=self.graphWidget, params_list=self.thread.current_params_list)
             for p in self.thread.current_params_list:
                 print(p.name)
@@ -1155,12 +1142,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             ('Задать период опроса', change_period),
             ('Установить пределы', change_limit),
         ])
-
+        # если параметр уже в Избранном, то его туда добавлять не надо, меняем название пункта меню
         if check_param_in_the_best_node(parametr):
             del all_items_menu_dict['Добавить в Избранное']
         else:
             del all_items_menu_dict['Удалить из Избранного']
-
+        # если придётся добавлять ещё какой-то виджет, то тут будет проблемно его воткнуть в меню
         match parametr.widget:
             case 'Text':
                 if not parametr.value_table:
@@ -1202,6 +1189,8 @@ def set_theme(theme_str=''):
     elif theme_str in list_themes():
         apply_stylesheet(app, theme_str, extra=extra)
         stapp = app.styleSheet()
+        # модуль qt_material устанавливает не на все мои элементы нужные стили,
+        # поэтому приходится выдергивать из его styleSheet некоторые стили и устанавливать их куда нужно
         pr_c_index = stapp.find('QPushButton {')
         primary_color = stapp[pr_c_index + 23:pr_c_index + 30]
         c_f_index = stapp.find('*{')
@@ -1289,7 +1278,6 @@ if __name__ == '__main__':
     window.light_box.setEnabled(False)
     # ----------------------------------- подготовка под графики ------------------------------------------------
     window.label.deleteLater()
-    window.graphWidget = PlotWidget()
     window.gridLayout_5.addWidget(window.graphWidget, 0, 0, 1, 1)
 
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
@@ -1300,7 +1288,7 @@ if __name__ == '__main__':
         node_dict = make_nodes_dict(fill_nodes_dict_from_yaml(NODES_YAML_FILE))
         with open(NODES_PICKLE_FILE, 'wb') as f:
             pickle.dump(node_dict, f)
-
+    # выставляю стиль, который был использован в последний раз или стиль по умолчанию
     try:
         with open(stylesheet_file) as f:
             window.current_theme = f.read()
@@ -1324,14 +1312,14 @@ if __name__ == '__main__':
         sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# не обновляется все значения параметров если фокус в одном из виджетов
+# при сравнении добавить возможность выбрать параметры,
+# которые нужно взять из файла + возможность делать это программно
+# на выбор темы добавить выпадающее меню с выбором темы
+# переделать def change_value(lst): под object, new_value
 # кнопка сохранить всё в гит
-# сохранение настроек параметра в ямл файл(и удаление пикл)
 # при обновлении проги должны добавляться только новые папки, старые параметры не трогаем
-# вывести окно сравнения различающихся параметров, которые можно менять при заливке других настроек
 # виджеты с частыми параметрами в окно управление
 # цветомузыка
 # научиться парсить текстовые настройки ТАБ
 # научиться парсить настройки старого КВУ
 # когда сохраняется файл, давать не него ссылку
-# делаем графики
