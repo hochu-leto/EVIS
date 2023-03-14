@@ -1,7 +1,7 @@
 from PyQt6.QtCore import pyqtSignal, QSize, Qt, QPropertyAnimation, QEasingCurve, QObject, QPointF, pyqtProperty, \
     QRegularExpression, QStringListModel
 from PyQt6.QtGui import QPainter, QPalette, QLinearGradient, QGradient, QRegularExpressionValidator, QColor
-from PyQt6.QtWidgets import QComboBox, QLabel, QLineEdit, QProgressBar, QSlider, QDoubleSpinBox, QPushButton, \
+from PyQt6.QtWidgets import QComboBox, QLabel, QLineEdit, QProgressBar, QSlider, QPushButton, \
     QAbstractButton, QSizePolicy, QListView
 
 color_EVO_red = QColor(222, 73, 14)

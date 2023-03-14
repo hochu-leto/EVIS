@@ -1114,8 +1114,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             print('Вкладка параметры, поток запущен')
             if self.graphics:
                 self.graphics.widget.clear()
-            for p in self.thread.current_params_list:
-                print(p.name)
+
         # Вкладка Графики
         elif self.main_tab.currentWidget() == self.grafics_tab:
             self.thread.make_plot = [True]
@@ -1124,8 +1123,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 self.connect_to_node()
             print('Вкладка Графики')
             self.graphics = EVOGraph(plot_widget=self.graphWidget, params_list=self.thread.current_params_list)
-            for p in self.thread.current_params_list:
-                print(p.name)
+
         else:
             print('Неизвестное состояние')
 

@@ -1,4 +1,4 @@
 pyuic6 VMU_monitor_v2.ui -o VMU_monitor_ui.py
 pyuic6 VMU_monitor_v3.ui -o VMU_monitor_ui.py
-pyinstaller --noconsole --noconfirm -i "pictures/EVO_logo.ico" EvCON.py
- pyinstaller --name="EvCON" -i "pictures/EVO_logo.ico" --windowed EvCON.py
+pyinstaller --noconsole --noconfirm --name="EvCON" -i "pictures/EVO_logo.ico" EvCON.py
+pyinstaller --name="EvCON" -i "pictures/EVO_logo.ico" --windowed EvCON.py
