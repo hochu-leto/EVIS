@@ -47,7 +47,7 @@ import time
 import pandas as pd
 import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
-from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator
+from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator, QAction
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidget, \
     QLineEdit
@@ -687,7 +687,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
 
     def __init__(self):
         super().__init__()
-        # Это нужно для инициализации нашего дизайна
+
         self.graphWidget = PlotWidget()
         self.graphics = None
         self.all_params_dict = {}
@@ -1130,11 +1130,11 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             print('Неизвестное состояние')
 
     def generate_menu(self, pos):
-        c_row = window.vmu_param_table.currentRow()
+        c_row = self.vmu_param_table.currentRow()
         if c_row < 0:
             print('Нет ячейки')
             return
-        parametr = window.thread.current_params_list[c_row]
+        parametr = self.thread.current_params_list[c_row]
         menu = QMenu()
         all_items_menu_dict = dict([
             ('Добавить в Избранное', add_param_to_the_best_node),
@@ -1168,6 +1168,16 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         # Display the data text of the selected row
         if action:
             items[action](parametr)
+
+
+def make_style_list_menu():
+    menu = QMenu
+    items = {menu.addAction(u'' + style): set_theme for style in window.themes_list}
+    window.change_theme_btn.setMenu(menu)
+    # action = menu.exec(set_style)
+    # if action:
+    #     items[action](set_style)
+
 
 
 def change_theme():
@@ -1225,7 +1235,6 @@ if __name__ == '__main__':
     # window.setWindowTitle('Electric Vehicle Information System')
     window.setWindowTitle('Electrical vehicle CONtrol')
     stylesheet_file = pathlib.Path(WORK_DIR, 'Data', 'EVOStyleSheet.txt')
-
     window.main_tab.currentChanged.connect(window.change_tab)
     # ============================== подключаю сигналы нажатия на окошки============
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
@@ -1254,6 +1263,9 @@ if __name__ == '__main__':
     window.load_from_eeprom_btn.setEnabled(False)
     window.joy_bind_btn.setEnabled(False)
     window.change_theme_btn.clicked.connect(change_theme)
+    # menu = QMenu
+    # itms = {menu.addAction(menu, QAction(str(style))): set_theme for style in window.themes_list}
+    # window.change_theme_btn.setMenu(menu)
     window.front_steer_rbtn.setEnabled(False)
     window.rear_steer_rbtn.setEnabled(False)
     window.curr_measure_btn.setEnabled(False)
@@ -1312,6 +1324,8 @@ if __name__ == '__main__':
         sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
+# в текстовом виджете оставлять фокус после ввода, пока юзер сам не уйдёт оттуда
+# при сохранении опрашивать ВСЕ параметры
 # при сравнении добавить возможность выбрать параметры,
 # которые нужно взять из файла + возможность делать это программно
 # на выбор темы добавить выпадающее меню с выбором темы

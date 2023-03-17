@@ -24,6 +24,7 @@ class SaveToFileThread(QThread):
 
     def __init__(self, node_for_save=EVONode()):
         super().__init__()
+        self.all_params_list = []
         self.ms_box = QMessageBox()
         self.ms_box.setWindowTitle('Сохранение')
         self.ms_box.setText('Идёт сохранение параметров в файл, ждите')
@@ -31,7 +32,7 @@ class SaveToFileThread(QThread):
         self.params_counter = 0
         self.errors_counter = 0
         self.current_parametr = None
-        self.one_parametr_percent = None
+        self.one_parametr_percent = 1
         self.max_errors = 30
         self.node_to_save = node_for_save
 
@@ -46,7 +47,8 @@ class SaveToFileThread(QThread):
         self.current_params_list = params_dict[list(params_dict.keys())[self.group_counter]]
         self.current_parametr = self.current_params_list[self.params_counter]
         self.one_parametr_percent = 90 / sum([len(group) for group in params_dict.values()])
-        # self.ms_box.exec()
+        self.all_params_list = [parametr for group_list in self.node_to_save.group_params_dict.values()
+                                for parametr in group_list]
 
         #  подфункция, конечно же это неправильно. но пока работает, не буду это трогать пока не поумнею
         def check_par():
@@ -67,7 +69,7 @@ class SaveToFileThread(QThread):
             return True
 
         def request_param():
-            # я проверяю, если  величина параметра уже известна, его опрашивать не надо,
+            # я проверяю, если  величина параметра уже известна, его опрашивать не надо, - это НЕПРАВИЛЬНО FIXME
             # но если они все известны, возникает выход за пределы словаря
             catch_empty_params = False
             while not catch_empty_params:
@@ -92,6 +94,17 @@ class SaveToFileThread(QThread):
                 self.current_parametr = self.current_params_list[self.params_counter]
                 self.ready_percent += self.one_parametr_percent
                 self.SignalOfReady.emit(int(self.ready_percent), '', False)
+
+        def get_param():
+            self.current_parametr = self.all_params_list[self.params_counter]
+            check_par()
+            self.ready_percent += self.one_parametr_percent
+            self.SignalOfReady.emit(int(self.ready_percent), '', False)
+            self.params_counter += 1
+            if self.params_counter > len(self.all_params_list) - 1:
+                timer.stop()
+                self.save_file()
+                return
 
         timer = QTimer()
         timer.timeout.connect(request_param)
@@ -305,7 +318,7 @@ class WaitCanAnswerThread(QThread):
                 ans = self.adapter.can_read(self.id_for_read)  # приходит список кадров, если всё хорошо
 
                 if isinstance(ans, dict):
-                    for ti, a in ans.items():      # давно было, похоже ключ-это время принятия фрейма
+                    for ti, a in ans.items():  # давно было, похоже ключ-это время принятия фрейма
                         print(ti - self.old_ti, buf_to_string(a))
                         self.old_ti = ti
                         byte_a = a[self.answer_byte]
