@@ -9,12 +9,20 @@ import numpy
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
-    QCheckBox, QWidget
+    QCheckBox, QWidget, QHBoxLayout
 from pyqtgraph import PlotWidget, mkPen
 
 import my_dialog
 from EVOWidgets import GreenLabel, MyComboBox, MyEditLine, zero_del, MyColorBar, MySlider, color_EVO_red_dark, \
     color_EVO_white
+
+NAME_COLUMN = 0
+DESCRIPTION_COLUMN = 1
+GRAPH_COLUMN = 2
+VALUE_COLUMN = 3
+COMPARE_COLUMN = 4
+UNIT_COLUMN = 5
+headers_list = ['Параметр', 'Описание', 'GR', 'Значение', 'Сравнение', 'Размерность']
 
 TheBestNode = 'Избранное'
 NewParamsList = 'Новый список'
@@ -103,7 +111,6 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
     items_list = []
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
-    headers_list = ['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность']
     show_table.setColumnCount(len(headers_list))
     show_table.setHorizontalHeaderLabels(headers_list)
 
@@ -127,38 +134,48 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
             lb = GreenLabel()
             lb.setText(name)
             lb.setToolTip(description)
-            show_table.setCellWidget(row, 0, lb)
+            show_table.setCellWidget(row, NAME_COLUMN, lb)
         else:
             name_item = QTableWidgetItem(name)
             name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             name_item.setToolTip(description)
-            show_table.setItem(row, 0, name_item)
+            show_table.setItem(row, NAME_COLUMN, name_item)
 
         match par.widget:
             case 'MyColorBar':
-                show_table.setCellWidget(row, 1, MyColorBar(parametr=par))
+                show_table.setCellWidget(row, DESCRIPTION_COLUMN, MyColorBar(parametr=par))
             case 'MySlider':
                 widget = MySlider(parametr=par)
-                show_table.setCellWidget(row, 1, widget)
+                show_table.setCellWidget(row, DESCRIPTION_COLUMN, widget)
                 items_list.append(widget)
             case _:
                 desc_item = QTableWidgetItem(description)
                 # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
                 desc_item.setToolTip(description)
-                show_table.setItem(row, 1, desc_item)
+                show_table.setItem(row, DESCRIPTION_COLUMN, desc_item)
+
+        graph_checkbox = QCheckBox()
+        # graph_checkbox.
+        cell_widget = QWidget()
+        lay_out = QHBoxLayout(cell_widget)
+        lay_out.addWidget(graph_checkbox)
+        lay_out.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay_out.setContentsMargins(0, 0, 0, 0)
+        cell_widget.setLayout(lay_out)
+        show_table.setCellWidget(row, GRAPH_COLUMN, cell_widget)
 
         value_item = QTableWidgetItem('')
         value_item.setFlags(value_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         color_opacity = int((150 / 1000) * abs(par.period)) + 3
         value_item.setBackground(QColor(0, 255, 255, color_opacity))
         value_item.setToolTip(f'{par.min_value}...{par.max_value}')
-        show_table.setItem(row, 2, value_item)
+        show_table.setItem(row, VALUE_COLUMN, value_item)
 
         compare_item = QTableWidgetItem(compare)
         compare_item.setFlags(compare_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
-        show_table.setItem(row, 3, compare_item)
+        show_table.setItem(row, COMPARE_COLUMN, compare_item)
 
         unit_item = QTableWidgetItem(unit)
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
@@ -166,19 +183,21 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
-    show_table.setColumnHidden(show_table.columnCount() - 2, not has_compare)
+    # show_table.setColumnHidden(show_table.columnCount() - 2, not has_compare)
+    show_table.setColumnHidden(COMPARE_COLUMN, not has_compare)
     # # максимальная ширина у описания, если не хватает длины, то переносится
     show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
-    show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-    show_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
-    show_table.setColumnWidth(2, 150)
+    show_table.horizontalHeader().setSectionResizeMode(DESCRIPTION_COLUMN, QHeaderView.ResizeMode.Stretch)
+    show_table.horizontalHeader().setSectionResizeMode(NAME_COLUMN, QHeaderView.ResizeMode.ResizeToContents)
+    show_table.horizontalHeader().setSectionResizeMode(GRAPH_COLUMN, QHeaderView.ResizeMode.ResizeToContents)
+    show_table.setColumnWidth(VALUE_COLUMN, 150)
     return items_list
 
 
 def show_new_vmu_params(params_list, table, has_compare_params=False):
     items_list = []
     for row, par in enumerate(params_list):
-        it = table.cellWidget(row, 2)
+        it = table.cellWidget(row, VALUE_COLUMN)
         if hasattr(it, 'isInFocus') \
                 and it.isInFocus:
             continue
@@ -203,26 +222,26 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
         if value_in_dict and par.editable:
             if not isinstance(it, MyComboBox):
                 widget_ = MyComboBox(parametr=par)
-                table.setCellWidget(row, 2, widget_)
+                table.setCellWidget(row, VALUE_COLUMN, widget_)
                 items_list.append(widget_)
-            table.cellWidget(row, 2).set_text()
+            table.cellWidget(row, VALUE_COLUMN).set_text()
         elif par.editable:
             if not isinstance(it, MyEditLine):
                 widget_ = MyEditLine(v_name, parametr=par)
-                table.setCellWidget(row, 2, widget_)
+                table.setCellWidget(row, VALUE_COLUMN, widget_)
                 items_list.append(widget_)
-            table.cellWidget(row, 2).set_text()
+            table.cellWidget(row, VALUE_COLUMN).set_text()
         else:
-            table.item(row, 2).setText(v_name)
+            table.item(row, VALUE_COLUMN).setText(v_name)
 
         if has_compare_params:
-            compare_name = table.item(row, 3).text()
+            compare_name = table.item(row, COMPARE_COLUMN).text()
             # здесь тоже неплохо бы делать цветную метку, но я так всё утоплю в метках
             color_ = color_EVO_red_dark if v_name.strip() != compare_name.strip() else color_EVO_white
-            table.item(row, 3).setBackground(color_)
+            table.item(row, COMPARE_COLUMN).setBackground(color_)
 
         if par.widget != 'Text':
-            table.cellWidget(row, 1).set_value()
+            table.cellWidget(row, DESCRIPTION_COLUMN).set_value()
 
     return items_list
 

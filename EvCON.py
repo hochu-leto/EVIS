@@ -70,7 +70,7 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     NODES_PICKLE_FILE, NODES_YAML_FILE, save_p_dict_to_yaml_file, \
     fill_yaml_dict, SETTINGS_DIR, save_diff, add_parametr_to_yaml_file
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode, easter_egg, EVOGraph
+    show_new_vmu_params, find_param, TheBestNode, easter_egg, EVOGraph, DESCRIPTION_COLUMN, VALUE_COLUMN, NAME_COLUMN
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -82,7 +82,7 @@ extra = {  # Density Scale
 @pyqtSlot(object)
 def set_focus(param):
     row = window.thread.current_params_list.index(param)
-    widget = window.vmu_param_table.cellWidget(row, 2)
+    widget = window.vmu_param_table.cellWidget(row, VALUE_COLUMN)
     if widget:
         widget.isInFocus = True
 
@@ -90,11 +90,11 @@ def set_focus(param):
 @pyqtSlot(object)
 def show_value(param):
     row = window.thread.current_params_list.index(param)
-    widget = window.vmu_param_table.cellWidget(row, 2)
+    widget = window.vmu_param_table.cellWidget(row, VALUE_COLUMN)
     if widget:
         widget.set_text()
     else:
-        window.vmu_param_table.item(row, 2).setText(zero_del(param.value))
+        window.vmu_param_table.item(row, VALUE_COLUMN).setText(zero_del(param.value))
 
 
 def wrapper_show_empty(params_list: list, param_table: QTableWidget, has_compare=False):
@@ -300,10 +300,12 @@ def set_new_value(param: Parametr, val):
     except ValueError:
         info_m = 'Параметр должен быть числом'
     row = window.thread.current_params_list.index(param)
-    widget = window.vmu_param_table.cellWidget(row, 2)
+    widget_text = window.vmu_param_table.cellWidget(row, VALUE_COLUMN)
+    if widget_text:
+        widget_text.set_text(new_val or 'wrong_value')
+    widget = window.vmu_param_table.cellWidget(row, DESCRIPTION_COLUMN)
     if widget:
-        widget.set_text(new_val or 'wrong_value')
-        # widget.isInFocus = False
+        widget.set_value()
     return info_m, my_label
 
 
@@ -328,7 +330,7 @@ def want_to_value_change(c_row, c_col):
     col_name = window.vmu_param_table.horizontalHeaderItem(c_col).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
     # меняем значение параметра
-    if col_name == 'ЗНАЧЕНИЕ':
+    if c_col == VALUE_COLUMN:
         c_flags = current_cell.flags()
         is_editable = True if Qt.ItemFlag.ItemIsEditable & c_flags else False
         info_m, lab = '', None
@@ -339,7 +341,7 @@ def want_to_value_change(c_row, c_col):
         info_and_widget(info_m, lab)
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
-    elif col_name == 'ПАРАМЕТР':
+    elif c_col == NAME_COLUMN:
         add_param_to_the_best_node(current_param)
     return
 
