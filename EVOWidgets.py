@@ -96,7 +96,6 @@ class MyEditLine(QLineEdit):
         if self.parametr is not None:
             value = float(self.text())
             lst = [self.parametr, value]
-        # self.isInFocus = False      # <<<---- проверить
         self.ValueSelected.emit(lst)
 
     def focusInEvent(self, event):

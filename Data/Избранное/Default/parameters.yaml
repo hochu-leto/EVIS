@@ -4,7 +4,7 @@
   sub_index: 0
   description: Текущая ось по итогам А3.4
   type: SIGNED16
-  value: 0
+  value: 0.0
   editable: true
   min_value: -32768
   max_value: 1.0
@@ -16,7 +16,7 @@
   sub_index: 0
   description: Задание реечной позиции -1000...+1000
   type: SIGNED16
-  value: 0
+  value: 0.0
   editable: true
   min_value: -32767.0
   max_value: 32767.0
@@ -25,7 +25,7 @@
   sub_index: 0
   description: Актуальная реечная позиция -1000...+1000
   type: SIGNED16
-  value: 0
+  value: 0.0
   editable: true
   min_value: -32767.0
   max_value: 32767.0
@@ -34,7 +34,7 @@
   sub_index: 0
   description: ТОК А * 100
   type: UNSIGNED16
-  value: 0
+  value: 0.0
   units: A
   multiplier: 0.1
   editable: false
@@ -45,7 +45,7 @@
   sub_index: 0
   description: МОМЕНТ Нм * 100
   type: SIGNED16
-  value: 0
+  value: 0.0
   units: kNm
   multiplier: 0.01
   editable: false
@@ -87,12 +87,13 @@
   sub_index: 0
   description: ТОК А * 100
   type: UNSIGNED16
-  value: 0
+  value: 0.0
   units: A
+  widget: MyColorBar
   multiplier: 0.1
   editable: false
-  min_value: 0
-  max_value: 6553.5
+  min_value: 0.0
+  max_value: 120.0
 - name: A1.8 Torque#Рулевая_зад_Томск
   index: 19
   sub_index: 0
@@ -1756,3 +1757,75 @@
   editable: false
   min_value: -32768
   max_value: 32767
+Рулевая Зад тестовый режим:
+- name: A0.2 SetSteerPos#Рулевая_зад_Томск
+  index: 2
+  sub_index: 0
+  description: Задание реечной позиции -1000...+1000
+  type: SIGNED16
+  value: 0.0
+  widget: MySlider
+  editable: true
+  min_value: -1000.0
+  max_value: 1000.0
+- name: A0.3 ActSteerPos#Рулевая_зад_Томск
+  index: 3
+  sub_index: 0
+  description: Актуальная реечная позиция -1000...+1000
+  type: SIGNED16
+  value: 36.0
+  widget: MyColorBar
+  editable: true
+  min_value: -1000.0
+  max_value: 1000.0
+- name: D0.0 ComandSet#Рулевая_зад_Томск
+  index: 500
+  sub_index: 0
+  description: КОМАНДЫ
+  type: SIGNED16
+  value: 0.0
+  editable: true
+  min_value: 0.0
+  max_value: 6.0
+  value_table:
+    0: 'STOP '
+    1: 'RUN '
+    2: 'NOT USED '
+    3: 'NOT USED '
+    4: 'NOT USED '
+    5: 'RESET FAULT '
+- name: D0.6 CAN_Control#Рулевая_зад_Томск
+  index: 506
+  sub_index: 0
+  description: Режим управления 0-Модбас, 1-CAN
+  type: SIGNED16
+  value: 2.0
+  editable: true
+  min_value: 0.0
+  max_value: 2.0
+  value_table:
+    0: 'MB CONTROL '
+    1: 'CAN CONTROL '
+    2: 'CAN CTRL_ETT '
+- name: C5.3 rxSetCurr#Рулевая_зад_Томск
+  index: 403
+  sub_index: 0
+  type: SIGNED16
+  value: 70.0
+  units: A
+  multiplier: 0.01
+  editable: true
+  min_value: -327.5
+  max_value: 327.5
+- name: A1.7 CurrentRMS#Рулевая_зад_Томск
+  index: 18
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0.0
+  units: A
+  widget: MyColorBar
+  multiplier: 0.1
+  editable: false
+  min_value: 0.0
+  max_value: 200.0

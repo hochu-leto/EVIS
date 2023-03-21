@@ -9,16 +9,6 @@
   editable: false
   min_value: 0.0
   max_value: 1.0
-- name: DC_VOLTAGE
-  index: 8192
-  sub_index: 3
-  description: Напряжение ЗПТ
-  type: FLOAT
-  value: 350.9154052734375
-  units: V
-  editable: false
-  min_value: 300.5
-  max_value: 370.0
 - name: DCLINK_CHARGE_TIMEOUT
   index: 8451
   sub_index: 1
@@ -97,17 +87,6 @@
   editable: true
   min_value: 0.0
   max_value: 10000.0
-- name: IS_MOTOR_MAX
-  index: 8449
-  sub_index: 9
-  description: Максимальный ток двигателя в двигательном режиме
-  type: FLOAT
-  value: 270.0
-  units: A
-  widget: MySlider
-  editable: true
-  min_value: 0.0
-  max_value: 1000.0
 - name: IS_GENER_MAX
   index: 8449
   sub_index: 10
@@ -174,3 +153,24 @@
   editable: true
   min_value: 0.0
   max_value: 10000.0
+- name: IS_MOTOR_MAX
+  index: 8449
+  sub_index: 9
+  description: Максимальный ток двигателя в двигательном режиме
+  type: FLOAT
+  value: 270.0
+  units: A
+  editable: true
+  min_value: 0.0
+  max_value: 1000.0
+- name: DC_VOLTAGE
+  index: 8192
+  sub_index: 3
+  description: Напряжение ЗПТ
+  type: FLOAT
+  value: 357.5088195800781
+  units: V
+  widget: MyColorBar
+  editable: false
+  min_value: 300.5
+  max_value: 370.0

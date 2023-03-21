@@ -253,8 +253,7 @@ class Parametr:
             self.value -= self.offset
             return self.value
         else:
-            print(f'{self.index=} , {index_ans=}')
-            print(f'{self.sub_index=} , {sub_index_ans=}')
+            print(f'Принятый адрес не совпадает - {self.index=} , {index_ans=} {self.sub_index=} , {sub_index_ans=}')
             return 'Адрес не совпадает'
 
     def to_dict(self):

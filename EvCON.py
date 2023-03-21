@@ -255,6 +255,7 @@ def change_value(lst):
 
 
 def set_new_value(param: Parametr, val):
+    new_val = ''
     info_m = ''
     my_label = None
     if 'WheelTypeSet' in param.name:
@@ -271,9 +272,7 @@ def set_new_value(param: Parametr, val):
             param.set_value(can_adapter, float(val))
             # и сразу же проверяю записался ли он в блок
             value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
-            if isinstance(value_data, str):
-                new_val = ''
-            else:
+            if not isinstance(value_data, str):
                 new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
             my_label = QLabel()
@@ -303,7 +302,8 @@ def set_new_value(param: Parametr, val):
     row = window.thread.current_params_list.index(param)
     widget = window.vmu_param_table.cellWidget(row, 2)
     if widget:
-        widget.isInFocus = False
+        widget.set_text(new_val or 'wrong_value')
+        # widget.isInFocus = False
     return info_m, my_label
 
 
@@ -681,7 +681,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
     record_vmu_params = False
     node_list_defined = False
     err_str = ''
-    themes_list = list_themes() + QStyleFactory.keys() + \
+    themes_list = list([sty for sty in list_themes() if not '_500' in sty]) + QStyleFactory.keys() + \
                   list([sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()])
     current_theme = ''
 
@@ -1114,8 +1114,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             print('Вкладка параметры, поток запущен')
             if self.graphics:
                 self.graphics.widget.clear()
-            for p in self.thread.current_params_list:
-                print(p.name)
         # Вкладка Графики
         elif self.main_tab.currentWidget() == self.grafics_tab:
             self.thread.make_plot = [True]
@@ -1124,8 +1122,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 self.connect_to_node()
             print('Вкладка Графики')
             self.graphics = EVOGraph(plot_widget=self.graphWidget, params_list=self.thread.current_params_list)
-            for p in self.thread.current_params_list:
-                print(p.name)
         else:
             print('Неизвестное состояние')
 
@@ -1170,29 +1166,19 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             items[action](parametr)
 
 
-def make_style_list_menu():
-    menu = QMenu
-    items = {menu.addAction(u'' + style): set_theme for style in window.themes_list}
-    window.change_theme_btn.setMenu(menu)
-    # action = menu.exec(set_style)
-    # if action:
-    #     items[action](set_style)
-
-
-
 def change_theme():
     if window.current_theme:
         theme_count = window.themes_list.index(window.current_theme)
-        if theme_count == len(window.themes_list) - 1:
-            window.current_theme = window.themes_list[0]
-        else:
-            window.current_theme = window.themes_list[theme_count + 1]
+        theme_count = 0 if theme_count == len(window.themes_list) - 1 else theme_count + 1
     else:
-        window.current_theme = window.themes_list[0]
-    set_theme(window.current_theme)
+        theme_count = 0
+    set_theme(window.themes_list[theme_count])
 
 
-def set_theme(theme_str=''):
+@pyqtSlot(QAction)
+def set_theme(theme_str=None):
+    if not isinstance(theme_str, str):
+        theme_str = theme_str.text()
     if theme_str in QStyleFactory.keys():
         app.setStyleSheet('')
         app.setStyle(theme_str)
@@ -1201,6 +1187,7 @@ def set_theme(theme_str=''):
         stapp = app.styleSheet()
         # модуль qt_material устанавливает не на все мои элементы нужные стили,
         # поэтому приходится выдергивать из его styleSheet некоторые стили и устанавливать их куда нужно
+
         pr_c_index = stapp.find('QPushButton {')
         primary_color = stapp[pr_c_index + 23:pr_c_index + 30]
         c_f_index = stapp.find('*{')
@@ -1221,6 +1208,7 @@ def set_theme(theme_str=''):
     c_style_sheet = app.styleSheet()
     app.setStyleSheet(c_style_sheet + 'GreenLabel {background-color: rgba(0, 200, 0, 50);} '
                                       'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
+    window.current_theme = theme_str
 
 
 if __name__ == '__main__':
@@ -1263,9 +1251,12 @@ if __name__ == '__main__':
     window.load_from_eeprom_btn.setEnabled(False)
     window.joy_bind_btn.setEnabled(False)
     window.change_theme_btn.clicked.connect(change_theme)
-    # menu = QMenu
-    # itms = {menu.addAction(menu, QAction(str(style))): set_theme for style in window.themes_list}
-    # window.change_theme_btn.setMenu(menu)
+
+    menu = QMenu()
+    itms = [menu.addAction(style) for style in window.themes_list]
+    window.change_theme_btn.setMenu(menu)
+    menu.triggered.connect(set_theme)
+
     window.front_steer_rbtn.setEnabled(False)
     window.rear_steer_rbtn.setEnabled(False)
     window.curr_measure_btn.setEnabled(False)
@@ -1324,8 +1315,8 @@ if __name__ == '__main__':
         sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# в текстовом виджете оставлять фокус после ввода, пока юзер сам не уйдёт оттуда
-# при сохранении опрашивать ВСЕ параметры
+# в текстовом виджете оставлять фокус после ввода, пока юзер сам не уйдёт оттуда -
+# работает, но также нужно обновлять и слайдер этого парметра
 # при сравнении добавить возможность выбрать параметры,
 # которые нужно взять из файла + возможность делать это программно
 # на выбор темы добавить выпадающее меню с выбором темы

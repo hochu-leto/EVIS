@@ -31,8 +31,8 @@ invertor_command_dict = {
 
 empty_node = {
     'name': 'NoName',
-    'req_id': 0x500,
-    'ans_id': 0x481,
+    'req_id': 0x0,
+    'ans_id': 0x1,
     'protocol': 'CANOpen',
     'serial_number': '',
     'firm_version': '',
