@@ -671,11 +671,11 @@ def check_node_online(all_node_dict: dict):
                 window.susp_zero_btn.setEnabled(True)
                 window.load_from_eeprom_btn.setEnabled(True)
                 window.light_box.setEnabled(True)
-            elif 'Рулевая_зад_Томск' in nd.name and nd.serial_number >= 55:
+            elif 'Рулевая_зад_Томск' in nd.name and nd.firmware_version >= 55:
                 window.rear_steer_rbtn.setEnabled(True)
                 window.rear_steer_rbtn.setChecked(True)
                 window.curr_measure_btn.setEnabled(True)
-            elif 'Рулевая_перед_Томск' in nd.name and nd.serial_number >= 55:
+            elif 'Рулевая_перед_Томск' in nd.name and nd.firmware_version >= 55:
                 window.front_steer_rbtn.setEnabled(True)
                 window.curr_measure_btn.setEnabled(True)
             exit_dict[nd.name] = nd
