@@ -50,7 +50,7 @@ from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator, QAction
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidget, \
-    QLineEdit
+    QLineEdit, QProxyStyle, QStyle
 import pathlib
 
 from pyqtgraph import PlotWidget
@@ -70,7 +70,10 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     NODES_PICKLE_FILE, NODES_YAML_FILE, save_p_dict_to_yaml_file, \
     fill_yaml_dict, SETTINGS_DIR, save_diff, add_parametr_to_yaml_file
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode, easter_egg, EVOGraph, DESCRIPTION_COLUMN, VALUE_COLUMN, NAME_COLUMN
+    show_new_vmu_params, find_param, TheBestNode, easter_egg, EVOGraph, DESCRIPTION_COLUMN, VALUE_COLUMN, NAME_COLUMN, \
+    GRAPH_COLUMN
+
+GRAPH_SIZE = 4
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -97,13 +100,55 @@ def show_value(param):
         window.vmu_param_table.item(row, VALUE_COLUMN).setText(zero_del(param.value))
 
 
+def add_param_to_graph(is_checked):
+    chb = window.sender()
+    if hasattr(chb, 'parametr') and isinstance(chb.parametr, Parametr):
+        par = chb.parametr
+        g_list = window.thread.graph_list
+        if is_checked:
+            if len(g_list) < GRAPH_SIZE:
+                g_list.append(par)
+            else:
+                msg = QMessageBox()
+                msg.setWindowIcon(window.windowIcon())
+                msg.setWindowTitle('Лишний параметр')
+                msg.setText('Список графиков полон')
+                msg.setInformativeText(f'Ты пытаешься добавить больше {GRAPH_SIZE}'
+                                       f' параметров в графики, но это не получится,'
+                                       f' можно заменить первый параметр \n{g_list[0].name} \n'
+                                       f'на этот  \n{par.name} \nМеняем?')
+                msg.setIcon(QMessageBox.Icon.Question)
+                change_par_btn = msg.addButton('Заменить', QMessageBox.ButtonRole.YesRole)
+                abort_btn = msg.addButton('Оставить', QMessageBox.ButtonRole.NoRole)
+
+                if not msg.exec():
+                    first_param = g_list.pop(0)
+                    if first_param in window.thread.current_params_list:
+                        index_par = window.thread.current_params_list.index(first_param)
+                        window.vmu_param_table.cellWidget(index_par, GRAPH_COLUMN).layout(). \
+                            itemAt(0).widget().setChecked(False)
+                    g_list.append(par)
+                else:
+                    chb.setChecked(False)
+        else:
+            if par in g_list:
+                g_list.remove(par)
+    else:
+        print('Неправильный чек-бокс')
+    return
+
+
 def wrapper_show_empty(params_list: list, param_table: QTableWidget, has_compare=False):
     slider_list = show_empty_params_list(params_list, show_table=param_table,
-                                         has_compare=has_compare)
+                                         has_compare=has_compare, par_in_graph_list=window.thread.graph_list)
     for slider in slider_list:
         slider.ValueChanged.connect(show_value)
         slider.SliderHold.connect(set_focus)
         slider.ValueSelected.connect(change_value)
+    for row in range(param_table.rowCount()):
+        # охренеть, это вот так находится
+        check_box = param_table.cellWidget(row, GRAPH_COLUMN).layout().itemAt(0).widget()
+        check_box.toggled.connect(add_param_to_graph)
 
 
 def search_param():
@@ -174,7 +219,7 @@ def record_log():
             df = pd.DataFrame(window.thread.record_dict)
             df_t = df.transpose()
             window.thread.record_dict.clear()
-            ex_wr = pd.ExcelWriter(file_name, mode="w")
+            ex_wr = pd.ExcelWriter(file_name)
             with ex_wr as writer:
                 df_t.to_excel(writer)
             QMessageBox.information(window, "Успешный успех!", f'Лог сохранён в файл {file_name}',
@@ -1119,7 +1164,9 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         # Вкладка Графики
         elif self.main_tab.currentWidget() == self.grafics_tab:
             self.thread.make_plot = [True]
-            self.thread.current_params_list = self.thread.current_params_list[:4]
+
+            self.thread.current_params_list = self.thread.graph_list if self.thread.graph_list\
+                else self.thread.current_params_list[:4]
             if self.thread.isFinished():
                 self.connect_to_node()
             print('Вкладка Графики')

@@ -14,7 +14,7 @@ from pyqtgraph import PlotWidget, mkPen
 
 import my_dialog
 from EVOWidgets import GreenLabel, MyComboBox, MyEditLine, zero_del, MyColorBar, MySlider, color_EVO_red_dark, \
-    color_EVO_white
+    color_EVO_white, GraphCheckBox
 
 NAME_COLUMN = 0
 DESCRIPTION_COLUMN = 1
@@ -107,7 +107,7 @@ def focus_out():
     print("focus out")
 
 
-def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False):
+def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False, par_in_graph_list=[]):
     items_list = []
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
@@ -155,8 +155,8 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
                 desc_item.setToolTip(description)
                 show_table.setItem(row, DESCRIPTION_COLUMN, desc_item)
 
-        graph_checkbox = QCheckBox()
-        # graph_checkbox.
+        graph_checkbox = GraphCheckBox(parametr=par)
+        graph_checkbox.setChecked(par in par_in_graph_list)
         cell_widget = QWidget()
         lay_out = QHBoxLayout(cell_widget)
         lay_out.addWidget(graph_checkbox)
@@ -164,6 +164,7 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         lay_out.setContentsMargins(0, 0, 0, 0)
         cell_widget.setLayout(lay_out)
         show_table.setCellWidget(row, GRAPH_COLUMN, cell_widget)
+        # show_table.setCellWidget(row, GRAPH_COLUMN, graph_checkbox)
 
         value_item = QTableWidgetItem('')
         value_item.setFlags(value_item.flags() & ~Qt.ItemFlag.ItemIsEditable)

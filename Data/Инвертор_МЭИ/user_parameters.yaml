@@ -9,18 +9,6 @@
   editable: false
   min_value: 0.0
   max_value: 1.0
-- name: DCLINK_CHARGE_TIMEOUT
-  index: 8451
-  sub_index: 1
-  description: Максимальное время ожидания нарастания напряжения в ЗПТ до уровня срабатывания
-    основного контактора
-  type: UNSIGNED32
-  value: 2260.0
-  units: ms
-  widget: MyColorBar
-  editable: true
-  min_value: 400.0
-  max_value: 4000.0
 - name: CASE_TEMP
   index: 8192
   sub_index: 15
@@ -54,17 +42,6 @@
   editable: false
   min_value: -50.0
   max_value: 200.0
-- name: DCLINK_CHARGE_THRESHOLD
-  index: 8451
-  sub_index: 0
-  description: Напряжение срабатывания основного контактора
-  type: FLOAT
-  value: 320.0
-  units: V
-  widget: MySlider
-  editable: true
-  min_value: 200.0
-  max_value: 500.0
 - name: FIELD_CURRENT
   index: 8192
   sub_index: 5
@@ -98,29 +75,6 @@
   editable: true
   min_value: 0.0
   max_value: 1000.0
-- name: DCLINK_DISCHARGE_THRESHOLD
-  index: 8451
-  sub_index: 3
-  description: Пороговое напряжение шины постоянного тока при отключении
-  type: FLOAT
-  value: 300.0
-  units: V
-  widget: MySlider
-  editable: true
-  min_value: 0.0
-  max_value: 6000.0
-- name: DCLINK_DISCHARGE_TIMEOUT
-  index: 8451
-  sub_index: 4
-  description: Максимальное время ожидания падения напряжения в ЗПТ до размыкания
-    основного контактора
-  type: UNSIGNED32
-  value: 150.0
-  units: ms
-  widget: MySlider
-  editable: true
-  min_value: 0.0
-  max_value: 500.0
 - name: KP_IF
   index: 8449
   sub_index: 7
@@ -174,3 +128,45 @@
   editable: false
   min_value: 300.5
   max_value: 370.0
+- name: DCLINK_CHARGE_THRESHOLD
+  index: 8451
+  sub_index: 0
+  description: Напряжение срабатывания основного контактора
+  type: FLOAT
+  value: 320.0
+  units: V
+  editable: true
+  min_value: 200.0
+  max_value: 500.0
+- name: DCLINK_CHARGE_TIMEOUT
+  index: 8451
+  sub_index: 1
+  description: Максимальное время ожидания нарастания напряжения в ЗПТ до уровня срабатывания
+    основного контактора
+  type: UNSIGNED32
+  value: 2260.0
+  units: ms
+  editable: true
+  min_value: 400.0
+  max_value: 4000.0
+- name: DCLINK_DISCHARGE_THRESHOLD
+  index: 8451
+  sub_index: 3
+  description: Пороговое напряжение шины постоянного тока при отключении
+  type: FLOAT
+  value: 300.0
+  units: V
+  editable: true
+  min_value: 0.0
+  max_value: 6000.0
+- name: DCLINK_DISCHARGE_TIMEOUT
+  index: 8451
+  sub_index: 4
+  description: Максимальное время ожидания падения напряжения в ЗПТ до размыкания
+    основного контактора
+  type: UNSIGNED32
+  value: 150.0
+  units: ms
+  editable: true
+  min_value: 0.0
+  max_value: 500.0

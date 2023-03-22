@@ -142,6 +142,7 @@ class MainThread(QThread):
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
+    graph_list = []
     current_node = EVONode()
     adapter = None
     is_recording = False

@@ -2,7 +2,7 @@ from PyQt6.QtCore import pyqtSignal, QSize, Qt, QPropertyAnimation, QEasingCurve
     QRegularExpression, QStringListModel
 from PyQt6.QtGui import QPainter, QPalette, QLinearGradient, QGradient, QRegularExpressionValidator, QColor
 from PyQt6.QtWidgets import QComboBox, QLabel, QLineEdit, QProgressBar, QSlider, QDoubleSpinBox, QPushButton, \
-    QAbstractButton, QSizePolicy, QListView
+    QAbstractButton, QSizePolicy, QListView, QCheckBox
 
 color_EVO_red = QColor(222, 73, 14)
 color_EVO_green = QColor(0, 254, 0, 80)
@@ -200,6 +200,14 @@ class MySlider(QSlider):
             value = float(self.value() * self.multiplier)
             lst = [self.parametr, value]
         self.ValueSelected.emit(lst)
+
+
+class GraphCheckBox(QCheckBox):
+
+    def __init__(self, parent=None, parametr=None):
+        super(QCheckBox, self).__init__(parent)
+        super().__init__(parent)
+        self.parametr = parametr
 
 
 class MyButton(QPushButton):
