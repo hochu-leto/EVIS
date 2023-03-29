@@ -43,6 +43,8 @@ def check_dict(par_dict: dict):
             final_dict[f'{old_n}&{n}'] = final_dict[old_n] + l
             del final_dict[old_n]
             old_n = f'{old_n}&{n}'
+    if '' in final_dict.keys():
+        del final_dict['']
     return final_dict
 
 

@@ -1,7 +1,9 @@
 import pandas as pd
 import yaml
+from tkinter import filedialog
+file = filedialog.askopenfilename()
 
-file = "vmu_errors.yml"
+# file = "vmu_errors.yml"
 
 with open(file, "r", encoding="UTF8") as stream:
     try:
@@ -23,9 +25,9 @@ for err in canopen_vmu_ttc['vmu_errors']:
     del err['hardware_id']
     parse_list.append(err)
 
-df = pd.DataFrame(parse_list, columns=err.keys())
+# df = pd.DataFrame(parse_list, columns=err.keys())
 
-df.to_excel(file.split('.')[0] + '_parse.xlsx', index=False)
+# df.to_excel(file.split('.')[0] + '_parse.xlsx', index=False)
 #
-# with open(r'errors.yaml', 'w', encoding='UTF-8') as file:
-#     documents = yaml.dump(parse_list, file, allow_unicode=True)
+with open(r'errors.yaml', 'w', encoding='UTF-8') as file:
+    documents = yaml.dump(parse_list, file, allow_unicode=True)

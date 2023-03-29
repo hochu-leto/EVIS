@@ -189,5 +189,5 @@ for tag in nodes:
     if tg:
         final_list.append(tg.copy())
 del group_par_dict['']
-with open(r'parameters.yaml', 'w', encoding='UTF8') as file:
+with open(r'../Data/КВУ_ТТС/1.4.0/parameters.yaml', 'w', encoding='UTF8') as file:
     documents = yaml.dump(check_dict(group_par_dict), file, allow_unicode=True)

@@ -114,20 +114,28 @@ def add_param_to_graph(is_checked):
                 msg.setWindowTitle('Лишний параметр')
                 msg.setText('Список графиков полон')
                 msg.setInformativeText(f'Ты пытаешься добавить больше {GRAPH_SIZE}'
-                                       f' параметров в графики, но это не получится,'
-                                       f' можно заменить первый параметр \n{g_list[0].name} \n'
+                                       f' параметров в графики, но это не получится.'
+                                       f' Можно заменить первый параметр \n{g_list[0].name} \n'
                                        f'на этот  \n{par.name} \nМеняем?')
                 msg.setIcon(QMessageBox.Icon.Question)
                 change_par_btn = msg.addButton('Заменить', QMessageBox.ButtonRole.YesRole)
-                abort_btn = msg.addButton('Оставить', QMessageBox.ButtonRole.NoRole)
+                abort_btn = msg.addButton('Оставить как есть', QMessageBox.ButtonRole.NoRole)
+                clear_list_btn = msg.addButton('Убрать все предыдущие параметры', QMessageBox.ButtonRole.RejectRole)
 
-                if not msg.exec():
+                msg.exec()
+                if msg.clickedButton() == change_par_btn:
                     first_param = g_list.pop(0)
                     if first_param in window.thread.current_params_list:
                         index_par = window.thread.current_params_list.index(first_param)
                         window.vmu_param_table.cellWidget(index_par, GRAPH_COLUMN).layout(). \
                             itemAt(0).widget().setChecked(False)
                     g_list.append(par)
+                elif msg.clickedButton() == clear_list_btn:
+                    g_list.clear()
+                    g_list.append(par)
+                    for row, param in enumerate(window.thread.current_params_list):
+                        window.vmu_param_table.cellWidget(row, GRAPH_COLUMN).layout(). \
+                            itemAt(0).widget().setChecked(param in g_list)
                 else:
                     chb.setChecked(False)
         else:
@@ -1165,7 +1173,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         elif self.main_tab.currentWidget() == self.grafics_tab:
             self.thread.make_plot = [True]
 
-            self.thread.current_params_list = self.thread.graph_list if self.thread.graph_list\
+            self.thread.current_params_list = self.thread.graph_list if self.thread.graph_list \
                 else self.thread.current_params_list[:4]
             if self.thread.isFinished():
                 self.connect_to_node()
@@ -1364,11 +1372,10 @@ if __name__ == '__main__':
         sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# в текстовом виджете оставлять фокус после ввода, пока юзер сам не уйдёт оттуда -
-# работает, но также нужно обновлять и слайдер этого парметра
+# определять номер инвертора, если версия ПО выше 2212
+# добавить на графики кнопку старт-стоп и текущее значение параметров
 # при сравнении добавить возможность выбрать параметры,
 # которые нужно взять из файла + возможность делать это программно
-# на выбор темы добавить выпадающее меню с выбором темы
 # переделать def change_value(lst): под object, new_value
 # кнопка сохранить всё в гит
 # при обновлении проги должны добавляться только новые папки, старые параметры не трогаем

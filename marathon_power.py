@@ -207,13 +207,13 @@ class CANMarathon(AdapterCAN):
         buffer = self.Buffer()
         buffer.id = ctypes.c_uint32(can_id)
         buffer.len = len(message)
-        # print(f'Отправляю   {hex(buffer.id)}  {buffer.len}  ', end=' ')
+        print(f'Отправляю   {hex(buffer.id)}  {buffer.len}  ', end=' ')
         j = 0
         for i in message:
-            # print(hex(i), end=' ')
+            print(hex(i), end=' ')
             buffer.data[j] = ctypes.c_uint8(i)
             j += 1
-        # print()
+        print()
         if can_id > 0xFFF:
             self.lib.msg_seteff(ctypes.pointer(buffer))
 
@@ -226,8 +226,6 @@ class CANMarathon(AdapterCAN):
             print('CiTransmit do not work')
             self.close_canal_can()
             return 'can_write CiTransmit do not work'
-
-            # exit()
         else:
             pass
             # print('   в CiTransmit так ' + str(err))
@@ -242,8 +240,6 @@ class CANMarathon(AdapterCAN):
                     print('CiTransmit do not work')
                     self.close_canal_can()
                     return 'can_write CiTransmit do not work'
-
-                    # exit()
                 else:
                     pass
                     # print(f'   в CiTrStat так {complete_dict[err]}, осталось кадров на передачу {trqcnt.value} ')

@@ -50,5 +50,5 @@ if __name__ == '__main__':
             if 'iolib_errors' in par['description']:
                 par['value_table'] = iolib_errors_dict.copy()
         parse_dict[group] = group_list
-    with open(r'parameters.yaml', 'w', encoding='UTF-8') as file:
+    with open(r'../Data/ ¬”_““—/1.4.0/parameters.yaml', 'w', encoding='UTF-8') as file:
         documents = yaml.dump(check_dict(parse_dict), file, allow_unicode=True)
