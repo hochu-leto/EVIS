@@ -1,7 +1,7 @@
 import time
 
-from PyQt5.QtCore import QThread, QObject, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtCore import QThread, QObject, pyqtSignal, pyqtSlot, QRegularExpression, QTimer
+from PyQt5.QtGui import QTextCursor, QRegularExpressionValidator
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import two_chanell_ui
 from marathon_power import CANMarathon
@@ -12,34 +12,45 @@ marathon = CANMarathon()
 marathon2 = CANMarathon()
 marathon2.can_canal_number = 1
 marathon2.BCI_bt0 = marathon2.BCI_250K_bt0
+timer = QTimer()
+timer_send = QTimer()
 
 
 def read_can1():
-    window.thread_for_first_canal.start()
+    if window.thread_for_first_canal.isRunning():
+        window.thread_for_first_canal.terminate()
+        # window.thread_for_first_canal.wait()
+        # window.thread_for_first_canal.quit()
+    else:
+        window.thread_for_first_canal.start()
 
 
 def read_can2():
     window.thread_for_second_canal.start()
 
 
+def get_ID() -> int:
+    text_ID = window.ID_le.text()
+    return 0 if not text_ID else int(text_ID, 16)
+
+
+def get_data() -> list[int]:
+    text_data = window.data_le.text()
+    if not text_data:
+        return [0]
+    f_list = []
+    for i in range(0, len(text_data), 2):
+        f_list.append(int(text_data[i:i + 2], 16))
+    return f_list
+
+
 class CANSaveToFileThread(QObject):
     mar = marathon
     running = False
     new_can_frame = pyqtSignal(str)
-    recording_file_name = ''
-    start_time = int(round(time.time() * 1000))
-    time_for_request = start_time
-    time_for_send = start_time
-    send_delay = 50  # задержка отправки в кан сообщений
 
     # метод, который будет выполнять алгоритм в другом потоке
     def run(self):
-        # current_time = self.start_time
-        # front_steer_data = 15000
-        # can_receive_list = []
-        # torque_data_list = [0b10001, 0, 0, front_steer_data & 0xFF,
-        #                     ((front_steer_data & 0xFF00) >> 8), 0, 0, 0]
-
         while True:
             can_receive_list = self.mar.can_read_all()
             if isinstance(can_receive_list, list):
@@ -48,13 +59,12 @@ class CANSaveToFileThread(QObject):
                 for i in range(can_receive_list[1]):
                     strn += (hex(can_receive_list[3][i])[2:].zfill(2) + ' ')
                 self.new_can_frame.emit(strn)
-
-            # проверяем что время передачи пришло и отправляю управление по 401 адресу
-            # if (current_time - self.start_time) > self.send_delay:
-            #     self.start_time = current_time
-            #     marathon.can_write(VMU_ID_PDO, torque_data_list)
             #
-            # current_time = int(round(time.time() * 1000))
+            # if window.send_chbox.isChecked():
+            #     # проверяем что время передачи пришло и отправляю
+            #     if time.perf_counter_ns() > self.start_time + self.send_delay:
+            #         self.start_time = time.perf_counter_ns()
+            #         marathon.can_write(get_ID(), get_data())
 
 
 class CANMonitorApp(QMainWindow, two_chanell_ui.Ui_MainWindow):
@@ -103,9 +113,45 @@ class CANMonitorApp(QMainWindow, two_chanell_ui.Ui_MainWindow):
         self.textBrowser_2.setTextCursor(cursor)
 
 
+def send_can1():
+    marathon.can_write(get_ID(), get_data())
+
+
+def change_id():
+    current_ID = get_ID()
+    window.ID_le.setText(hex(current_ID + 1)[2:].upper())
+
+
+def periodic_change():
+    if timer.isActive():
+        timer.stop()
+    else:
+        timer.start(300)
+
+
+def periodic_send():
+    if timer_send.isActive():
+        timer_send.stop()
+    else:
+        timer_send.start(50)
+
+
 app = QApplication([])
 window = CANMonitorApp()
-window.read1_btn.clicked.connect(read_can1)
+reg_ex = QRegularExpression("^[0-9a-fA-F]+$")
+window.ID_le.setValidator(QRegularExpressionValidator(reg_ex))
+reg_ex = QRegularExpression("^[0-9A-F]+$")
+window.data_le.setValidator(QRegularExpressionValidator(reg_ex))
+
+window.read1_chbox.clicked.connect(read_can1)
+window.send1_btn.clicked.connect(send_can1)
+window.periodic_change_btn.clicked.connect(change_id)
+window.periodic_change_id_chbox.clicked.connect(periodic_change)
+window.send_chbox.clicked.connect(periodic_send)
+
+timer.timeout.connect(change_id)
+timer_send.timeout.connect(send_can1)
+
 window.read2_btn.clicked.connect(read_can2)
 window.show()  # Показываем окно
 app.exec_()  # и запускаем приложение
