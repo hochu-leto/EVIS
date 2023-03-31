@@ -1172,7 +1172,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         # Вкладка Графики
         elif self.main_tab.currentWidget() == self.grafics_tab:
             self.thread.make_plot = [True]
-
             self.thread.current_params_list = self.thread.graph_list if self.thread.graph_list \
                 else self.thread.current_params_list[:4]
             if self.thread.isFinished():

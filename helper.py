@@ -9,7 +9,7 @@ import numpy
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
-    QCheckBox, QWidget, QHBoxLayout
+    QCheckBox, QWidget, QHBoxLayout, QPushButton, QGraphicsProxyWidget
 from pyqtgraph import PlotWidget, mkPen
 
 import my_dialog
@@ -267,6 +267,12 @@ class EVOGraph:
         self.counter = 0
         self.curves = []
         self.startTime = perf_counter()
+        self.start_stop_btn = QPushButton('СТОП')
+        self.clear_btn = QPushButton('СБРОС')
+        proxy = QGraphicsProxyWidget()
+        proxy.setWidget(self.start_stop_btn)
+        proxy.setWidget(self.clear_btn)
+        proxy.setPos(0, 0)
 
     def update_plots(self):
         now = perf_counter()
