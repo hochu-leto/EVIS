@@ -135,10 +135,12 @@ class SaveToFileThread(QThread):
 
 # поток для опроса параметров и ошибок
 class MainThread(QThread):
-    # сигнал со списком параметров из текущей группы
+    # сигнал со списком - если пустой, то ОК, если первый элемент - строка, значит ошибка(надо переделать на строку)
     threadSignalAThread = pyqtSignal(list)
     # сигнал с ошибками
     err_thread_signal = pyqtSignal(dict)
+    # сигнал что параметры графиков опрошены
+    graphSignal = pyqtSignal()
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
@@ -151,15 +153,31 @@ class MainThread(QThread):
 
     def __init__(self, parent=None):
         super().__init__()
+        self.params_counter = 0
+        self.errors_counter = 0
         self.max_errors = 3
         self.current_nodes_dict = {}
         self.parent = parent
-        self.make_plot = []
+        self.make_plot = False
+
+    def check_param(self, param):
+        # ---!!!если параметр строковый, будет None!!---
+        # если строка - значит ошибка
+        if isinstance(param, str):
+            self.errors_counter += 1
+        else:
+            self.errors_counter = 0
+        if self.errors_counter >= self.max_errors:
+            self.threadSignalAThread.emit([param])
+            return False
+        return True
 
     def run(self):
-        def emitting(ans_list):
+        def emitting(ans_list=None):
             # передача пустого списка если всё хорошо
             # и строки ошибки в списке если проблемы
+            if ans_list is None:
+                ans_list = []
             self.thread_timer = time.perf_counter_ns()
             self.threadSignalAThread.emit(ans_list)
             self.params_counter = 0
@@ -183,7 +201,7 @@ class MainThread(QThread):
                         self.params_counter += 1
                         if self.params_counter >= len(self.current_params_list):
                             self.params_counter = 0
-                            emitting(self.make_plot)
+                            emitting()
                             return
                         current_param = self.current_params_list[self.params_counter]
             except IndexError:
@@ -191,21 +209,19 @@ class MainThread(QThread):
                       f'{len(self.current_params_list)}, придётся брать параметр = {self.current_params_list[0].name}')
                 current_param = self.current_params_list[0]
 
-            param = current_param.get_value(self.adapter)  # ---!!!если параметр строковый, будет None!!---
-            # если строка - значит ошибка
-            if isinstance(param, str):
-                self.errors_counter += 1
-            else:
-                self.errors_counter = 0
-
-            if self.errors_counter >= self.max_errors:
-                self.threadSignalAThread.emit([param])
+            if not self.check_param(current_param.get_value(self.adapter)):
                 return
+            # если есть запрос на графики и их список не пуст, опрашиваем их все за раз и обновляем
+            if self.make_plot and self.graph_list:
+                for graph_param in self.graph_list:
+                    if not self.check_param(graph_param.get_value(self.adapter)):
+                        return
+                self.graphSignal.emit()
 
             self.params_counter += 1
             if self.params_counter >= len(self.current_params_list):
                 self.params_counter = 0
-                emitting(self.make_plot)
+                emitting()    # self.make_plot)
                 if self.is_recording:
                     dt = datetime.datetime.now()
                     dt = dt.strftime("%H:%M:%S.%f")

@@ -1,7 +1,5 @@
 import yaml
-from helper import int_to_hex_str
-from tkinter import filedialog as fd
-from parse_yaml_for_burr import check_dict
+from tkinter import filedialog
 
 convert_types = dict(uint8='UNSIGNED8', int8='SIGNED8', uint16='UNSIGNED16', int16='SIGNED16', uint32='UNSIGNED32',
                      int32='SIGNED32', float='FLOAT', string='VISIBLE_STRING')
@@ -67,6 +65,26 @@ from 'canopen_parameters.yml'
       eeprom: true  
 '''
 
+
+def check_dict(par_dict: dict):
+    final_dict = {}
+
+    old_n = ''
+    final_dict[old_n] = []
+
+    for n, l in par_dict.items():
+        if len(l) > 3:
+            final_dict[n] = l
+            old_n = n
+        else:
+            final_dict[f'{old_n}&{n}'] = final_dict[old_n] + l
+            del final_dict[old_n]
+            old_n = f'{old_n}&{n}'
+    if '' in final_dict.keys():
+        del final_dict['']
+    return final_dict
+
+
 if __name__ == '__main__':
     file_name = 'iolib_errors.yml'
     with open(file_name, "r", encoding="UTF8") as stream:
@@ -76,7 +94,7 @@ if __name__ == '__main__':
             print(exc)
     iolib_errors_dict = vmu_ttc_ioe['iolib_errors']
 
-    file_name = fd.askopenfilename()
+    file_name = filedialog.askopenfilename()
 
     with open(file_name, "r", encoding="UTF8") as stream:
         try:
@@ -87,12 +105,16 @@ if __name__ == '__main__':
     parse_dict = {}
     for group, group_list in canopen_vmu_ttc['canopen_parameters'].items():
         for par in group_list:
-            par['type'] = convert_types[par['type']]
-            par['description'] = par['description'].strip().replace('\n', '')
-            par['editable'] = True if 'w' in par['access'] else False
-            del par['access']
-            par['sub_index'] = par['subindex']
-            del par['subindex']
+            if 'type' in par.keys():
+                par['type'] = convert_types[par['type']]
+            if 'description' in par.keys():
+                par['description'] = par['description'].strip().replace('\n', '')
+            if 'access' in par.keys():
+                par['editable'] = True if 'w' in par['access'] else False
+                del par['access']
+            if 'subindex' in par.keys():
+                par['sub_index'] = par['subindex']
+                del par['subindex']
 
             if 'units' in par.keys():
                 if '[' in par['units']:
@@ -111,7 +133,7 @@ if __name__ == '__main__':
                 par['eeprom'] = True
 
             if 'value' in par.keys():
-                if par['value'] and not '[' in par['value']:
+                if par['value'] and '[' not in par['value']:
                     par['value'] = float(par['value'])
                 else:
                     del par['value']

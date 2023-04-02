@@ -44,6 +44,7 @@ import pickle
 import sys
 import time
 
+import numpy
 import pandas as pd
 import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
@@ -141,6 +142,7 @@ def add_param_to_graph(is_checked):
         else:
             if par in g_list:
                 g_list.remove(par)
+        window.graphics.update_params_list(g_list)
     else:
         print('Неправильный чек-бокс')
     return
@@ -339,9 +341,9 @@ def set_new_value(param: Parametr, val):
                         window.save_eeprom_btn.setEnabled(True)
                         if window.thread.current_node.name == 'Инвертор_МЭИ':
                             info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
-                        elif window.thread.current_node.name == 'КВУ_ТТС':
-                            param.node.param_was_changed = param.eeprom
-                            window.save_eeprom_btn.setEnabled(param.eeprom)
+                        # elif window.thread.current_node.name == 'КВУ_ТТС':
+                        #     param.node.param_was_changed = param.eeprom
+                        #     window.save_eeprom_btn.setEnabled(param.eeprom)
             else:
                 my_label = RedLabel()
                 # если поток был запущен до изменения, то запускаем его снова
@@ -743,14 +745,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
     def __init__(self):
         super().__init__()
 
-        self.graphWidget = PlotWidget()
-        self.graphics = None
         self.all_params_dict = {}
         self.setupUi(self)
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
         self.thread = MainThread(self)
         self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
+        self.thread.graphSignal.connect(self.update_graphs)
         self.thread.err_thread_signal.connect(self.add_new_errors)
         self.thread.adapter = can_adapter
         #  И для сохранения
@@ -762,6 +763,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
         self.default_style_sheet = self.styleSheet()
+        self.graphics = EVOGraph()
+
+    @pyqtSlot()
+    def update_graphs(self):
+        if not self.graphics.update_plots():
+            self.stop_thread('В графики можно добавить не больше четырёх параметров, сейчас нет ни одного')
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
@@ -780,20 +787,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                     if self.thread.is_recording:
                         record_log()
                     # останавливаем поток
-                    self.thread.quit()
-                    self.thread.wait()
-                    # выкидываем ошибку
-                    QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.StandardButton.Ok)
-                self.connect_btn.setText("Подключиться")
-                if can_adapter.isDefined:
-                    can_adapter.close_canal_can()
-                if err == 'Адаптер не подключен':
-                    can_adapter.isDefined = False
+                    self.stop_thread(err)
+            # elif list_of_params[0]:
+            # ля, криво! Это тот случай, когда я хочу рисовать графики, тупо запихиваю в лист[0] True
             else:
+                pass
                 # вообще можно возвращать даже не список, а переменную
                 # и по её значению уже решать что делать с обновлённым списком параметров
-                # по идее, в текущем листе уже должно быть только 4 первых параметра
-                self.graphics.update_plots()
         elif not list_of_params and self.thread.current_params_list:  # ошибок нет - всё хорошо
             # показываем свежие обновлённые параметры
             widgets_list = show_new_vmu_params(params_list=self.thread.current_params_list,
@@ -804,6 +804,17 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 i.ValueSelected.connect(change_value)
         else:
             print('непредвиденная ситуация в списке что то есть, длина списка = ', len(list_of_params))
+
+    def stop_thread(self, err=''):
+        self.thread.quit()
+        self.thread.wait()
+        # выкидываем ошибку
+        QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.StandardButton.Ok)
+        self.connect_btn.setText("Подключиться")
+        if can_adapter.isDefined:
+            can_adapter.close_canal_can()
+        if err == 'Адаптер не подключен':
+            can_adapter.isDefined = False
 
     @pyqtSlot(dict)  # добавляем ошибки в окошко
     def add_new_errors(self, nds: dict):
@@ -1099,10 +1110,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             self.thread.iter_count = 1
             self.thread.start()
             self.connect_btn.setText("Отключиться")
+            self.graphics.start_stop_btn.setText("СТОП")
         else:
             self.thread.quit()
             self.thread.wait()
             self.connect_btn.setText("Подключиться")
+            self.graphics.start_stop_btn.setText("СТАРТ")
             can_adapter.close_canal_can()
 
     def closeEvent(self, event):
@@ -1131,27 +1144,27 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                                               f' нужно сохранить этот список?'):
                     event.ignore()
 
-        msg = QMessageBox(self)
-        msg.setWindowTitle("Выход")
-        msg.setIcon(QMessageBox.Icon.Question)
-        msg.setText("Вы уверены, что хотите закрыть приложение?")
+        # msg = QMessageBox(self)
+        # msg.setWindowTitle("Выход")
+        # msg.setIcon(QMessageBox.Icon.Question)
+        # msg.setText("Вы уверены, что хотите закрыть приложение?")
+        #
+        # buttonAccept = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
+        # msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)
+        # msg.setDefaultButton(buttonAccept)
+        # msg.exec()
 
-        buttonAccept = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
-        msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)
-        msg.setDefaultButton(buttonAccept)
-        msg.exec()
-
-        if msg.clickedButton() == buttonAccept:
-            with open(stylesheet_file, 'w+') as f:
-                f.write(self.current_theme)
-            if self.thread.isRunning():
-                self.thread.quit()
-                self.thread.wait()
-                del self.thread
-            if can_adapter.isDefined:
-                can_adapter.close_canal_can()
-        else:
-            event.ignore()
+        # if msg.clickedButton() == buttonAccept:
+        with open(stylesheet_file, 'w+') as f:
+            f.write(self.current_theme)
+        if self.thread.isRunning():
+            self.thread.quit()
+            self.thread.wait()
+            del self.thread
+        if can_adapter.isDefined:
+            can_adapter.close_canal_can()
+        # else:
+        #     event.ignore()
 
     def change_tab(self):
         # Вкладка управление
@@ -1163,21 +1176,19 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         # Вкладка параметры
         elif self.main_tab.currentWidget() == self.params_tab:
             params_list_changed()
-            self.thread.make_plot = []
+            # self.thread.make_plot = []
             if self.thread.isFinished():
                 self.connect_to_node()
             print('Вкладка параметры, поток запущен')
-            if self.graphics:
-                self.graphics.widget.clear()
+            # if self.graphics:
+            #     self.graphics.widget.clear()
         # Вкладка Графики
         elif self.main_tab.currentWidget() == self.grafics_tab:
-            self.thread.make_plot = [True]
-            self.thread.current_params_list = self.thread.graph_list if self.thread.graph_list \
-                else self.thread.current_params_list[:4]
             if self.thread.isFinished():
                 self.connect_to_node()
             print('Вкладка Графики')
-            self.graphics = EVOGraph(plot_widget=self.graphWidget, params_list=self.thread.current_params_list)
+            self.graphics.update_params_list(self.thread.graph_list)
+
         else:
             print('Неизвестное состояние')
 
@@ -1220,6 +1231,10 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         # Display the data text of the selected row
         if action:
             items[action](parametr)
+
+    def show_graphs(self, visible: bool):
+        print(visible)
+        self.thread.make_plot = visible
 
 
 def change_theme():
@@ -1337,7 +1352,9 @@ if __name__ == '__main__':
     window.light_box.setEnabled(False)
     # ----------------------------------- подготовка под графики ------------------------------------------------
     window.label.deleteLater()
-    window.gridLayout_5.addWidget(window.graphWidget, 0, 0, 1, 1)
+    window.gridLayout_5.addWidget(window.graphics, 0, 0, 1, 1)
+    window.graphics.start_stop_btn.clicked.connect(window.connect_to_node)
+    window.graphics.dock_widget.visibilityChanged.connect(window.show_graphs)
 
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:
@@ -1371,11 +1388,16 @@ if __name__ == '__main__':
         sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
+# !!!!!!!!!!!! кнопка сохранить в еепром всегда активна !!!!!!!
+# !!!!!!!!!!!! графики отдельным окном !!!!!!!
+# !!!!!!!!!!!! Столбцы в таблице можно передвигать !!!!!!!
+# если не найдены блоки на скорости 125, искать и остальные скорости тоже
 # определять номер инвертора, если версия ПО выше 2212
 # добавить на графики кнопку старт-стоп и текущее значение параметров
 # при сравнении добавить возможность выбрать параметры,
 # которые нужно взять из файла + возможность делать это программно
 # переделать def change_value(lst): под object, new_value
+# переделать def add_new_vmu_params(lst): под string
 # кнопка сохранить всё в гит
 # при обновлении проги должны добавляться только новые папки, старые параметры не трогаем
 # виджеты с частыми параметрами в окно управление
