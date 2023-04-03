@@ -106,7 +106,6 @@ def add_param_to_graph(is_checked):
     if hasattr(chb, 'parametr') and isinstance(chb.parametr, Parametr):
         par = chb.parametr
         g_list = window.thread.graph_list
-        # g_list = window.graphics.params_list.copy()
         if is_checked:
             if len(g_list) < GRAPH_SIZE:
                 g_list.append(par)
@@ -132,6 +131,7 @@ def add_param_to_graph(is_checked):
                         window.vmu_param_table.cellWidget(index_par, GRAPH_COLUMN).layout(). \
                             itemAt(0).widget().setChecked(False)
                     g_list.append(par)
+                    window.graphics.widget.clear()
                 elif msg.clickedButton() == clear_list_btn:
                     g_list.clear()
                     window.graphics.widget.clear()
@@ -475,19 +475,25 @@ def change_limit(param):
         min_val = value_changer_dialog.min_line_edit.text()
         if min_val:
             val = float(min_val)
-            if val < type_values[param.type]['min'] or \
-                    val > param.max_value or \
-                    val > param.value:
+            if val < type_values[param.type]['min']:
+                val = type_values[param.type]['min']
+            elif val > param.value:
+                val = param.value
+            elif val > param.max_value:     # вряд-ли такое возможно
                 val = param.min_value
             param.min_value = val
+
         max_val = value_changer_dialog.max_line_edit.text()
         if max_val:
             val = float(max_val)
-            if val > type_values[param.type]['max'] or \
-                    val < param.min_value or \
-                    val < param.value:
+            if val > type_values[param.type]['max']:
+                val = type_values[param.type]['max']
+            elif val < param.value:
+                val = param.value
+            elif val < param.min_value:
                 val = param.max_value
             param.max_value = val
+
         add_parametr_to_yaml_file(parametr=param)
         wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
 
@@ -687,11 +693,11 @@ def check_node_online(all_node_dict: dict):
                 window.susp_zero_btn.setEnabled(True)
                 window.load_from_eeprom_btn.setEnabled(True)
                 window.light_box.setEnabled(True)
-            elif 'Рулевая_зад_Томск' in nd.name and nd.firmware_version >= 55:
+            elif 'Рулевая_зад_Томск' in nd.name and str(nd.firmware_version) >= '55':
                 window.rear_steer_rbtn.setEnabled(True)
                 window.rear_steer_rbtn.setChecked(True)
                 window.curr_measure_btn.setEnabled(True)
-            elif 'Рулевая_перед_Томск' in nd.name and nd.firmware_version >= 55:
+            elif 'Рулевая_перед_Томск' in nd.name and str(nd.firmware_version) >= '55':
                 window.front_steer_rbtn.setEnabled(True)
                 window.curr_measure_btn.setEnabled(True)
             exit_dict[nd.name] = nd
@@ -1395,7 +1401,6 @@ if __name__ == '__main__':
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
 # решить вопрос с дробными параметрами с мультипликатором в кву
 # сетку в графиках ярче
-# !!!!!!!!!!!!! если ставить пределы, задаваемое значение искажается !!!!!!!!!!
 # как сохранять весь график?
 # !!!!!!!!!!!! Столбцы в таблице можно передвигать !!!!!!!
 # если не найдены блоки на скорости 125, искать и остальные скорости тоже

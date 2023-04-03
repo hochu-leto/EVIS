@@ -116,7 +116,7 @@
   sub_index: 16
   description: Желаемый момент двигателя в ручном режиме управления
   type: SIGNED16
-  value: 0.0
+  value: 31.99755
   units: '%'
   widget: MySlider
   multiplier: 0.00305

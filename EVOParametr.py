@@ -176,15 +176,20 @@ class Parametr:
             self.set_list = data + [LSB, MSB, value_type, 0x10]
 
     def set_value(self, adapter: CANAdater, value):
+        value = (value if value < self.max_value else self.max_value) \
+            if value >= self.min_value else self.min_value
         value += self.offset
         value /= self.multiplier
-        if 'Рулевая' in self.node.name:  # У томска проблемы с типом переменных
-            self.value = value
-        else:
-            # кажется здесь собака порылась!!!!
-            self.value = (value if value < self.max_value else self.max_value) \
-                if value >= self.min_value else self.min_value
+        value = round(value, 5)
+        # if 'Рулевая' in self.node.name:  # У томска проблемы с типом переменных
+        #     self.value = value
+        # else:
+        #     кажется здесь собака порылась!!!!
+            # self.value = (value if value < self.max_value else self.max_value) \
+            #     if value >= self.min_value else self.min_value
         # здесь надо проверять, что она не выходит за пределы по типу данных
+        self.value = (value if value < type_values[self.type]['max'] else type_values[self.type]['max']) \
+            if value >= type_values[self.type]['min'] else type_values[self.type]['min']
         self.get_list()
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.set_list)
         # надо как-то определять, если блок не принял значение, тоже какой-то ответ будет
@@ -252,6 +257,7 @@ class Parametr:
 
             self.value *= self.multiplier
             self.value -= self.offset
+            self.value = round(self.value, 5)
             return self.value
         else:
             print(f'Принятый адрес не совпадает - {self.index=} , {index_ans=} {self.sub_index=} , {sub_index_ans=}')
