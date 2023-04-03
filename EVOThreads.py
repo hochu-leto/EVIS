@@ -214,6 +214,7 @@ class MainThread(QThread):
             # если есть запрос на графики и их список не пуст, опрашиваем их все за раз и обновляем
             if self.make_plot and self.graph_list:
                 for graph_param in self.graph_list:
+                    # а если в граф_листе окажутся параметры из разных блоков с разными адаптерами?
                     if not self.check_param(graph_param.get_value(self.adapter)):
                         return
                 self.graphSignal.emit()

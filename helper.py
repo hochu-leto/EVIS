@@ -255,8 +255,9 @@ class EVOGraph(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.data_y = None
-        self.params_list = None
+        self.params_list = []
+        self.param_counter = len(self.params_list)
+        self.data_y = numpy.zeros((self.chunkSize + 1, 0))
         self.data_x = numpy.zeros((self.chunkSize + 1))
         self.counter = 0
         self.curves = []
@@ -285,11 +286,48 @@ class EVOGraph(QMainWindow):
                                      QDockWidget.DockWidgetFeature.DockWidgetMovable)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dock_widget)
 
-    def update_params_list(self, new_params_list: list):
-        self.params_list = new_params_list
+    def update_params_list(self):
+        p_counter = len(self.params_list)
+        if p_counter > self.param_counter:
+            data_new = numpy.zeros((self.chunkSize + 1, p_counter - self.param_counter))
+            self.data_y = numpy.concatenate([self.data_y, data_new], axis=1)
+        elif p_counter < self.param_counter:
+            self.data_y = self.data_y[:, :(p_counter - self.param_counter)]
+
+        self.param_counter = len(self.params_list)
+        curve = []
+        self.legend.clear()
+        for parametr in self.params_list:
+            curve.append(self.widget.plot(name=parametr.name))
+        self.curves.append(curve)
+        self.widget.enableAutoRange('y', 0.95)
+
+        # задаю последнее значение параметра как текущее
+        # for i, param in enumerate(self.params_list):
+        #     self.data_y[-1, i] = param.value
+
+    def new_chunk(self):
+        curve = []
+        self.legend.clear()
+        for parametr in self.params_list:
+            curve.append(self.widget.plot(name=parametr.name))
+        self.curves.append(curve)
+        # из старого массива достаём последний элемент
+        last_x = self.data_x[-1]
+        last_y = self.data_y[-1]
+        # создаём новый массив причём для всех графиков
+        self.data_x = numpy.zeros((self.chunkSize + 1))
         self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
-        for i, param in enumerate(self.params_list):
-            self.data_y[-1, i] = param.value
+        # и впихиваем в него на первую позицию последний элемент старого массива
+        self.data_x[0] = last_x
+        self.data_y[0] = last_y
+
+        # если количество кусков больше 10, удаляем до 10
+        while len(self.curves) > self.maxChunks:
+            c = self.curves.pop(0)
+            for cc in c:
+                self.widget.removeItem(cc)
+        return curve
 
     @pyqtSlot()
     def update_plots(self):
@@ -309,26 +347,7 @@ class EVOGraph(QMainWindow):
         if i == 0:
             # когда количество кривых кратно количеству 100
             # добавляется новая пачка кривых в список
-            curve = []
-            self.legend.clear()
-            for parametr in self.params_list:
-                curve.append(self.widget.plot(name=parametr.name))
-            self.curves.append(curve)
-            # из старого массива достаём последний элемент
-            last_x = self.data_x[-1]
-            last_y = self.data_y[-1]
-            # создаём новый массив причём для всех графиков
-            self.data_x = numpy.zeros((self.chunkSize + 1))
-            self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
-            # и впихиваем в него на первую позицию последний элемент старого массива
-            self.data_x[0] = last_x
-            self.data_y[0] = last_y
-
-            # если количество кусков больше 10, удаляем до 10
-            while len(self.curves) > self.maxChunks:
-                c = self.curves.pop(0)
-                for cc in c:
-                    self.widget.removeItem(cc)
+            curve = self.new_chunk()
         else:
             # если сейчас не 100я кривая, то берём последний
             curve = self.curves[-1]

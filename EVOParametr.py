@@ -181,9 +181,10 @@ class Parametr:
         if 'Рулевая' in self.node.name:  # У томска проблемы с типом переменных
             self.value = value
         else:
+            # кажется здесь собака порылась!!!!
             self.value = (value if value < self.max_value else self.max_value) \
                 if value >= self.min_value else self.min_value
-
+        # здесь надо проверять, что она не выходит за пределы по типу данных
         self.get_list()
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.set_list)
         # надо как-то определять, если блок не принял значение, тоже какой-то ответ будет

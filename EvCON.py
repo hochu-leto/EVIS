@@ -106,6 +106,7 @@ def add_param_to_graph(is_checked):
     if hasattr(chb, 'parametr') and isinstance(chb.parametr, Parametr):
         par = chb.parametr
         g_list = window.thread.graph_list
+        # g_list = window.graphics.params_list.copy()
         if is_checked:
             if len(g_list) < GRAPH_SIZE:
                 g_list.append(par)
@@ -133,6 +134,7 @@ def add_param_to_graph(is_checked):
                     g_list.append(par)
                 elif msg.clickedButton() == clear_list_btn:
                     g_list.clear()
+                    window.graphics.widget.clear()
                     g_list.append(par)
                     for row, param in enumerate(window.thread.current_params_list):
                         window.vmu_param_table.cellWidget(row, GRAPH_COLUMN).layout(). \
@@ -142,7 +144,9 @@ def add_param_to_graph(is_checked):
         else:
             if par in g_list:
                 g_list.remove(par)
-        window.graphics.update_params_list(g_list)
+        window.graphics.update_params_list()
+        if not g_list:
+            window.graphics.widget.clear()
     else:
         print('Неправильный чек-бокс')
     return
@@ -319,31 +323,33 @@ def set_new_value(param: Parametr, val):
                 != QMessageBox.StandardButton.Ok:
             return "Пердумал", my_label
     try:
-        float(val)
+        val = float(val)
         if window.thread.isRunning():
             # отключаем поток, если он был включен
             window.connect_to_node()
             # отправляю параметр, полученный из диалогового окна
-            param.set_value(can_adapter, float(val))
+            # param.set_value(can_adapter, float(val))
+            param.set_value(can_adapter, val)
             # и сразу же проверяю записался ли он в блок
             value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
             if not isinstance(value_data, str):
                 new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
             my_label = QLabel()
+            print(f'{val=}, {zero_del(val).strip()}, {value_data=}, {new_val=}')
             if zero_del(val).strip() == new_val:
                 my_label = GreenLabel()
                 if param.node.save_to_eeprom:
                     param.node.param_was_changed = True
                     # В Избранном кнопку не активируем, может быть несколько блоков.
                     # Возможно, я когда-то смогу
-                    if window.thread.current_node.name != TheBestNode:
-                        window.save_eeprom_btn.setEnabled(True)
-                        if window.thread.current_node.name == 'Инвертор_МЭИ':
-                            info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
-                        # elif window.thread.current_node.name == 'КВУ_ТТС':
-                        #     param.node.param_was_changed = param.eeprom
-                        #     window.save_eeprom_btn.setEnabled(param.eeprom)
+                    # if window.thread.current_node.name != TheBestNode:
+                    # window.save_eeprom_btn.setEnabled(True)
+                    if window.thread.current_node.name == 'Инвертор_МЭИ':
+                        info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
+                    elif window.thread.current_node.name == 'КВУ_ТТС':
+                        param.node.param_was_changed = param.eeprom
+                    #     window.save_eeprom_btn.setEnabled(param.eeprom)
             else:
                 my_label = RedLabel()
                 # если поток был запущен до изменения, то запускаем его снова
@@ -764,6 +770,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         self.nodes_tree.header().close()
         self.default_style_sheet = self.styleSheet()
         self.graphics = EVOGraph()
+        self.thread.graph_list = self.graphics.params_list
 
     @pyqtSlot()
     def update_graphs(self):
@@ -811,6 +818,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         # выкидываем ошибку
         QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.StandardButton.Ok)
         self.connect_btn.setText("Подключиться")
+        self.graphics.start_stop_btn.setText("СТАРТ")
         if can_adapter.isDefined:
             can_adapter.close_canal_can()
         if err == 'Адаптер не подключен':
@@ -1084,6 +1092,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         self.node_fm_lab.setText(f'Версия ПО: {nd.cut_firmware()}')
         if self.save_to_file_btn.isEnabled():
             self.save_to_file_btn.setText(f'Сохранить настройки блока:\n {nd.name} в файл')
+        self.save_eeprom_btn.setEnabled(nd.save_to_eeprom)
         return
 
     def connect_to_node(self):
@@ -1167,27 +1176,24 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         #     event.ignore()
 
     def change_tab(self):
-        # Вкладка управление
-        if self.main_tab.currentWidget() == self.management_tab:
-            if self.thread.isRunning():
-                self.connect_to_node()
-                print('Поток остановлен')
-            print('Вкладка управление')
+
         # Вкладка параметры
-        elif self.main_tab.currentWidget() == self.params_tab:
+        if self.main_tab.currentWidget() == self.params_tab:
             params_list_changed()
-            # self.thread.make_plot = []
             if self.thread.isFinished():
                 self.connect_to_node()
-            print('Вкладка параметры, поток запущен')
-            # if self.graphics:
-            #     self.graphics.widget.clear()
+
+        # Вкладка управление
+        elif self.main_tab.currentWidget() == self.management_tab:
+            if not self.graphics.isVisible() and self.thread.isRunning():
+                self.connect_to_node()
+
         # Вкладка Графики
         elif self.main_tab.currentWidget() == self.grafics_tab:
             if self.thread.isFinished():
                 self.connect_to_node()
-            print('Вкладка Графики')
-            self.graphics.update_params_list(self.thread.graph_list)
+            if not self.graphics.isVisible():
+                self.graphics.update_params_list()
 
         else:
             print('Неизвестное состояние')
@@ -1233,7 +1239,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             items[action](parametr)
 
     def show_graphs(self, visible: bool):
-        print(visible)
         self.thread.make_plot = visible
 
 
@@ -1388,12 +1393,14 @@ if __name__ == '__main__':
         sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
-# !!!!!!!!!!!! кнопка сохранить в еепром всегда активна !!!!!!!
-# !!!!!!!!!!!! графики отдельным окном !!!!!!!
+# решить вопрос с дробными параметрами с мультипликатором в кву
+# сетку в графиках ярче
+# !!!!!!!!!!!!! если ставить пределы, задаваемое значение искажается !!!!!!!!!!
+# как сохранять весь график?
 # !!!!!!!!!!!! Столбцы в таблице можно передвигать !!!!!!!
 # если не найдены блоки на скорости 125, искать и остальные скорости тоже
 # определять номер инвертора, если версия ПО выше 2212
-# добавить на графики кнопку старт-стоп и текущее значение параметров
+# добавить на графики текущее значение параметров
 # при сравнении добавить возможность выбрать параметры,
 # которые нужно взять из файла + возможность делать это программно
 # переделать def change_value(lst): под object, new_value
@@ -1401,7 +1408,4 @@ if __name__ == '__main__':
 # кнопка сохранить всё в гит
 # при обновлении проги должны добавляться только новые папки, старые параметры не трогаем
 # виджеты с частыми параметрами в окно управление
-# цветомузыка
-# научиться парсить текстовые настройки ТАБ
-# научиться парсить настройки старого КВУ
 # когда сохраняется файл, давать не него ссылку

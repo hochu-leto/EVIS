@@ -1135,7 +1135,7 @@
   sub_index: 1
   description: Включение ручного режима управления
   type: UNSIGNED8
-  value: 0
+  value: 0.0
   editable: true
   min_value: 0.0
   max_value: 15.0
@@ -1147,7 +1147,7 @@
   sub_index: 16
   description: Желаемый момент двигателя в ручном режиме управления
   type: SIGNED16
-  value: 0
+  value: 0.305
   units: '%'
   widget: MySlider
   multiplier: 0.00305
@@ -1159,7 +1159,7 @@
   sub_index: 1
   description: Желаемое положение передней рулевой рейки в ручном режиме управления,
   type: SIGNED16
-  value: 0
+  value: 0.0
   units: '[-30000..30000]'
   widget: MySlider
   editable: true
@@ -1170,7 +1170,7 @@
   sub_index: 2
   description: Желаемое положение задней рулевой рейки в ручном режиме управления,
   type: SIGNED16
-  value: 0
+  value: 0.0
   units: '[-30000..30000]'
   widget: MySlider
   editable: true
@@ -1181,7 +1181,7 @@
   sub_index: 4
   description: Текущее положение передней рулевой рейки, получаемое с рейки
   type: SIGNED16
-  value: -6
+  value: -1.0
   units: '[-1000..1000]'
   widget: MyColorBar
   editable: false
@@ -1192,7 +1192,7 @@
   sub_index: 4
   description: Текущее положение задней рулевой рейки, получаемое с рейки
   type: SIGNED16
-  value: 28
+  value: 0.0
   units: '[-1000..1000]'
   widget: MyColorBar
   editable: false
@@ -1203,7 +1203,7 @@
   sub_index: 3
   description: Текущая скорость вращения двигателя, полученная от ПСТЭД
   type: SIGNED16
-  value: 0
+  value: 0.0
   units: об/мин
   widget: MyColorBar
   multiplier: 0.24415
@@ -1828,4 +1828,114 @@
   multiplier: 0.1
   editable: false
   min_value: 0.0
+  max_value: 200.0
+Крутим мотор:
+- name: PSTED_MANUAL_CONTROL_REF_TORQUE#КВУ_ТТС
+  index: 8456
+  sub_index: 16
+  description: Желаемый момент двигателя в ручном режиме управления
+  type: SIGNED16
+  value: 2.9981500000000003
+  units: '%'
+  multiplier: 0.00305
+  editable: true
+  min_value: -32768
+  max_value: 32767
+- name: MANUAL_CONTROL#КВУ_ТТС
+  index: 8448
+  sub_index: 1
+  description: Включение ручного режима управления
+  type: UNSIGNED8
+  value: 1.0
+  editable: true
+  min_value: 0
+  max_value: 255
+  value_table:
+    0: Отключен
+    1: Включен
+- name: DC_CURRENT#Инвертор_МЭИ
+  index: 8192
+  sub_index: 4
+  description: Потребляемый ток
+  type: FLOAT
+  value: -3.7514219284057617
+  units: A
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647
+- name: FAULTS#Инвертор_МЭИ
+  index: 8192
+  sub_index: 2
+  description: Ошибки
+  type: UNSIGNED32
+  value: 0.0
+  editable: false
+  min_value: 0
+  max_value: 4294967295
+  value_table:
+    0: Нет ошибок
+    1: Защита от снижения напряжения в ЗПТ
+    2: Защита от повышения напряжения в ЗПТ
+    4: Фазный сверхток
+    8: Сверхток в обмотке возбуждения
+    16: Сверхток в звене постоянного тока
+    32: Защита драйверов трёхфазного моста
+    64: Защита драйверов регулятора тока обмотки возбуждения
+    128: Температурная защита силовых ключей
+    256: Температурная защита преобразователя
+    512: Температурная защита двигателя
+    1024: Температурная защита обмотки возбуждения
+    2048: Потеря соединения по CAN-шине
+    4096: Ошибка передачи данных по CAN-шине
+    8192: Программная ошибка
+    16384: Аппаратная ошибка
+    32768: Отказ датчика фазного тока
+    65536: Отказ датчика тока возбуждения
+    131072: Отказ датчика тока звена постоянного тока
+    262144: Аварийный останов
+    524288: Ошибка включения контакторов
+    1048576: Ошибка ДПР
+    2097152: Неисправность датчика температуры двигателя
+    4194304: Ошибка размыкания силового контактора (приварились контакты)
+- name: DC_VOLTAGE#Инвертор_МЭИ
+  index: 8192
+  sub_index: 3
+  description: Напряжение ЗПТ
+  type: FLOAT
+  value: 348.4734191894531
+  units: V
+  widget: MyColorBar
+  editable: false
+  min_value: 300.5
+  max_value: 370.0
+- name: STATOR_CURRENT#Инвертор_МЭИ
+  index: 8192
+  sub_index: 6
+  description: Ток статора
+  type: FLOAT
+  value: 8.437701225280762
+  units: A
+  editable: false
+  min_value: -2147483648
+  max_value: 2147483647
+- name: SPEED_RPM#Инвертор_МЭИ
+  index: 8192
+  sub_index: 19
+  description: Скорость мотора
+  type: FLOAT
+  value: 2176.36328125
+  units: rpm
+  editable: true
+  min_value: -2147483648
+  max_value: 2147483647
+- name: CASE_TEMP#Инвертор_МЭИ
+  index: 8192
+  sub_index: 15
+  description: Температура воздуха
+  type: FLOAT
+  value: 40.004638671875
+  units: В°C
+  widget: MyColorBar
+  editable: false
+  min_value: -50.0
   max_value: 200.0
