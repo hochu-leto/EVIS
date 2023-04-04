@@ -18,18 +18,6 @@
   editable: true
   min_value: -1000.0
   max_value: 1000.0
-- name: A1.7 CurrentRMS
-  index: 18
-  sub_index: 0
-  description: ТОК А * 100
-  type: UNSIGNED16
-  value: 0
-  units: A
-  widget: MyColorBar
-  multiplier: 0.1
-  editable: false
-  min_value: 0.0
-  max_value: 655.0
 - name: A0.8 ErrPositAbs
   index: 8
   sub_index: 0
@@ -51,3 +39,15 @@
   editable: true
   min_value: 0.0
   max_value: 99.0
+- name: A1.7 CurrentRMS
+  index: 18
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0.0
+  units: A
+  widget: MyColorBar
+  multiplier: 0.1
+  editable: false
+  min_value: 0.0
+  max_value: 200.0

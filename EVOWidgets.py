@@ -1,8 +1,8 @@
 from PyQt6.QtCore import pyqtSignal, QSize, Qt, QPropertyAnimation, QEasingCurve, QObject, QPointF, pyqtProperty, \
     QRegularExpression, QStringListModel
 from PyQt6.QtGui import QPainter, QPalette, QLinearGradient, QGradient, QRegularExpressionValidator, QColor
-from PyQt6.QtWidgets import QComboBox, QLabel, QLineEdit, QProgressBar, QSlider, QPushButton, \
-    QAbstractButton, QSizePolicy, QListView
+from PyQt6.QtWidgets import QComboBox, QLabel, QLineEdit, QProgressBar, QSlider, QDoubleSpinBox, QPushButton, \
+    QAbstractButton, QSizePolicy, QListView, QCheckBox
 
 color_EVO_red = QColor(222, 73, 14)
 color_EVO_green = QColor(0, 254, 0, 80)
@@ -96,7 +96,6 @@ class MyEditLine(QLineEdit):
         if self.parametr is not None:
             value = float(self.text())
             lst = [self.parametr, value]
-        # self.isInFocus = False      # <<<---- проверить
         self.ValueSelected.emit(lst)
 
     def focusInEvent(self, event):
@@ -201,6 +200,14 @@ class MySlider(QSlider):
             value = float(self.value() * self.multiplier)
             lst = [self.parametr, value]
         self.ValueSelected.emit(lst)
+
+
+class GraphCheckBox(QCheckBox):
+
+    def __init__(self, parent=None, parametr=None):
+        super(QCheckBox, self).__init__(parent)
+        super().__init__(parent)
+        self.parametr = parametr
 
 
 class MyButton(QPushButton):

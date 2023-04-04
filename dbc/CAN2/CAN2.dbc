@@ -1,0 +1,432 @@
+VERSION "created by canmatrix"
+
+
+NS_ :
+
+BS_:
+
+BU_: BKU Joystick_controller BKU_Joystick KVU BMS CCS 
+
+
+BO_ 2147483648 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ kvu_sideDoor_Right : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ kvu_sideDoor_Left : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 2566882212 BKU_Joystick_suspension: 8 BKU_Joystick
+ SG_ bku_suspension_enable : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ bku_suspension_cmd_rr : 32|8@1+ (2,-250) [-250|250] "mm" Vector__XXX
+ SG_ bku_suspension_cmd_rl : 24|8@1+ (2,-250) [-250|250] "mm" Vector__XXX
+ SG_ bku_suspension_cmd_fr : 16|8@1+ (2,-250) [-250|250] "mm" Vector__XXX
+ SG_ bku_suspension_cmd_fl : 8|8@1+ (2,-250) [-250|250] "mm" Vector__XXX
+
+BO_ 2566885540 BKU_Joystick_resetErrors: 8 BKU_Joystick
+ SG_ bku_resetErrors_bits : 0|40@1+ (1,0) [0|1099511627775] "" Vector__XXX
+
+BO_ 2566881956 BKU_Joystick_periphCmd: 8 BKU_Joystick
+ SG_ bku_periphCmd_lightsTurnRight : 2|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ bku_periphCmd_steeringRearCmd : 16|16@1+ (0.01,-100) [-100|100] "%" Vector__XXX
+ SG_ bku_periphCmd_lightsFar : 10|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ bku_periphCmd_lightsTurnLeft : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ bku_periphCmd_lightsStop : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ bku_periphCmd_lightsFront : 8|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ bku_periphCmd_lightsBack : 6|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 2231337380 BKU_Joystick_mainCmd: 8 BKU_Joystick
+ SG_ bku_mainCmd_steeringFrontCmd : 24|16@1+ (0.01,-100) [-100|100] "%" Vector__XXX
+ SG_ bku_mainCmd_pstedTorque : 8|16@1+ (0.01,-100) [-100|100] "%" Vector__XXX
+ SG_ bku_mainCmd_parkingBrakeCmd : 2|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ bku_mainCmd_hydraulicBrakeCmd : 40|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+ SG_ bku_mainCmd_discreteBrakeCmd : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ bku_mainCmd_arm : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 2566874529 KVU_peripheral_signals: 8 KVU
+ SG_ Peripheral_RedButton : 8|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Peripheral_SideDoorRight : 2|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Peripheral_SideDoorLeft : 0|2@1+ (1,0) [0|3] "" BKU
+ SG_ Peripheral_Hood : 4|2@1+ (1,0) [0|3] "" BKU
+ SG_ Peripheral_DoorOfThe4thBlock : 6|2@1+ (1,0) [0|3] "" BKU
+
+BO_ 2566885541 BKU_resetErrors: 8 BKU
+ SG_ bku_resetErrors_bits : 0|40@1+ (1,0) [0|1099511627775] "" KVU
+
+BO_ 2566882213 BKU_suspension: 8 BKU
+ SG_ bku_suspension_enable : 0|2@1+ (1,0) [0|3] "" KVU
+ SG_ bku_suspension_cmd_rr : 32|8@1+ (2,-250) [-250|250] "mm" KVU
+ SG_ bku_suspension_cmd_rl : 24|8@1+ (2,-250) [-250|250] "mm" KVU
+ SG_ bku_suspension_cmd_fr : 16|8@1+ (2,-250) [-250|250] "mm" KVU
+ SG_ bku_suspension_cmd_fl : 8|8@1+ (2,-250) [-250|250] "mm" KVU
+
+BO_ 2432655777 KVU_wheel_mileage: 8 KVU
+ SG_ kvu_abs_mileage_rr : 48|16@1+ (1,0) [0|32767] "" BKU
+ SG_ kvu_abs_mileage_rl : 32|16@1+ (1,0) [0|32767] "" BKU
+ SG_ kvu_abs_mileage_fr : 16|16@1+ (1,0) [0|32767] "" BKU
+ SG_ kvu_abs_mileage_fl : 0|16@1+ (1,0) [0|32767] "" BKU
+
+BO_ 2566873761 KVU_suspension: 8 KVU
+ SG_ kvu_suspension_value_rr : 56|8@1+ (2,-250) [-250|260] "mm" BKU
+ SG_ kvu_suspension_value_rl : 48|8@1+ (2,-250) [-250|260] "mm" BKU
+ SG_ kvu_suspension_value_fr : 40|8@1+ (2,-250) [-250|260] "mm" BKU
+ SG_ kvu_suspension_value_fl : 32|8@1+ (2,-250) [-250|260] "mm" BKU
+ SG_ kvu_suspension_pressure_rr : 24|8@1+ (0.1,0) [0|25] "atm" BKU
+ SG_ kvu_suspension_pressure_rl : 16|8@1+ (0.1,0) [0|25] "atm" BKU
+ SG_ kvu_suspension_pressure_fr : 8|8@1+ (0.1,0) [0|25] "atm" BKU
+ SG_ kvu_suspension_pressure_fl : 0|8@1+ (0.1,0) [0|25] "atm" BKU
+
+BO_ 2432655521 KVU_wheel_freq: 8 KVU
+ SG_ kvu_abs_freq_rr : 48|16@1+ (0.002,-50) [-50|81.07] "Hz" BKU
+ SG_ kvu_abs_freq_rl : 32|16@1+ (0.002,-50) [-50|81.07] "Hz" BKU
+ SG_ kvu_abs_freq_fr : 16|16@1+ (0.002,-50) [-50|81.07] "Hz" BKU
+ SG_ kvu_abs_freq_fl : 0|16@1+ (0.002,-50) [-50|81.07] "Hz" BKU
+
+BO_ 2566870945 KVU_brakes: 8 KVU
+ SG_ kvu_brakes_status : 8|8@1+ (1,0) [0|0] "" BKU
+ SG_ kvu_brakes_parkingState : 4|2@1+ (1,0) [0|3] "" BKU
+ SG_ kvu_brakes_parkingInfo : 0|4@1+ (1,0) [0|15] "" BKU
+ SG_ kvu_brakes_discreteCmd : 48|2@1+ (1,0) [0|3] "" BKU
+ SG_ kvu_brakes_cont4 : 40|8@1+ (1,0) [0|255] "%" BKU
+ SG_ kvu_brakes_cont3 : 32|8@1+ (1,0) [0|255] "%" BKU
+ SG_ kvu_brakes_cont2 : 24|8@1+ (1,0) [0|255] "%" BKU
+ SG_ kvu_brakes_cont1 : 16|8@1+ (1,0) [0|255] "%" BKU
+
+BO_ 2566870433 KVU_steering: 8 KVU
+ SG_ kvu_steering_rear_status : 32|8@1+ (1,0) [0|255] "" BKU
+ SG_ kvu_steering_rear_curPosition : 40|16@1+ (1,-30000) [-30000|35535] "" BKU
+ SG_ kvu_steering_front_status : 0|8@1+ (1,0) [0|255] "" BKU
+ SG_ kvu_steering_front_curPosition : 8|16@1+ (1,-30000) [-30000|35535] "" BKU
+
+BO_ 2566870177 KVU_psted_2: 8 KVU
+ SG_ kvu_psted2_voltage : 0|16@1+ (0.1,0) [0|6553.5] "V" BKU
+ SG_ kvu_psted2_power : 40|16@1+ (0.1,-2000) [-2000|4553.5] "kW" BKU
+ SG_ kvu_psted2_motorTemp : 16|8@1+ (1,-40) [-40|210] "°C" BKU
+ SG_ kvu_psted2_invertorTemp : 24|8@1+ (1,-40) [-40|210] "°C" BKU
+ SG_ kvu_psted2_fluxCoilTemp : 32|8@1+ (1,-40) [-40|210] "°C" BKU
+
+BO_ 2566869921 KVU_psted_1: 8 KVU
+ SG_ kvu_psted1_torque : 8|16@1+ (0.01,-100) [-100|555.35] "%" BKU
+ SG_ kvu_psted1_status : 0|8@1+ (1,0) [0|255] "" BKU
+ SG_ kvu_psted1_statorCurrent : 40|16@1+ (0.1,-2000) [-2000|4553.5] "A" BKU
+ SG_ kvu_psted1_rpm : 24|16@1+ (0.25,-8000) [-8000|8383.75] "rpm" BKU
+
+BO_ 2566881957 BKU_periphCmd: 8 BKU
+ SG_ bku_periphCmd_lightsTurnRight : 2|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ bku_periphCmd_steeringRearCmd : 16|16@1+ (0.01,-100) [-100|100] "%" KVU
+ SG_ bku_periphCmd_lightsFar : 10|2@1+ (1,0) [0|3] "" KVU
+ SG_ bku_periphCmd_lightsTurnLeft : 0|2@1+ (1,0) [0|3] "" KVU
+ SG_ bku_periphCmd_lightsStop : 4|2@1+ (1,0) [0|3] "" KVU
+ SG_ bku_periphCmd_lightsFront : 8|2@1+ (1,0) [0|3] "" KVU
+ SG_ bku_periphCmd_lightsBack : 6|2@1+ (1,0) [0|3] "" KVU
+
+BO_ 2231337381 BKU_mainCmd: 8 BKU
+ SG_ bku_mainCmd_steeringFrontCmd : 24|16@1+ (0.01,-100) [-100|100] "%" KVU
+ SG_ bku_mainCmd_pstedTorque : 8|16@1+ (0.01,-100) [-100|100] "%" KVU
+ SG_ bku_mainCmd_parkingBrakeCmd : 2|2@1+ (1,0) [0|3] "" KVU
+ SG_ bku_mainCmd_hydraulicBrakeCmd : 40|8@1+ (0.4,0) [0|100] "%" KVU
+ SG_ bku_mainCmd_discreteBrakeCmd : 4|2@1+ (1,0) [0|3] "" KVU
+ SG_ bku_mainCmd_arm : 0|2@1+ (1,0) [0|3] "" KVU
+
+BO_ 2298433953 KVU_mainState: 8 KVU
+ SG_ kvu_mainState_errorCode : 40|16@1+ (1,0) [0|65535] "" Vector__XXX
+ SG_ kvu_mainState_workMode : 24|8@1+ (1,0) [0|255] "" BKU
+ SG_ kvu_mainState_readyToMove : 0|2@1+ (1,0) [0|3] "" BKU
+ SG_ kvu_mainState_emergencyStop : 4|2@1+ (1,0) [0|3] "" BKU
+ SG_ kvu_mainState_bmsStatus : 8|8@1+ (1,0) [0|255] "" BKU
+ SG_ kvu_mainState_warningCount : 32|4@1+ (1,0) [0|15] "" BKU
+ SG_ kvu_mainState_voltage24 : 16|8@1+ (0.1,10) [10|34] "V" BKU
+ SG_ kvu_mainState_criticalCount : 36|4@1+ (1,0) [0|15] "" BKU
+ SG_ kvu_mainState_chargerConnected : 2|2@1+ (1,0) [0|3] "" BKU
+
+BO_ 2550588916 BMS_CCS_06E5: 8 BMS
+ SG_ bms_m_batState : 32|1@0+ (1,0) [0|1] "" CCS
+ SG_ bms_m_maxAllowableChVoltage : 7|16@0+ (0.1,0) [0|6553.5] "V" CCS
+ SG_ bms_m_maxAllowableChCurrent : 23|16@0+ (0.1,0) [0|6553.5] "A" CCS
+
+BO_ 2550589172 BMS_CCS_multiMsg: 8 BMS
+ SG_ bms_m_singleBatMaxProtectVolt m2 : 39|16@0+ (1,0) [0|65535] "mV" CCS
+ SG_ bms_m_presentSOC m4 : 32|8@1+ (1,0) [0|255] "" KVU,CCS
+ SG_ bms_m_maxAllowableDchCurrent m1 : 40|8@1+ (10,0) [0|2550] "A" CCS
+ SG_ bms_m_maxAllowableChVoltage m1 : 7|16@0+ (0.1,0) [0|6553.5] "V" CCS
+ SG_ bms_m_maxAllowableChCurrent m1 : 23|16@0+ (0.1,0) [0|6553.5] "A" CCS
+ SG_ bms_m_chargerClosed m1 : 32|1@1+ (1,0) [0|1] "" CCS
+ SG_ bms_m_cellMinVoltage m3 : 23|16@0+ (1,0) [0|65535] "mV" CCS
+ SG_ bms_m_cellMinProtectVoltage m3 : 39|16@0+ (1,0) [0|65535] "mV" CCS
+ SG_ bms_m_cellMaxVoltage m3 : 7|16@0+ (1,0) [0|65535] "mV" CCS
+ SG_ bms_m_batTotalVoltage m4 : 7|16@0+ (0.1,0) [0|6553.5] "V" KVU,CCS
+ SG_ bms_m_batState m3 : 48|2@1+ (1,0) [0|3] "" CCS
+ SG_ bms_m_batNumbers m5 : 7|16@0+ (1,0) [0|65535] "" CCS
+ SG_ bms_m_batNumber m2 : 48|8@1+ (1,0) [0|255] "" CCS
+ SG_ bms_m_batNominalAH m2 : 7|16@0+ (0.1,0) [0|6553.5] "AH" CCS
+ SG_ bms_m_batMinTempr m4 : 48|8@1+ (1,-100) [-100|155] "°C" CCS
+ SG_ bms_m_batMaxTempr m4 : 40|8@1+ (1,-100) [-100|155] "°C" CCS
+ SG_ bms_m_batActualAH m2 : 23|16@0+ (0.1,0) [0|6553.5] "AH" CCS
+ SG_ bms_m_actualChCurrent m4 : 23|16@0- (0.1,0) [-3276.8|3276.7] "A" KVU,CCS
+ SG_ bms_multiMsg_page M : 56|8@1+ (1,0) [0|255] "" KVU,CCS
+
+BO_ 2566869221 CCS_Status: 8 CCS
+ SG_ ccs_status_statingState : 35|1@1+ (1,0) [0|1] "" BMS,KVU
+ SG_ ccs_status_overheat : 33|1@1+ (1,0) [0|1] "" BMS,KVU
+ SG_ ccs_status_inputVoltaheError : 34|1@1+ (1,0) [0|1] "" BMS,KVU
+ SG_ ccs_status_hardwareFailure : 32|1@1+ (1,0) [0|1] "" BMS,KVU
+ SG_ ccs_status_communicationError : 36|1@1+ (1,0) [0|1] "" BMS,KVU
+ SG_ ccs_outputVoltage : 7|16@0+ (0.1,0) [0|6553.5] "V" BMS,KVU
+ SG_ ccs_outputCurrent : 23|16@0- (25.6,0) [0|1677696] "A" BMS,KVU
+
+BO_ 928 BMS_380: 8 BMS
+ SG_ bms_err_DCHContactorFeedbackErr : 7|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_CHContactorFeedbackErr : 6|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_stuckContactor : 5|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_unallowableCharging : 4|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_sdRWError : 3|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_sdMountError : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highChTempr : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_lowChTempr : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 672 BMS_280: 8 BMS
+ SG_ bms_err_spiritOffline : 61|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_temprSensorShorted : 60|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_noTemprSensors : 59|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_WDTReset : 58|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_settingsError : 57|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_shuntError : 56|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_shuntOffline : 55|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_DchContactorCyclesError : 54|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_ChContactorCyclesError : 53|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_currentSensorError : 52|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_ADCError : 51|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_logicCountError : 50|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highContactorTempr : 49|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_shortCircuit : 48|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_combiliftOffline : 47|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_needAck : 46|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_HYGOffline : 45|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_cellCountError : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_crownDown : 43|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_criticalError : 42|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_logicOffline : 41|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highLogicTempr : 40|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_water : 39|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highHumidity : 38|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_batteryCover : 37|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_highDchTempr : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_lowDchTempr : 35|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_overvoltage : 34|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_undervoltage : 33|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_err_overcurrent : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_serviceReset : 21|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_mainContactor : 20|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_crownEWS : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_AckPowerdown : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_auxDischargingContactor : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_balancing2 : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_balancing1 : 15|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_cellAnalysis : 14|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_combiliftShutdown : 13|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_prechargeContactor : 12|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_init : 11|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_HYGShutdown : 10|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_cooler : 9|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_highDCHTempr : 8|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_increasedVoltage : 7|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_dischargingCurPresent : 6|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_dischargingContactor : 5|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_chargicgCurPresent : 4|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_allowCharging : 3|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_chargingContactor : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_highChargingCurrent : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_flag_lowSOC : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 416 BMS_180: 8 BMS
+ SG_ bms_batteryVoltage : 48|16@1+ (0.1,0) [0|6553.5] "V" Vector__XXX
+ SG_ bms_SOC : 40|8@1+ (1,0) [0|255] "%" Vector__XXX
+ SG_ bms_cellTemprMax : 32|8@1- (1,0) [-128|127] "°C" Vector__XXX
+ SG_ bms_cellTemprMin : 24|8@1- (1,0) [-128|127] "°C" Vector__XXX
+ SG_ bms_batteryCurrent : 8|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ bms_dischargingContactorFeedback : 6|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_chargingContactorFeedback : 5|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_inhibitDischarging : 4|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_inhibitCharging : 3|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_powerDownRequest : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_chargerConnected : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ bms_batteryCover : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+
+CM_ BO_ 2147483648  "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+
+CM_ SG_ 2566874529 Peripheral_RedButton "Состояние кнопки аварийной остановки";
+CM_ SG_ 2566874529 Peripheral_SideDoorRight "Состояние дверцы правого борта (шкаф управления)";
+CM_ SG_ 2566874529 Peripheral_SideDoorLeft "Состояние дверцы левого борта (ТАБ)";
+CM_ SG_ 2566874529 Peripheral_Hood "Состоние капота";
+CM_ SG_ 2566874529 Peripheral_DoorOfThe4thBlock "Состоние дверцы 4го блока";
+CM_ SG_ 2566870945 kvu_brakes_status "Текущий статус контроллера системы плавного торможения";
+CM_ SG_ 2566870945 kvu_brakes_parkingState "Состояние стояночного тормоза";
+CM_ SG_ 2566870945 kvu_brakes_parkingInfo "Текущий статус блока управления электропривода стояночного тормоза ";
+CM_ SG_ 2566870433 kvu_steering_rear_status "Текущий статус электропривода рулевой рейки задней оси ";
+CM_ SG_ 2566870433 kvu_steering_rear_curPosition "Текущее положение электропривода рулевой рейки задней оси";
+CM_ SG_ 2566870433 kvu_steering_front_status "Текущий статус электропривода рулевой рейки передней оси ";
+CM_ SG_ 2566870433 kvu_steering_front_curPosition "Текущее положение электропривода рулевой рейки передней оси";
+CM_ SG_ 2566870177 kvu_psted2_voltage "Напряжение на звене постоянного тока ПСТЭД";
+CM_ SG_ 2566870177 kvu_psted2_power "Мощность тягового двигателя";
+CM_ SG_ 2566870177 kvu_psted2_motorTemp "Температура тягового двигателя";
+CM_ SG_ 2566870177 kvu_psted2_invertorTemp "Температура силового преобразователя тягового двигателя";
+CM_ SG_ 2566870177 kvu_psted2_fluxCoilTemp "Температура обмотки возбуждения тягового двигателя,";
+CM_ SG_ 2566869921 kvu_psted1_torque "Текущее значение момента, развиваемого двигателем";
+CM_ SG_ 2566869921 kvu_psted1_status "Текущий статус ПСТЭД";
+CM_ SG_ 2566869921 kvu_psted1_statorCurrent "Ток статора двигателя";
+CM_ SG_ 2566869921 kvu_psted1_rpm "Текущая частота вращения двигателя";
+CM_ SG_ 2298433953 kvu_mainState_errorCode "Код ошибки КВУ";
+CM_ SG_ 2298433953 kvu_mainState_workMode "Режим работы КВУ";
+CM_ SG_ 2298433953 kvu_mainState_emergencyStop "Аварийный останов";
+CM_ SG_ 2298433953 kvu_mainState_chargerConnected "Charger is connected to the vehicle";
+CM_ SG_ 2550589172 bms_m_actualChCurrent "Positiva values - Charge, Negative - discharge";
+CM_ SG_ 2566869221 ccs_outputCurrent "Positive values - charging, negative - discharging";
+
+
+BA_DEF_ BO_ "GenMsgBackgroundColor" STRING;
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 3600000;
+BA_DEF_ BO_ "GenMsgCycleTimeFast" INT 0 3600000;
+BA_DEF_ BO_ "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_ "GenMsgFastOnStart" INT 0 100000;
+BA_DEF_ BO_ "GenMsgForegroundColor" STRING;
+BA_DEF_ BO_ "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_ "GenMsgNrOfRepetition" INT 0 1000000;
+BA_DEF_ BO_ "GenMsgRequestable" INT 0 1;
+BA_DEF_ BO_ "GenMsgSendType" ENUM  "cyclic","NotUsed","IfActive","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","noMsgSendType";
+BA_DEF_ BO_ "GenMsgStartDelayTime" INT 0 100000;
+BA_DEF_ BO_ "TpJ1939VarDlc" ENUM  "No","Yes";
+BA_DEF_ BO_ "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","J1939PG";
+BA_DEF_ BO_ "filterlabeling" INT 0 0;
+BA_DEF_ BO_ "matchingcriteria" INT 0 0;
+BA_DEF_ SG_ "GenSigEVName" STRING;
+BA_DEF_ SG_ "GenSigILSupport" ENUM  "No","Yes";
+BA_DEF_ SG_ "GenSigInactiveValue" INT 0 0;
+BA_DEF_ SG_ "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType";
+BA_DEF_ SG_ "GenSigStartValue" INT 0 2147483647;
+BA_DEF_ SG_ "SPN" INT 0 524287;
+BA_DEF_ SG_ "SigType" ENUM  "Default","Range","RangeSigned","ASCII","Discrete","Control","ReferencePGN","DTC","StringDelimiter","StringLength","StringLengthControl","MessageCounter","MessageChecksum";
+BA_DEF_ BU_ "ECU" STRING;
+BA_DEF_ BU_ "NmJ1939AAC" INT 0 1;
+BA_DEF_ BU_ "NmJ1939ECUInstance" INT 0 3;
+BA_DEF_ BU_ "NmJ1939Function" INT 0 255;
+BA_DEF_ BU_ "NmJ1939FunctionInstance" INT 0 7;
+BA_DEF_ BU_ "NmJ1939IdentityNumber" INT 0 2097151;
+BA_DEF_ BU_ "NmJ1939IndustryGroup" INT 0 7;
+BA_DEF_ BU_ "NmJ1939ManufacturerCode" INT 0 2047;
+BA_DEF_ BU_ "NmJ1939System" INT 0 127;
+BA_DEF_ BU_ "NmJ1939SystemInstance" INT 0 15;
+BA_DEF_ BU_ "NmStationAddress" INT 0 255;
+BA_DEF_ BU_ "NodeLayerModules" STRING;
+BA_DEF_  "BusType" STRING;
+BA_DEF_  "DBName" STRING;
+BA_DEF_  "ProtocolType" STRING;
+BA_DEF_DEF_ "BusType" "";
+BA_DEF_DEF_ "DBName" "";
+BA_DEF_DEF_ "ECU" "";
+BA_DEF_DEF_ "GenMsgBackgroundColor" "";
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_DEF_DEF_ "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_ "GenMsgDelayTime" 0;
+BA_DEF_DEF_ "GenMsgFastOnStart" 0;
+BA_DEF_DEF_ "GenMsgForegroundColor" "";
+BA_DEF_DEF_ "GenMsgILSupport" "Yes";
+BA_DEF_DEF_ "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_ "GenMsgRequestable" 1;
+BA_DEF_DEF_ "GenMsgSendType" "noMsgSendType";
+BA_DEF_DEF_ "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_ "GenSigEVName" "Env@Nodename_@Signame";
+BA_DEF_DEF_ "GenSigILSupport" "Yes";
+BA_DEF_DEF_ "GenSigInactiveValue" 0;
+BA_DEF_DEF_ "GenSigSendType" "NoSigSendType";
+BA_DEF_DEF_ "GenSigStartValue" 0;
+BA_DEF_DEF_ "NmJ1939AAC" 0;
+BA_DEF_DEF_ "NmJ1939ECUInstance" 0;
+BA_DEF_DEF_ "NmJ1939Function" 0;
+BA_DEF_DEF_ "NmJ1939FunctionInstance" 0;
+BA_DEF_DEF_ "NmJ1939IdentityNumber" 0;
+BA_DEF_DEF_ "NmJ1939IndustryGroup" 0;
+BA_DEF_DEF_ "NmJ1939ManufacturerCode" 0;
+BA_DEF_DEF_ "NmJ1939System" 0;
+BA_DEF_DEF_ "NmJ1939SystemInstance" 0;
+BA_DEF_DEF_ "NmStationAddress" 254;
+BA_DEF_DEF_ "NodeLayerModules" "";
+BA_DEF_DEF_ "SPN" 0;
+BA_DEF_DEF_ "SigType" "Default";
+BA_DEF_DEF_ "TpJ1939VarDlc" "No";
+BA_DEF_DEF_ "VFrameFormat" "J1939PG";
+BA_DEF_DEF_ "filterlabeling" 0;
+BA_DEF_DEF_ "matchingcriteria" 0;
+BA_ "NmStationAddress" BU_ BKU_Joystick 164;
+BA_ "NmStationAddress" BU_ KVU 161;
+BA_ "NmStationAddress" BU_ BMS 244;
+BA_ "NmStationAddress" BU_ CCS 229;
+
+BA_ "BusType"   "CAN";
+BA_ "DBName"   "Joystick_Controller";
+BA_ "ProtocolType"   "J1939";
+
+BA_ "VFrameFormat" BO_ 2147483648 1;
+BA_ "VFrameFormat" BO_ 2566882212 3;
+BA_ "VFrameFormat" BO_ 2566885540 3;
+BA_ "VFrameFormat" BO_ 2566881956 3;
+BA_ "VFrameFormat" BO_ 2231337380 3;
+BA_ "VFrameFormat" BO_ 2566874529 3;
+BA_ "VFrameFormat" BO_ 2566885541 3;
+BA_ "VFrameFormat" BO_ 2566882213 3;
+BA_ "VFrameFormat" BO_ 2432655777 3;
+BA_ "VFrameFormat" BO_ 2566873761 3;
+BA_ "VFrameFormat" BO_ 2432655521 3;
+BA_ "VFrameFormat" BO_ 2566870945 3;
+BA_ "VFrameFormat" BO_ 2566870433 3;
+BA_ "VFrameFormat" BO_ 2566870177 3;
+BA_ "VFrameFormat" BO_ 2566869921 3;
+BA_ "VFrameFormat" BO_ 2566881957 3;
+BA_ "VFrameFormat" BO_ 2231337381 3;
+BA_ "VFrameFormat" BO_ 2298433953 3;
+BA_ "VFrameFormat" BO_ 2550588916 3;
+BA_ "VFrameFormat" BO_ 2550589172 3;
+BA_ "VFrameFormat" BO_ 2566869221 3;
+BA_ "VFrameFormat" BO_ 928 0;
+BA_ "VFrameFormat" BO_ 672 0;
+BA_ "VFrameFormat" BO_ 416 0;
+
+BA_ "GenSigStartValue" SG_ 2566882212 bku_suspension_cmd_rr 125;
+BA_ "GenSigStartValue" SG_ 2566882212 bku_suspension_cmd_rl 125;
+BA_ "GenSigStartValue" SG_ 2566882212 bku_suspension_cmd_fr 125;
+BA_ "GenSigStartValue" SG_ 2566882212 bku_suspension_cmd_fl 125;
+BA_ "GenSigStartValue" SG_ 2566881956 bku_periphCmd_steeringRearCmd 10000;
+BA_ "GenSigStartValue" SG_ 2231337380 bku_mainCmd_steeringFrontCmd 10000;
+BA_ "GenSigStartValue" SG_ 2231337380 bku_mainCmd_pstedTorque 10000;
+BA_ "GenSigStartValue" SG_ 2566885541 bku_resetErrors_bits 0;
+BA_ "GenSigStartValue" SG_ 2566882213 bku_suspension_cmd_rr 125;
+BA_ "GenSigStartValue" SG_ 2566882213 bku_suspension_cmd_rl 125;
+BA_ "GenSigStartValue" SG_ 2566882213 bku_suspension_cmd_fr 125;
+BA_ "GenSigStartValue" SG_ 2566882213 bku_suspension_cmd_fl 125;
+BA_ "GenSigStartValue" SG_ 2566873761 kvu_suspension_value_rr 125;
+BA_ "GenSigStartValue" SG_ 2566873761 kvu_suspension_value_rl 125;
+BA_ "GenSigStartValue" SG_ 2566873761 kvu_suspension_value_fr 125;
+BA_ "GenSigStartValue" SG_ 2566873761 kvu_suspension_value_fl 125;
+BA_ "GenSigStartValue" SG_ 2432655521 kvu_abs_freq_rr 25000;
+BA_ "GenSigStartValue" SG_ 2432655521 kvu_abs_freq_rl 25000;
+BA_ "GenSigStartValue" SG_ 2432655521 kvu_abs_freq_fr 25000;
+BA_ "GenSigStartValue" SG_ 2432655521 kvu_abs_freq_fl 25000;
+BA_ "GenSigStartValue" SG_ 2566870433 kvu_steering_rear_curPosition 30000;
+BA_ "GenSigStartValue" SG_ 2566870433 kvu_steering_front_curPosition 30000;
+BA_ "GenSigStartValue" SG_ 2566870177 kvu_psted2_power 20000;
+BA_ "GenSigStartValue" SG_ 2566870177 kvu_psted2_motorTemp 40;
+BA_ "GenSigStartValue" SG_ 2566870177 kvu_psted2_invertorTemp 40;
+BA_ "GenSigStartValue" SG_ 2566870177 kvu_psted2_fluxCoilTemp 40;
+BA_ "GenSigStartValue" SG_ 2566869921 kvu_psted1_torque 10000;
+BA_ "GenSigStartValue" SG_ 2566869921 kvu_psted1_statorCurrent 20000;
+BA_ "GenSigStartValue" SG_ 2566869921 kvu_psted1_rpm 32000;
+BA_ "GenSigStartValue" SG_ 2566881957 bku_periphCmd_steeringRearCmd 10000;
+BA_ "GenSigStartValue" SG_ 2231337381 bku_mainCmd_steeringFrontCmd 10000;
+BA_ "GenSigStartValue" SG_ 2231337381 bku_mainCmd_pstedTorque 10000;
+BA_ "GenSigStartValue" SG_ 2298433953 kvu_mainState_voltage24 0;
+BA_ "GenSigStartValue" SG_ 2550589172 bms_m_batMinTempr 100;
+BA_ "GenSigStartValue" SG_ 2550589172 bms_m_batMaxTempr 100;
+
+VAL_ 2566874529 Peripheral_RedButton 0 "Not pressed" 1 "Pressed" 2 "Error" 3 "Not avialable";
+VAL_ 2566874529 Peripheral_SideDoorRight 0 "Close" 1 "Open" 2 "Error" 3 "Not Avialable";
+VAL_ 2566874529 Peripheral_SideDoorLeft 0 "Close" 1 "Open" 2 "Error" 3 "Not Avialable";
+VAL_ 2566874529 Peripheral_Hood 0 "Close" 1 "Open" 2 "Error" 3 "Not Avialable";
+VAL_ 2566874529 Peripheral_DoorOfThe4thBlock 0 "Close" 1 "Open" 2 "Error" 3 "Not Avialable";
+VAL_ 2298433953 kvu_mainState_errorCode 256 "Separator" 1536 "0: LIGHTS CONTROL: Lights pin" 1792 "0: EEPROM: CRC" 1793 "0: EEPROM: Hardware" 1794 "0: EEPROM: Nullptr" 1795 "1: EEPROM: Init timeout" 1796 "0: EEPROM: Verification" 2306 "1: FRONT STEERING: WARNING" 2307 "1: FRONT STEERING: OVERHEAT" 2336 "0: FRONT STEERING: OFFLINE" 2337 "0: FRONT STEERING: FAULT" 2562 "1: REAR STEERING: WARNING" 2563 "1: REAR STEERING: OVERHEAT" 2592 "0: REAR STEERING: OFFLINE" 2593 "0: REAR STEERING: FAULT" 3328 "0: ABS: FL Hardware" 3329 "0: ABS: FL Wiring" 3330 "0: ABS: FL Warning" 3331 "0: ABS: FL Failure" 3332 "0: ABS: FR Hardware" 3333 "0: ABS: FR Wiring" 3334 "0: ABS: FR Warning" 3335 "0: ABS: FR Failure" 3336 "0: ABS: RL Hardware" 3337 "0: ABS: RL Wiring" 3338 "0: ABS: RL Warning" 3339 "0: ABS: RL Failure" 3340 "0: ABS: RR Hardware" 3341 "0: ABS: RR Wiring" 3342 "0: ABS: RR Warning" 3343 "0: ABS: RR Failure" 3585 "0: DISCRETE INPUTS: Antifreeze" 3616 "1: DISCRETE INPUTS: Red button" 3618 "1: DISCRETE INPUTS: Brake fluid" 3841 "0: IOLIB ERRORS: ERROR_NON_FATAL" 3843 "0: IOLIB ERRORS: CFG_FLASH" 3844 "0: IOLIB ERRORS: WARNING_FLASH" 3845 "0: IOLIB ERRORS: WARNING_RAM" 3872 "1: IOLIB ERRORS: ERROR_FATAL" 3874 "1: IOLIB ERRORS: ERROR_FPU" 4099 "0: CHARGING: BMS_OFFLINE" 4100 "0: CHARGING: BZU_HARDWARE" 4101 "0: CHARGING: BZU_OVERHEAT" 4102 "0: CHARGING: BZU_INPUT_VOLTAGE" 4103 "0: CHARGING: BZU_COMMUNICATION" 4128 "1: CHARGING: BZU_OFFLINE" 4136 "1: CHARGING: BMS_CRITICAL_ERROR" 4352 "0: SUSPENSION: Hardware fault" 4353 "0: SUSPENSION: Pressure limit" 4354 "0: SUSPENSION: Height timeout" 4608 "0: VOLTAGE: 24V HARDWARE" 4609 "0: VOLTAGE: 24V UNDERVOLTAGE" 4610 "0: VOLTAGE: 24V OVERVOLTAGE" 4612 "0: VOLTAGE: 12V HARDWARE" 4613 "0: VOLTAGE: 12V UNDERVOLTAGE" 4614 "0: VOLTAGE: 12V OVERVOLTAGE" 4880 "0: PSTED: Contactor warning" 4881 "0: PSTED: Overheat warning" 4882 "0: PSTED: Sensor warning" 4883 "0: PSTED: High voltage warning" 4884 "0: PSTED: Other warning" 4885 "0: PSTED: BMS_UNDERVOLTAGE" 4886 "0: PSTED: ISOLATION_FAULT" 4896 "1: PSTED: Offline" 4897 "1: PSTED: Hardware fault" 4898 "1: PSTED: Emergency stop" 4899 "1: PSTED: Overheat" 4900 "1: PSTED: Phys limits" 4901 "1: PSTED: Contactor fault" 4902 "1: PSTED: Software and config" 4903 "1: PSTED: Precharge fault" 4906 "1: PSTED: Other errors" 5120 "0: POWER: Mass relay pin" 5121 "0: POWER: BKU_turnoff pin" 5408 "1: MAINFSM: BKU_LOST_IN_ARMED" 6144 "0: COOLING_FAN: HARDWARE_ERROR" 6145 "0: COOLING_FAN: WRONG_SETTINGS" 6688 "1: T15_CONTROL: HARDWARE" 6915 "0: DIO: SUSP_VALVE_UP_1" 6916 "0: DIO: SUSP_VALVE_UP_2" 6917 "0: DIO: SUSP_VALVE_UP_3" 6918 "0: DIO: SUSP_VALVE_UP_4" 6919 "0: DIO: SUSP_VALVE_DOWN_1" 6920 "0: DIO: SUSP_VALVE_DOWN_2" 6921 "0: DIO: SUSP_VALVE_DOWN_3" 6922 "0: DIO: SUSP_VALVE_DOWN_4" 6926 "0: DIO: CHARGE_LED" 6944 "1: DIO: PARKING_BRAKE" 6945 "1: DIO: CHARGE_CP" 6946 "1: DIO: START_PSTED" 6955 "1: DIO: BRAKE_PUMP" 6956 "1: DIO: BRAKE_VALVE_1_8" 6957 "1: DIO: BRAKE_VALVE_2_9" 7168 "0: PAYLOAD: OVERWEIGHT " 7169 "0: PAYLOAD: CALIBRATION_DATA" 7170 "0: PAYLOAD: CALIBRATION_PROCESS" 7172 "0: PAYLOAD: PAYLOAD_WARNING_1_KG" 7173 "0: PAYLOAD: PAYLOAD_WARNING_2_KG" 7174 "0: PAYLOAD: PAYLOAD_WARNING_3_KG" 7175 "0: PAYLOAD: PAYLOAD_WARNING_4_KG";
+VAL_ 2298433953 kvu_mainState_workMode 0 "Controlled from BKU" 1 "Local control from VMU commands" 2 "Driver control";

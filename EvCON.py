@@ -44,13 +44,14 @@ import pickle
 import sys
 import time
 
+import numpy
 import pandas as pd
 import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
-from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator
+from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator, QAction
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidget, \
-    QLineEdit
+    QLineEdit, QProxyStyle, QStyle
 import pathlib
 
 from pyqtgraph import PlotWidget
@@ -70,7 +71,10 @@ from work_with_file import fill_sheet_dict, fill_compare_values, fill_nodes_dict
     NODES_PICKLE_FILE, NODES_YAML_FILE, save_p_dict_to_yaml_file, \
     fill_yaml_dict, SETTINGS_DIR, save_diff, add_parametr_to_yaml_file
 from helper import NewParamsList, log_uncaught_exceptions, DialogChange, show_empty_params_list, \
-    show_new_vmu_params, find_param, TheBestNode, easter_egg, EVOGraph
+    show_new_vmu_params, find_param, TheBestNode, easter_egg, EVOGraph, DESCRIPTION_COLUMN, VALUE_COLUMN, NAME_COLUMN, \
+    GRAPH_COLUMN
+
+GRAPH_SIZE = 4
 
 can_adapter = CANAdapter()
 sys.excepthook = log_uncaught_exceptions
@@ -82,7 +86,7 @@ extra = {  # Density Scale
 @pyqtSlot(object)
 def set_focus(param):
     row = window.thread.current_params_list.index(param)
-    widget = window.vmu_param_table.cellWidget(row, 2)
+    widget = window.vmu_param_table.cellWidget(row, VALUE_COLUMN)
     if widget:
         widget.isInFocus = True
 
@@ -90,20 +94,75 @@ def set_focus(param):
 @pyqtSlot(object)
 def show_value(param):
     row = window.thread.current_params_list.index(param)
-    widget = window.vmu_param_table.cellWidget(row, 2)
+    widget = window.vmu_param_table.cellWidget(row, VALUE_COLUMN)
     if widget:
         widget.set_text()
     else:
-        window.vmu_param_table.item(row, 2).setText(zero_del(param.value))
+        window.vmu_param_table.item(row, VALUE_COLUMN).setText(zero_del(param.value))
+
+
+def add_param_to_graph(is_checked):
+    chb = window.sender()
+    if hasattr(chb, 'parametr') and isinstance(chb.parametr, Parametr):
+        par = chb.parametr
+        g_list = window.thread.graph_list
+        if is_checked:
+            if len(g_list) < GRAPH_SIZE:
+                g_list.append(par)
+            else:
+                msg = QMessageBox()
+                msg.setWindowIcon(window.windowIcon())
+                msg.setWindowTitle('Лишний параметр')
+                msg.setText('Список графиков полон')
+                msg.setInformativeText(f'Ты пытаешься добавить больше {GRAPH_SIZE}'
+                                       f' параметров в графики, но это не получится.'
+                                       f' Можно заменить первый параметр \n{g_list[0].name} \n'
+                                       f'на этот  \n{par.name} \nМеняем?')
+                msg.setIcon(QMessageBox.Icon.Question)
+                change_par_btn = msg.addButton('Заменить', QMessageBox.ButtonRole.YesRole)
+                abort_btn = msg.addButton('Оставить как есть', QMessageBox.ButtonRole.NoRole)
+                clear_list_btn = msg.addButton('Убрать все предыдущие параметры', QMessageBox.ButtonRole.RejectRole)
+
+                msg.exec()
+                if msg.clickedButton() == change_par_btn:
+                    first_param = g_list.pop(0)
+                    if first_param in window.thread.current_params_list:
+                        index_par = window.thread.current_params_list.index(first_param)
+                        window.vmu_param_table.cellWidget(index_par, GRAPH_COLUMN).layout(). \
+                            itemAt(0).widget().setChecked(False)
+                    g_list.append(par)
+                    window.graphics.widget.clear()
+                elif msg.clickedButton() == clear_list_btn:
+                    g_list.clear()
+                    window.graphics.widget.clear()
+                    g_list.append(par)
+                    for row, param in enumerate(window.thread.current_params_list):
+                        window.vmu_param_table.cellWidget(row, GRAPH_COLUMN).layout(). \
+                            itemAt(0).widget().setChecked(param in g_list)
+                else:
+                    chb.setChecked(False)
+        else:
+            if par in g_list:
+                g_list.remove(par)
+        window.graphics.update_params_list()
+        if not g_list:
+            window.graphics.widget.clear()
+    else:
+        print('Неправильный чек-бокс')
+    return
 
 
 def wrapper_show_empty(params_list: list, param_table: QTableWidget, has_compare=False):
     slider_list = show_empty_params_list(params_list, show_table=param_table,
-                                         has_compare=has_compare)
+                                         has_compare=has_compare, par_in_graph_list=window.thread.graph_list)
     for slider in slider_list:
         slider.ValueChanged.connect(show_value)
         slider.SliderHold.connect(set_focus)
         slider.ValueSelected.connect(change_value)
+    for row in range(param_table.rowCount()):
+        # охренеть, это вот так находится
+        check_box = param_table.cellWidget(row, GRAPH_COLUMN).layout().itemAt(0).widget()
+        check_box.toggled.connect(add_param_to_graph)
 
 
 def search_param():
@@ -174,7 +233,7 @@ def record_log():
             df = pd.DataFrame(window.thread.record_dict)
             df_t = df.transpose()
             window.thread.record_dict.clear()
-            ex_wr = pd.ExcelWriter(file_name, mode="w")
+            ex_wr = pd.ExcelWriter(file_name)
             with ex_wr as writer:
                 df_t.to_excel(writer)
             QMessageBox.information(window, "Успешный успех!", f'Лог сохранён в файл {file_name}',
@@ -255,6 +314,7 @@ def change_value(lst):
 
 
 def set_new_value(param: Parametr, val):
+    new_val = ''
     info_m = ''
     my_label = None
     if 'WheelTypeSet' in param.name:
@@ -263,17 +323,24 @@ def set_new_value(param: Parametr, val):
                 != QMessageBox.StandardButton.Ok:
             return "Пердумал", my_label
     try:
-        float(val)
+        val = float(val)
         if window.thread.isRunning():
             # отключаем поток, если он был включен
             window.connect_to_node()
             # отправляю параметр, полученный из диалогового окна
-            param.set_value(can_adapter, float(val))
+            # --------------------------------------
+            # frac = str(val).split('.')[1]
+            # delimeter = len(frac) if int(frac) else 0
+            # ---------------------------------------
+            # print(f'{val=}, {zero_del(val).strip()}', end='    ')   # , {value_data=}, {new_val=}')
+            param.set_value(can_adapter, val)
             # и сразу же проверяю записался ли он в блок
             value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
-            if isinstance(value_data, str):
-                new_val = ''
-            else:
+            if not isinstance(value_data, str):
+                # ------------------------------------------------
+                # param.value = round(value_data, delimeter)
+                # new_val = zero_del(param.value).strip()
+                # ---------------------------------------------------
                 new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
             my_label = QLabel()
@@ -283,13 +350,13 @@ def set_new_value(param: Parametr, val):
                     param.node.param_was_changed = True
                     # В Избранном кнопку не активируем, может быть несколько блоков.
                     # Возможно, я когда-то смогу
-                    if window.thread.current_node.name != TheBestNode:
-                        window.save_eeprom_btn.setEnabled(True)
-                        if window.thread.current_node.name == 'Инвертор_МЭИ':
-                            info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
-                        elif window.thread.current_node.name == 'КВУ_ТТС':
-                            param.node.param_was_changed = param.eeprom
-                            window.save_eeprom_btn.setEnabled(param.eeprom)
+                    # if window.thread.current_node.name != TheBestNode:
+                    # window.save_eeprom_btn.setEnabled(True)
+                    if window.thread.current_node.name == 'Инвертор_МЭИ':
+                        info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
+                    elif window.thread.current_node.name == 'КВУ_ТТС':
+                        param.node.param_was_changed = param.eeprom
+                    #     window.save_eeprom_btn.setEnabled(param.eeprom)
             else:
                 my_label = RedLabel()
                 # если поток был запущен до изменения, то запускаем его снова
@@ -301,9 +368,12 @@ def set_new_value(param: Parametr, val):
     except ValueError:
         info_m = 'Параметр должен быть числом'
     row = window.thread.current_params_list.index(param)
-    widget = window.vmu_param_table.cellWidget(row, 2)
+    widget_text = window.vmu_param_table.cellWidget(row, VALUE_COLUMN)
+    if widget_text:
+        widget_text.set_text(new_val or 'wrong_value')
+    widget = window.vmu_param_table.cellWidget(row, DESCRIPTION_COLUMN)
     if widget:
-        widget.isInFocus = False
+        widget.set_value()
     return info_m, my_label
 
 
@@ -328,7 +398,7 @@ def want_to_value_change(c_row, c_col):
     col_name = window.vmu_param_table.horizontalHeaderItem(c_col).text().strip().upper()
     current_param = window.thread.current_params_list[c_row]
     # меняем значение параметра
-    if col_name == 'ЗНАЧЕНИЕ':
+    if c_col == VALUE_COLUMN:
         c_flags = current_cell.flags()
         is_editable = True if Qt.ItemFlag.ItemIsEditable & c_flags else False
         info_m, lab = '', None
@@ -339,7 +409,7 @@ def want_to_value_change(c_row, c_col):
         info_and_widget(info_m, lab)
     # добавляю параметр в Избранное/Новый список
     # пока редактирование старых списков не предусмотрено
-    elif col_name == 'ПАРАМЕТР':
+    elif c_col == NAME_COLUMN:
         add_param_to_the_best_node(current_param)
     return
 
@@ -412,19 +482,25 @@ def change_limit(param):
         min_val = value_changer_dialog.min_line_edit.text()
         if min_val:
             val = float(min_val)
-            if val < type_values[param.type]['min'] or \
-                    val > param.max_value or \
-                    val > param.value:
+            if val < type_values[param.type]['min']:
+                val = type_values[param.type]['min']
+            elif val > param.value:
+                val = param.value
+            elif val > param.max_value:     # вряд-ли такое возможно
                 val = param.min_value
             param.min_value = val
+
         max_val = value_changer_dialog.max_line_edit.text()
         if max_val:
             val = float(max_val)
-            if val > type_values[param.type]['max'] or \
-                    val < param.min_value or \
-                    val < param.value:
+            if val > type_values[param.type]['max']:
+                val = type_values[param.type]['max']
+            elif val < param.value:
+                val = param.value
+            elif val < param.min_value:
                 val = param.max_value
             param.max_value = val
+
         add_parametr_to_yaml_file(parametr=param)
         wrapper_show_empty(window.thread.current_params_list, window.vmu_param_table)
 
@@ -624,11 +700,11 @@ def check_node_online(all_node_dict: dict):
                 window.susp_zero_btn.setEnabled(True)
                 window.load_from_eeprom_btn.setEnabled(True)
                 window.light_box.setEnabled(True)
-            elif 'Рулевая_зад_Томск' in nd.name and nd.serial_number >= 55:
+            elif 'Рулевая_зад_Томск' in nd.name and str(nd.firmware_version) >= '55':
                 window.rear_steer_rbtn.setEnabled(True)
                 window.rear_steer_rbtn.setChecked(True)
                 window.curr_measure_btn.setEnabled(True)
-            elif 'Рулевая_перед_Томск' in nd.name and nd.serial_number >= 55:
+            elif 'Рулевая_перед_Томск' in nd.name and str(nd.firmware_version) >= '55':
                 window.front_steer_rbtn.setEnabled(True)
                 window.curr_measure_btn.setEnabled(True)
             exit_dict[nd.name] = nd
@@ -681,21 +757,20 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
     record_vmu_params = False
     node_list_defined = False
     err_str = ''
-    themes_list = list_themes() + QStyleFactory.keys() + \
+    themes_list = list([sty for sty in list_themes() if not '_500' in sty]) + QStyleFactory.keys() + \
                   list([sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()])
     current_theme = ''
 
     def __init__(self):
         super().__init__()
-        # Это нужно для инициализации нашего дизайна
-        self.graphWidget = PlotWidget()
-        self.graphics = None
+
         self.all_params_dict = {}
         self.setupUi(self)
         self.setWindowIcon(QIcon('pictures/icons_speed.png'))
         #  Создаю поток для опроса параметров кву
         self.thread = MainThread(self)
         self.thread.threadSignalAThread.connect(self.add_new_vmu_params)
+        self.thread.graphSignal.connect(self.update_graphs)
         self.thread.err_thread_signal.connect(self.add_new_errors)
         self.thread.adapter = can_adapter
         #  И для сохранения
@@ -707,6 +782,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         self.nodes_tree.setColumnCount(1)
         self.nodes_tree.header().close()
         self.default_style_sheet = self.styleSheet()
+        self.graphics = EVOGraph()
+        self.thread.graph_list = self.graphics.params_list
+
+    @pyqtSlot()
+    def update_graphs(self):
+        if not self.graphics.update_plots():
+            self.stop_thread('В графики можно добавить не больше четырёх параметров, сейчас нет ни одного')
 
     @pyqtSlot(list)
     def add_new_vmu_params(self, list_of_params: list):
@@ -725,20 +807,13 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                     if self.thread.is_recording:
                         record_log()
                     # останавливаем поток
-                    self.thread.quit()
-                    self.thread.wait()
-                    # выкидываем ошибку
-                    QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.StandardButton.Ok)
-                self.connect_btn.setText("Подключиться")
-                if can_adapter.isDefined:
-                    can_adapter.close_canal_can()
-                if err == 'Адаптер не подключен':
-                    can_adapter.isDefined = False
+                    self.stop_thread(err)
+            # elif list_of_params[0]:
+            # ля, криво! Это тот случай, когда я хочу рисовать графики, тупо запихиваю в лист[0] True
             else:
+                pass
                 # вообще можно возвращать даже не список, а переменную
                 # и по её значению уже решать что делать с обновлённым списком параметров
-                # по идее, в текущем листе уже должно быть только 4 первых параметра
-                self.graphics.update_plots()
         elif not list_of_params and self.thread.current_params_list:  # ошибок нет - всё хорошо
             # показываем свежие обновлённые параметры
             widgets_list = show_new_vmu_params(params_list=self.thread.current_params_list,
@@ -749,6 +824,18 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                 i.ValueSelected.connect(change_value)
         else:
             print('непредвиденная ситуация в списке что то есть, длина списка = ', len(list_of_params))
+
+    def stop_thread(self, err=''):
+        self.thread.quit()
+        self.thread.wait()
+        # выкидываем ошибку
+        QMessageBox.critical(self, "Ошибка ", 'Нет подключения' + '\n' + err, QMessageBox.StandardButton.Ok)
+        self.connect_btn.setText("Подключиться")
+        self.graphics.start_stop_btn.setText("СТАРТ")
+        if can_adapter.isDefined:
+            can_adapter.close_canal_can()
+        if err == 'Адаптер не подключен':
+            can_adapter.isDefined = False
 
     @pyqtSlot(dict)  # добавляем ошибки в окошко
     def add_new_errors(self, nds: dict):
@@ -1018,6 +1105,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         self.node_fm_lab.setText(f'Версия ПО: {nd.cut_firmware()}')
         if self.save_to_file_btn.isEnabled():
             self.save_to_file_btn.setText(f'Сохранить настройки блока:\n {nd.name} в файл')
+        self.save_eeprom_btn.setEnabled(nd.save_to_eeprom)
         return
 
     def connect_to_node(self):
@@ -1044,10 +1132,12 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             self.thread.iter_count = 1
             self.thread.start()
             self.connect_btn.setText("Отключиться")
+            self.graphics.start_stop_btn.setText("СТОП")
         else:
             self.thread.quit()
             self.thread.wait()
             self.connect_btn.setText("Подключиться")
+            self.graphics.start_stop_btn.setText("СТАРТ")
             can_adapter.close_canal_can()
 
     def closeEvent(self, event):
@@ -1076,63 +1166,57 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                                               f' нужно сохранить этот список?'):
                     event.ignore()
 
-        msg = QMessageBox(self)
-        msg.setWindowTitle("Выход")
-        msg.setIcon(QMessageBox.Icon.Question)
-        msg.setText("Вы уверены, что хотите закрыть приложение?")
+        # msg = QMessageBox(self)
+        # msg.setWindowTitle("Выход")
+        # msg.setIcon(QMessageBox.Icon.Question)
+        # msg.setText("Вы уверены, что хотите закрыть приложение?")
+        #
+        # buttonAccept = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
+        # msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)
+        # msg.setDefaultButton(buttonAccept)
+        # msg.exec()
 
-        buttonAccept = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
-        msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)
-        msg.setDefaultButton(buttonAccept)
-        msg.exec()
-
-        if msg.clickedButton() == buttonAccept:
-            with open(stylesheet_file, 'w+') as f:
-                f.write(self.current_theme)
-            if self.thread.isRunning():
-                self.thread.quit()
-                self.thread.wait()
-                del self.thread
-            if can_adapter.isDefined:
-                can_adapter.close_canal_can()
-        else:
-            event.ignore()
+        # if msg.clickedButton() == buttonAccept:
+        with open(stylesheet_file, 'w+') as f:
+            f.write(self.current_theme)
+        if self.thread.isRunning():
+            self.thread.quit()
+            self.thread.wait()
+            del self.thread
+        if can_adapter.isDefined:
+            can_adapter.close_canal_can()
+        # else:
+        #     event.ignore()
 
     def change_tab(self):
-        # Вкладка управление
-        if self.main_tab.currentWidget() == self.management_tab:
-            if self.thread.isRunning():
-                self.connect_to_node()
-                print('Поток остановлен')
-            print('Вкладка управление')
+
         # Вкладка параметры
-        elif self.main_tab.currentWidget() == self.params_tab:
+        if self.main_tab.currentWidget() == self.params_tab:
             params_list_changed()
-            self.thread.make_plot = []
             if self.thread.isFinished():
                 self.connect_to_node()
-            print('Вкладка параметры, поток запущен')
-            if self.graphics:
-                self.graphics.widget.clear()
+
+        # Вкладка управление
+        elif self.main_tab.currentWidget() == self.management_tab:
+            if not self.graphics.isVisible() and self.thread.isRunning():
+                self.connect_to_node()
 
         # Вкладка Графики
         elif self.main_tab.currentWidget() == self.grafics_tab:
-            self.thread.make_plot = [True]
-            self.thread.current_params_list = self.thread.current_params_list[:4]
             if self.thread.isFinished():
                 self.connect_to_node()
-            print('Вкладка Графики')
-            self.graphics = EVOGraph(plot_widget=self.graphWidget, params_list=self.thread.current_params_list)
+            if not self.graphics.isVisible():
+                self.graphics.update_params_list()
 
         else:
             print('Неизвестное состояние')
 
     def generate_menu(self, pos):
-        c_row = window.vmu_param_table.currentRow()
+        c_row = self.vmu_param_table.currentRow()
         if c_row < 0:
             print('Нет ячейки')
             return
-        parametr = window.thread.current_params_list[c_row]
+        parametr = self.thread.current_params_list[c_row]
         menu = QMenu()
         all_items_menu_dict = dict([
             ('Добавить в Избранное', add_param_to_the_best_node),
@@ -1167,20 +1251,25 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
         if action:
             items[action](parametr)
 
+    def show_graphs(self, visible: bool):
+        self.thread.make_plot = visible
+        if not visible:
+            self.graphics.dock_widget.setWindowTitle('Зажми меня и потяни вниз')
+
 
 def change_theme():
     if window.current_theme:
         theme_count = window.themes_list.index(window.current_theme)
-        if theme_count == len(window.themes_list) - 1:
-            window.current_theme = window.themes_list[0]
-        else:
-            window.current_theme = window.themes_list[theme_count + 1]
+        theme_count = 0 if theme_count == len(window.themes_list) - 1 else theme_count + 1
     else:
-        window.current_theme = window.themes_list[0]
-    set_theme(window.current_theme)
+        theme_count = 0
+    set_theme(window.themes_list[theme_count])
 
 
-def set_theme(theme_str=''):
+@pyqtSlot(QAction)
+def set_theme(theme_str=None):
+    if not isinstance(theme_str, str):
+        theme_str = theme_str.text()
     if theme_str in QStyleFactory.keys():
         app.setStyleSheet('')
         app.setStyle(theme_str)
@@ -1189,6 +1278,7 @@ def set_theme(theme_str=''):
         stapp = app.styleSheet()
         # модуль qt_material устанавливает не на все мои элементы нужные стили,
         # поэтому приходится выдергивать из его styleSheet некоторые стили и устанавливать их куда нужно
+
         pr_c_index = stapp.find('QPushButton {')
         primary_color = stapp[pr_c_index + 23:pr_c_index + 30]
         c_f_index = stapp.find('*{')
@@ -1209,6 +1299,7 @@ def set_theme(theme_str=''):
     c_style_sheet = app.styleSheet()
     app.setStyleSheet(c_style_sheet + 'GreenLabel {background-color: rgba(0, 200, 0, 50);} '
                                       'RedLabel {background-color: rgba(200, 0, 0, 50);} ')
+    window.current_theme = theme_str
 
 
 if __name__ == '__main__':
@@ -1223,7 +1314,6 @@ if __name__ == '__main__':
     # window.setWindowTitle('Electric Vehicle Information System')
     window.setWindowTitle('Electrical vehicle CONtrol')
     stylesheet_file = pathlib.Path(WORK_DIR, 'Data', 'EVOStyleSheet.txt')
-
     window.main_tab.currentChanged.connect(window.change_tab)
     # ============================== подключаю сигналы нажатия на окошки============
     window.nodes_tree.currentItemChanged.connect(params_list_changed)
@@ -1252,6 +1342,12 @@ if __name__ == '__main__':
     window.load_from_eeprom_btn.setEnabled(False)
     window.joy_bind_btn.setEnabled(False)
     window.change_theme_btn.clicked.connect(change_theme)
+
+    menu = QMenu()
+    itms = [menu.addAction(style) for style in window.themes_list]
+    window.change_theme_btn.setMenu(menu)
+    menu.triggered.connect(set_theme)
+
     window.front_steer_rbtn.setEnabled(False)
     window.rear_steer_rbtn.setEnabled(False)
     window.curr_measure_btn.setEnabled(False)
@@ -1276,7 +1372,9 @@ if __name__ == '__main__':
     window.light_box.setEnabled(False)
     # ----------------------------------- подготовка под графики ------------------------------------------------
     window.label.deleteLater()
-    window.gridLayout_5.addWidget(window.graphWidget, 0, 0, 1, 1)
+    window.gridLayout_5.addWidget(window.graphics, 0, 0, 1, 1)
+    window.graphics.start_stop_btn.clicked.connect(window.connect_to_node)
+    window.graphics.dock_widget.visibilityChanged.connect(window.show_graphs)
 
     # заполняю первый список блоков из файла - максимальное количество всего, что может быть на нижнем уровне
     try:
@@ -1310,14 +1408,18 @@ if __name__ == '__main__':
         sys.exit(app.exec())  # и запускаем приложение
 
 # реальный номер 11650178014310 считывает 56118710341001 наоборот - Антон решает
+# решить вопрос с дробными параметрами с мультипликатором в кву
+# сетку в графиках ярче
+# как сохранять весь график?
+# !!!!!!!!!!!! Столбцы в таблице можно передвигать !!!!!!!
+# если не найдены блоки на скорости 125, искать и остальные скорости тоже
+# определять номер инвертора, если версия ПО выше 2212
+# добавить на графики текущее значение параметров
 # при сравнении добавить возможность выбрать параметры,
 # которые нужно взять из файла + возможность делать это программно
-# на выбор темы добавить выпадающее меню с выбором темы
 # переделать def change_value(lst): под object, new_value
+# переделать def add_new_vmu_params(lst): под string
 # кнопка сохранить всё в гит
 # при обновлении проги должны добавляться только новые папки, старые параметры не трогаем
 # виджеты с частыми параметрами в окно управление
-# цветомузыка
-# научиться парсить текстовые настройки ТАБ
-# научиться парсить настройки старого КВУ
 # когда сохраняется файл, давать не него ссылку

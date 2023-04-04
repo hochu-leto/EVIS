@@ -542,8 +542,6 @@ def check_steering_current(window):
             steer.start()
 
             if dialog.exec():
-                steer.set_straight()
-                steer.quit()
-                steer.wait()
-                print('Поток остановлен')
+                steer.terminate()
+                steer.stop()
     return True

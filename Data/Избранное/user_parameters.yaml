@@ -1,15 +1,3 @@
-- name: PSTED_MANUAL_CONTROL_REF_TORQUE#КВУ_ТТС
-  index: 8456
-  sub_index: 16
-  description: Желаемый момент двигателя в ручном режиме управления
-  type: SIGNED16
-  value: 0
-  units: '%'
-  widget: MySlider
-  multiplier: 0.00305
-  editable: true
-  min_value: -100.0
-  max_value: 100.0
 - name: STEERING_FRONT_MANUAL_CONTROL_CMD#КВУ_ТТС
   index: 8464
   sub_index: 1
@@ -111,3 +99,27 @@
   editable: false
   min_value: 0.0
   max_value: 2.0
+- name: A1.7 CurrentRMS#Рулевая_зад_Томск
+  index: 18
+  sub_index: 0
+  description: ТОК А * 100
+  type: UNSIGNED16
+  value: 0.0
+  units: A
+  widget: MyColorBar
+  multiplier: 0.1
+  editable: false
+  min_value: 0.0
+  max_value: 120.0
+- name: PSTED_MANUAL_CONTROL_REF_TORQUE#КВУ_ТТС
+  index: 8456
+  sub_index: 16
+  description: Желаемый момент двигателя в ручном режиме управления
+  type: SIGNED16
+  value: 31.99755
+  units: '%'
+  widget: MySlider
+  multiplier: 0.00305
+  editable: true
+  min_value: -32.0
+  max_value: 32.0

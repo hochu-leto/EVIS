@@ -20,7 +20,7 @@ abs:
   editable: true
   eeprom: null
   name: ABS_WHEEL_MIN_SPEED_THRESHOLD
-  scale: 4.096681687832855
+  multiplier: 0.2441
   type: SIGNED16
   unit: об/мин
   value: null
@@ -30,7 +30,7 @@ abs:
   editable: true
   eeprom: null
   name: ABS_MOTOR_MIN_SPEED_THRESHOLD
-  scale: 4.096681687832855
+  multiplier: 0.2441
   type: SIGNED16
   unit: об/мин
   value: null
@@ -66,14 +66,14 @@ abs:
   editable: true
   eeprom: null
   name: ABS_FILTER_FACTOR
-  scale: 256.4102564102564
+  multiplier: 0.0039
   type: UNSIGNED8
   value: null
 - address: '0x21600C'
   description: Скорость ВАТС, посчитанная на основании валидных датчиков
   editable: false
   name: ABS_VEHICLE_VELOCITY
-  scale: 100.0
+  multiplier: 0.01
   type: SIGNED16
   unit: м/с
   value: null
@@ -81,7 +81,7 @@ abs:
   description: Частота вращения колеса "Переднее левое"
   editable: false
   name: ABS_WHEEL_FREQ_FL
-  scale: 500.0
+  multiplier: 0.002
   type: SIGNED16
   unit: Гц
   value: null
@@ -89,7 +89,7 @@ abs:
   description: Частота вращения колеса "Переднее правое"
   editable: false
   name: ABS_WHEEL_FREQ_FR
-  scale: 500.0
+  multiplier: 0.002
   type: SIGNED16
   unit: Гц
   value: null
@@ -97,7 +97,7 @@ abs:
   description: Частота вращения колеса "Заднее левое"
   editable: false
   name: ABS_WHEEL_FREQ_RL
-  scale: 500.0
+  multiplier: 0.002
   type: SIGNED16
   unit: Гц
   value: null
@@ -105,7 +105,7 @@ abs:
   description: Частота вращения колеса "Заднее правое"
   editable: false
   name: ABS_WHEEL_FREQ_RR
-  scale: 500.0
+  multiplier: 0.002
   type: SIGNED16
   unit: Гц
   value: null
@@ -3288,7 +3288,7 @@ main_fsm&power_management:
   editable: true
   eeprom: null
   name: VEHICLE_STOP_VELOCITY_THRES
-  scale: 100.0
+  multiplier: 0.01
   type: SIGNED16
   unit: м/с
   value: null
@@ -3317,7 +3317,7 @@ motor_control:
   description: Запрашиваемый момент, отправляемый на ПСТЭД
   editable: false
   name: TO_PSTED_CMD_VALUE
-  scale: 327.86885245901635
+  multiplier: 0.00305
   type: SIGNED16
   unit: '%'
   value: null
@@ -3325,7 +3325,7 @@ motor_control:
   description: Текущее напряжение батареи, отправляемое на ПСТЭД
   editable: false
   name: TO_PSTED_BMS_VOLTAGE
-  scale: 10.0
+  multiplier: 0.1
   type: UNSIGNED16
   unit: В
   value: null
@@ -3341,7 +3341,7 @@ motor_control:
   description: Текущий момент, полученный от ПСТЭД
   editable: false
   name: FROM_PSTED_TORQUE
-  scale: 1.27000254000508
+  multiplier: 0.7874
   type: SIGNED8
   unit: '%'
   value: null
@@ -3349,7 +3349,7 @@ motor_control:
   description: Текущая скорость вращения двигателя, полученная от ПСТЭД
   editable: false
   name: FROM_PSTED_MOTOR_SPEED
-  scale: 4.095842719639566
+  multiplier: 0.24415
   type: SIGNED16
   unit: об/мин
   value: null
@@ -3357,7 +3357,7 @@ motor_control:
   description: Текущий ток статора, полученный от ПСТЭД
   editable: false
   name: FROM_PSTED_CURRENT
-  scale: 0.19538462440236729
+  multiplier: 5.11811
   type: SIGNED8
   unit: А
   value: null
@@ -3365,7 +3365,7 @@ motor_control:
   description: Текущая мощность, полученная от ПСТЭД
   editable: false
   name: FROM_PSTED_POWER
-  scale: 0.8466683600033866
+  multiplier: 1.1811
   type: SIGNED8
   unit: кВт
   value: null
@@ -3373,7 +3373,7 @@ motor_control:
   description: Текущее напряжение в звене постоянного тока, полученное от ПСТЭД
   editable: false
   name: FROM_PSTED_VOLTAGE
-  scale: 0.15740594994490792
+  multiplier: 6.353
   type: UNSIGNED8
   unit: В
   value: null
@@ -3381,7 +3381,7 @@ motor_control:
   description: Текущее выходное напряжение инвертора, полученное от ПСТЭД
   editable: false
   name: FROM_PSTED_OUT_VOLTAGE
-  scale: 2.5510204081632653
+  multiplier: 0.392
   type: UNSIGNED8
   unit: '%'
   value: null
@@ -3445,7 +3445,7 @@ motor_control:
   description: Желаемый момент двигателя в ручном режиме управления
   editable: true
   name: PSTED_MANUAL_CONTROL_REF_TORQUE
-  scale: 327.86885245901635
+  multiplier: 0.00305
   type: SIGNED16
   unit: '%'
 - address: '0x210901'
@@ -3460,7 +3460,7 @@ motor_control:
   editable: true
   eeprom: null
   name: PSTED_RAMP_MAX_TORQUE
-  scale: 666.6666666666666
+  scale: 666.7
   type: UNSIGNED16
   unit: '%'
   value: null
@@ -3630,7 +3630,7 @@ pneumatic_suspension:
   max_value: 1.0
   min_value: 0.0
   name: SUSPENSION_PRESSURE_SENSOR_FILTER
-  scale: 256.4102564102564
+  multiplier: 0.0039
   type: UNSIGNED8
   unit: '[0..1]'
   value: '[0..1]'
@@ -3641,7 +3641,7 @@ pneumatic_suspension:
   max_value: 1.0
   min_value: 0.0
   name: SUSPENSION_HEIGHT_SENSOR_FILTER
-  scale: 256.4102564102564
+  multiplier: 0.0039
   type: UNSIGNED8
   unit: '[0..1]'
   value: '[0..1]'
@@ -3816,7 +3816,7 @@ rx_from_bku:
   description: Команда от БКУ на задание момента ПСТЭД
   editable: false
   name: FROM_BKU_TORQUE
-  scale: 100.0
+  multiplier: 0.01
   scaleB: 100.0
   type: UNSIGNED32
   unit: '%'
@@ -3825,7 +3825,7 @@ rx_from_bku:
   description: Команда от БКУ на задание положения передней рулевой рейки
   editable: false
   name: FROM_BKU_STEERING_FRONT
-  scale: 100.0
+  multiplier: 0.01
   scaleB: 100.0
   type: UNSIGNED32
   unit: '%'
@@ -3834,7 +3834,7 @@ rx_from_bku:
   description: Команда от БКУ на задание значения плавного торможения
   editable: false
   name: FROM_BKU_SMOOTH_BRAKE
-  scale: 2.5
+  multiplier: 0.4
   type: UNSIGNED32
   unit: '%'
   value: null
@@ -3874,7 +3874,7 @@ rx_from_bku:
   description: Команда от БКУ на задание положения задней рулевой рейки
   editable: false
   name: FROM_BKU_STEERING_REAR
-  scale: 100.0
+  multiplier: 0.01
   scaleB: 100.0
   type: UNSIGNED32
   unit: '%'
@@ -3889,7 +3889,7 @@ rx_from_bku:
   description: Команда от БКУ на высоту пневмоподвески 1
   editable: false
   name: FROM_BKU_SUSPENSION_HEIGHT_1
-  scale: 0.5
+  multiplier: 2.0
   scaleB: 250.0
   type: UNSIGNED32
   unit: мм
@@ -3898,7 +3898,7 @@ rx_from_bku:
   description: Команда от БКУ на высоту пневмоподвески 2
   editable: false
   name: FROM_BKU_SUSPENSION_HEIGHT_2
-  scale: 0.5
+  multiplier: 2.0
   scaleB: 250.0
   type: UNSIGNED32
   unit: мм
@@ -3907,7 +3907,7 @@ rx_from_bku:
   description: Команда от БКУ на высоту пневмоподвески 3
   editable: false
   name: FROM_BKU_SUSPENSION_HEIGHT_3
-  scale: 0.5
+  multiplier: 2.0
   scaleB: 250.0
   type: UNSIGNED32
   unit: мм
@@ -3916,7 +3916,7 @@ rx_from_bku:
   description: Команда от БКУ на высоту пневмоподвески 4
   editable: false
   name: FROM_BKU_SUSPENSION_HEIGHT_4
-  scale: 0.5
+  multiplier: 2.0
   scaleB: 250.0
   type: UNSIGNED32
   unit: мм
@@ -3954,7 +3954,7 @@ steering_control:
   max_value: 30000.0
   min_value: -30000.0
   name: TO_BKU_STEERING_FRONT_POSITION
-  scale: 1.0
+  multiplier: 1.0
   scaleB: 30000.0
   type: UNSIGNED32
   unit: '[-30000..30000]'
@@ -4069,7 +4069,7 @@ steering_control:
   max_value: 30000.0
   min_value: -30000.0
   name: TO_BKU_STEERING_REAR_POSITION
-  scale: 1.0
+  multiplier: 1.0
   scaleB: 30000.0
   type: UNSIGNED32
   unit: '[-30000..30000]'

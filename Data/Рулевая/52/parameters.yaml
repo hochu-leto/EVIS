@@ -115,7 +115,7 @@ A1.Position, Load:
   unit: r/m
 - address: '0x0012'
   code: 0.1.1
-  degree: 1.0
+  degree: 2.0
   description: ТОК А * 100
   editable: false
   max_value: 6553.5

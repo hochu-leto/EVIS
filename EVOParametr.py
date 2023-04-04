@@ -122,7 +122,7 @@ class Parametr:
         # на что умножаем число из КАНа
         degree = check_value('degree')
         scale = float(check_value('scale', 10 ** degree))
-        self.multiplier = float(check_value('multiplier', float(check_value('mult', 1 / (scale or 1)))))
+        self.multiplier = round(float(check_value('multiplier', float(check_value('mult', 1 / (scale or 1))))), 4)
         # вычитаем это из полученного выше числа
         self.offset = float(check_value('scaleB', float(check_value('offset'))))
         period = int(check_value('period', 1))  # период опроса параметра 1=каждый цикл 1000=очень редко
@@ -157,12 +157,15 @@ class Parametr:
         return ColorGap(g_min, g_max, g_color)
 
     # формирует посылку в зависимости от протокола
-    def get_list(self):
+    def get_list(self, val=None):
+        if val is None:
+            val = self.value
         value_type = type_values[self.type]['type']
         MSB = ((self.index & 0xFF00) >> 8)
         LSB = self.index & 0xFF
-        value = float_to_int(self.value) if self.type == 'FLOAT' else int(self.value) \
-            if self.value and not isinstance(self.value, str) else 0
+        value = float_to_int(val) if self.type == 'FLOAT' else int(round(val, 0)) \
+            if val and not isinstance(val, str) else 0
+        # print(f'value to send  =  {value}', end='    ')
         data = [value & 0xFF,
                 (value & 0xFF00) >> 8,
                 (value & 0xFF0000) >> 16,
@@ -176,15 +179,18 @@ class Parametr:
             self.set_list = data + [LSB, MSB, value_type, 0x10]
 
     def set_value(self, adapter: CANAdater, value):
+        frac = str(value).split('.')[1]
+        delimeter = len(frac) if int(frac) else 0
+        value = (value if value < self.max_value else self.max_value) \
+            if value >= self.min_value else self.min_value
         value += self.offset
         value /= self.multiplier
-        if 'Рулевая' in self.node.name:  # У томска проблемы с типом переменных
-            self.value = value
-        else:
-            self.value = (value if value < self.max_value else self.max_value) \
-                if value >= self.min_value else self.min_value
-
-        self.get_list()
+        value = round(value, delimeter)
+        # print(f'{value=}, {self.multiplier=}', end='   ')
+        # здесь надо проверять, что она не выходит за пределы по типу данных
+        value = (value if value < type_values[self.type]['max'] else type_values[self.type]['max']) \
+            if value >= type_values[self.type]['min'] else type_values[self.type]['min']
+        self.get_list(value)
         value_data = adapter.can_request(self.node.request_id, self.node.answer_id, self.set_list)
         # надо как-то определять, если блок не принял значение, тоже какой-то ответ будет
         if isinstance(value_data, str):
@@ -228,6 +234,7 @@ class Parametr:
             index_ans = 0
             sub_index_ans = 0
             value = 0
+        # print(f' received value  =  {value}', end=' ---->  ')
 
         if self.type == 'VISIBLE_STRING':
             self.string_from_can(value_data[-4:])
@@ -236,7 +243,8 @@ class Parametr:
         elif index_ans == self.index and sub_index_ans == self.sub_index:
             # принятый адрес должен совпадать с тем же адресом, что был отправлен
             if self.type == 'FLOAT':
-                self.value = bytes_to_float(value_data[-4:])
+                # self.value = bytes_to_float(value_data[-4:])
+                value = bytes_to_float(value_data[-4:])
             elif self.type == 'DATE':
                 # день месяца (0-4), номер месяца (5-8) и текущий год (9-15)
                 TDateVar = ctypes.c_uint32(value).value
@@ -247,14 +255,19 @@ class Parametr:
                 self.value = None
                 return self.value
             else:
-                self.value = type_values[self.type]['func'](value).value
+                # self.value = type_values[self.type]['func'](value).value
+                value = type_values[self.type]['func'](value).value
 
-            self.value *= self.multiplier
-            self.value -= self.offset
+            # self.value *= self.multiplier
+            value *= self.multiplier
+            # self.value -= self.offset
+            value -= self.offset
+            # self.value = round(self.value, 5)
+            self.value = value
+            # print(f' final value = {value}')
             return self.value
         else:
-            print(f'{self.index=} , {index_ans=}')
-            print(f'{self.sub_index=} , {sub_index_ans=}')
+            print(f'Принятый адрес не совпадает - {self.index=} , {index_ans=} {self.sub_index=} , {sub_index_ans=}')
             return 'Адрес не совпадает'
 
     def to_dict(self):

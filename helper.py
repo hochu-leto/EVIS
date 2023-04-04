@@ -9,12 +9,20 @@ import numpy
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidget, QTableWidgetItem, QHeaderView, QDialogButtonBox, \
-    QCheckBox, QWidget
-from pyqtgraph import PlotWidget, mkPen
+    QCheckBox, QWidget, QHBoxLayout, QPushButton, QGraphicsProxyWidget, QDockWidget, QGridLayout, QMainWindow
+from pyqtgraph import PlotWidget, mkPen, GraphicsLayoutWidget
 
 import my_dialog
 from EVOWidgets import GreenLabel, MyComboBox, MyEditLine, zero_del, MyColorBar, MySlider, color_EVO_red_dark, \
-    color_EVO_white
+    color_EVO_white, GraphCheckBox
+
+NAME_COLUMN = 0
+DESCRIPTION_COLUMN = 1
+GRAPH_COLUMN = 2
+VALUE_COLUMN = 3
+COMPARE_COLUMN = 4
+UNIT_COLUMN = 5
+headers_list = ['Параметр', 'Описание', 'GR', 'Значение', 'Сравнение', 'Размерность']
 
 TheBestNode = 'Избранное'
 NewParamsList = 'Новый список'
@@ -99,11 +107,10 @@ def focus_out():
     print("focus out")
 
 
-def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False):
+def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_compare=False, par_in_graph_list=[]):
     items_list = []
     show_table.setRowCount(0)
     show_table.setRowCount(len(list_of_params))
-    headers_list = ['Параметр', 'Описание', 'Значение', 'Сравнение', 'Размерность']
     show_table.setColumnCount(len(headers_list))
     show_table.setHorizontalHeaderLabels(headers_list)
 
@@ -127,38 +134,49 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
             lb = GreenLabel()
             lb.setText(name)
             lb.setToolTip(description)
-            show_table.setCellWidget(row, 0, lb)
+            show_table.setCellWidget(row, NAME_COLUMN, lb)
         else:
             name_item = QTableWidgetItem(name)
             name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             name_item.setToolTip(description)
-            show_table.setItem(row, 0, name_item)
+            show_table.setItem(row, NAME_COLUMN, name_item)
 
         match par.widget:
             case 'MyColorBar':
-                show_table.setCellWidget(row, 1, MyColorBar(parametr=par))
+                show_table.setCellWidget(row, DESCRIPTION_COLUMN, MyColorBar(parametr=par))
             case 'MySlider':
                 widget = MySlider(parametr=par)
-                show_table.setCellWidget(row, 1, widget)
+                show_table.setCellWidget(row, DESCRIPTION_COLUMN, widget)
                 items_list.append(widget)
             case _:
                 desc_item = QTableWidgetItem(description)
                 # desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
                 desc_item.setToolTip(description)
-                show_table.setItem(row, 1, desc_item)
+                show_table.setItem(row, DESCRIPTION_COLUMN, desc_item)
+
+        graph_checkbox = GraphCheckBox(parametr=par)
+        graph_checkbox.setChecked(par in par_in_graph_list)
+        cell_widget = QWidget()
+        lay_out = QHBoxLayout(cell_widget)
+        lay_out.addWidget(graph_checkbox)
+        lay_out.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay_out.setContentsMargins(0, 0, 0, 0)
+        cell_widget.setLayout(lay_out)
+        show_table.setCellWidget(row, GRAPH_COLUMN, cell_widget)
+        # show_table.setCellWidget(row, GRAPH_COLUMN, graph_checkbox)
 
         value_item = QTableWidgetItem('')
         value_item.setFlags(value_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         color_opacity = int((150 / 1000) * abs(par.period)) + 3
         value_item.setBackground(QColor(0, 255, 255, color_opacity))
         value_item.setToolTip(f'{par.min_value}...{par.max_value}')
-        show_table.setItem(row, 2, value_item)
+        show_table.setItem(row, VALUE_COLUMN, value_item)
 
         compare_item = QTableWidgetItem(compare)
         compare_item.setFlags(compare_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
-        show_table.setItem(row, 3, compare_item)
+        show_table.setItem(row, COMPARE_COLUMN, compare_item)
 
         unit_item = QTableWidgetItem(unit)
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
@@ -166,19 +184,21 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
-    show_table.setColumnHidden(show_table.columnCount() - 2, not has_compare)
+    # show_table.setColumnHidden(show_table.columnCount() - 2, not has_compare)
+    show_table.setColumnHidden(COMPARE_COLUMN, not has_compare)
     # # максимальная ширина у описания, если не хватает длины, то переносится
     show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
-    show_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-    show_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
-    show_table.setColumnWidth(2, 150)
+    show_table.horizontalHeader().setSectionResizeMode(DESCRIPTION_COLUMN, QHeaderView.ResizeMode.Stretch)
+    show_table.horizontalHeader().setSectionResizeMode(NAME_COLUMN, QHeaderView.ResizeMode.ResizeToContents)
+    show_table.horizontalHeader().setSectionResizeMode(GRAPH_COLUMN, QHeaderView.ResizeMode.ResizeToContents)
+    show_table.setColumnWidth(VALUE_COLUMN, 150)
     return items_list
 
 
 def show_new_vmu_params(params_list, table, has_compare_params=False):
     items_list = []
     for row, par in enumerate(params_list):
-        it = table.cellWidget(row, 2)
+        it = table.cellWidget(row, VALUE_COLUMN)
         if hasattr(it, 'isInFocus') \
                 and it.isInFocus:
             continue
@@ -203,52 +223,123 @@ def show_new_vmu_params(params_list, table, has_compare_params=False):
         if value_in_dict and par.editable:
             if not isinstance(it, MyComboBox):
                 widget_ = MyComboBox(parametr=par)
-                table.setCellWidget(row, 2, widget_)
+                table.setCellWidget(row, VALUE_COLUMN, widget_)
                 items_list.append(widget_)
-            table.cellWidget(row, 2).set_text()
+            table.cellWidget(row, VALUE_COLUMN).set_text()
         elif par.editable:
             if not isinstance(it, MyEditLine):
                 widget_ = MyEditLine(v_name, parametr=par)
-                table.setCellWidget(row, 2, widget_)
+                table.setCellWidget(row, VALUE_COLUMN, widget_)
                 items_list.append(widget_)
-            table.cellWidget(row, 2).set_text()
+            table.cellWidget(row, VALUE_COLUMN).set_text()
         else:
-            table.item(row, 2).setText(v_name)
+            table.item(row, VALUE_COLUMN).setText(v_name)
 
         if has_compare_params:
-            compare_name = table.item(row, 3).text()
+            compare_name = table.item(row, COMPARE_COLUMN).text()
             # здесь тоже неплохо бы делать цветную метку, но я так всё утоплю в метках
             color_ = color_EVO_red_dark if v_name.strip() != compare_name.strip() else color_EVO_white
-            table.item(row, 3).setBackground(color_)
+            table.item(row, COMPARE_COLUMN).setBackground(color_)
 
         if par.widget != 'Text':
-            table.cellWidget(row, 1).set_value()
+            table.cellWidget(row, DESCRIPTION_COLUMN).set_value()
 
     return items_list
 
 
-class EVOGraph:
+class EVOGraph(QMainWindow):
     chunkSize = 100
     maxChunks = 10
     pens = [mkPen(color=(0, 255, 0)), mkPen(color=(255, 0, 0)), mkPen(color=(0, 0, 255)),
             mkPen(color=(0, 255, 255)), mkPen(color=(255, 255, 0)), mkPen(color=(255, 0, 255))]
 
-    def __init__(self, plot_widget: PlotWidget, params_list: list):
-        self.widget = plot_widget
-        self.legend = self.widget.addLegend()
-        self.widget.showGrid(x=True, y=True)
-        self.widget.enableAutoRange('y', 0.95)
-        self.widget.setXRange(- self.chunkSize / 10, 0)
-        self.params_list = params_list
+    def __init__(self):
+        super().__init__()
+        self.params_list = []
+        self.param_counter = len(self.params_list)
+        self.data_y = numpy.zeros((self.chunkSize + 1, 0))
         self.data_x = numpy.zeros((self.chunkSize + 1))
-        self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
-        for i, param in enumerate(self.params_list):
-            self.data_y[-1, i] = param.value
         self.counter = 0
         self.curves = []
         self.startTime = perf_counter()
+        self.dock_widget = QDockWidget('Зажми меня и потяни вниз', self)
+        self.dock_widget.dockLocationChanged.connect(self.changeTitle)
+        self.dockWidgetContents = QWidget()
+        self.dockWidgetContents.setObjectName("dockWidgetContents")
+        self.gridLayout = QGridLayout(self.dockWidgetContents)
+        self.gridLayout.setObjectName("gridLayout")
+        self.start_stop_btn = QPushButton('СТАРТ', parent=self.dockWidgetContents)
+        self.start_stop_btn.setObjectName("start_stop_btn")
+        self.gridLayout.addWidget(self.start_stop_btn, 0, 0, 1, 1)
+        self.clear_btn = QPushButton('СБРОС', parent=self.dockWidgetContents)
+        self.clear_btn.setObjectName("clear_btn")
+        self.clear_btn.setEnabled(False)
+        self.gridLayout.addWidget(self.clear_btn, 0, 7, 1, 1)
+        self.widget = PlotWidget(parent=self.dockWidgetContents)
+        self.widget.showGrid(x=True, y=True)
+        self.legend = self.widget.addLegend()
+        self.widget.enableAutoRange('y', 0.95)
+        self.widget.setXRange(- self.chunkSize / 10, 0)
+        self.gridLayout.addWidget(self.widget, 1, 0, 1, 8)
+        self.dock_widget.setWidget(self.dockWidgetContents)
+        self.dock_widget.setFloating(False)
+        self.dock_widget.setFeatures(QDockWidget.DockWidgetFeature.DockWidgetFloatable |
+                                     QDockWidget.DockWidgetFeature.DockWidgetMovable)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dock_widget)
 
+    def changeTitle(self):
+        if self.dock_widget.isWindow():
+            self.dock_widget.setWindowTitle('По двойному щелчку я встану на место')
+        else:
+            self.dock_widget.setWindowTitle('Зажми меня и потяни вниз')
+
+    def update_params_list(self):
+        p_counter = len(self.params_list)
+        if p_counter > self.param_counter:
+            data_new = numpy.zeros((self.chunkSize + 1, p_counter - self.param_counter))
+            self.data_y = numpy.concatenate([self.data_y, data_new], axis=1)
+        elif p_counter < self.param_counter:
+            self.data_y = self.data_y[:, :(p_counter - self.param_counter)]
+
+        self.param_counter = len(self.params_list)
+        curve = []
+        self.legend.clear()
+        for parametr in self.params_list:
+            curve.append(self.widget.plot(name=parametr.name))
+        self.curves.append(curve)
+        self.widget.enableAutoRange('y', 0.95)
+
+        # задаю последнее значение параметра как текущее
+        # for i, param in enumerate(self.params_list):
+        #     self.data_y[-1, i] = param.value
+
+    def new_chunk(self):
+        curve = []
+        self.legend.clear()
+        for parametr in self.params_list:
+            curve.append(self.widget.plot(name=parametr.name))
+        self.curves.append(curve)
+        # из старого массива достаём последний элемент
+        last_x = self.data_x[-1]
+        last_y = self.data_y[-1]
+        # создаём новый массив причём для всех графиков
+        self.data_x = numpy.zeros((self.chunkSize + 1))
+        self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
+        # и впихиваем в него на первую позицию последний элемент старого массива
+        self.data_x[0] = last_x
+        self.data_y[0] = last_y
+
+        # если количество кусков больше 10, удаляем до 10
+        while len(self.curves) > self.maxChunks:
+            c = self.curves.pop(0)
+            for cc in c:
+                self.widget.removeItem(cc)
+        return curve
+
+    @pyqtSlot()
     def update_plots(self):
+        if not self.params_list:
+            return False
         now = perf_counter()
         # пробегаемся по списку со всеми кривыми
         # и задаём им позицию х - чтоб весь график сдвинулся влево
@@ -263,26 +354,7 @@ class EVOGraph:
         if i == 0:
             # когда количество кривых кратно количеству 100
             # добавляется новая пачка кривых в список
-            curve = []
-            self.legend.clear()
-            for parametr in self.params_list:
-                curve.append(self.widget.plot(name=parametr.name))
-            self.curves.append(curve)
-            # из старого массива достаём последний элемент
-            last_x = self.data_x[-1]
-            last_y = self.data_y[-1]
-            # создаём новый массив причём для всех графиков
-            self.data_x = numpy.zeros((self.chunkSize + 1))
-            self.data_y = numpy.zeros((self.chunkSize + 1, len(self.params_list)))
-            # и впихиваем в него на первую позицию последний элемент старого массива
-            self.data_x[0] = last_x
-            self.data_y[0] = last_y
-
-            # если количество кусков больше 10, удаляем до 10
-            while len(self.curves) > self.maxChunks:
-                c = self.curves.pop(0)
-                for cc in c:
-                    self.widget.removeItem(cc)
+            curve = self.new_chunk()
         else:
             # если сейчас не 100я кривая, то берём последний
             curve = self.curves[-1]
@@ -295,8 +367,7 @@ class EVOGraph:
             crv.setData(x=self.data_x[:i + 2], y=self.data_y[:i + 2, indx],
                         pen=self.pens[indx])
         self.counter += 1
-
-    pass
+        return True
 
 
 class DialogChange(QDialog, my_dialog.Ui_value_changer_dialog):
@@ -425,7 +496,6 @@ def dw2float(dw_array):
     m1 = m * (2 ** (-23))  # Мантисса в float
     return s * m1 * (2 ** (e - 127))
 
-
 #
 # пока просто не нужный код, может, потом пригодится
 #
@@ -440,54 +510,54 @@ def dw2float(dw_array):
 #     print(group_param_name)
 
 
-    # def define_max_current(self, value: int):
-    #     result = False
-    #     self.move_to(value)
-    #     current_time = start_time = time.perf_counter()
-    #
-    #     # а дальше смотрим за текущими параметрами пока не вышло время
-    #     while time.perf_counter() < start_time + self.time_for_moving:
-    #         print(f'\rТекущее положение {self.current_position} '
-    #               f'ток сейчас {self.actual_current()} '
-    #               f'заданное положение {value} '
-    #               f'максимальный ток {self.max_current}', end='', flush=True)
-    #
-    #         # регулярно опрашиваем текущее положение
-    #         if time.perf_counter() > current_time + self.time_for_request:
-    #             current_time = time.perf_counter()
-    #             self.actual_position()
-    #
-    #         #  выходим с победой если попали в нужный диапазон
-    #         if value + self.parameters_get['position'].min_value < \
-    #                 self.current_position < value + self.parameters_get['position'].max_value:
-    #             result = True
-    #             break
-    #     self.set_straight()
-    #     # отключаем мотор и все параметры возвращаем к номинальным
-    #     self.stop()
-    #     print()
-    #     return result
+# def define_max_current(self, value: int):
+#     result = False
+#     self.move_to(value)
+#     current_time = start_time = time.perf_counter()
+#
+#     # а дальше смотрим за текущими параметрами пока не вышло время
+#     while time.perf_counter() < start_time + self.time_for_moving:
+#         print(f'\rТекущее положение {self.current_position} '
+#               f'ток сейчас {self.actual_current()} '
+#               f'заданное положение {value} '
+#               f'максимальный ток {self.max_current}', end='', flush=True)
+#
+#         # регулярно опрашиваем текущее положение
+#         if time.perf_counter() > current_time + self.time_for_request:
+#             current_time = time.perf_counter()
+#             self.actual_position()
+#
+#         #  выходим с победой если попали в нужный диапазон
+#         if value + self.parameters_get['position'].min_value < \
+#                 self.current_position < value + self.parameters_get['position'].max_value:
+#             result = True
+#             break
+#     self.set_straight()
+#     # отключаем мотор и все параметры возвращаем к номинальным
+#     self.stop()
+#     print()
+#     return result
 
-    # def current_loop(self, value: int, start_current=None, delta_current=None):
-    #     self.max_current = self.get_param(self.parameters_set['current'])
-    #     self.set_straight()
-    #     if delta_current is not None:
-    #         self.delta_current = delta_current
-    #     self.time_for_moving = 3
-    #     if start_current is None:
-    #         start_current = self.parameters_get['current'].min_value
-    #     cur = self.set_current(start_current)
-    #     if cur:
-    #         at = 0
-    #         while not self.define_max_current(value):
-    #             start_current += self.delta_current
-    #             cur = self.set_current(start_current)
-    #             if not cur or at > self.max_iteration:
-    #                 return 'Слишком долго'
-    #             at += 1
-    #         return start_current
-    #     else:
-    #         return f'Невозможно задать ток {start_current}'
+# def current_loop(self, value: int, start_current=None, delta_current=None):
+#     self.max_current = self.get_param(self.parameters_set['current'])
+#     self.set_straight()
+#     if delta_current is not None:
+#         self.delta_current = delta_current
+#     self.time_for_moving = 3
+#     if start_current is None:
+#         start_current = self.parameters_get['current'].min_value
+#     cur = self.set_current(start_current)
+#     if cur:
+#         at = 0
+#         while not self.define_max_current(value):
+#             start_current += self.delta_current
+#             cur = self.set_current(start_current)
+#             if not cur or at > self.max_iteration:
+#                 return 'Слишком долго'
+#             at += 1
+#         return start_current
+#     else:
+#         return f'Невозможно задать ток {start_current}'
 # param_list_for_steer_current = ['FROM_STEERING_FRONT_POSITION', 'FROM_STEERING_FRONT_CURRENT',
 #                                 'FROM_STEERING_REAR_POSITION', 'FROM_STEERING_REAR_CURRENT']
 # n_name = 'КВУ_ТТС'
@@ -502,111 +572,111 @@ def dw2float(dw_array):
 # else:
 #     QMessageBox.critical(window, "Ошибка ", 'Нет адаптера на шине 250', QMessageBox.StandardButton.Ok)
 
-    # for par in list(parametr_dict.values())[:4]:
-    #     par.current_value = par.parametr.get_value(adapter)
-    #     if isinstance(par.current_value, str):
-    #         QMessageBox.critical(window, "Ошибка ", f'Не удалось считать параметр {par.name}',
-    #                              QMessageBox.StandardButton.Ok)
-    #         return False
-    #     elif not par.check():
-    #         return False
-    #     print(par.name, par.current_value)
-    #
-    # position = parametr_dict['st_act_pos']
-    # current = parametr_dict['st_set_curr']
-    # currents = parametr_dict['st_status']
-    # current.max_value = current.current_value
-    # timer = QTimer()
-    # timer.timeout.connect(moving_steer)
-    #
-    # if QMessageBox.information(window,
-    #                            "Информация",
-    #                            'Сейчас рейка начнёт движение, лучше убрать всё лишнее, что может помешать движению',
-    #                            QMessageBox.StandardButton.Ok,
-    #                            QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
-    #
-    #     target_position = parametr_dict['st_set_pos'].min_value
-    #     current.current_value = current.min_value
-    #     for par in list(parametr_dict.values())[3:]:
-    #         if par.parametr.set_value(adapter, par.min_value):
-    #             QMessageBox.critical(window, "Ошибка ", f'Не могу установить значение параметра {par.name}'
-    #                                                     f' повтори ещё раз', QMessageBox.StandardButton.Ok)
-    #             end_func()
-    #             return False
-    #     timer.start(delay)
-    #     loop = QEventLoop()
-    #     loop.exec()
+# for par in list(parametr_dict.values())[:4]:
+#     par.current_value = par.parametr.get_value(adapter)
+#     if isinstance(par.current_value, str):
+#         QMessageBox.critical(window, "Ошибка ", f'Не удалось считать параметр {par.name}',
+#                              QMessageBox.StandardButton.Ok)
+#         return False
+#     elif not par.check():
+#         return False
+#     print(par.name, par.current_value)
+#
+# position = parametr_dict['st_act_pos']
+# current = parametr_dict['st_set_curr']
+# currents = parametr_dict['st_status']
+# current.max_value = current.current_value
+# timer = QTimer()
+# timer.timeout.connect(moving_steer)
+#
+# if QMessageBox.information(window,
+#                            "Информация",
+#                            'Сейчас рейка начнёт движение, лучше убрать всё лишнее, что может помешать движению',
+#                            QMessageBox.StandardButton.Ok,
+#                            QMessageBox.StandardButton.Cancel) == QMessageBox.StandardButton.Ok:
+#
+#     target_position = parametr_dict['st_set_pos'].min_value
+#     current.current_value = current.min_value
+#     for par in list(parametr_dict.values())[3:]:
+#         if par.parametr.set_value(adapter, par.min_value):
+#             QMessageBox.critical(window, "Ошибка ", f'Не могу установить значение параметра {par.name}'
+#                                                     f' повтори ещё раз', QMessageBox.StandardButton.Ok)
+#             end_func()
+#             return False
+#     timer.start(delay)
+#     loop = QEventLoop()
+#     loop.exec()
 
 
-    # parametr_dict = dict(
-    #     st_status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
-    #                             min_value=0, max_value=0),
-    #     st_alarms=SteerParametr(name='A0.0 Alarms', warning='В блоке есть ошибки'),
-    #     st_act_pos=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении',
-    #                              min_value=-30, max_value=30),
-    #     st_set_curr=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
-    #                               min_value=1, max_value=100),
-    #     st_motor_command=SteerParametr(name='D0.0 ComandSet',
-    #                                    min_value=1, max_value=1),
-    #     st_control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2,
-    #                              min_value=0, max_value=0),
-    #     st_set_pos=SteerParametr(name='A0.2 SetSteerPos',
-    #                              min_value=-1000, max_value=1000)
-    # )
-    #
-    # for par in parametr_dict.values():
-    #     par.parametr = find_param(window.thread.current_nodes_dict, par.name, current_steer.name)[0]
-    #     if not par.parametr:
-    #         QMessageBox.critical(window, "Ошибка ", f'Не найден параметр{par.name}', QMessageBox.StandardButton.Ok)
-    #         return False
-    #     print(par.parametr.description)
+# parametr_dict = dict(
+#     st_status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
+#                             min_value=0, max_value=0),
+#     st_alarms=SteerParametr(name='A0.0 Alarms', warning='В блоке есть ошибки'),
+#     st_act_pos=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении',
+#                              min_value=-30, max_value=30),
+#     st_set_curr=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
+#                               min_value=1, max_value=100),
+#     st_motor_command=SteerParametr(name='D0.0 ComandSet',
+#                                    min_value=1, max_value=1),
+#     st_control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2,
+#                              min_value=0, max_value=0),
+#     st_set_pos=SteerParametr(name='A0.2 SetSteerPos',
+#                              min_value=-1000, max_value=1000)
+# )
+#
+# for par in parametr_dict.values():
+#     par.parametr = find_param(window.thread.current_nodes_dict, par.name, current_steer.name)[0]
+#     if not par.parametr:
+#         QMessageBox.critical(window, "Ошибка ", f'Не найден параметр{par.name}', QMessageBox.StandardButton.Ok)
+#         return False
+#     print(par.parametr.description)
 
-    # def end_func():
-    #     timer.stop()
-    #     current.parametr.set_value(adapter, current.max_value)
-    #     for par in list(parametr_dict.values())[4:]:
-    #         if par.parametr.set_value(adapter, par.nominal_value):
-    #             QMessageBox.critical(window, "Ошибка ",
-    #                                  f'Не могу установить значение по умолчанию параметра {par.name}',
-    #                                  QMessageBox.StandardButton.Ok)
-    #             return False
-    #     if currents.max_value:
-    #         QMessageBox.information(window,
-    #                                 "Информация",
-    #                                 f'Ток страгивания = {currents.min_value}\n'
-    #                                 f'Ток максимального выворота = {currents.max_value}',
-    #                                 QMessageBox.StandardButton.Ok)
-    #     return True
-    #
-    # def moving_steer():
-    #     old_delta = target_position - position.current_value
-    #     position.current_value = position.parametr.get_value(adapter)
-    #     new_delta = target_position - position.current_value
-    #
-    #     if abs(new_delta) > abs(old_delta) + abs(target_position / 100):
-    #         QMessageBox.critical(window, "Ошибка ", f'Рейка движется не в том направлении',
-    #                              QMessageBox.StandardButton.Ok)
-    #         end_func()
-    #         return
-    #     if not currents.min_value:
-    #         if abs(position.current_value) >= abs(target_position / 10):
-    #             currents.min_value = current.current_value
-    #
-    #     if abs(position.current_value) >= abs(target_position):
-    #         currents.max_value = current.current_value
-    #         end_func()
-    #         return
-    #     else:
-    #         if current.current_value < current.max_value:
-    #             current.current_value += delta_current
-    #             current.parametr.set_value(adapter, current.current_value)
-    #         else:
-    #             QMessageBox.critical(window, "Ошибка ", f'Достигнут предел тока', QMessageBox.StandardButton.Ok)
-    #             end_func()
-    #             return
-    #
-    # delay = 500
-    # delta_current = 0.5
+# def end_func():
+#     timer.stop()
+#     current.parametr.set_value(adapter, current.max_value)
+#     for par in list(parametr_dict.values())[4:]:
+#         if par.parametr.set_value(adapter, par.nominal_value):
+#             QMessageBox.critical(window, "Ошибка ",
+#                                  f'Не могу установить значение по умолчанию параметра {par.name}',
+#                                  QMessageBox.StandardButton.Ok)
+#             return False
+#     if currents.max_value:
+#         QMessageBox.information(window,
+#                                 "Информация",
+#                                 f'Ток страгивания = {currents.min_value}\n'
+#                                 f'Ток максимального выворота = {currents.max_value}',
+#                                 QMessageBox.StandardButton.Ok)
+#     return True
+#
+# def moving_steer():
+#     old_delta = target_position - position.current_value
+#     position.current_value = position.parametr.get_value(adapter)
+#     new_delta = target_position - position.current_value
+#
+#     if abs(new_delta) > abs(old_delta) + abs(target_position / 100):
+#         QMessageBox.critical(window, "Ошибка ", f'Рейка движется не в том направлении',
+#                              QMessageBox.StandardButton.Ok)
+#         end_func()
+#         return
+#     if not currents.min_value:
+#         if abs(position.current_value) >= abs(target_position / 10):
+#             currents.min_value = current.current_value
+#
+#     if abs(position.current_value) >= abs(target_position):
+#         currents.max_value = current.current_value
+#         end_func()
+#         return
+#     else:
+#         if current.current_value < current.max_value:
+#             current.current_value += delta_current
+#             current.parametr.set_value(adapter, current.current_value)
+#         else:
+#             QMessageBox.critical(window, "Ошибка ", f'Достигнут предел тока', QMessageBox.StandardButton.Ok)
+#             end_func()
+#             return
+#
+# delay = 500
+# delta_current = 0.5
 
 # if abs(new_delta) > abs(old_delta) + (self.parameters_get['position'].max_value * 3):
 #     result = 'Рейка движется не в том направлении'
@@ -698,7 +768,6 @@ def dw2float(dw_array):
 #                 val = param.max_value
 #             param.max_value = val
 #
-
 
 
 # def save_p_dict_to_pickle_file(node: EVONode):

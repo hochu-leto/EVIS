@@ -37,11 +37,13 @@
     <file url="file://$PROJECT_DIR$/python_for_help/ElegantDark.qss" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/python_for_help/combobox_ex.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/python_for_help/delegate_ex.py" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/python_for_help/pyqtgraph_ex.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/python_for_help/dock_graphs.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/python_for_help/graphs1.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/python_for_help/pyqtgraph_ex.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/qt_material" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/co_dictionary_old_ttc.cpp" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/params_from_table.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/yaml/parse_yaml_for_yml_ttc.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/parse_yaml_from_eds.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/parse_yaml_from_xml.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/store_file.yaml" charset="windows-1251" />

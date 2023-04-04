@@ -30,7 +30,7 @@ CONTACTOR:
   type: FLOAT
   unit: V
 - address: '0x210304'
-  description: Максимальное время ожидания паденияния напряжения в ЗПТ до размыкания
+  description: Максимальное время ожидания падения напряжения в ЗПТ до размыкания
     основного контактора
   editable: true
   group: CONTACTOR
@@ -101,6 +101,12 @@ CONVERTER&DEVICE:
   name: FAN_TEMP_TH_OFF
   type: FLOAT
   unit: В°C
+- address: '0x210209'
+  description: Серийный номер Инвертора
+  editable: true
+  group: CONVERTER
+  name: S_N_CONVERTER
+  type: FLOAT
 - address: '0x100800'
   description: Имя устройства
   editable: false
@@ -341,6 +347,12 @@ MOTOR:
   name: FAN_TEMP_TH_OFF
   type: FLOAT
   unit: В°C
+- address: '0x210009'
+  description: Серийный номер двигателя
+  editable: true
+  group: MOTOR
+  name: S_N_MOTOR
+  type: FLOAT
 POSSENS&SOFTWARE:
 - address: '0x210500'
   description: Порядок секторов ДПР

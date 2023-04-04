@@ -151,20 +151,6 @@
   min_value: 0.0
   max_value: 255.0
   eeprom: true
-- name: ABS_WHEEL_MIN_SPEED_THRESHOLD
-  index: 8544
-  sub_index: 3
-  description: Пороговая скорость колес, используемая для детекции ошибок датчиков
-    АБС
-  type: SIGNED16
-  value: 0
-  units: об/мин
-  widget: MySlider
-  multiplier: 0.24410000000000004
-  editable: true
-  min_value: -0.0
-  max_value: 1000.0
-  eeprom: true
 - name: ABS_WARNING_COUNT_THRESHOLD
   index: 8544
   sub_index: 5
@@ -189,42 +175,20 @@
   min_value: 0.0
   max_value: 255.0
   eeprom: true
-- name: ABS_WHEEL_FREQ_RL
+- name: ABS_WHEEL_MIN_SPEED_THRESHOLD
   index: 8544
-  sub_index: 15
-  description: Частота вращения колеса "Заднее левое"
+  sub_index: 3
+  description: Пороговая скорость колес, используемая для детекции ошибок датчиков
+    АБС
   type: SIGNED16
-  value: 65.534
-  units: Гц
-  widget: MyColorBar
-  multiplier: 0.002
-  editable: false
-  min_value: -70.0
-  max_value: 70.0
-- name: ABS_WHEEL_FREQ_FR
-  index: 8544
-  sub_index: 14
-  description: Частота вращения колеса "Переднее правое"
-  type: SIGNED16
-  value: 0.0
-  units: Гц
-  widget: MyColorBar
-  multiplier: 0.002
-  editable: false
-  min_value: -70.0
-  max_value: 70.0
-- name: ABS_WHEEL_FREQ_RR
-  index: 8544
-  sub_index: 16
-  description: Частота вращения колеса "Заднее правое"
-  type: SIGNED16
-  value: -65.536
-  units: Гц
-  widget: MyColorBar
-  multiplier: 0.002
-  editable: false
-  min_value: -70.0
-  max_value: 70.0
+  value: 556.7921
+  units: об/мин
+  widget: MySlider
+  multiplier: 0.24410000000000004
+  editable: true
+  min_value: -0.0
+  max_value: 556.7921
+  eeprom: true
 - name: ABS_WHEEL_FREQ_FL
   index: 8544
   sub_index: 13
@@ -232,8 +196,7 @@
   type: SIGNED16
   value: 0.0
   units: Гц
-  widget: MyColorBar
   multiplier: 0.002
   editable: false
-  min_value: -70.0
-  max_value: 70.0
+  min_value: -0.0
+  max_value: 40.0

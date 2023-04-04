@@ -24,6 +24,7 @@ class SaveToFileThread(QThread):
 
     def __init__(self, node_for_save=EVONode()):
         super().__init__()
+        self.all_params_list = []
         self.ms_box = QMessageBox()
         self.ms_box.setWindowTitle('Сохранение')
         self.ms_box.setText('Идёт сохранение параметров в файл, ждите')
@@ -31,7 +32,7 @@ class SaveToFileThread(QThread):
         self.params_counter = 0
         self.errors_counter = 0
         self.current_parametr = None
-        self.one_parametr_percent = None
+        self.one_parametr_percent = 1
         self.max_errors = 30
         self.node_to_save = node_for_save
 
@@ -46,7 +47,8 @@ class SaveToFileThread(QThread):
         self.current_params_list = params_dict[list(params_dict.keys())[self.group_counter]]
         self.current_parametr = self.current_params_list[self.params_counter]
         self.one_parametr_percent = 90 / sum([len(group) for group in params_dict.values()])
-        # self.ms_box.exec()
+        self.all_params_list = [parametr for group_list in self.node_to_save.group_params_dict.values()
+                                for parametr in group_list]
 
         #  подфункция, конечно же это неправильно. но пока работает, не буду это трогать пока не поумнею
         def check_par():
@@ -67,7 +69,7 @@ class SaveToFileThread(QThread):
             return True
 
         def request_param():
-            # я проверяю, если  величина параметра уже известна, его опрашивать не надо,
+            # я проверяю, если  величина параметра уже известна, его опрашивать не надо, - это НЕПРАВИЛЬНО FIXME
             # но если они все известны, возникает выход за пределы словаря
             catch_empty_params = False
             while not catch_empty_params:
@@ -93,8 +95,19 @@ class SaveToFileThread(QThread):
                 self.ready_percent += self.one_parametr_percent
                 self.SignalOfReady.emit(int(self.ready_percent), '', False)
 
+        def get_param():
+            self.current_parametr = self.all_params_list[self.params_counter]
+            check_par()
+            self.ready_percent += self.one_parametr_percent
+            self.SignalOfReady.emit(int(self.ready_percent), '', False)
+            self.params_counter += 1
+            if self.params_counter > len(self.all_params_list) - 1:
+                timer.stop()
+                self.save_file()
+                return
+
         timer = QTimer()
-        timer.timeout.connect(request_param)
+        timer.timeout.connect(get_param)
         timer.start(send_delay)
 
         loop = QEventLoop()
@@ -122,13 +135,16 @@ class SaveToFileThread(QThread):
 
 # поток для опроса параметров и ошибок
 class MainThread(QThread):
-    # сигнал со списком параметров из текущей группы
+    # сигнал со списком - если пустой, то ОК, если первый элемент - строка, значит ошибка(надо переделать на строку)
     threadSignalAThread = pyqtSignal(list)
     # сигнал с ошибками
     err_thread_signal = pyqtSignal(dict)
+    # сигнал что параметры графиков опрошены
+    graphSignal = pyqtSignal()
     max_iteration = 1000
     iter_count = 1
     current_params_list = []
+    graph_list = []
     current_node = EVONode()
     adapter = None
     is_recording = False
@@ -137,15 +153,31 @@ class MainThread(QThread):
 
     def __init__(self, parent=None):
         super().__init__()
+        self.params_counter = 0
+        self.errors_counter = 0
         self.max_errors = 3
         self.current_nodes_dict = {}
         self.parent = parent
-        self.make_plot = []
+        self.make_plot = False
+
+    def check_param(self, param):
+        # ---!!!если параметр строковый, будет None!!---
+        # если строка - значит ошибка
+        if isinstance(param, str):
+            self.errors_counter += 1
+        else:
+            self.errors_counter = 0
+        if self.errors_counter >= self.max_errors:
+            self.threadSignalAThread.emit([param])
+            return False
+        return True
 
     def run(self):
-        def emitting(ans_list):
+        def emitting(ans_list=None):
             # передача пустого списка если всё хорошо
             # и строки ошибки в списке если проблемы
+            if ans_list is None:
+                ans_list = []
             self.thread_timer = time.perf_counter_ns()
             self.threadSignalAThread.emit(ans_list)
             self.params_counter = 0
@@ -160,33 +192,37 @@ class MainThread(QThread):
                 emitting(['Пустой список \n Сюда можно добавить параметры двойным кликом по '
                           'названию нужного параметра'])
                 return
-            current_param = self.current_params_list[self.params_counter]
-            if not self.iter_count == 1:
-                while not self.iter_count % current_param.period == 0:
-                    # если период опроса текущего параметра не кратен текущей итерации,
-                    # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
-                    self.params_counter += 1
-                    if self.params_counter >= len(self.current_params_list):
-                        self.params_counter = 0
-                        emitting(self.make_plot)
-                        return
-                    current_param = self.current_params_list[self.params_counter]
+            try:
+                current_param = self.current_params_list[self.params_counter]
+                if not self.iter_count == 1:
+                    while not self.iter_count % current_param.period == 0:
+                        # если период опроса текущего параметра не кратен текущей итерации,
+                        # и запрашиваем следующий параметр. Это ускоряет опрос параметров с малым периодом опроса
+                        self.params_counter += 1
+                        if self.params_counter >= len(self.current_params_list):
+                            self.params_counter = 0
+                            emitting()
+                            return
+                        current_param = self.current_params_list[self.params_counter]
+            except IndexError:
+                print(f'Ошибка!!!!!!! Счётчик = {self.params_counter}, а длина списка параметров = '
+                      f'{len(self.current_params_list)}, придётся брать параметр = {self.current_params_list[0].name}')
+                current_param = self.current_params_list[0]
 
-            param = current_param.get_value(self.adapter)  # ---!!!если параметр строковый, будет None!!---
-            # если строка - значит ошибка
-            if isinstance(param, str):
-                self.errors_counter += 1
-            else:
-                self.errors_counter = 0
-
-            if self.errors_counter >= self.max_errors:
-                self.threadSignalAThread.emit([param])
+            if not self.check_param(current_param.get_value(self.adapter)):
                 return
+            # если есть запрос на графики и их список не пуст, опрашиваем их все за раз и обновляем
+            if self.make_plot and self.graph_list:
+                for graph_param in self.graph_list:
+                    # а если в граф_листе окажутся параметры из разных блоков с разными адаптерами?
+                    if not self.check_param(graph_param.get_value(self.adapter)):
+                        return
+                self.graphSignal.emit()
 
             self.params_counter += 1
             if self.params_counter >= len(self.current_params_list):
                 self.params_counter = 0
-                emitting(self.make_plot)
+                emitting()    # self.make_plot)
                 if self.is_recording:
                     dt = datetime.datetime.now()
                     dt = dt.strftime("%H:%M:%S.%f")
@@ -305,7 +341,7 @@ class WaitCanAnswerThread(QThread):
                 ans = self.adapter.can_read(self.id_for_read)  # приходит список кадров, если всё хорошо
 
                 if isinstance(ans, dict):
-                    for ti, a in ans.items():      # давно было, похоже ключ-это время принятия фрейма
+                    for ti, a in ans.items():  # давно было, похоже ключ-это время принятия фрейма
                         print(ti - self.old_ti, buf_to_string(a))
                         self.old_ti = ti
                         byte_a = a[self.answer_byte]
@@ -396,28 +432,23 @@ class SteerMoveThread(QThread):
     def __init__(self, steer: EVONode, adapter):
         super().__init__()
         # словарь с параметрами, которые опрашиваем
+        self.success_counter = 0
         self.result = None
         self.err_counter = None
         self.parameters_get = dict(
-            status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен',
-                                 min_value=0, max_value=0),
+            status=SteerParametr(name='A0.1 Status', warning='БУРР должен быть неактивен'),
             alarms=SteerParametr(name='A0.0 Alarms', warning='В блоке есть ошибки'),
-            position=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении',
-                                   nominal_value=0, min_value=-17, max_value=17),
-            current=SteerParametr(name='A1.7 CurrentRMS',
-                                  min_value=1, max_value=100),
-            serial=SteerParametr(name='B0.9 Serial_Number',
-                                 min_value=1, max_value=1000))
+            position=SteerParametr(name='A0.3 ActSteerPos', warning='Рейка НЕ в нулевом положении', min_value=-7,
+                                   max_value=7),
+            current=SteerParametr(name='A1.7 CurrentRMS', min_value=1, max_value=100),
+            serial=SteerParametr(name='B0.9 Serial_Number', min_value=1, max_value=1000))
         # словарь с параметрами, которые задаём
         self.parameters_set = dict(
             current=SteerParametr(name='C5.3 rxSetCurr', warning='Ток ограничения рейки задан неверно',
                                   nominal_value=70, min_value=1, max_value=90),
-            command=SteerParametr(name='D0.0 ComandSet', nominal_value=0,
-                                  min_value=0, max_value=5),
-            control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2,
-                                  min_value=0, max_value=2),
-            position=SteerParametr(name='A0.2 SetSteerPos', nominal_value=0,
-                                   min_value=-1000, max_value=1000))
+            command=SteerParametr(name='D0.0 ComandSet', max_value=5),
+            control=SteerParametr(name='D0.6 CAN_Control', nominal_value=2, max_value=2),
+            position=SteerParametr(name='A0.2 SetSteerPos', min_value=-1000, max_value=1000))
         self.node = steer
         self.adapter = adapter
         self.max_iteration = 7
@@ -429,7 +460,7 @@ class SteerMoveThread(QThread):
         for par in list(self.parameters_get.values()) + list(self.parameters_set.values()):
             par.parametr = find_param(par.name, self.node)[0]
             if not par.parametr:
-                QMessageBox.critical(None, "Ошибка ", f'Не найден параметр{par.name}', QMessageBox.StandardButton.Ok)
+                print(f'Не найден параметр{par.name}')
 
         self.current_position = self.parameters_set['position'].nominal_value
         self.min_position = self.parameters_set['position'].min_value
@@ -444,11 +475,12 @@ class SteerMoveThread(QThread):
             value = param.parametr.get_value(self.adapter)
             if not isinstance(value, str):
                 return value
-        # QMessageBox.critical(None, "Ошибка ", f'Запросить {param.name} не удалось', QMessageBox.StandardButton.Ok)
+        print(f'Запросить {param.name} не удалось')
         self.err_counter += 1
         return None
 
     def set_param(self, param: SteerParametr, value: int):
+        err = 'Неизвестная ошибка'
         if value > param.max_value:
             value = param.max_value
         if value < param.min_value:
@@ -456,8 +488,11 @@ class SteerMoveThread(QThread):
         for i in range(self.max_iteration):
             err = param.parametr.set_value(self.adapter, value)
             if not err:
-                return True
+                compare = self.get_param(param)
+                if int(compare) == int(value):
+                    return True
         self.err_counter += 1
+        print(f'Задать {value} для {param.name} не удалось', err)
         return False
 
     def actual_position(self):
@@ -474,7 +509,6 @@ class SteerMoveThread(QThread):
         elif value < self.min_position:
             value = self.min_position
         if not self.set_param(self.parameters_set['position'], value):
-            print(f'Задать положение {value} не удалось')
             return False
         return True
 
@@ -483,60 +517,79 @@ class SteerMoveThread(QThread):
         if value > self.max_current:
             value = self.max_current
         if not self.set_param(self.parameters_set['current'], value):
-            # QMessageBox.critical(None, "Ошибка ", f'Задать ток {value} не удалось', QMessageBox.StandardButton.Ok)
             return False
         return True
 
     # задание движения, за показаниями не следим, мотор не выключаем
     def move_to(self, value: int):
-        if value > self.max_position:
-            value = self.max_position
-        elif value < self.min_position:
-            value = self.min_position
         # если есть ошибки, не включаем
-        err = self.node.check_errors(self.adapter)
+        err = list([error.name for error in self.node.check_errors(self.adapter)])
         if err:
             errs = "\n - ".join(err)
-            QMessageBox.critical(None, "Ошибка ", f' В блоке ошибки {errs}', QMessageBox.StandardButton.Ok)
+            print(f' В блоке ошибки {errs}')
             return False
 
-        if not self.set_position(value) or not self.turn_on_motor():
-            self.stop()
-            return False
+        return self.set_position(value)
 
-        return True
-
-    # задаю команду на местное управление и включаю мотор
-    def turn_on_motor(self):
+    # задаю команду на местное управление
+    def switch_mode_on(self):
         if not self.set_param(self.parameters_set['control'], 0):
-            QMessageBox.critical(None, "Ошибка ", f'Не удалось перейти в тестовый режим', QMessageBox.StandardButton.Ok)
             print(f'Не удалось перейти в тестовый режим')
             return False
+        return True
+
+    # включаю мотор
+    def turn_on_motor(self):
         if not self.set_param(self.parameters_set['command'], 1):
-            QMessageBox.critical(None, "Ошибка ", f'Не удалось включить мотор', QMessageBox.StandardButton.Ok)
             print(f'Не удалось включить мотор')
             return False
         return True
 
     # возвращаю всё на штатные значения
     def stop(self):
-        for par in self.parameters_set.values():
-            self.set_param(par, par.nominal_value)
+        result = False
+        iterator = 0
+        while not result:
+            for par in self.parameters_set.values():
+                self.set_param(par, par.nominal_value)
+            time.sleep(0.5)
+            result = True
+            for par in self.parameters_set.values():
+                compare = self.get_param(par)
+                if compare is None:
+                    result = False
+                elif int(compare) != int(par.nominal_value):
+                    print(f'Не удалось задать {par.name} получилось {compare}, а должно быть {par.nominal_value}')
+                    result = False
+            iterator += 1
+            if iterator > self.max_iteration:
+                return False
         return True
 
+    def set_straight_sharp(self):
+        # нужно усовершенствовать процедуру приведения в ноль
+        # - подвели к нулю, отключили мотор, проверили остаточное,
+        # если больше дельты, переводим не в ноль,
+        # а в остаточное с обратным знаком, выключаем мотор и снова смотрим остаточное
+        # и так несколько итераций, пока при отключенном моторе остаточное не будет в пределах дельты
+        # перепробовал разные коэффициенты для дельты, не выходит она в ноль,
+        # резина не даёт нужно по другому как-то сейчас не использую эту функцию, потому что вечный цикл возможен
+        time.sleep(0.5)
+        self.current_position = self.actual_position()
+        while self.current_position > self.parameters_get['position'].max_value or \
+                self.current_position < self.parameters_get['position'].min_value:
+            self.set_straight()
+            time.sleep(0.5)
+            self.current_position = self.actual_position()
+
     def set_straight(self):
-        result = False
-        # определяем заданный пользователем максимальный ток (возможно, это нужно изменять)
-        # и задаём команду на вращение
-        self.max_current = self.get_param(self.parameters_set['current'])
-        move = self.move_to(self.parameters_get['position'].nominal_value)
-        if move and self.max_current:
-            print('Выходим в ноль')
-            self.parameters_set['current'].nominal_value = self.max_current
+        self.actual_position()
+        # задаём команду на поворот в ноль, ставим номинальный ток
+        if self.move_to(self.parameters_set['position'].nominal_value) and \
+                self.set_param(self.parameters_set['current'], self.parameters_set['current'].nominal_value):
             current_time = start_time = time.perf_counter()
             # а дальше смотрим за текущими параметрами пока не вышло время
             while time.perf_counter() < start_time + self.time_for_moving:
-                # print(f'\rТекущее положение {self.current_position}', end='', flush=True)
                 # регулярно опрашиваем текущее положение
                 if time.perf_counter() > current_time + self.time_for_request:
                     current_time = time.perf_counter()
@@ -544,30 +597,23 @@ class SteerMoveThread(QThread):
                 #  выходим с победой если попали в нужный диапазон
                 if self.parameters_get['position'].min_value < \
                         self.current_position < self.parameters_get['position'].max_value:
-                    result = True
-                    break
-        # отключаем мотор и все параметры возвращаем к номинальным
-        self.stop()
-        print()
-        return result
+                    return True
+        return False
 
     def define_current(self, value: int, current=None):
-        # self.max_current = self.get_param(self.parameters_set['current'])
-        result = f'Упёрлись в ограничение по времени {self.time_for_moving}с'
-        # и задаём команду на вращение
-        move = self.move_to(value)
+        result = f'Упёрлись в ограничение по времени {self.time_for_moving}с '
         # задаём минимальный ток для начала вращения
         if current is None:
             current = self.parameters_get['current'].min_value
         cur = self.set_current(current)
+        # и задаём команду на вращение
+        move = self.move_to(value)
         if move and cur:
             current_set_time = current_time = start_time = time.perf_counter()
             # а дальше смотрим за текущими параметрами пока не вышло время
-
             while time.perf_counter() < start_time + self.time_for_moving:
                 if time.perf_counter() > current_time + self.time_for_request:
                     current_time = time.perf_counter()
-                    # old_delta = value - self.current_position
                     self.actual_current()
                     if self.actual_position() is not None:
                         progress = abs(self.current_position) * self.percent_of_progress
@@ -579,18 +625,15 @@ class SteerMoveThread(QThread):
                 if time.perf_counter() > current_set_time + self.time_for_set:
                     current_set_time = time.perf_counter()
                     current += self.delta_current
-                    err = self.set_current(current)
-                    print(f'\rТекущее положение {self.current_position} '
-                          f'Добавляю ток  {current} '
-                          f'Удалось? -  {err}', end='', flush=True)
+                    self.set_current(current)
                     if current > self.max_current:
                         result = f'Упёрлись в ограничение по току {round(current, 2)}'
                         break
 
                 if value + self.parameters_get['position'].min_value < \
                         self.current_position < value + self.parameters_get['position'].max_value:
-                    print(f'\n Определили ток {current}')
                     result = round(current, 2)
+                    self.success_counter += 1
                     break
 
                 if self.err_counter > self.max_iteration:
@@ -599,18 +642,22 @@ class SteerMoveThread(QThread):
                     self.wait()
                     self.quit()
                     return 'Много ошибок'
-        # отключаем мотор и все параметры возвращаем к номинальным
-        self.stop()
-        print()
+        else:
+            print(f"Не удалось или задать ток {cur=} или перейти в тестовый режим {move=}")
         return result
 
     def run(self):
         self.result = []
         self.err_counter = 0
+        self.success_counter = 0
         divider = 10
         full_progress = abs(self.min_position + self.min_position / divider) + \
                         abs(self.max_position + self.max_position / divider)
         self.percent_of_progress = 100 / full_progress
+
+        self.switch_mode_on()
+        self.turn_on_motor()
+
         self.set_straight()
         self.SignalOfProcess.emit(['Страгиваем влево...'], [], int(self.progress))
         min_go = self.min_position / divider
@@ -618,6 +665,7 @@ class SteerMoveThread(QThread):
         text = f'Ток страгивания влево на величину {min_go} = {start_current_left}А'
         self.result.append(text)
         print(text)
+
         self.set_straight()
         self.progress += abs(min_go) * self.percent_of_progress
         self.SignalOfProcess.emit([text, 'Страгиваем вправо...'], [], int(self.progress))
@@ -626,6 +674,7 @@ class SteerMoveThread(QThread):
         text = f'Ток страгивания вправо на величину {min_go} = {start_current_right}А'
         self.result.append(text)
         print(text)
+
         self.set_straight()
         self.progress += abs(min_go) * self.percent_of_progress
         self.time_for_moving = 30
@@ -638,6 +687,7 @@ class SteerMoveThread(QThread):
         text = f'Ток максимального выворота влево = {full_current_left}А'
         self.result.append(text)
         print(text)
+
         self.set_straight()
         self.progress += abs(self.min_position) * self.percent_of_progress
         self.SignalOfProcess.emit([text, 'Выворачиваем полностью вправо...'], [], int(self.progress))
@@ -649,9 +699,12 @@ class SteerMoveThread(QThread):
         text = f'Ток максимального выворота вправо = {full_current_right}А'
         self.result.append(text)
         print(text)
-        self.set_straight()
+
+        self.set_straight_sharp()
         self.progress += abs(self.max_position) * self.percent_of_progress
-        self.SignalOfProcess.emit([text, 'Процедура завершена',
+        suc = ' УСПЕШНО' if self.success_counter >= 4 else ' НЕУДАЧНО, рекомендуется повторить'
+        self.result.append(suc)
+        self.SignalOfProcess.emit([text, f'Процедура завершена{suc}',
                                    'Файл проверки сохранён в папку /BURR_current/'], [], int(self.progress))
         self.stop()
         self.quit()
