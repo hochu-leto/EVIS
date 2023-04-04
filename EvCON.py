@@ -332,7 +332,7 @@ def set_new_value(param: Parametr, val):
             # frac = str(val).split('.')[1]
             # delimeter = len(frac) if int(frac) else 0
             # ---------------------------------------
-            print(f'{val=}, {zero_del(val).strip()}', end='    ')   # , {value_data=}, {new_val=}')
+            # print(f'{val=}, {zero_del(val).strip()}', end='    ')   # , {value_data=}, {new_val=}')
             param.set_value(can_adapter, val)
             # и сразу же проверяю записался ли он в блок
             value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
@@ -1253,6 +1253,8 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
 
     def show_graphs(self, visible: bool):
         self.thread.make_plot = visible
+        if not visible:
+            self.graphics.dock_widget.setWindowTitle('Зажми меня и потяни вниз')
 
 
 def change_theme():

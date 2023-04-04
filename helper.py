@@ -262,7 +262,8 @@ class EVOGraph(QMainWindow):
         self.counter = 0
         self.curves = []
         self.startTime = perf_counter()
-        self.dock_widget = QDockWidget('Dockable', self)
+        self.dock_widget = QDockWidget('Зажми меня и потяни вниз', self)
+        self.dock_widget.dockLocationChanged.connect(self.changeTitle)
         self.dockWidgetContents = QWidget()
         self.dockWidgetContents.setObjectName("dockWidgetContents")
         self.gridLayout = QGridLayout(self.dockWidgetContents)
@@ -285,6 +286,12 @@ class EVOGraph(QMainWindow):
         self.dock_widget.setFeatures(QDockWidget.DockWidgetFeature.DockWidgetFloatable |
                                      QDockWidget.DockWidgetFeature.DockWidgetMovable)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dock_widget)
+
+    def changeTitle(self):
+        if self.dock_widget.isWindow():
+            self.dock_widget.setWindowTitle('По двойному щелчку я встану на место')
+        else:
+            self.dock_widget.setWindowTitle('Зажми меня и потяни вниз')
 
     def update_params_list(self):
         p_counter = len(self.params_list)
