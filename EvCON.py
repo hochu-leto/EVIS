@@ -45,14 +45,11 @@ import sys
 import time
 
 import pandas as pd
-import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator, QAction
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidget, QLineEdit
 import pathlib
-
-from qt_material import apply_stylesheet, list_themes, QtStyleTools
 
 import VMU_monitor_ui
 from CANAdater import CANAdapter
@@ -738,7 +735,7 @@ def save_to_file_pressed():  # если нужно записать текущи
     window.tr.start()
 
 
-class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
+class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):
     record_vmu_params = False
     node_list_defined = False
     err_str = ''
