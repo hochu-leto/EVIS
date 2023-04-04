@@ -140,18 +140,6 @@
   editable: false
   min_value: 0.0
   max_value: 15.0
-- name: ABS_WHEEL_FREQ_FL
-  index: 8544
-  sub_index: 13
-  description: Частота вращения колеса "Переднее левое"
-  type: SIGNED16
-  value: 0
-  units: Гц
-  widget: MyColorBar
-  multiplier: 0.002
-  editable: false
-  min_value: -0.0
-  max_value: 40.0
 - name: ABS_WHEEL_TICKS
   index: 8544
   sub_index: 1
@@ -162,20 +150,6 @@
   editable: true
   min_value: 0.0
   max_value: 255.0
-  eeprom: true
-- name: ABS_WHEEL_MIN_SPEED_THRESHOLD
-  index: 8544
-  sub_index: 3
-  description: Пороговая скорость колес, используемая для детекции ошибок датчиков
-    АБС
-  type: SIGNED16
-  value: 0
-  units: об/мин
-  widget: MySlider
-  multiplier: 0.24410000000000004
-  editable: true
-  min_value: -0.0
-  max_value: 1000.0
   eeprom: true
 - name: ABS_WARNING_COUNT_THRESHOLD
   index: 8544
@@ -201,3 +175,28 @@
   min_value: 0.0
   max_value: 255.0
   eeprom: true
+- name: ABS_WHEEL_MIN_SPEED_THRESHOLD
+  index: 8544
+  sub_index: 3
+  description: Пороговая скорость колес, используемая для детекции ошибок датчиков
+    АБС
+  type: SIGNED16
+  value: 556.7921
+  units: об/мин
+  widget: MySlider
+  multiplier: 0.24410000000000004
+  editable: true
+  min_value: -0.0
+  max_value: 556.7921
+  eeprom: true
+- name: ABS_WHEEL_FREQ_FL
+  index: 8544
+  sub_index: 13
+  description: Частота вращения колеса "Переднее левое"
+  type: SIGNED16
+  value: 0.0
+  units: Гц
+  multiplier: 0.002
+  editable: false
+  min_value: -0.0
+  max_value: 40.0

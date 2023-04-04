@@ -328,18 +328,22 @@ def set_new_value(param: Parametr, val):
             # отключаем поток, если он был включен
             window.connect_to_node()
             # отправляю параметр, полученный из диалогового окна
-            frac = str(val).split('.')[1]
-            delimeter = len(frac) if int(frac) else 0
+            # --------------------------------------
+            # frac = str(val).split('.')[1]
+            # delimeter = len(frac) if int(frac) else 0
+            # ---------------------------------------
+            print(f'{val=}, {zero_del(val).strip()}', end='    ')   # , {value_data=}, {new_val=}')
             param.set_value(can_adapter, val)
             # и сразу же проверяю записался ли он в блок
             value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
             if not isinstance(value_data, str):
-                param.value = round(value_data, delimeter)
-                new_val = zero_del(param.value).strip()
-                # new_val = zero_del(round(value_data, delimeter)).strip()
+                # ------------------------------------------------
+                # param.value = round(value_data, delimeter)
+                # new_val = zero_del(param.value).strip()
+                # ---------------------------------------------------
+                new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
             my_label = QLabel()
-            print(f'{val=}, {zero_del(val).strip()}, {value_data=}, {new_val=}')
             if zero_del(val).strip() == new_val:
                 my_label = GreenLabel()
                 if param.node.save_to_eeprom:

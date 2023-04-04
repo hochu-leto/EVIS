@@ -122,7 +122,7 @@ class Parametr:
         # на что умножаем число из КАНа
         degree = check_value('degree')
         scale = float(check_value('scale', 10 ** degree))
-        self.multiplier = float(check_value('multiplier', float(check_value('mult', 1 / (scale or 1)))))
+        self.multiplier = round(float(check_value('multiplier', float(check_value('mult', 1 / (scale or 1))))), 4)
         # вычитаем это из полученного выше числа
         self.offset = float(check_value('scaleB', float(check_value('offset'))))
         period = int(check_value('period', 1))  # период опроса параметра 1=каждый цикл 1000=очень редко
@@ -176,11 +176,14 @@ class Parametr:
             self.set_list = data + [LSB, MSB, value_type, 0x10]
 
     def set_value(self, adapter: CANAdater, value):
+        frac = str(value).split('.')[1]
+        delimeter = len(frac) if int(frac) else 0
         value = (value if value < self.max_value else self.max_value) \
             if value >= self.min_value else self.min_value
         value += self.offset
         value /= self.multiplier
-        value = round(value, 5)
+        value = round(value, delimeter)
+        print(f'{value=}, {delimeter=}, {self.multiplier=}')
         # if 'Рулевая' in self.node.name:  # У томска проблемы с типом переменных
         #     self.value = value
         # else:
@@ -257,7 +260,7 @@ class Parametr:
 
             self.value *= self.multiplier
             self.value -= self.offset
-            self.value = round(self.value, 5)
+            # self.value = round(self.value, 5)
             return self.value
         else:
             print(f'Принятый адрес не совпадает - {self.index=} , {index_ans=} {self.sub_index=} , {sub_index_ans=}')
