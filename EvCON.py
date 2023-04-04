@@ -44,17 +44,14 @@ import pickle
 import sys
 import time
 
-import numpy
 import pandas as pd
 import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator, QAction
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
-    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidget, \
-    QLineEdit, QProxyStyle, QStyle
+    QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidget, QLineEdit
 import pathlib
 
-from pyqtgraph import PlotWidget
 from qt_material import apply_stylesheet, list_themes, QtStyleTools
 
 import VMU_monitor_ui
@@ -328,19 +325,10 @@ def set_new_value(param: Parametr, val):
             # отключаем поток, если он был включен
             window.connect_to_node()
             # отправляю параметр, полученный из диалогового окна
-            # --------------------------------------
-            # frac = str(val).split('.')[1]
-            # delimeter = len(frac) if int(frac) else 0
-            # ---------------------------------------
-            # print(f'{val=}, {zero_del(val).strip()}', end='    ')   # , {value_data=}, {new_val=}')
             param.set_value(can_adapter, val)
             # и сразу же проверяю записался ли он в блок
             value_data = param.get_value(can_adapter)  # !!!если параметр строковый, будет None!!--
             if not isinstance(value_data, str):
-                # ------------------------------------------------
-                # param.value = round(value_data, delimeter)
-                # new_val = zero_del(param.value).strip()
-                # ---------------------------------------------------
                 new_val = zero_del(value_data).strip()
             # и сравниваю их - соседняя ячейка становится зеленоватой, если ОК и красноватой если не ОК
             my_label = QLabel()
@@ -350,13 +338,10 @@ def set_new_value(param: Parametr, val):
                     param.node.param_was_changed = True
                     # В Избранном кнопку не активируем, может быть несколько блоков.
                     # Возможно, я когда-то смогу
-                    # if window.thread.current_node.name != TheBestNode:
-                    # window.save_eeprom_btn.setEnabled(True)
                     if window.thread.current_node.name == 'Инвертор_МЭИ':
                         info_m = f'Параметр будет работать, \nтолько после сохранения в ЕЕПРОМ'
                     elif window.thread.current_node.name == 'КВУ_ТТС':
                         param.node.param_was_changed = param.eeprom
-                    #     window.save_eeprom_btn.setEnabled(param.eeprom)
             else:
                 my_label = RedLabel()
                 # если поток был запущен до изменения, то запускаем его снова
@@ -757,8 +742,7 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
     record_vmu_params = False
     node_list_defined = False
     err_str = ''
-    themes_list = list([sty for sty in list_themes() if not '_500' in sty]) + QStyleFactory.keys() + \
-                  list([sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()])
+    themes_list = QStyleFactory.keys()
     current_theme = ''
 
     def __init__(self):
@@ -808,8 +792,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                         record_log()
                     # останавливаем поток
                     self.stop_thread(err)
-            # elif list_of_params[0]:
-            # ля, криво! Это тот случай, когда я хочу рисовать графики, тупо запихиваю в лист[0] True
             else:
                 pass
                 # вообще можно возвращать даже не список, а переменную
@@ -1166,17 +1148,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
                                               f' нужно сохранить этот список?'):
                     event.ignore()
 
-        # msg = QMessageBox(self)
-        # msg.setWindowTitle("Выход")
-        # msg.setIcon(QMessageBox.Icon.Question)
-        # msg.setText("Вы уверены, что хотите закрыть приложение?")
-        #
-        # buttonAccept = msg.addButton("Да", QMessageBox.ButtonRole.YesRole)
-        # msg.addButton("Отменить", QMessageBox.ButtonRole.RejectRole)
-        # msg.setDefaultButton(buttonAccept)
-        # msg.exec()
-
-        # if msg.clickedButton() == buttonAccept:
         with open(stylesheet_file, 'w+') as f:
             f.write(self.current_theme)
         if self.thread.isRunning():
@@ -1185,8 +1156,6 @@ class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
             del self.thread
         if can_adapter.isDefined:
             can_adapter.close_canal_can()
-        # else:
-        #     event.ignore()
 
     def change_tab(self):
 
@@ -1273,27 +1242,6 @@ def set_theme(theme_str=None):
     if theme_str in QStyleFactory.keys():
         app.setStyleSheet('')
         app.setStyle(theme_str)
-    elif theme_str in list_themes():
-        apply_stylesheet(app, theme_str, extra=extra)
-        stapp = app.styleSheet()
-        # модуль qt_material устанавливает не на все мои элементы нужные стили,
-        # поэтому приходится выдергивать из его styleSheet некоторые стили и устанавливать их куда нужно
-
-        pr_c_index = stapp.find('QPushButton {')
-        primary_color = stapp[pr_c_index + 23:pr_c_index + 30]
-        c_f_index = stapp.find('*{')
-        c_f_index_end = stapp.find('*:focus')
-        cur_font = stapp[c_f_index + 2:c_f_index_end]
-        b_f_index = stapp.find('/*  QPushButton  */')
-        b_f_index_end = stapp.find('QPushButton:checked,')
-        butt_font = stapp[b_f_index + 34:b_f_index_end]
-        my_style = f'QLabel {{color: {primary_color};\n' \
-                   f'{butt_font}\n' \
-                   f'GreenLabel, RedLabel {{\n' \
-                   f'{cur_font} '
-        app.setStyleSheet(stapp + my_style)
-    elif theme_str in [sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()]:
-        app.setStyleSheet(qrainbowstyle.load_stylesheet(style=theme_str))
     else:
         app.setStyleSheet('')
     c_style_sheet = app.styleSheet()
@@ -1307,11 +1255,10 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     splash = QSplashScreen()
     # splash.setPixmap(QPixmap('pictures/EVO-EVIS_l.jpg'))
+    # window.setWindowTitle('Electric Vehicle Information System')
     splash.setPixmap(QPixmap('pictures/EVO-EvCON.jpg'))
     splash.show()
     window = VMUMonitorApp()
-    window.label.setPixmap(QPixmap('pictures/grafic.png'))
-    # window.setWindowTitle('Electric Vehicle Information System')
     window.setWindowTitle('Electrical vehicle CONtrol')
     stylesheet_file = pathlib.Path(WORK_DIR, 'Data', 'EVOStyleSheet.txt')
     window.main_tab.currentChanged.connect(window.change_tab)
@@ -1371,7 +1318,6 @@ if __name__ == '__main__':
     window.flash_light_checkBox.clicked.connect(lambda: multyvibrator(window))
     window.light_box.setEnabled(False)
     # ----------------------------------- подготовка под графики ------------------------------------------------
-    window.label.deleteLater()
     window.gridLayout_5.addWidget(window.graphics, 0, 0, 1, 1)
     window.graphics.start_stop_btn.clicked.connect(window.connect_to_node)
     window.graphics.dock_widget.visibilityChanged.connect(window.show_graphs)

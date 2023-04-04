@@ -463,7 +463,7 @@ def multyvibrator(window):
                     off_light = PDOCommand(light_id_vmu, light_command_dict['off_rbtn'])
                     # можно ещё запрашивать период моргания
                     wait_thread.req_delay = 5000
-                    wait_thread.wait_time = 1200
+                    wait_thread.wait_time = 600
                     wait_thread.adapter = adapter
                     wait_thread.command_list = [low_beam, off_light] * 200
                     wait_thread.SignalOfProcess.connect(log_set)
@@ -478,6 +478,7 @@ def multyvibrator(window):
     if err:
         QMessageBox.critical(window, "Ошибка ", err, QMessageBox.StandardButton.Ok)
         window.flash_light_checkBox.setChecked(False)
+
 
 def adapter_for_node(ad: CANAdater, value=None) -> CANAdater:
     adapter = False

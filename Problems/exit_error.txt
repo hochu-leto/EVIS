@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Users\timofey.inozemtsev\PycharmProjects\VMU_monitor\EvCON.py", line 789, in add_new_vmu_params
-    elif not list_of_params and self.thread.current_params_list:  # ошибок нет - всё хорошо
-AttributeError: 'builtin_function_or_method' object has no attribute 'current_params_list'
-
-Process finished with exit code -1073741819 (0xC0000005)

@@ -164,7 +164,6 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
         lay_out.setContentsMargins(0, 0, 0, 0)
         cell_widget.setLayout(lay_out)
         show_table.setCellWidget(row, GRAPH_COLUMN, cell_widget)
-        # show_table.setCellWidget(row, GRAPH_COLUMN, graph_checkbox)
 
         value_item = QTableWidgetItem('')
         value_item.setFlags(value_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
@@ -184,7 +183,6 @@ def show_empty_params_list(list_of_params: list, show_table: QTableWidget, has_c
 
     show_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
-    # show_table.setColumnHidden(show_table.columnCount() - 2, not has_compare)
     show_table.setColumnHidden(COMPARE_COLUMN, not has_compare)
     # # максимальная ширина у описания, если не хватает длины, то переносится
     show_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
@@ -308,10 +306,6 @@ class EVOGraph(QMainWindow):
             curve.append(self.widget.plot(name=parametr.name))
         self.curves.append(curve)
         self.widget.enableAutoRange('y', 0.95)
-
-        # задаю последнее значение параметра как текущее
-        # for i, param in enumerate(self.params_list):
-        #     self.data_y[-1, i] = param.value
 
     def new_chunk(self):
         curve = []
