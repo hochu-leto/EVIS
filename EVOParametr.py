@@ -179,7 +179,7 @@ class Parametr:
             self.set_list = data + [LSB, MSB, value_type, 0x10]
 
     def set_value(self, adapter: CANAdater, value):
-        frac = str(value).split('.')[1]
+        frac = str(value).split('.')[1] if '.' in str(value) else 0
         delimeter = len(frac) if int(frac) else 0
         value = (value if value < self.max_value else self.max_value) \
             if value >= self.min_value else self.min_value
