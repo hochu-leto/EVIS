@@ -1,3 +1,4 @@
+
 canlib==1.22.565
 et-xmlfile==1.1.0
 numpy==1.24.1
@@ -20,3 +21,4 @@ PyQt5~=5.15.9
 helpdev~=0.7.1
 pyqtgraph~=0.13.1
 matplotlib~=3.7.0
+python-can~=4.1.0

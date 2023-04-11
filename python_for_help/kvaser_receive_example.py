@@ -1,7 +1,12 @@
+import os
+import pathlib
 from time import sleep
+
+os.environ['KVDLLPATH'] = str(pathlib.Path(pathlib.Path.cwd(), 'Kvaser_Driver_and_dll'))
 
 from canlib import canlib, Frame
 from canlib.canlib import ChannelData
+
 
 def setUpChannel(channel=0,
                  # openFlags=canlib.Open.ACCEPT_VIRTUAL,
@@ -15,7 +20,7 @@ def setUpChannel(channel=0,
             try:
                 chdata = canlib.ChannelData(channel).card_serial_no
             except canlib.canError as ex:
-                   print(ex)
+                print(ex)
             print(canlib.getNumberOfChannels(), chdata)
 
         try:
@@ -33,6 +38,7 @@ def setUpChannel(channel=0,
             except canlib.canError as ex:
                 print(f'Ошибка при закрытии канала = {ex}')
 
+
 def tearDownChannel(ch):
     ch.busOff()
     ch.close()
@@ -48,7 +54,7 @@ for channel in range(0, num_channels):
         chdata.channel_name,
         chdata.card_upc_no,
         chdata.card_serial_no)
-    )
+          )
 
 ch0 = setUpChannel(channel=0)
 
@@ -57,6 +63,7 @@ while True:
     # print(f'Channel s/n = {chdata.card_serial_no}')
     while not isinstance(ch0, canlib.Channel):
         ch0 = setUpChannel(channel=0)
+        print(ch0.getChannelData_Serial)
 
     try:
         frame = ch0.read()

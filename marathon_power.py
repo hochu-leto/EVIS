@@ -541,14 +541,14 @@ class CANMarathon(AdapterCAN):
                     # успешное выполнение, количество прочитанных фреймов
                     if result >= 0:
                         # просматриваем все полученные фреймы в поисках нужных ИД, может быть несколько
-                        print("Принял ")
+                        # print("Принял ")
                         for w in range(result):
                             buff = buffer_a[w]
-                            print(hex(buff.id), end='     ')
+                            # print(hex(buff.id), end='     ')
                             if can_id_ans == buff.id:
                                 next_frame = True
                                 for r in range(1, 7):
-                                    print(hex(buff.data[r]), end=' ')
+                                    # print(hex(buff.data[r]), end=' ')
                                     exit_list.append(buff.data[r])
                                 break
                     else:
@@ -559,8 +559,8 @@ class CANMarathon(AdapterCAN):
                 else:  # result < 0 - ошибка
                     err = 'Нет подключения к CAN шине '  # надо исправлять это безобразие
             # if len(exit_list) > l_byte - 1:
-        print()
-        print(f'Было отправлено {frame_counter} фреймов, принято {len(exit_list)} байт, возвращаю ')
+        # print()
+        # print(f'Было отправлено {frame_counter} фреймов, принято {len(exit_list)} байт, возвращаю ')
         if not err:
             return exit_list
 
@@ -823,10 +823,10 @@ class CANMarathon(AdapterCAN):
                         
                         exit()
                     if result >= 0:
-                        print(hex(buffer.id), end='    ')
-                        for e in buffer.data:
-                            print(hex(e), end=' ')
-                        print()
+                        # print(hex(buffer.id), end='    ')
+                        # for e in buffer.data:
+                        #     print(hex(e), end=' ')
+                        # print()
                         self.close_canal_can()
                         return name_bit
             self.close_canal_can()

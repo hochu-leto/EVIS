@@ -8,7 +8,7 @@ from sys import platform
 from PyQt6.QtWidgets import QApplication, QMessageBox
 
 import AdapterCAN
-# from kvaser_power import Kvaser
+from kvaser_power import Kvaser
 from marathon_power import CANMarathon
 from helper import buf_to_string
 
@@ -33,9 +33,10 @@ class CANAdapter:
             print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
         elif platform == "win32":  # Windows... - квасер в приоритете, если нет, то марафон
             # -------------------------------- ИСПРАВИТЬ  -----------------------------------
-            # self.search_chanells(Kvaser)
+            self.search_chanells(Kvaser)
             # if not self.can_adapters:
-            self.search_chanells(CANMarathon)
+            if not self.isDefined:
+                self.search_chanells(CANMarathon)
         if not self.adapters_dict:
             if QApplication.instance() is None:
                 app = QApplication([])
