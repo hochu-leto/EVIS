@@ -1,3 +1,5 @@
+import can
+
 from AdapterCAN import AdapterCAN
 
 
@@ -15,13 +17,19 @@ class PythonCan(AdapterCAN):
             self.bitrate = 125000  # и скорость 125
         self.wait_time = 300
         self.max_iteration = 5
+        self.open_channel = None
 
+    # здесь € должен вернуть или экземпл€р адаптера, если нашЄл его или строку с ошибкой
     def check_bitrate(self):
+        name_bit = 'ќшибка'
         for name_bit, bit in self.can_bitrate.items():
             print(f'ѕровер€ю битрейт {name_bit}')
         return name_bit
 
-    def canal_open(self):  # если канал если он нашЄлс€ или строку с ошибкой
+    def canal_open(self):  # канал если он нашЄлс€ или строку с ошибкой
+        if self.open_channel is None:
+            device_list = can.detect_available_configs()
+
         pass
 
     def close_canal_can(self):

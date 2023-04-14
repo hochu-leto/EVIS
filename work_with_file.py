@@ -124,15 +124,19 @@ def fill_err_list_from_yaml(file, node):
 
 # ------------------------------------- заполнения словаря с группами параметров -----------------------------
 def fill_par_dict_from_yaml(file, node, user_params_file=None):
-    try:
-        with open(user_params_file, "r", encoding="UTF-8") as stream:
-            try:
-                user_params_list = yaml.safe_load(stream) or []
-            except yaml.YAMLError as exc:
-                print(exc)
-    except FileNotFoundError:
+    if user_params_file is None:
         user_params_list = []
-        print('Нет файла с пользовательскими настройками параметров, загружаю стандартные')
+        print('Не задан файл с пользовательскими настройками параметров, загружаю стандартные')
+    else:
+        try:
+            with open(user_params_file, "r", encoding="UTF-8") as stream:
+                try:
+                    user_params_list = yaml.safe_load(stream) or []
+                except yaml.YAMLError as exc:
+                    print(exc)
+        except FileNotFoundError:
+            user_params_list = []
+            print('Нет файла с пользовательскими настройками параметров, загружаю стандартные')
 
     with open(file, "r", encoding="UTF-8") as stream:
         try:

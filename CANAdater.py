@@ -46,21 +46,24 @@ class CANAdapter:
 
     def search_chanells(self, adapter: AdapterCAN):
         print(f'Пробую найти {adapter.__name__}')
-        i = 0
-        while True:  # хреновая тема
+        # i = 0
+        # while True:  # хреновая тема
+
+        for i in range(2):      # у нас только два канала может быть
             can_adapter = adapter(channel=i)
             bit = can_adapter.check_bitrate()  # пробежавшись по битрейту
             if isinstance(bit, str):  # и получив строку, понимаю, что адаптера нет совсем
                 break
-            #       если же битрейт возвращает число, при этом меняется битрейт самого канала
-            #       или адаптер на 125 имеется, запоминаем его
+            # если же битрейт возвращает число, при этом меняется битрейт самого канала
+            # или адаптер на 125 имеется, запоминаем его
             self.isDefined = True
             print(f'Нашёл {adapter.__name__} канал {i}, скорость {bit}')
-            self.adapters_dict[bit] = can_adapter
-            i += 1
-            if i > 4:
-                print('Слишком много каналов')
-                break
+            self.adapters_dict[bit] = can_adapter   # это словарь где ключ - скорость, а значение - экземпляр адаптера
+
+            # i += 1
+            # if i > 4:
+            #     print('Слишком много каналов')
+            #     break
 
     #   на случай, если оба канала подключены к одной шине,
     #   их битрейты совпадают и они просто будут перезаписаны в словаре
