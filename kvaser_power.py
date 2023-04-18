@@ -2,7 +2,6 @@ import os
 import pathlib
 import time
 
-
 os.environ['KVDLLPATH'] = str(pathlib.Path(pathlib.Path.cwd(), 'Kvaser_Driver_and_dll'))
 
 from canlib import canlib, Frame
@@ -95,7 +94,8 @@ class Kvaser(AdapterCAN):
     }
 
     def __init__(self, channel=0, bit=125):
-        self.openFlags = canlib.Open.OVERRIDE_EXCLUSIVE
+        canlib.initializeLibrary()
+        self.openFlags = canlib.Open.OVERRIDE_EXCLUSIVE & ~canlib.Open.ACCEPT_VIRTUAL
         self.outputControl = canlib.Driver.NORMAL
         self.can_canal_number = channel  # по умолчанию нулевой канал
         if bit in self.can_bitrate.keys():
@@ -106,7 +106,21 @@ class Kvaser(AdapterCAN):
         self.wait_time = 500
         self.max_iteration = 5
         self.is_busy = False
-        self.ch = self.canal_open()
+        self.ch = None  # self.canal_open()
+
+    def clear_rx_buffer(self, chan: canlib.Channel) -> bool:
+        last_time = time.perf_counter_ns()
+        while (time.perf_counter_ns() - self.wait_time * 100_000) < last_time:
+            try:
+                frame = chan.read()
+                print(frame.id)
+            except canlib.CanNoMsg as ex:
+                return True
+            except canlib.canError as ex:
+                print(ex)
+                return False
+
+        return False
 
     def check_bitrate(self):
         for name_bit, bit in self.can_bitrate.items():
@@ -114,26 +128,30 @@ class Kvaser(AdapterCAN):
 
             self.bitrate = bit
             i = 0
-            # если канал уже есть, его обнуляем
-            if isinstance(self.ch, canlib.Channel):
-                self.ch.busOff()
-                self.ch.close()
-                self.ch = None
+            # # если канал уже есть, его обнуляем
+            # if isinstance(self.ch, canlib.Channel):
+            #     self.ch.busOff()
+            #     self.ch.close()
+            self.ch = None
             # пока нет канала, пытаемся его открыть, пока не кончились итерации
             while not isinstance(self.ch, canlib.Channel):
                 self.ch = self.canal_open()
                 i += 1
                 if i == self.max_iteration:
                     return self.ch
-            #
-            last_frame_time = int(round(time.time() * 1000))
-            current_time = 0
-            while current_time < (last_frame_time + self.wait_time):
-                current_time = int(round(time.time() * 1000))
+
+            last_frame_time = time.perf_counter_ns()  # int(round(time.time() * 1000))
+            # current_time = 0
+            print(self.clear_rx_buffer(self.ch))
+            while (time.perf_counter_ns() - self.wait_time * 100_000) < last_frame_time:
+                # current_time < (last_frame_time + self.wait_time):
+                # current_time = int(round(time.time() * 1000))
                 try:
+                    # self.ch.iocontrol.flush_tx_buffer()
+                    # self.ch.iocontrol.flush_rx_buffer()
                     frame = self.ch.read()
                     if frame.id != 0:
-                        self.ch.busOff()
+                        # self.ch.busOff()
                         return name_bit
                 except canlib.CanNoMsg as ex:
                     pass
@@ -147,24 +165,28 @@ class Kvaser(AdapterCAN):
     def canal_open(self):  # если канал если он нашёлся или строку с ошибкой
         # сначала несколько раз перезагружаем библиотеку и проверяем не появился ли канал с текущим номером
         # кажется, уже найденный канал слетит, если при поиске следующего будем перезагружать библиотеку
-        for i in range(self.max_iteration):
-            canlib.reinitializeLibrary()
-            try:
-                chdata = canlib.ChannelData(self.can_canal_number).card_serial_no
-                if chdata:  # если серийный номер карты не ноль, то это реальный адаптер, выходим из цикла
-                    break   # надо по другому определять что есть реальный канал
-            except canlib.canError as ex:
-                if ex.status in error_codes.keys():
-                    return error_codes[ex.status]
-                return str(ex)
-            if i == self.max_iteration - 1 and not chdata:
-                return error_codes[canlib.canERR_NOTFOUND]
+        is_hw_channel = canlib.ChannelData(self.can_canal_number).card_type
+        if is_hw_channel == canlib.HardwareType.NONE or is_hw_channel == canlib.HardwareType.VIRTUAL:
+            return 'Kvaser не обнаружен'
+            # for i in range(self.max_iteration):
+            #     # canlib.reinitializeLibrary()
+            #     try:
+            #         chdata = canlib.ChannelData(self.can_canal_number).card_serial_no
+            #         if chdata:  # если серийный номер карты не ноль, то это реальный адаптер, выходим из цикла
+            #             break   # надо по другому определять что есть реальный канал
+            #     except canlib.canError as ex:
+            #         if ex.status in error_codes.keys():
+            #             return error_codes[ex.status]
+            #         return str(ex)
+            #     if i == self.max_iteration - 1 and not chdata:
+            #         return error_codes[canlib.canERR_NOTFOUND]
         # открываю канал с заданными параметрами и возвращаю его
         try:
             ch = canlib.openChannel(channel=self.can_canal_number, flags=self.openFlags, bitrate=self.bitrate)
             ch.setBusOutputControl(self.outputControl)
             ch.busOn()
             self.is_busy = False
+
             return ch
         except canlib.canError as ex:
             print(f' В canal_open2  так  {ex}')
@@ -194,13 +216,7 @@ class Kvaser(AdapterCAN):
 
         try:
             self.is_busy = True
-            # self.ch.writeWait(frame, 50)  #.write(frame)
             self.ch.write(frame)
-            # print('write')
-        # except canlib.canError == canlib.canERR_INVHANDLE:
-        #     self.ch = self.canal_open()
-        #     self.ch.write(frame)
-        #     return ''
         except canlib.canError as ex:
             self.is_busy = False
             if ex.status in error_codes.keys():
@@ -218,7 +234,7 @@ class Kvaser(AdapterCAN):
 
         if not isinstance(self.ch, canlib.Channel):
             return self.ch
-        # self.ch.free_objbuf()
+
         while (time.perf_counter_ns() - self.wait_time * 100_000) < last_frame_time:
 
             try:
@@ -227,7 +243,6 @@ class Kvaser(AdapterCAN):
             except canlib.canError as ex:
                 self.is_busy = False
                 if ex.status == canlib.canERR_NOMSG:
-                    # print('Пусто')
                     continue
                 print(f'    В can_read  так  {ex}')
                 if ex.status in error_codes.keys():
@@ -238,7 +253,7 @@ class Kvaser(AdapterCAN):
 
             if frame.id == ID:
                 return frame.data
-            # print(hex(frame.id))
+
         return error_codes[canlib.canERR_NOMSG]
 
     # def can_request(self, can_id_req: int, can_id_ans: int, message: list):
@@ -298,71 +313,17 @@ class Kvaser(AdapterCAN):
     #             self.ch.busOff()
     #             return frame.data
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
-        # if not isinstance(message, list):
-        #     return error_codes[canERR_WRONG_DATA]
-        # проверяю вообще подключен ли квасер, если да, то ошибки быть не должно
-        # i = 0
-        # while not isinstance(self.ch, canlib.Channel):
-        #     self.ch = self.canal_open()
-        #     i += 1
-        #     if i == self.max_iteration:
-        #         return self.ch
-
-        # if can_id_req > 0x0000FFF:
-        #     flags = canlib.MessageFlag.EXT
-        # else:
-        #     flags = canlib.MessageFlag.STD
-        #
-        # frame = Frame(
-        #     id_=can_id_req,
-        #     data=message,
-        #     flags=flags)
-        # # canlib.Channel(self.can_canal_number)
-        # try:
-        #     self.is_busy = True
-        #     self.ch.free_objbuf()
-        #     self.ch.write(frame)
-        # except canlib.canError as ex:
-        #     er = ex.status
-        #     self.ch = self.canal_open()
-        #     if er in error_codes.keys():
-        #         return error_codes[er]
-        #     else:
-        #         return str(ex)
+        data = 'Не могу запросить параметр'
         for _ in range(self.max_iteration):
-            req = self.can_write(can_id_req, message)
-            if not req:
+            data = self.can_write(can_id_req, message)
+            if not data:
                 data = self.can_read(can_id_ans)
-                # return data
-                # return self.can_read(can_id_ans)
+                if not isinstance(data, str):
+                    break
             else:
-                return req
-            if not isinstance(data, str):
                 break
+
         return data
-        # last_frame_time = int(round(time.time() * 1000))
-        # while True:
-        #     current_time = int(round(time.time() * 1000))
-        #     if current_time > (last_frame_time + self.wait_time):
-        #         if frame.id == 0 or frame.id == can_id_req:
-        #             print('frame.id = ', frame.id, 'can_id_req = ', can_id_req)
-        #             return error_codes[canlib.canERR_NOMSG]
-        #         else:
-        #             return error_codes[canERR_NO_ECU_ANSWER]
-        #
-        #     try:
-        #         frame = self.ch.read()
-        #         self.is_busy = False
-        #     except canlib.CanNoMsg as ex:
-        #         pass
-        #     except canlib.canError as ex:
-        #         if ex.status in error_codes.keys():
-        #             return error_codes[ex.status]
-        #         return str(ex)
-        #     if frame.id == can_id_ans:
-        #         # проверить это
-        #         self.ch.busOff()
-        #         return frame.data
 
     def can_request_long(self, can_id_req: int, can_id_ans: int, l_byte):
 

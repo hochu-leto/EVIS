@@ -53,7 +53,7 @@ class CANAdapter:
             can_adapter = adapter(channel=i)
             bit = can_adapter.check_bitrate()  # пробежавшись по битрейту
             if isinstance(bit, str):  # и получив строку, понимаю, что адаптера нет совсем
-                break
+                continue
             # если же битрейт возвращает число, при этом меняется битрейт самого канала
             # или адаптер на 125 имеется, запоминаем его
             self.isDefined = True
