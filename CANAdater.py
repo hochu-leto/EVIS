@@ -3,11 +3,17 @@
 (пока только МАРАФОН и Квасер) и определяет скорости кан-шин, к которым они подключены.
 Нормально работает пока только с марафоном
 '''
+import os
+import pathlib
 from sys import platform
+os.environ['KVDLLPATH'] = str(pathlib.Path(pathlib.Path.cwd(), 'Kvaser_Driver_and_dll'))
 
-from PyQt6.QtWidgets import QApplication, QMessageBox
+from canlib import canlib
+from PyQt6.QtWidgets import QApplication, QMessageBox, QWidget
+from canlib.canlib.exceptions import CanError, CanGeneralError
 
 import AdapterCAN
+from Kvaser_channel import KvaserChannel1, KvaserChannel2, hardware_kvaser_channels, KvaserChannel
 from kvaser_power import Kvaser
 from marathon_power import CANMarathon
 from helper import buf_to_string
@@ -32,66 +38,90 @@ class CANAdapter:
         elif platform == "darwin":  # OS X
             print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
         elif platform == "win32":  # Windows... - квасер в приоритете, если нет, то марафон
-            # -------------------------------- ИСПРАВИТЬ  -----------------------------------
-            self.search_chanells(Kvaser)
-            # if not self.can_adapters:
-            if not self.isDefined:
-                self.search_chanells(CANMarathon)
+            text = ''
+            if not self.search_kvaser_channels():
+                self.search_channels(CANMarathon)
+            # self.adapters_dict[125] = Kvaser(channel=0, bit=125)
+            # self.adapters_dict[250] = Kvaser(channel=0, bit=250)
+            # self.adapters_dict[250] = KvaserChannel1()
+            # self.adapters_dict[125] = KvaserChannel2()
+            # self.isDefined = True
+        # - работает только для последнего адаптера
+        # self.adapters_dict[250].canal_open()
         if not self.adapters_dict:
             if QApplication.instance() is None:
                 app = QApplication([])
-            QMessageBox.critical(None, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.StandardButton.Ok)
+            # QMessageBox.critical(None, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.StandardButton.Ok)
+            # QMessageBox.critical(None, "Ошибка ", text, QMessageBox.StandardButton.Ok)
+            QMessageBox.critical(QWidget(), "Ошибка ", text, QMessageBox.StandardButton.Ok)
             return False
         return True
 
-    def search_chanells(self, adapter: AdapterCAN):
-        print(f'Пробую найти {adapter.__name__}')
-        # i = 0
-        # while True:  # хреновая тема
+    def search_kvaser_channels(self):
+        channel_dict = hardware_kvaser_channels()
+        print(channel_dict)
+        if channel_dict:
+            self.isDefined = True
+            for channel, bit in channel_dict.items():
+                self.adapters_dict[bit] = KvaserChannel(channel=channel, bitrate=bit)
+        return True if self.adapters_dict else False
 
-        for i in range(2):      # у нас только два канала может быть
+    def search_channels(self, adapter: AdapterCAN, chanel_count=2) -> str:
+        print(f'Пробую найти {adapter.__name__}')
+        text = adapter.__name__
+        bit_dict = adapter.can_bitrate.copy()
+        for i in range(chanel_count):  # у нас только два канала может быть
+            text += f'\n канал {i}'
             can_adapter = adapter(channel=i)
-            bit = can_adapter.check_bitrate()  # пробежавшись по битрейту
+            bit = can_adapter.check_bitrate(bitrate_dict=bit_dict)  # пробежавшись по битрейту
             if isinstance(bit, str):  # и получив строку, понимаю, что адаптера нет совсем
+                text += bit
                 continue
             # если же битрейт возвращает число, при этом меняется битрейт самого канала
-            # или адаптер на 125 имеется, запоминаем его
             self.isDefined = True
             print(f'Нашёл {adapter.__name__} канал {i}, скорость {bit}')
-            self.adapters_dict[bit] = can_adapter   # это словарь где ключ - скорость, а значение - экземпляр адаптера
-
-            # i += 1
-            # if i > 4:
-            #     print('Слишком много каналов')
-            #     break
-
-    #   на случай, если оба канала подключены к одной шине,
-    #   их битрейты совпадают и они просто будут перезаписаны в словаре
+            text = can_adapter.text
+            self.adapters_dict[bit] = can_adapter  # это словарь где ключ - скорость, а значение - экземпляр адаптера
+            del bit_dict[bit]
+        return text
 
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
         # если нужно опросить блок, айди которого уже есть в словаре,
         # просто используем этот адаптер, который привязан к этому айди -
         # так можно опрашивать сразу два кана(а может и три, если такой адаптер найдётся)
-        if can_id_req in list(self.id_nodes_dict.keys()):
-            adapter = self.id_nodes_dict[can_id_req]
-            self.is_busy = True  # даю понять всем, что адаптер занят, чтоб два потока не обращались в одно время
-            ans = adapter.can_request(can_id_req, can_id_ans, message)
-            self.is_busy = False
-            return ans
-        # если в словаре нет айди блока, бегу по словарю(хотя это можно сделать списком) с имеющимся адаптерами
-        # if not self.isDefined:
-        #     self.close_canal_can()
-        #     self.find_adapters()
         answer = 'Проверь соединение с ВАТС'
-        for adapter in self.adapters_dict.values():
-            self.is_busy = True
-            answer = adapter.can_request(can_id_req, can_id_ans, message)
-            self.is_busy = False  # освобождаем адаптер
-            # если в ответе нет строки(ошибки), значит адаптер имеется,
-            # добавляем его в словарь с этим айди блока и возвращаем ответ
-            if not isinstance(answer, str):
-                self.id_nodes_dict[can_id_req] = adapter
-                return answer
+        if self.id_nodes_dict:
+            if can_id_req in list(self.id_nodes_dict.keys()):
+                adapter = self.id_nodes_dict[can_id_req]
+                self.is_busy = True  # даю понять всем, что адаптер занят, чтоб два потока не обращались в одно время
+                ans = adapter.can_request(can_id_req, can_id_ans, message)
+                self.is_busy = False
+                if isinstance(ans, CanGeneralError):    # CanError):
+                    match ans.status:
+                        case canlib.Error.HARDWARE | canlib.Error.INTERNAL:
+                            self.id_nodes_dict.clear()
+                            for ad in self.adapters_dict:
+                                try:
+                                    ad.busOff()
+                                    ad.close()
+                                except canlib.canError:
+                                    continue
+                            self.adapters_dict.clear()
+                            self.isDefined = False
+                return ans.__str__()
+            # если в словаре нет айди блока, бегу по словарю(хотя это можно сделать списком) с имеющимся адаптерами
+            for adapter in self.adapters_dict.values():
+                self.is_busy = True
+                answer = adapter.can_request(can_id_req, can_id_ans, message)
+                self.is_busy = False  # освобождаем адаптер
+                # если в ответе нет строки(ошибки), значит адаптер имеется,
+                # добавляем его в словарь с этим айди блока и возвращаем ответ
+                if not isinstance(answer, str):
+                    self.id_nodes_dict[can_id_req] = adapter
+                    return answer
+        else:
+            if not self.search_kvaser_channels():
+                self.search_channels(CANMarathon)
         return answer
 
     def close_canal_can(self):
@@ -116,9 +146,9 @@ class CANAdapter:
             adapter = self.adapters_dict[bitrate]
             ans = adapter.can_read(can_id_ans)
             if isinstance(ans, dict):
-                for ti, a in ans.items():
-                    print(ti, buf_to_string(a))
-                    print()
+                # for ti, a in ans.items():
+                #     print(ti, buf_to_string(a))
+                #     print()
                 ans = list(ans.values())
             return ans
         return 'Неверный битрейт'

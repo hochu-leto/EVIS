@@ -44,18 +44,18 @@ import pickle
 import sys
 import time
 
-import numpy
+# import numpy
 import pandas as pd
-import qrainbowstyle
+# import qrainbowstyle
 from PyQt6.QtCore import pyqtSlot, Qt, QRegularExpression
 from PyQt6.QtGui import QIcon, QPixmap, QBrush, QRegularExpressionValidator, QAction
 from PyQt6.QtWidgets import QMessageBox, QApplication, QMainWindow, QTreeWidgetItem, QDialog, \
     QSplashScreen, QFileDialog, QDialogButtonBox, QStyleFactory, QLabel, QMenu, QTableWidget, \
-    QLineEdit, QProxyStyle, QStyle
+    QLineEdit
 import pathlib
 
-from pyqtgraph import PlotWidget
-from qt_material import apply_stylesheet, list_themes, QtStyleTools
+# from pyqtgraph import PlotWidget
+# from qt_material import apply_stylesheet, list_themes, QtStyleTools
 
 import VMU_monitor_ui
 from CANAdater import CANAdapter
@@ -753,12 +753,12 @@ def save_to_file_pressed():  # если нужно записать текущи
     window.tr.start()
 
 
-class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow, QtStyleTools):
+class VMUMonitorApp(QMainWindow, VMU_monitor_ui.Ui_MainWindow):  #, QtStyleTools):
     record_vmu_params = False
     node_list_defined = False
     err_str = ''
-    themes_list = list([sty for sty in list_themes() if not '_500' in sty]) + QStyleFactory.keys() + \
-                  list([sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()])
+    themes_list = QStyleFactory.keys()      # + \list([sty for sty in list_themes() if not '_500' in sty]) +
+                  # list([sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()])
     current_theme = ''
 
     def __init__(self):
@@ -1273,27 +1273,27 @@ def set_theme(theme_str=None):
     if theme_str in QStyleFactory.keys():
         app.setStyleSheet('')
         app.setStyle(theme_str)
-    elif theme_str in list_themes():
-        apply_stylesheet(app, theme_str, extra=extra)
-        stapp = app.styleSheet()
+    # elif theme_str in list_themes():
+    #     apply_stylesheet(app, theme_str, extra=extra)
+    #     stapp = app.styleSheet()
         # модуль qt_material устанавливает не на все мои элементы нужные стили,
         # поэтому приходится выдергивать из его styleSheet некоторые стили и устанавливать их куда нужно
 
-        pr_c_index = stapp.find('QPushButton {')
-        primary_color = stapp[pr_c_index + 23:pr_c_index + 30]
-        c_f_index = stapp.find('*{')
-        c_f_index_end = stapp.find('*:focus')
-        cur_font = stapp[c_f_index + 2:c_f_index_end]
-        b_f_index = stapp.find('/*  QPushButton  */')
-        b_f_index_end = stapp.find('QPushButton:checked,')
-        butt_font = stapp[b_f_index + 34:b_f_index_end]
-        my_style = f'QLabel {{color: {primary_color};\n' \
-                   f'{butt_font}\n' \
-                   f'GreenLabel, RedLabel {{\n' \
-                   f'{cur_font} '
-        app.setStyleSheet(stapp + my_style)
-    elif theme_str in [sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()]:
-        app.setStyleSheet(qrainbowstyle.load_stylesheet(style=theme_str))
+        # pr_c_index = stapp.find('QPushButton {')
+        # primary_color = stapp[pr_c_index + 23:pr_c_index + 30]
+        # c_f_index = stapp.find('*{')
+        # c_f_index_end = stapp.find('*:focus')
+        # cur_font = stapp[c_f_index + 2:c_f_index_end]
+        # b_f_index = stapp.find('/*  QPushButton  */')
+        # b_f_index_end = stapp.find('QPushButton:checked,')
+        # butt_font = stapp[b_f_index + 34:b_f_index_end]
+        # my_style = f'QLabel {{color: {primary_color};\n' \
+        #            f'{butt_font}\n' \
+        #            f'GreenLabel, RedLabel {{\n' \
+        #            f'{cur_font} '
+        # app.setStyleSheet(stapp + my_style)
+    # elif theme_str in [sty_s.lower() for sty_s in qrainbowstyle.getAvailableStyles()]:
+    #     app.setStyleSheet(qrainbowstyle.load_stylesheet(style=theme_str))
     else:
         app.setStyleSheet('')
     c_style_sheet = app.styleSheet()

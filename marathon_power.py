@@ -112,6 +112,18 @@ class CANMarathon(AdapterCAN):
         self.lib.CiWaitEvent.argtypes = [ctypes.POINTER(array_cw), ctypes.c_int32, ctypes.c_int16]
         self.lib.CiTransmit.argtypes = [ctypes.c_int8, ctypes.POINTER(self.Buffer)]
         self.buffer_array = self.Buffer * 1000
+        self.text = 'Marathon'
+
+    # def check_connection(self) -> bool:
+    #     result = False
+    #     try:
+    #         result = self.lib.CiOpen(0, 0x2 | 0x4)
+    #         result = ctypes.c_int16(result).value
+    #         if result == 0:
+    #             result = True
+    #     except Exception as e:
+    #         print('CiOpen do not work')
+    #     return result
 
     def canal_open(self):
         result = -1
@@ -786,9 +798,11 @@ class CANMarathon(AdapterCAN):
         self.close_canal_can()
         return err
 
-    def check_bitrate(self):
+    def check_bitrate(self,  bitrate_dict=None):
+        if bitrate_dict is None:
+            bitrate_dict = self.can_bitrate.copy()
         # если канал закрыт, его нда открыть
-        for name_bit, bit in self.can_bitrate.items():
+        for name_bit, bit in bitrate_dict.items():
             print(f'Проверяю битрейт {name_bit}')
             self.BCI_bt0 = bit
             err = self.canal_open()

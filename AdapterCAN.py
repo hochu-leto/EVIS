@@ -29,3 +29,8 @@ class AdapterCAN:
         # запрашиваем у блока по can_id_req message и
         # выдаём что он ответил по can_id_ans
         pass
+
+
+    def check_connection() -> bool:
+        # проверяю подключен ли физический адаптер
+        pass
