@@ -280,21 +280,34 @@ class KvaserChannel:
 
         return ''
 
+    def clear_rx_buffer(self) -> bool:
+        last_time = time.perf_counter_ns()
+        while (time.perf_counter_ns() - self.wait_time * 100_000) < last_time:
+            try:
+                frame = self.ch.read()
+                print(frame.id)
+            except canlib.CanNoMsg as ex:
+                return True
+            except canlib.canError as ex:
+                print(ex)
+                return False
+        return False
+
     def can_read(self, ID: int):
         last_frame_time = time.perf_counter_ns()
 
         if not isinstance(self.ch, canlib.Channel):
             self.canal_open()
-
+        self.clear_rx_buffer()
         while (time.perf_counter_ns() - self.wait_time * 100_000) < last_frame_time:
 
             try:
                 self.is_busy = True
-                frame = self.ch.read()
+                frame = self.ch.read(200)
             except canlib.canError as ex:
-                self.is_busy = False
                 if ex.status == canlib.canERR_NOMSG:
                     continue
+                self.is_busy = False
                 print(f'    В can_read  так  {ex}')
                 self.text += f' ошибка при чтении с канала 1 -> {ex}'
                 return ex
@@ -312,7 +325,7 @@ class KvaserChannel:
             data = self.can_write(can_id_req, message)
             if not data:
                 data = self.can_read(can_id_ans)
-                if not isinstance(data, str):
+                if not isinstance(data, canlib.Error):
                     break
             else:
                 break

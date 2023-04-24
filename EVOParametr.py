@@ -234,7 +234,6 @@ class Parametr:
             index_ans = 0
             sub_index_ans = 0
             value = 0
-        # print(f' received value  =  {value}', end=' ---->  ')
 
         if self.type == 'VISIBLE_STRING':
             self.string_from_can(value_data[-4:])
@@ -243,7 +242,6 @@ class Parametr:
         elif index_ans == self.index and sub_index_ans == self.sub_index:
             # принятый адрес должен совпадать с тем же адресом, что был отправлен
             if self.type == 'FLOAT':
-                # self.value = bytes_to_float(value_data[-4:])
                 value = bytes_to_float(value_data[-4:])
             elif self.type == 'DATE':
                 # день месяца (0-4), номер месяца (5-8) и текущий год (9-15)
@@ -255,16 +253,11 @@ class Parametr:
                 self.value = None
                 return self.value
             else:
-                # self.value = type_values[self.type]['func'](value).value
                 value = type_values[self.type]['func'](value).value
 
-            # self.value *= self.multiplier
             value *= self.multiplier
-            # self.value -= self.offset
             value -= self.offset
-            # self.value = round(self.value, 5)
             self.value = value
-            # print(f' final value = {value}')
             return self.value
         else:
             print(f'Принятый адрес не совпадает - {self.index=} , {index_ans=} {self.sub_index=} , {sub_index_ans=}')

@@ -33,27 +33,17 @@ class CANAdapter:
         print('Ищу адаптеры')
         if platform == "linux" or platform == "linux2":  # linux - только квасер
             pass
-            # -------------------------------- ИСПРАВИТЬ  -----------------------------------
-            # self.search_chanells(Kvaser)
+
         elif platform == "darwin":  # OS X
             print("Ошибка " + 'С таким говном не работаем' + '\n' + "Вон ОТСЮДА!!!")
         elif platform == "win32":  # Windows... - квасер в приоритете, если нет, то марафон
-            text = ''
             if not self.search_kvaser_channels():
                 self.search_channels(CANMarathon)
-            # self.adapters_dict[125] = Kvaser(channel=0, bit=125)
-            # self.adapters_dict[250] = Kvaser(channel=0, bit=250)
-            # self.adapters_dict[250] = KvaserChannel1()
-            # self.adapters_dict[125] = KvaserChannel2()
-            # self.isDefined = True
-        # - работает только для последнего адаптера
-        # self.adapters_dict[250].canal_open()
+
         if not self.adapters_dict:
             if QApplication.instance() is None:
                 app = QApplication([])
-            # QMessageBox.critical(None, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.StandardButton.Ok)
-            # QMessageBox.critical(None, "Ошибка ", text, QMessageBox.StandardButton.Ok)
-            QMessageBox.critical(QWidget(), "Ошибка ", text, QMessageBox.StandardButton.Ok)
+            QMessageBox.critical(None, "Ошибка ", 'Адаптер не обнаружен', QMessageBox.StandardButton.Ok)
             return False
         return True
 
@@ -85,43 +75,51 @@ class CANAdapter:
             del bit_dict[bit]
         return text
 
+    def kvaser_error_handle(self, err):
+        match err.status:
+            case canlib.Error.HARDWARE | canlib.Error.INTERNAL:
+                self.id_nodes_dict.clear()
+                for ad in self.adapters_dict:
+                    try:
+                        ad.busOff()
+                        ad.close()
+                    except canlib.canError:
+                        continue
+                self.adapters_dict.clear()
+                self.isDefined = False
+        return str(err)
+
     def can_request(self, can_id_req: int, can_id_ans: int, message: list):
         # если нужно опросить блок, айди которого уже есть в словаре,
         # просто используем этот адаптер, который привязан к этому айди -
         # так можно опрашивать сразу два кана(а может и три, если такой адаптер найдётся)
         answer = 'Проверь соединение с ВАТС'
-        if self.id_nodes_dict:
+        if self.adapters_dict:
             if can_id_req in list(self.id_nodes_dict.keys()):
                 adapter = self.id_nodes_dict[can_id_req]
                 self.is_busy = True  # даю понять всем, что адаптер занят, чтоб два потока не обращались в одно время
                 ans = adapter.can_request(can_id_req, can_id_ans, message)
                 self.is_busy = False
                 if isinstance(ans, CanGeneralError):    # CanError):
-                    match ans.status:
-                        case canlib.Error.HARDWARE | canlib.Error.INTERNAL:
-                            self.id_nodes_dict.clear()
-                            for ad in self.adapters_dict:
-                                try:
-                                    ad.busOff()
-                                    ad.close()
-                                except canlib.canError:
-                                    continue
-                            self.adapters_dict.clear()
-                            self.isDefined = False
-                return ans.__str__()
+                    ans = self.kvaser_error_handle(ans)
+                return ans
             # если в словаре нет айди блока, бегу по словарю(хотя это можно сделать списком) с имеющимся адаптерами
             for adapter in self.adapters_dict.values():
                 self.is_busy = True
                 answer = adapter.can_request(can_id_req, can_id_ans, message)
                 self.is_busy = False  # освобождаем адаптер
-                # если в ответе нет строки(ошибки), значит адаптер имеется,
+                # если в ответе нет ошибки, значит адаптер имеется,
                 # добавляем его в словарь с этим айди блока и возвращаем ответ
-                if not isinstance(answer, str):
+                if isinstance(answer, CanGeneralError):
+                    answer = self.kvaser_error_handle(answer)
+                else:
                     self.id_nodes_dict[can_id_req] = adapter
                     return answer
         else:
             if not self.search_kvaser_channels():
                 self.search_channels(CANMarathon)
+            if self.adapters_dict:
+                self.can_request(can_id_req, can_id_ans, message)
         return answer
 
     def close_canal_can(self):
