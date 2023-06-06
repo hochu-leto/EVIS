@@ -1,7 +1,8 @@
 import os
 import time
+from datetime import datetime
 from tkinter import filedialog as fd
-
+import can
 import can_decoder
 import pandas as pd
 import glob
@@ -12,6 +13,7 @@ from os import walk
 from pandas import ExcelWriter
 
 mypath = 'dbc/'
+
 #
 # f = []
 # for (dirpath, dirnames, dbc_files_list) in walk(mypath):
@@ -20,6 +22,62 @@ mypath = 'dbc/'
 #
 # dbc_files_list1 = next(walk(mypath), (None, None, []))[2]  # [] if no file
 # dbc_files_list2 = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+
+import can  # pip install python-can
+
+
+def log_to_asc_convert(log_file: str) -> str:
+    log_in = can.io.CanutilsLogReader(log_file)
+    asc_file = log_file.replace('.log', '.asc')
+
+    try:
+        for msg in log_in:
+            pass
+        with open(asc_file, 'w') as f_out:
+            log_out = can.io.ASCWriter(f_out)
+            for msg in log_in:
+                log_out.on_message_received(msg)
+        log_out.stop()
+    except ValueError:
+        canwise_log_to_candump(log_file, asc_file)
+    return asc_file
+
+
+def canwise_log_to_candump(log_file, exit_file):
+    ms_string = '0018992249'
+    date_string = '31.05.2023'
+    time_string = '14:23:22.903'
+    temp_file = 'temp.log'
+    with open(log_file, 'r') as f_in:
+        with open(temp_file, 'w') as f_temp:
+            for mess in f_in.readlines():
+                ms = mess.split()
+                if ms[0] == 'ER':
+                    continue
+                byte_count = int(ms[4])
+                ms_string = ms[byte_count + 6]
+                date_string = ms[byte_count + 7]
+                time_string = ms[byte_count + 8]
+                # time_stamp = datetime.strptime(ms_string, "%f")
+                # time_stamp = datetime.strptime(date_string + time_string[:-4] + ms_string[4:],
+                #                                "%d.%m.%Y%H:%M:%S%f")
+                time_stamp = datetime.strptime(date_string + time_string,
+                                               "%d.%m.%Y%H:%M:%S.%f")
+                # time_stamp = datetime.strptime(ms_string[:4] + '.' + ms_string[4:], "%S.%f")
+                now = str(datetime.timestamp(time_stamp)).ljust(17, '0')
+                id_string = ms[3] if ms[2] == 'EFF' else ms[3][-3:]
+                data_string = ''.join(ms[6:6 + byte_count])
+                ch_string = 'can0'
+                f_temp.write(f'({now}) {ch_string} {id_string}#{data_string}\n')
+
+    log_in = can.io.CanutilsLogReader(temp_file)
+    with open(exit_file, 'w') as f_out:
+        log_out = can.io.ASCWriter(f_out)
+        for msg in log_in:
+            log_out.on_message_received(msg)
+    log_out.stop()
+
+
 dbc_files_list = glob.glob(mypath + "*.dbc")
 if not dbc_files_list:
     print(f'*.dbc Файлы в папке {mypath} не найдены')
@@ -32,6 +90,8 @@ file_name = fd.askopenfilename()
 if not file_name:
     print('Файл не выбран')
     quit()
+# log_to_asc_convert(file_name)
+# quit()
 f = str(file_name)
 new_file_name = f[:f.rfind('.')] + '.xlsx'
 with open(file_name, "r") as file:
@@ -108,4 +168,3 @@ else:
 
 with ex_wr as writer:
     df.to_excel(writer, index=False)
-

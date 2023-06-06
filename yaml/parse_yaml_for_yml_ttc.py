@@ -1,10 +1,8 @@
 import yaml
-from tkinter import filedialog
+# from tkinter import filedialog
 
 convert_types = dict(uint8='UNSIGNED8', int8='SIGNED8', uint16='UNSIGNED16', int16='SIGNED16', uint32='UNSIGNED32',
                      int32='SIGNED32', float='FLOAT', string='VISIBLE_STRING')
-# file = "canopen_parameters.yml"
-# file = "C:\\workspace\\PycharmProjects\\VMU_monitor\\Data\\all_nodes.yaml"
 '''
   required_fields:
     name:           name:
@@ -94,8 +92,7 @@ if __name__ == '__main__':
             print(exc)
     iolib_errors_dict = vmu_ttc_ioe['iolib_errors']
 
-    file_name = filedialog.askopenfilename()
-
+    file_name = 'canopen_parameters.yml'
     with open(file_name, "r", encoding="UTF8") as stream:
         try:
             canopen_vmu_ttc = yaml.safe_load(stream)
@@ -141,5 +138,8 @@ if __name__ == '__main__':
             if 'iolib_errors' in par['description']:
                 par['value_table'] = iolib_errors_dict.copy()
         parse_dict[group] = group_list
+        if '' in parse_dict.keys():
+            del parse_dict['']
     with open(r'parameters.yaml', 'w', encoding='UTF-8') as file:
-        documents = yaml.dump(check_dict(parse_dict), file, allow_unicode=True)
+        # documents = yaml.dump(check_dict(parse_dict), file, allow_unicode=True) объединяет короткие группы параметров
+        documents = yaml.dump(parse_dict, file, allow_unicode=True)

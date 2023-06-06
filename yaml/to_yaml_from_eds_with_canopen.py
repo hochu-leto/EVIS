@@ -11,9 +11,9 @@ from parse_yaml_for_burr import check_dict
 type_dict = {
     0x01: 'BOOLEAN',
     0x02: 'SIGNED8',  # 'INTEGER8',
-    0x03: 'SIGNED16',   # 'INTEGER16',
-    0x04: 'SIGNED32',   # 'INTEGER32',
-    0x15: 'SIGNED64',   # 'INTEGER64',
+    0x03: 'SIGNED16',  # 'INTEGER16',
+    0x04: 'SIGNED32',  # 'INTEGER32',
+    0x15: 'SIGNED64',  # 'INTEGER64',
     0x05: 'UNSIGNED8',
     0x06: 'UNSIGNED16',
     0x07: 'UNSIGNED32',
@@ -44,10 +44,13 @@ def convert_variable_to_evo_param(param_list: list, var: canopen.objectdictionar
             editable=var.writable,
             type=type_dict[var.data_type],
             value=var.default,
-            address=hex(var.index) + int_to_hex_str(var.subindex)
+            # address=hex(var.index) + int_to_hex_str(var.subindex)
+            index=var.index,
+            sub_index=var.subindex
         )
         param_list.append(parametr)
     return param_list
+
 
 if __name__ == '__main__':
 

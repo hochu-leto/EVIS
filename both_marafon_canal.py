@@ -1,8 +1,12 @@
 import time
 
-from PyQt5.QtCore import QThread, QObject, pyqtSignal, pyqtSlot, QRegularExpression, QTimer
-from PyQt5.QtGui import QTextCursor, QRegularExpressionValidator
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtCore import QTimer, QObject, pyqtSignal, QThread, pyqtSlot, QRegularExpression
+from PyQt6.QtGui import QTextCursor, QRegularExpressionValidator
+from PyQt6.QtWidgets import QMainWindow, QApplication
+
+# from PyQt5.QtCore import QThread, QObject, pyqtSignal, pyqtSlot, QRegularExpression, QTimer
+# from PyQt5.QtGui import QTextCursor, QRegularExpressionValidator
+# from PyQt5.QtWidgets import QApplication, QMainWindow
 import two_chanell_ui
 from marathon_power import CANMarathon
 
@@ -102,14 +106,14 @@ class CANMonitorApp(QMainWindow, two_chanell_ui.Ui_MainWindow):
     def add_new_frame(self, frame: str):
         self.textBrowser_1.append(frame)
         cursor = self.textBrowser_1.textCursor()
-        cursor.movePosition(QTextCursor.End)
+        cursor.movePosition(QTextCursor.MoveOperation.End)
         self.textBrowser_1.setTextCursor(cursor)
 
     @pyqtSlot(str)
     def add_new_frame2(self, frame: str):
         self.textBrowser_2.append(frame)
         cursor = self.textBrowser_2.textCursor()
-        cursor.movePosition(QTextCursor.End)
+        cursor.movePosition(QTextCursor.MoveOperation.End)
         self.textBrowser_2.setTextCursor(cursor)
 
 
@@ -154,4 +158,4 @@ timer_send.timeout.connect(send_can1)
 
 window.read2_btn.clicked.connect(read_can2)
 window.show()  # Показываем окно
-app.exec_()  # и запускаем приложение
+app.exec()  # и запускаем приложение
