@@ -19,8 +19,8 @@ type_dict = dict(
     UINT16='UNSIGNED16',
     ENUM='UNSIGNED16',
     INT16='SIGNED16',
-    UNION='SIGNED16',
-    STR='SIGNED16',
+    UNION='UNSIGNED16',     # 'SIGNED16',
+    STR='UNSIGNED16',     # 'SIGNED16',
     STRING='VISIBLE_STRING',
     INT32='SIGNED32',
     DATE='DATE',
@@ -30,7 +30,6 @@ type_dict = dict(
 
 def check_dict(par_dict: dict):
     final_dict = {}
-    # final_dict[' '] = []
 
     old_n = ''
     final_dict[old_n] = []
@@ -39,7 +38,7 @@ def check_dict(par_dict: dict):
         if len(l) > 3:
             final_dict[n] = l
             old_n = n
-        else:
+        elif l:
             final_dict[f'{old_n}&{n}'] = final_dict[old_n] + l
             del final_dict[old_n]
             old_n = f'{old_n}&{n}'
@@ -48,8 +47,26 @@ def check_dict(par_dict: dict):
     return final_dict
 
 
-if __name__ == '__main__':
-    file_name = fd.askopenfilename()
+def split_group(final_list: list[dict]) -> dict[str:list[dict]]:
+    old_group = ''
+    f_list = []
+    param_dict = {}
+    for par in final_list:
+        if par['code'].count('.') == 2:
+            f_list.append(par)
+        elif par['code'].count('.') == 1:
+            param_dict[old_group] = f_list.copy()
+            f_list.clear()
+            old_group = str(par['name'])
+        else:
+            pass
+    param_dict[old_group] = f_list.copy()
+    clear_dict = {k: param_dict[k].copy() for k in param_dict.keys() if param_dict[k]}
+
+    return clear_dict
+
+
+def xls_to_list(file_name: str) -> list[dict]:
     excel_data_df = pandas.read_excel(file_name)
     nodes = excel_data_df.to_dict(orient='records')
     final_list = []
@@ -75,6 +92,10 @@ if __name__ == '__main__':
         else:
             print('No scale ')
             break
+        if str(tg['degree']) != 'nan':
+            scale = 10 ** int(tg['degree'])
+            tg['multiplier'] = 1 / scale
+        del tg['degree']
 
         if 'name' in t.keys():
             tg['name'] = t['name']
@@ -114,16 +135,19 @@ if __name__ == '__main__':
         elif 'Ед. изм.' in t.keys():
             tg['unit'] = t['Ед. изм.']
         else:
+            tg['unit'] = 'nan'
             print('No Ед. изм. ')
             break
+        if str(tg['unit']) == 'nan':
+            del tg['unit']
 
-        if 'Размер' in t.keys():
-            tg['size'] = t['Размер']
-        elif 'size' in t.keys():
-            tg['size'] = t['size']
-        else:
-            print('No size ')
-            break
+        # if 'Размер' in t.keys():
+        #     tg['size'] = t['Размер']
+        # elif 'size' in t.keys():
+        #     tg['size'] = t['size']
+        # else:
+        #     print('No size ')
+        #     break
 
         if 'code' in t.keys():
             tg['code'] = t['code']
@@ -141,28 +165,28 @@ if __name__ == '__main__':
 
         if 'Строки' in t.keys() and str(t['Строки']) != 'nan':
             list_v = t['Строки'].split(';\n') if len(t['Строки'].split(';\r\n')) == 1 else t['Строки'].split(';\r\n')
-            tg['value_table'] = {n.split('- ')[0]: n.split('- ')[1] for n in list_v if n}
+            try:
+                tg['value_table'] = {n.split('- ')[0]: n.split('- ')[1] for n in list_v if n}
+            except IndexError:
+                tg['value_table'] = {0: 'Таблица неверна'}
+
+        if v_type == 'UNION':
+            tg['value_table'] = {2 ** int(k) : v.strip() for k, v in tg['value_table'].items() if 'ezerv' not in v}
+            tg['value_table'][0] = 'Нет значения'
+            tg['widget'] = 'BIN'
 
         tg['period'] = 1
         if str(tg['address']) != 'nan':
-            tg['address'] = '0x' + hex(int(tg['address']))[2::].zfill(4)
-
+            tg['index'] = int(tg['address'])
+            del tg['address']
         final_list.append(tg.copy())
+    return final_list
 
-    old_group = ''
-    f_list = []
-    param_dict = {}
-    group = ''
-    for par in final_list:
-        if par['code'].count('.') == 2:
-            f_list.append(par)
-        elif par['code'].count('.') == 1:
-            param_dict[old_group] = f_list.copy()
-            f_list.clear()
-            old_group = str(par['name'])
-        else:
-            pass
-    del param_dict['']
 
-    with open(r'parameters_burr.yaml', 'w', encoding='UTF-8') as file:
-        documents = yaml.dump(check_dict(param_dict), file, allow_unicode=True)
+if __name__ == '__main__':
+    file_name = fd.askopenfilename()
+    d = xls_to_list(file_name)
+    x = split_group(d)
+    # x = check_dict(x)
+    with open(r'parameters_burr.yaml', 'w', encoding='UTF-8') as file:  # encoding='windows-1251'
+        documents = yaml.dump(x, file, allow_unicode=True)

@@ -1,5 +1,6 @@
 pyuic5 two_chanell-1.ui -o two_chanell_ui.py
 pyuic6 VMU_monitor_v3.ui -o VMU_monitor_ui.py
+pyuic6 dia.ui -o dia_ui.py
 pyuic6 dock_with_button.ui -o dock_with_button.py
 pyinstaller --noconsole --noconfirm -i "pictures/EVO_logo.ico" EvCON.py
 pyinstaller --name="EvCON" -i "pictures/EVO_logo.ico" --windowed EvCON.py

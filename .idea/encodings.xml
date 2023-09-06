@@ -35,7 +35,9 @@
     <file url="file://$PROJECT_DIR$/Kvaser_channel.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/aaaa.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/command_buttons.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dial.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/kvaser_request.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/make_changelog.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/menu_items.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/python_for_help/ElegantDark.qss" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/python_for_help/canwise_and_candump_log_to_asc_converter.py" charset="UTF-8" />
@@ -46,6 +48,8 @@
     <file url="file://$PROJECT_DIR$/python_for_help/kvaser_power_1.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/python_for_help/pyqtgraph_ex.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/qt_material" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/vats_nodes_orm.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/yaml/aaaaaaaa.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/co_dictionary_old_ttc.cpp" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/params_from_table.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/parse_yaml_for_yml_ttc.py" charset="UTF-8" />
@@ -54,6 +58,7 @@
     <file url="file://$PROJECT_DIR$/yaml/store_file.yaml" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/yaml/yaml_err_from_table_for_old_v_ttc.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/yaml/yaml_from_cpp_for_old_ttc.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/yaml_to_xls.py" charset="UTF-8" />
     <file url="PROJECT" charset="windows-1251" />
   </component>
 </project>

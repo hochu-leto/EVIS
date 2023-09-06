@@ -54,7 +54,7 @@ region = pg.LinearRegionItem()
 region.setZValue(20)
 # Add the LinearRegionItem to the ViewBox, but tell the ViewBox to exclude this
 # item when doing auto-range calculations.
-p2.addItem(region, ignoreBounds=True)
+p2.addItem(region)
 
 p1.setAutoVisible(y=True)
 
@@ -93,7 +93,7 @@ region.setRegion([1000, 2000])
 vLine = pg.InfiniteLine()
 firstLine = pg.InfiniteLine(pen='r')
 secondLine = pg.InfiniteLine(pen='g')
-p1.addItem(vLine, ignoreBounds=True)
+p1.addItem(vLine)
 
 proxy = QGraphicsProxyWidget(parent=p1)
 button = QPushButton('СБРОС')
@@ -136,7 +136,7 @@ def mouseClicked(evt):
         mousePoint = vb.mapSceneToView(pos)
         index = int(mousePoint.x())
         if firstLine not in p1.items:
-            p1.addItem(firstLine, ignoreBounds=True)
+            p1.addItem(firstLine)
             firstLine.setPos(mousePoint.x())
             if 0 < index < len(data1):  # сделать вторую метку, где при нажатии мыши
                 # будут сохраняться заданная первая, вторая позиция и их разница
@@ -148,7 +148,7 @@ def mouseClicked(evt):
                 label_y2.show()
         else:
             if secondLine not in p1.items:
-                p1.addItem(secondLine, ignoreBounds=True)
+                p1.addItem(secondLine)
             secondLine.setPos(firstLine.getXPos())
             firstLine.setPos(mousePoint.x())
             old_x = float(label_x.text.split('=')[1])
